@@ -1,0 +1,13 @@
+{
+  "application": {
+    "version": "sunmao/v1",
+    "kind": "Application",
+    "metadata": {
+      "name": "kui"
+    },
+    "spec": {
+      "components": []
+    }
+  },
+  "modules": []
+}

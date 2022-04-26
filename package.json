@@ -1,0 +1,29 @@
+{
+  "name": "kui-shadow",
+  "private": true,
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=16"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@sunmao-ui/core": "^0.5.5",
+    "@sunmao-ui/editor": "^0.5.9",
+    "@sunmao-ui/runtime": "^0.5.7",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.27",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^1.3.0",
+    "body-parser": "^1.20.0",
+    "typescript": "^4.6.3",
+    "vite": "^2.9.5"
+  }
+}
