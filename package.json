@@ -12,8 +12,10 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
+    "@emotion/css": "^11.9.0",
     "@linaria/core": "3.0.0-beta.15",
     "@linaria/react": "3.0.0-beta.15",
+    "@sinclair/typebox": "^0.21.2",
     "@sunmao-ui/core": "^0.5.5",
     "@sunmao-ui/editor": "^0.5.9",
     "@sunmao-ui/runtime": "^0.5.7",

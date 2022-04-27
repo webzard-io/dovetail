@@ -8,7 +8,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 const globalSassPath = path.resolve(
   __dirname,
-  "./src/_internal/styles/variables.scss"
+  "./src/themes/CloudTower/styles/variables.scss"
 );
 const globalSass = fs.readFileSync(globalSassPath, "utf-8");
 
