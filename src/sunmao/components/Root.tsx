@@ -25,9 +25,13 @@ export const Root = implementRuntimeComponent({
     properties: Type.Object({}),
     state: RootState,
     methods: {},
-    slots: ["root"],
+    slots: {
+      root: {
+        slotProps: Type.Object({}),
+      },
+    },
     styleSlots: [],
-    events: ["onClick"],
+    events: [],
   },
 })(({ slotsElements, mergeState }) => {
   useEffect(() => {
@@ -38,7 +42,7 @@ export const Root = implementRuntimeComponent({
 
   return (
     <KitContext.Provider value={CloudTowerKit}>
-      {slotsElements.root}
+      {slotsElements.root ? <slotsElements.root /> : null}
     </KitContext.Provider>
   );
 });

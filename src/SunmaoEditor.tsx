@@ -75,7 +75,6 @@ const DEFAULT_APP: Application = {
 
 export default function registerEditor(
   managerOptions: FsManagerOptions,
-  libs: SunmaoLib[],
   runtimeProps?: SunmaoUIRuntimeProps
 ) {
   const fsManager = new FsManager(managerOptions);
@@ -86,7 +85,6 @@ export default function registerEditor(
 
     const { Editor: SunmaoEditor, registry } = useMemo(() => {
       const { Editor, registry } = initSunmaoUIEditor({
-        libs,
         defaultApplication: app,
         defaultModules: modules,
         storageHandler: {
@@ -103,11 +101,6 @@ export default function registerEditor(
       fsManager.getApp().then(setApp);
       fsManager.getModules().then(setModules);
     }, []);
-    useEffect(() => {
-      runtimeProps?.utilMethods?.forEach((method) => {
-        registry.registerUtilMethod(method);
-      });
-    }, [registry]);
 
     return <SunmaoEditor />;
   };

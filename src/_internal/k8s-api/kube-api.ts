@@ -199,7 +199,7 @@ export class KubeApi<T> {
   public async list({ namespace, query }: KubeApiListOptions = {}): Promise<T> {
     const url = this.getUrl({ namespace });
     const res = await ky
-      .get("/proxy" + url, {
+      .get(url, {
         searchParams: query as URLSearchParams,
       })
       .json<T>();
@@ -229,7 +229,9 @@ export class KubeApi<T> {
       this.normalizeQuery(query) as URLSearchParams
     );
 
-    return resourcePath + (query ? `?${searchParams.toString()}` : "");
+    return (
+      "/proxy" + resourcePath + (query ? `?${searchParams.toString()}` : "")
+    );
   }
 
   private normalizeQuery(query: Partial<KubeApiQueryParams> = {}) {

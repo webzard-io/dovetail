@@ -8,7 +8,9 @@ import { KubeApi } from "./_internal/k8s-api/kube-api";
 import type { NamespaceList } from "kubernetes-types/core/v1";
 
 function App() {
-  const Page = registerSunmaoApp(schema as Schema, libs);
+  const Page = registerSunmaoApp(schema as Schema, {
+    libs,
+  });
 
   useEffect(() => {
     const api = new KubeApi<NamespaceList>({

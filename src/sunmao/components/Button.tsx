@@ -32,7 +32,11 @@ export const Button = implementRuntimeComponent({
     methods: {
       click: undefined,
     },
-    slots: ["content"],
+    slots: {
+      content: {
+        slotProps: Type.Object({}),
+      },
+    },
     styleSlots: ["button"],
     events: ["onClick"],
   },
@@ -68,7 +72,7 @@ export const Button = implementRuntimeComponent({
           ${customStyle?.button}
         `}
       >
-        {slotsElements.content || "text"}
+        {slotsElements.content ? <slotsElements.content /> : "text"}
       </kit.Button>
     );
   }
