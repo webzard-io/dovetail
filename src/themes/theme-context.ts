@@ -26,9 +26,22 @@ type ButtonProps = {
   className?: string;
 } & RefAndChildren;
 
+type TableProps = {
+  data: any[];
+  columns: {
+    title: string;
+    dataIndex: string | number | Array<string | number>;
+    width?: number;
+  }[];
+  loading?: boolean;
+  rowKey: string | ((record: any, index?: number) => string);
+} & RefAndChildren;
+
 export interface Kit {
   name: string;
   Button: React.FC<ButtonProps>;
+  Table: React.FC<TableProps>;
+  Loading: React.FC;
 }
 
 export const createKitContext = (kit: Kit) => {

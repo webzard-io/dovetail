@@ -40,7 +40,7 @@ type KubeApiLinkRef = {
 
 type KubeObjectConstructor = {
   kind: string;
-  namespaced: boolean;
+  namespace?: string;
   apiBase: string;
 };
 
@@ -219,9 +219,7 @@ export class KubeApi<T> {
       apiPrefix: this.apiPrefix,
       apiVersion: this.apiVersionWithGroup,
       resource: this.apiResource,
-      namespace: this.objectConstructor.namespaced
-        ? namespace ?? "default"
-        : undefined,
+      namespace: this.objectConstructor.namespace,
       name,
     });
 

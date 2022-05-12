@@ -8,7 +8,9 @@ const rawKubeConfig = fs.readFileSync(
   "utf-8"
 );
 const kubeConfig: any = load(rawKubeConfig);
-const kubeContext = kubeConfig.contexts[0];
+const kubeContext = kubeConfig.contexts.find(
+  (ctx) => ctx.name === kubeConfig["current-context"]
+);
 console.log("using context", kubeContext.name);
 const cluster = kubeConfig.clusters.find(
   (c) => c.name === kubeContext.context.cluster

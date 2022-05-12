@@ -14,10 +14,14 @@
           "traits": []
         },
         {
-          "id": "button1",
-          "type": "kui/v1/button",
+          "id": "stack4",
+          "type": "core/v1/stack",
           "properties": {
-            "type": "default"
+            "spacing": 12,
+            "direction": "horizontal",
+            "align": "auto",
+            "wrap": "",
+            "justify": ""
           },
           "traits": [
             {
@@ -28,24 +32,52 @@
                   "slot": "root"
                 }
               }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": [
+                  {
+                    "styleSlot": "content",
+                    "style": "width: 100%;\nheight: 100%;"
+                  }
+                ]
+              }
             }
           ]
         },
         {
-          "id": "text2",
-          "type": "core/v1/text",
+          "id": "unstructured_table2",
+          "type": "kui/v1/unstructured_table",
           "properties": {
-            "value": {
-              "raw": "{{ root.theme }} kui button",
-              "format": "plain"
-            }
+            "kind": "Deployment",
+            "apiBase": "apis/apps/v1/deployments",
+            "columns": [
+              {
+                "title": "Name",
+                "dataIndex": "metadata.name",
+                "width": 200
+              },
+              {
+                "title": "Namespace",
+                "dataIndex": "metadata.namespace",
+                "width": 100
+              },
+              {
+                "title": "Age",
+                "dataIndex": "metadata.creationTimestamp",
+                "width": 100
+              }
+            ],
+            "namespace": "",
+            "fieldSelector": ""
           },
           "traits": [
             {
               "type": "core/v1/slot",
               "properties": {
                 "container": {
-                  "id": "button1",
+                  "id": "stack4",
                   "slot": "content"
                 }
               }

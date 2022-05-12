@@ -1,6 +1,6 @@
 import { initSunmaoUIEditor } from "@sunmao-ui/editor";
 import { useState, useEffect, useMemo } from "react";
-import { SunmaoLib, SunmaoUIRuntimeProps } from "@sunmao-ui/runtime";
+import { SunmaoUIRuntimeProps } from "@sunmao-ui/runtime";
 import type { Application, Module } from "@sunmao-ui/core";
 
 type FsManagerOptions = { name: string };
@@ -83,8 +83,8 @@ export default function registerEditor(
     const [app, setApp] = useState(JSON.parse(JSON.stringify(DEFAULT_APP)));
     const [modules, setModules] = useState<Module[]>([]);
 
-    const { Editor: SunmaoEditor, registry } = useMemo(() => {
-      const { Editor, registry } = initSunmaoUIEditor({
+    const { Editor: SunmaoEditor } = useMemo(() => {
+      const { Editor } = initSunmaoUIEditor({
         defaultApplication: app,
         defaultModules: modules,
         storageHandler: {
@@ -94,7 +94,7 @@ export default function registerEditor(
         runtimeProps,
       });
 
-      return { Editor, registry };
+      return { Editor };
     }, [app, modules]);
 
     useEffect(() => {
