@@ -1,9 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import { KitContext } from "../../themes/theme-context";
 import type { ListMeta, ObjectMeta } from "kubernetes-types/meta/v1";
 import { KubeApi } from "../../_internal/k8s-api/kube-api";
+import _ObjectAge from "../../_internal/components/_ObjectAge";
 
 const UnstructuredTableProps = Type.Object({
   kind: Type.String({
@@ -18,10 +20,16 @@ const UnstructuredTableProps = Type.Object({
   fieldSelector: Type.String(),
   columns: Type.Array(
     Type.Object({
+      key: Type.String(),
       title: Type.String(),
       dataIndex: Type.String(),
       width: Type.Number(),
-    })
+    }),
+    {
+      widgetOptions: {
+        displayedKeys: ["title"],
+      },
+    }
   ),
 });
 
@@ -58,9 +66,19 @@ export const UnstructuredTable = implementRuntimeComponent({
       kind: "Deployment",
       apiBase: "apis/apps/v1/deployments",
       columns: [
-        { title: "Name", dataIndex: "metadata.name", width: 100 },
-        { title: "Namespace", dataIndex: "metadata.namespace", width: 200 },
-        { title: "Age", dataIndex: "metadata.creationTimestamp", width: 100 },
+        { key: "name", title: "Name", dataIndex: "metadata.name", width: 100 },
+        {
+          key: "namespace",
+          title: "Namespace",
+          dataIndex: "metadata.namespace",
+          width: 200,
+        },
+        {
+          key: "age",
+          title: "Age",
+          dataIndex: "metadata.creationTimestamp",
+          width: 100,
+        },
       ],
     },
     exampleSize: [8, 4],
@@ -73,8 +91,13 @@ export const UnstructuredTable = implementRuntimeComponent({
     state: UnstructuredTableState,
     methods: {},
     slots: {
-      root: {
-        slotProps: Type.Object({}),
+      cell: {
+        slotProps: Type.Object({
+          key: Type.String(),
+          value: Type.Any(),
+          record: Type.Any(),
+          index: Type.Number(),
+        }),
       },
     },
     styleSlots: [],
@@ -106,6 +129,7 @@ export const UnstructuredTable = implementRuntimeComponent({
         objectConstructor: {
           kind,
           apiBase,
+          namespace,
         },
       });
       setResponse((prev) => ({ ...prev, loading: true }));
@@ -126,6 +150,22 @@ export const UnstructuredTable = implementRuntimeComponent({
         columns={columns.map((col) => ({
           ...col,
           dataIndex: col.dataIndex.split("."),
+          render: (value, record, index) => {
+            const slotEl = slotsElements.cell?.({
+              value,
+              record,
+              index,
+              key: col.key,
+            });
+            const len = renderToStaticMarkup(<>{slotEl}</>).length;
+            if (len) {
+              return slotEl;
+            }
+            if (col.dataIndex === "metadata.creationTimestamp") {
+              return <_ObjectAge date={value} />;
+            }
+            return value;
+          },
         }))}
         data={data.items}
         loading={loading}

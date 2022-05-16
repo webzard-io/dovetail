@@ -72,7 +72,7 @@ export const Button = implementRuntimeComponent({
           ${customStyle?.button}
         `}
       >
-        {slotsElements.content ? <slotsElements.content /> : "text"}
+        <> {slotsElements.content ? slotsElements.content({}) : "text"}</>
       </kit.Button>
     );
   }

@@ -29,9 +29,11 @@ type ButtonProps = {
 type TableProps = {
   data: any[];
   columns: {
+    key: string;
     title: string;
     dataIndex: string | number | Array<string | number>;
     width?: number;
+    render?: (val: any, record: any, index: number) => React.ReactNode;
   }[];
   loading?: boolean;
   rowKey: string | ((record: any, index?: number) => string);

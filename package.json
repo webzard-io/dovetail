@@ -21,6 +21,7 @@
     "@sunmao-ui/runtime": "link:/Users/yanzhen/workspace/sunmao-ui/packages/runtime",
     "antd": "^4.20.0",
     "classnames": "^2.3.1",
+    "dayjs": "^1.11.2",
     "js-yaml": "^4.1.0",
     "kubernetes-types": "1.21.0-beta.1",
     "ky": "^0.30.0",
