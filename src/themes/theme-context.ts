@@ -37,6 +37,25 @@ type TableProps = {
   }[];
   loading?: boolean;
   rowKey: string | ((record: any, index?: number) => string);
+  onSelect?: (keys: string[], records: any[]) => void;
+  selectedKeys?: string[];
+  onActive?: (key: string, record: any) => void;
+  activeKey?: string;
+} & RefAndChildren;
+
+type SidebarProps = {
+  className?: string;
+  width?: number;
+  visible?: boolean;
+  onClose?: () => void;
+  getContainer: string | (() => HTMLElement);
+} & RefAndChildren;
+
+type TagProps = {
+  className?: string;
+  color?: string;
+  closable?: boolean;
+  onClose?: () => void;
 } & RefAndChildren;
 
 export interface Kit {
@@ -44,6 +63,8 @@ export interface Kit {
   Button: React.FC<ButtonProps>;
   Table: React.FC<TableProps>;
   Loading: React.FC;
+  Sidebar: React.FC<SidebarProps>;
+  Tag: React.FC<TagProps>;
 }
 
 export const createKitContext = (kit: Kit) => {

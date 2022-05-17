@@ -47,11 +47,36 @@
           ]
         },
         {
+          "id": "unstructured_sidebar3",
+          "type": "kui/v1/unstructured_sidebar",
+          "properties": {
+            "item": "{{ unstructured_table3.activeItem }}",
+            "defaultVisible": true
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "stack4",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": []
+              }
+            }
+          ]
+        },
+        {
           "id": "unstructured_table3",
           "type": "kui/v1/unstructured_table",
           "properties": {
             "kind": "Deployment",
-            "apiBase": "apis/apiextensions.k8s.io/v1/customresourcedefinitions",
+            "apiBase": "/apis/apps/v1/deployments",
             "columns": [
               {
                 "key": "name",
@@ -89,6 +114,28 @@
               "type": "core/v1/style",
               "properties": {
                 "styles": []
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onActive",
+                    "componentId": "unstructured_sidebar3",
+                    "method": {
+                      "name": "setVisible",
+                      "parameters": {
+                        "visible": true
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
               }
             }
           ]

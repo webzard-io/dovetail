@@ -40,7 +40,7 @@ interface TableProps<T extends { id: string }> {
     index: number,
     evt: React.MouseEvent<HTMLElement, MouseEvent>
   ) => void;
-  rowClassName?: (record: T, index: number) => string;
+  // rowClassName?: (record: T, index: number) => string;
   scroll?: { x?: number | string | true; y?: number | string };
   onResize?: (column: RequiredColumnProps<T>[]) => void;
   resizable?: boolean;
@@ -61,12 +61,15 @@ interface TableProps<T extends { id: string }> {
   };
   /* eslint-enable @typescript-eslint/no-explicit-any */
   RowMenu?: React.FC<{ record: T; index: number }>;
-  rowSelection?: TableRowSelection<T>;
   empty?: string | React.ReactNode;
   tableLayout?: "fixed" | "auto";
   initLoading?: boolean;
   rowKey?: AntdTableProps<T>["rowKey"];
   wrapper?: React.MutableRefObject<HTMLDivElement | null>;
+  onSelect?: (keys: string[], records: any[]) => void;
+  selectedKeys?: string[];
+  onActive?: (key: string, record: any) => void;
+  activeKey?: string;
 }
 
 function canScroll(el: Element, direction = "vertical"): boolean {
@@ -125,11 +128,13 @@ const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
       columns,
       onSorterChange,
       onRowClick,
-      rowClassName,
       scroll,
       bordered,
       components,
-      rowSelection,
+      onSelect,
+      selectedKeys,
+      onActive,
+      activeKey,
       empty,
       tableLayout = "fixed",
       initLoading,
@@ -138,6 +143,10 @@ const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
     } = props;
     const orderRef = useRef<"descend" | "ascend" | undefined | null>(null);
     const hasScrollBard = useTableBodyHasScrollBar(wrapper, data);
+
+    const getKey = (record: any) => {
+      return typeof rowKey === "string" ? record[rowKey] : rowKey?.(record);
+    };
 
     return (
       <div
@@ -149,7 +158,7 @@ const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
             TableStyle,
             !data?.length && "empty-table",
             initLoading && "table-init-loading",
-            rowSelection && "has-selection"
+            onSelect && "has-selection"
           )}
           bordered={bordered}
           loading={{
@@ -187,11 +196,25 @@ const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
             }
           }}
           onRow={(record: any, index) => ({
-            onClick: (evt) => onRowClick?.(record, index!, evt),
+            onClick: (evt) => {
+              onRowClick?.(record, index!, evt);
+              const key = getKey(record);
+              onActive?.(key, record);
+            },
           })}
-          rowClassName={rowClassName}
+          rowClassName={(r) => {
+            return getKey(r) === activeKey ? "active-row" : "";
+          }}
           scroll={scroll}
-          rowSelection={rowSelection && { ...rowSelection, columnWidth: 32 }}
+          rowSelection={
+            onSelect && {
+              type: "checkbox",
+              selectedRowKeys: selectedKeys,
+              onChange(keys, rows) {
+                onSelect(keys as string[], rows);
+              },
+            }
+          }
           showSorterTooltip={false}
         />
       </div>

@@ -1,5 +1,6 @@
 // highly inspired by https://github.com/lensapp/lens/blob/1a29759bff/src/common/k8s-api/kube-api.ts
 import ky from "ky";
+import type { ListMeta, ObjectMeta } from "kubernetes-types/meta/v1";
 
 type KubeApiQueryParams = {
   watch?: boolean | number;
@@ -244,3 +245,16 @@ export class KubeApi<T> {
     return query;
   }
 }
+
+export type UnstructuredList = {
+  apiVersion: string;
+  kind: string;
+  meatadata: ListMeta;
+  items: Unstructured[];
+};
+
+export type Unstructured = {
+  apiVersion: string;
+  kind: string;
+  metadata: ObjectMeta;
+};

@@ -3,8 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import { KitContext } from "../../themes/theme-context";
-import type { ListMeta, ObjectMeta } from "kubernetes-types/meta/v1";
-import { KubeApi } from "../../_internal/k8s-api/kube-api";
+import { KubeApi, UnstructuredList } from "../../_internal/k8s-api/kube-api";
 import _ObjectAge from "../../_internal/components/_ObjectAge";
 
 const UnstructuredTableProps = Type.Object({
@@ -33,20 +32,11 @@ const UnstructuredTableProps = Type.Object({
   ),
 });
 
-const UnstructuredTableState = Type.Object({});
-
-type UnstructuredList = {
-  apiVersion: string;
-  kind: string;
-  meatadata: ListMeta;
-  items: Unstructured[];
-};
-
-type Unstructured = {
-  apiVersion: string;
-  kind: string;
-  metadata: ObjectMeta;
-};
+const UnstructuredTableState = Type.Object({
+  items: Type.Array(Type.Any()),
+  activeItem: Type.Any(),
+  selectedItems: Type.Array(Type.Any()),
+});
 
 const emptyData = {
   apiVersion: "",
@@ -59,7 +49,7 @@ export const UnstructuredTable = implementRuntimeComponent({
   version: "kui/v1",
   metadata: {
     name: "unstructured_table",
-    displayName: "UnstructuredTable",
+    displayName: "Unstructured Table",
     isDraggable: true,
     isResizable: true,
     exampleProperties: {
@@ -101,7 +91,7 @@ export const UnstructuredTable = implementRuntimeComponent({
       },
     },
     styleSlots: [],
-    events: [],
+    events: ["onActive", "onSelect"],
   },
 })(
   ({
@@ -113,6 +103,7 @@ export const UnstructuredTable = implementRuntimeComponent({
     kind,
     namespace,
     fieldSelector,
+    callbackMap,
   }) => {
     const kit = useContext(KitContext);
     const [{ data, loading, error }, setResponse] = useState<{
@@ -143,6 +134,25 @@ export const UnstructuredTable = implementRuntimeComponent({
         })
         .finally(() => setResponse((prev) => ({ ...prev, loading: false })));
     }, [apiBase, kind, namespace]);
+    const [activeKey, setActiveKey] = useState<string>("");
+    const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+    useEffect(() => {
+      mergeState({
+        items: data.items,
+      });
+    }, [data.items]);
+    useEffect(() => {
+      mergeState({
+        activeItem: data.items.find((item) => item.metadata.name === activeKey),
+      });
+    }, [activeKey]);
+    useEffect(() => {
+      mergeState({
+        selectedItems: data.items.filter((item) =>
+          selectedKeys.includes(item.metadata.name!)
+        ),
+      });
+    }, [selectedKeys]);
 
     return (
       <kit.Table
@@ -170,6 +180,16 @@ export const UnstructuredTable = implementRuntimeComponent({
         data={data.items}
         loading={loading}
         rowKey={(row) => row.metadata.name}
+        activeKey={activeKey}
+        onActive={(key) => {
+          setActiveKey(key);
+          callbackMap?.onActive();
+        }}
+        selectedKeys={selectedKeys}
+        onSelect={(keys) => {
+          setSelectedKeys(keys);
+          callbackMap?.onSelect();
+        }}
       />
     );
   }
