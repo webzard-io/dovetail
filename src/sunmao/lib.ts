@@ -4,6 +4,7 @@ import { Button } from "./components/Button";
 import { UnstructuredTable } from "./components/UnstructuredTable";
 import { ObjectAge } from "./components/ObjectAge";
 import { UnstructuredSidebar } from "./components/UnstructuredSidebar";
+import { UnstructuredForm } from "./components/UnstructuredForm";
 
 export const libs: SunmaoLib[] = [
   {
@@ -14,6 +15,7 @@ export const libs: SunmaoLib[] = [
       UnstructuredTable,
       ObjectAge,
       UnstructuredSidebar,
+      UnstructuredForm,
     ],
   },
 ];

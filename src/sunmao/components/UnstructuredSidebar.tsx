@@ -6,7 +6,6 @@ import {
 import { Type } from "@sinclair/typebox";
 import { KitContext } from "../../themes/theme-context";
 import _ObjectMeta from "../../_internal/components/_ObjectMeta";
-import { css } from "@emotion/css";
 
 const UnstructuredSidebarProps = Type.Object({
   item: Type.Any(),
