@@ -586,7 +586,7 @@
               {
                 "key": "phase",
                 "title": "状态",
-                "dataIndex": "status.phase",
+                "dataIndex": "status",
                 "width": 100
               },
               {
@@ -674,11 +674,11 @@
           ]
         },
         {
-          "id": "phase_text",
+          "id": "status_text",
           "type": "core/v1/text",
           "properties": {
             "value": {
-              "raw": "{{ $slot.value }}",
+              "raw": "{{ $slot.value.ready ? 'Ready' : 'Not Ready' }}",
               "format": "plain"
             }
           },
@@ -699,7 +699,7 @@
                 "styles": [
                   {
                     "styleSlot": "content",
-                    "style": "color: {{\n  {\n    'Provisioned': '#25c764'\n  }[$slot.value] || '#ff9100' \n}};"
+                    "style": "color: {{ $slot.value.ready ? '#25c764' : '#ff9100' \n}};"
                   }
                 ]
               }
@@ -741,6 +741,46 @@
               "properties": {
                 "key": "value",
                 "initialValue": "false"
+              }
+            }
+          ]
+        },
+        {
+          "id": "create_cluster",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/fetch",
+              "properties": {
+                "url": "/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/default/kubesmartclusters?dryRun=All",
+                "method": "post",
+                "lazy": true,
+                "disabled": false,
+                "headers": {
+                  "content-type": "application/json"
+                },
+                "body": "{{(() => {\n  const body = {\n    apiVersion: 'kubesmart.smtx.io/v1alpha1',\n    kind: 'KubeSmartCluster',\n    metadata: {\n      namespace: 'default',\n      name: 'yz-demo',\n    },\n    spec: {\n      ...create_form.value,\n    }\n  }\n  \n  return body\n})()}}",
+                "bodyType": "json",
+                "onComplete": [
+                  {
+                    "componentId": "$utils",
+                    "method": {
+                      "name": "message",
+                      "parameters": {
+                        "type": "info",
+                        "message": "创建 K8s 集群",
+                        "duration": 2
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ],
+                "onError": []
               }
             }
           ]

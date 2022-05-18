@@ -7,6 +7,8 @@ import { Type } from "@sinclair/typebox";
 import { css } from "@emotion/css";
 import { KitContext } from "../../themes/theme-context";
 import _ObjectMeta from "../../_internal/components/_ObjectMeta";
+import _ObjectSpec from "../../_internal/components/_ObjectSpec";
+import _ObjectStatus from "../../_internal/components/_ObjectStatus";
 
 const UnstructuredSidebarProps = Type.Object({
   item: Type.Any(),
@@ -152,6 +154,18 @@ export const UnstructuredSidebar = implementRuntimeComponent({
         <div className={CardWrapper}>
           <div className="card-body">
             <_ObjectMeta item={item} />
+          </div>
+        </div>
+        <div className={Header}>Spec</div>
+        <div className={CardWrapper}>
+          <div className="card-body">
+            <_ObjectSpec item={item} />
+          </div>
+        </div>
+        <div className={Header}>Status</div>
+        <div className={CardWrapper}>
+          <div className="card-body">
+            <_ObjectStatus item={item} />
           </div>
         </div>
       </kit.Sidebar>

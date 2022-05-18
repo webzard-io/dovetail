@@ -229,7 +229,7 @@ export class KubeApi<T> {
     );
 
     return (
-      "/proxy" + resourcePath + (query ? `?${searchParams.toString()}` : "")
+      "/proxy-k8s" + resourcePath + (query ? `?${searchParams.toString()}` : "")
     );
   }
 

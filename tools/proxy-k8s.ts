@@ -30,7 +30,7 @@ export function getProxyConfig() {
         "base64"
       ).toString(),
     },
-    rewrite: (path) => path.replace(/^\/proxy/, ""),
+    rewrite: (path) => path.replace(/^\/proxy-k8s/, ""),
     secure: false,
     changeOrigin: true,
   };

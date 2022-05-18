@@ -17,7 +17,7 @@ const globalSass = fs.readFileSync(globalSassPath, "utf-8");
 export default defineConfig({
   server: {
     proxy: {
-      "/proxy": getProxyConfig(),
+      "/proxy-k8s": getProxyConfig(),
     },
   },
   plugins: [
