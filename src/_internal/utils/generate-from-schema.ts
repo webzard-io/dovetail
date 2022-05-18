@@ -4,6 +4,9 @@ export function generateFromSchema(spec: JSONSchema7, noOptional = false): any {
   if (!spec) {
     return {};
   }
+  if ("default" in spec) {
+    return spec.default;
+  }
   switch (true) {
     case spec.type === "string" && "enum" in spec && Boolean(spec.enum?.length):
       return spec.enum![0];

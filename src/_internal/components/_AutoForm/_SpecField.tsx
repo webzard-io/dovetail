@@ -1,7 +1,7 @@
 import React from "react";
 import { isEmpty } from "lodash-es";
 // TODO: use kit context when I have time:)
-import { Form, Row, Col } from "antd";
+import { Row, Col } from "antd";
 import { css, cx } from "@linaria/core";
 import { JSONSchema7 } from "json-schema";
 import { WidgetProps } from "./widget";
@@ -24,7 +24,6 @@ type TemplateProps = {
   displayLabel?: boolean;
   displayDescription?: boolean;
   children?: React.ReactNode;
-  level: number;
 };
 
 const FormLabel = css`
@@ -111,7 +110,7 @@ type SpecFieldProps = WidgetProps & {
 };
 
 const SpecField: React.FC<SpecFieldProps> = (props) => {
-  const { spec, level, path, value, onChange } = props;
+  const { spec, level, path, value, onChange, renderer } = props;
   const { title, widgetOptions } = spec;
   const label = title ?? "";
   const displayLabel =
@@ -144,21 +143,27 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   }
 
   return (
-    <DefaultTemplate
-      label={label}
-      description={spec.description}
-      displayLabel={displayLabel}
-      displayDescription={displayDescription}
-      level={level}
-    >
-      <Component
-        spec={spec}
-        value={value}
-        path={path}
-        level={level}
-        onChange={onChange}
-      />
-    </DefaultTemplate>
+    <>
+      {renderer?.(path, level, "before")}
+      <DefaultTemplate
+        label={label}
+        description={spec.description}
+        displayLabel={displayLabel}
+        displayDescription={displayDescription}
+      >
+        {renderer?.(path, level, "widget") || (
+          <Component
+            spec={spec}
+            value={value}
+            path={path}
+            level={level}
+            onChange={onChange}
+            renderer={renderer}
+          />
+        )}
+      </DefaultTemplate>
+      {renderer?.(path, level, "after")}
+    </>
   );
 };
 

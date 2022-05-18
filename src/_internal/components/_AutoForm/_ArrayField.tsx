@@ -7,7 +7,7 @@ import { KitContext } from "../../../themes/theme-context";
 import { generateFromSchema } from "../../utils/generate-from-schema";
 
 export const ArrayField: React.FC<WidgetProps> = (props) => {
-  const { spec, value, path, level, onChange } = props;
+  const { spec, value, path, level, onChange, renderer } = props;
   const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
   const kit = useContext(KitContext);
 
@@ -39,7 +39,7 @@ export const ArrayField: React.FC<WidgetProps> = (props) => {
             }}
           >
             <div>
-              {itemSpec.title} {itemIndex + 1}
+              {itemSpec.title ? `${itemSpec.title} ${itemIndex + 1}` : ""}
             </div>
             <kit.Button
               size="small"
@@ -58,8 +58,9 @@ export const ArrayField: React.FC<WidgetProps> = (props) => {
               ...itemSpec,
               title: itemSpec.title,
             }}
-            path={path.concat(String(itemIndex))}
+            path={path.concat(`[${itemIndex}]`)}
             level={level + 1}
+            renderer={renderer}
             onChange={(newItemValue: any) => {
               const newValue = [...value];
               newValue[itemIndex] = newItemValue;

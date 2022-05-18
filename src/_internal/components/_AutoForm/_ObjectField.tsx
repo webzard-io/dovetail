@@ -3,7 +3,7 @@ import SpecField from "./_SpecField";
 import { WidgetProps } from "./widget";
 
 export const ObjectField: React.FC<WidgetProps> = (props) => {
-  const { spec, value, path, level, onChange } = props;
+  const { spec, value, path, level, onChange, renderer } = props;
 
   const properties = Object.keys(spec.properties || {});
   return (
@@ -22,7 +22,8 @@ export const ObjectField: React.FC<WidgetProps> = (props) => {
               ...subSpec,
               title: subSpec.title || name,
             }}
-            path={path.concat(name)}
+            path={path.concat(`.${name}`)}
+            renderer={renderer}
             level={level + 1}
             value={value?.[name]}
             onChange={(newValue) => {

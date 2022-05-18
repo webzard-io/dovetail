@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import AutoFrom from "../../_internal/components/_AutoForm/_AutoForm";
@@ -34,7 +35,26 @@ export const UnstructuredForm = implementRuntimeComponent({
     properties: UnstructuredFormProps,
     state: UnstructuredTableState,
     methods: {},
-    slots: {},
+    slots: {
+      beforeField: {
+        slotProps: Type.Object({
+          path: Type.String(),
+          level: Type.Number(),
+        }),
+      },
+      field: {
+        slotProps: Type.Object({
+          path: Type.String(),
+          level: Type.Number(),
+        }),
+      },
+      afterField: {
+        slotProps: Type.Object({
+          path: Type.String(),
+          level: Type.Number(),
+        }),
+      },
+    },
     styleSlots: [],
     events: [],
   },
@@ -46,6 +66,7 @@ export const UnstructuredForm = implementRuntimeComponent({
     callbackMap,
     mergeState,
     subscribeMethods,
+    slotsElements,
   }) => {
     const [value, setValue] = useState(
       defaultValue || generateFromSchema(spec)
@@ -66,6 +87,31 @@ export const UnstructuredForm = implementRuntimeComponent({
           }}
           level={0}
           path=""
+          renderer={(path, level, position) => {
+            if (position === "before") {
+              return slotsElements.beforeField?.({
+                path,
+                level,
+              }) as React.ReactNode;
+            }
+            if (position === "after") {
+              return slotsElements.afterField?.({
+                path,
+                level,
+              }) as React.ReactNode;
+            }
+            if (position === "widget") {
+              const fieldEl = slotsElements.field?.({
+                path,
+                level,
+              }) as React.ReactNode;
+              const len = renderToStaticMarkup(<>{fieldEl}</>).length;
+              if (len) {
+                return fieldEl;
+              }
+            }
+            return null;
+          }}
         />
       </div>
     );

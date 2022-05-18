@@ -12,4 +12,9 @@ export type WidgetProps = {
   path: string;
   value: any;
   onChange: (newV: any) => void;
+  renderer?: (
+    path: string,
+    level: number,
+    position: "before" | "after" | "widget"
+  ) => React.ReactNode;
 };

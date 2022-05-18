@@ -3,7 +3,9 @@ import { Form, FormInstance } from "antd";
 import { WidgetProps } from "./widget";
 import SpecField from "./_SpecField";
 
-const AutoForm = React.forwardRef<FormInstance, WidgetProps>((props, ref) => {
+type AutoFormProps = WidgetProps;
+
+const AutoForm = React.forwardRef<FormInstance, AutoFormProps>((props, ref) => {
   const { ...rest } = props;
   return (
     <Form ref={ref}>
