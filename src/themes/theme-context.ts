@@ -58,6 +58,17 @@ type TagProps = {
   onClose?: () => void;
 } & RefAndChildren;
 
+type ModalProps = {
+  className?: string;
+  width?: number;
+  visible?: boolean;
+  maskClosable?: boolean;
+  onClose?: () => void;
+  title?: React.ReactNode;
+  footer?: React.ReactNode;
+  getContainer: string | (() => HTMLElement);
+} & RefAndChildren;
+
 export interface Kit {
   name: string;
   Button: React.FC<ButtonProps>;
@@ -65,6 +76,7 @@ export interface Kit {
   Loading: React.FC;
   Sidebar: React.FC<SidebarProps>;
   Tag: React.FC<TagProps>;
+  Modal: React.FC<ModalProps>;
 }
 
 export const createKitContext = (kit: Kit) => {

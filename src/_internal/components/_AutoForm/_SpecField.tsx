@@ -46,6 +46,14 @@ const FormHelperText = css`
   color: rgba(44, 56, 82, 0.6);
 `;
 
+const FormItem = css`
+  line-height: 32px;
+`;
+
+const HasMargin = css`
+  margin-bottom: 16px;
+`;
+
 const DefaultTemplate: React.FC<TemplateProps> = (props) => {
   const {
     id,
@@ -64,20 +72,20 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
   }
 
   return (
-    <Form.Item required={required} id={id}>
-      <Row>
-        {displayLabel && (
-          <Col span="6" className={FormLabel}>
-            {label}
-          </Col>
-        )}
-        <Col span={displayLabel ? 18 : 24}>{children}</Col>
+    <Row className={cx(FormItem, displayLabel && HasMargin)}>
+      {displayLabel && (
+        <Col span="6" className={FormLabel}>
+          {label}
+        </Col>
+      )}
+      <Col span={displayLabel ? 18 : 24}>
+        {children}
         {errors && <div className={FormErrorMessage}>{errors}</div>}
         {description && displayDescription && (
           <div className={FormHelperText}>{description}</div>
         )}
-      </Row>
-    </Form.Item>
+      </Col>
+    </Row>
   );
 };
 

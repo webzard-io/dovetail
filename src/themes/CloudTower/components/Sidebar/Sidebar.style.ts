@@ -18,6 +18,7 @@ export const Sidebar = css`
   .drawer-content-inner {
     height: 100%;
     position: relative;
+    padding: 24px;
 
     .close-icon {
       position: absolute;

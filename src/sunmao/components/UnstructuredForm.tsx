@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import AutoFrom from "../../_internal/components/_AutoForm/_AutoForm";
-import { mergeWith } from "lodash-es";
 import { generateFromSchema } from "../../_internal/utils/generate-from-schema";
 
 const UnstructuredFormProps = Type.Object({
@@ -48,7 +47,9 @@ export const UnstructuredForm = implementRuntimeComponent({
     mergeState,
     subscribeMethods,
   }) => {
-    const [value, setValue] = useState(generateFromSchema(spec));
+    const [value, setValue] = useState(
+      defaultValue || generateFromSchema(spec)
+    );
     useEffect(() => {
       mergeState({
         value,
@@ -56,7 +57,7 @@ export const UnstructuredForm = implementRuntimeComponent({
     }, [value]);
 
     return (
-      <div ref={elementRef}>
+      <div ref={elementRef} style={{ width: "100%" }}>
         <AutoFrom
           spec={spec}
           value={value}
