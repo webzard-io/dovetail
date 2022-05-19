@@ -123,16 +123,22 @@ export const UnstructuredTable = implementRuntimeComponent({
           namespace,
         },
       });
-      setResponse((prev) => ({ ...prev, loading: true }));
-      api
-        .list({ query: fieldSelector ? { fieldSelector } : {} })
-        .then((res) => {
-          setResponse((prev) => ({ ...prev, error: null, data: res }));
-        })
-        .catch((err) => {
-          setResponse((prev) => ({ ...prev, error: err, data: emptyData }));
-        })
-        .finally(() => setResponse((prev) => ({ ...prev, loading: false })));
+      const doRequest = (s: boolean) => {
+        setResponse((prev) => ({ ...prev, loading: s ? false : true }));
+        api
+          .list({ query: fieldSelector ? { fieldSelector } : {} })
+          .then((res) => {
+            setResponse((prev) => ({ ...prev, error: null, data: res }));
+          })
+          .catch((err) => {
+            setResponse((prev) => ({ ...prev, error: err, data: emptyData }));
+          })
+          .finally(() => setResponse((prev) => ({ ...prev, loading: false })));
+      };
+      doRequest(false);
+      setInterval(() => {
+        doRequest(true);
+      }, 5000);
     }, [apiBase, kind, namespace]);
     const [activeKey, setActiveKey] = useState<string>("");
     const [selectedKeys, setSelectedKeys] = useState<string[]>([]);

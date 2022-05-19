@@ -105,7 +105,10 @@ export const UnstructuredForm = implementRuntimeComponent({
                 path,
                 level,
               }) as React.ReactNode;
+              const _ = window.document.createElement;
+              window.document.createElement = null as any;
               const len = renderToStaticMarkup(<>{fieldEl}</>).length;
+              window.document.createElement = _;
               if (len) {
                 return fieldEl;
               }

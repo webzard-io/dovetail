@@ -99,7 +99,7 @@ export default function registerEditor(
 
     useEffect(() => {
       fsManager.getApp().then(setApp);
-      fsManager.getModules().then(setModules);
+      // fsManager.getModules().then(setModules);
     }, []);
 
     return <SunmaoEditor />;
