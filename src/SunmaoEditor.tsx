@@ -2,6 +2,7 @@ import { initSunmaoUIEditor } from "@sunmao-ui/editor";
 import { useState, useEffect, useMemo } from "react";
 import { SunmaoUIRuntimeProps } from "@sunmao-ui/runtime";
 import type { Application, Module } from "@sunmao-ui/core";
+import { widgets as editorWidgets } from "./editor";
 
 type FsManagerOptions = { name: string };
 class FsManager {
@@ -92,6 +93,7 @@ export default function registerEditor(
           onSaveModules: fsManager.saveModules,
         },
         runtimeProps,
+        widgets: editorWidgets,
       });
 
       return { Editor };

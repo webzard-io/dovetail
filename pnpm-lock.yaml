@@ -11,6 +11,7 @@ specifiers:
   '@sinclair/typebox': ^0.21.2
   '@sunmao-ui/core': link:/Users/yanzhen/workspace/sunmao-ui/packages/core
   '@sunmao-ui/editor': link:/Users/yanzhen/workspace/sunmao-ui/packages/editor
+  '@sunmao-ui/editor-sdk': link:/Users/yanzhen/workspace/sunmao-ui/packages/editor-sdk
   '@sunmao-ui/runtime': link:/Users/yanzhen/workspace/sunmao-ui/packages/runtime
   '@types/js-yaml': ^4.0.5
   '@types/json-schema': ^7.0.11
@@ -45,6 +46,7 @@ dependencies:
   '@sinclair/typebox': 0.21.2
   '@sunmao-ui/core': link:../sunmao-ui/packages/core
   '@sunmao-ui/editor': link:../sunmao-ui/packages/editor
+  '@sunmao-ui/editor-sdk': link:../sunmao-ui/packages/editor-sdk
   '@sunmao-ui/runtime': link:../sunmao-ui/packages/runtime
   antd: 4.20.0_ef5jwxihqo6n7gxfmzogljlgcm
   classnames: 2.3.1

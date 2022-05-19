@@ -8,7 +8,7 @@ const BranchRow = css`
 
   label {
     border-left: 2px solid black;
-    padding-left: 2px;
+    padding-left: 4px;
   }
 `;
 
@@ -17,6 +17,9 @@ const OddRow = css`
 `;
 const EvenRow = css`
   background: #f2f5fa;
+`;
+const LightRow = css`
+  color: #a3b4cc;
 `;
 
 const colors = [
@@ -58,13 +61,22 @@ const Branch: React.FC<{ k: string; v: any; depth: number; index: number }> = (
   props
 ) => {
   const { k, v, depth, index } = props;
+  const light = String(v).includes("Fields") || String(v).includes("Items");
+  console.log(v, light);
 
   return (
-    <div className={cx(Row, BranchRow, index % 2 ? EvenRow : OddRow)}>
+    <div
+      className={cx(
+        Row,
+        BranchRow,
+        index % 2 ? EvenRow : OddRow,
+        light && LightRow
+      )}
+    >
       <label
         style={{
-          marginLeft: depth * 6,
-          marginRight: -depth * 6,
+          marginLeft: depth * 8,
+          marginRight: -depth * 8,
           borderColor: colors[depth % colors.length],
         }}
       >

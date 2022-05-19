@@ -18,6 +18,7 @@
     "@sinclair/typebox": "^0.21.2",
     "@sunmao-ui/core": "link:/Users/yanzhen/workspace/sunmao-ui/packages/core",
     "@sunmao-ui/editor": "link:/Users/yanzhen/workspace/sunmao-ui/packages/editor",
+    "@sunmao-ui/editor-sdk": "link:/Users/yanzhen/workspace/sunmao-ui/packages/editor-sdk",
     "@sunmao-ui/runtime": "link:/Users/yanzhen/workspace/sunmao-ui/packages/runtime",
     "antd": "^4.20.0",
     "classnames": "^2.3.1",
