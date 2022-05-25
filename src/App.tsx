@@ -1,6 +1,6 @@
 import { libs } from "./sunmao/lib";
 import registerSunmaoApp from "./SunmaoApp";
-import schema from "./sunmao/schema.json";
+import schema from "./sunmao/lcm.json";
 import type { Schema } from "./types";
 import "./init";
 

@@ -6,7 +6,9 @@ import AutoFrom from "../../_internal/components/_AutoForm/_AutoForm";
 import { generateFromSchema } from "../../_internal/utils/generate-from-schema";
 
 const UnstructuredFormProps = Type.Object({
-  spec: Type.Any(),
+  spec: Type.Any({
+    widget: "kui/v1/AutoFormSpecWidget",
+  }),
   defaultValue: Type.Any(),
 });
 

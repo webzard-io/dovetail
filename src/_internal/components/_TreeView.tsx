@@ -62,7 +62,6 @@ const Branch: React.FC<{ k: string; v: any; depth: number; index: number }> = (
 ) => {
   const { k, v, depth, index } = props;
   const light = String(v).includes("Fields") || String(v).includes("Items");
-  console.log(v, light);
 
   return (
     <div

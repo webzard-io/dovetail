@@ -28,8 +28,8 @@ export default defineConfig({
     sunmaoFsVitePlugin({
       schemas: [
         {
-          name: "main",
-          path: path.resolve(__dirname, "./src/sunmao/schema.json"),
+          name: "lcm",
+          path: path.resolve(__dirname, "./src/sunmao/lcm.json"),
         },
       ],
     }),

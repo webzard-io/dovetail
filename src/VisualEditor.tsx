@@ -4,7 +4,7 @@ import "@sunmao-ui/editor/dist/index.css";
 import "./init";
 
 function VisualEditor() {
-  const PageEditor = registerSunmaoEditor({ name: "main" }, { libs });
+  const PageEditor = registerSunmaoEditor({ name: "lcm" }, { libs });
 
   return <PageEditor />;
 }

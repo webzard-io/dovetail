@@ -25,4 +25,4 @@ dist-ssr
 
 # App
 
-src/sunmao/schema.json
+src/sunmao/*.json
