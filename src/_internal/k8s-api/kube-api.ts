@@ -202,6 +202,7 @@ export class KubeApi<T> {
     const res = await ky
       .get(url, {
         searchParams: query as URLSearchParams,
+        retry: 0,
       })
       .json<T>();
 

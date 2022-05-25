@@ -5,7 +5,7 @@ import react from "@vitejs/plugin-react";
 import sunmaoFsVitePlugin from "./tools/sunmao-fs-vite-plugin";
 import linariaVitePlugin from "./tools/linaria-vite-plugin";
 import tsconfigPaths from "vite-tsconfig-paths";
-import { getProxyConfig } from "./tools/proxy-k8s";
+import { getProxyConfig, applyK8sYamlPlugin } from "./tools/proxy-k8s";
 
 const globalSassPath = path.resolve(
   __dirname,
@@ -31,10 +31,15 @@ export default defineConfig({
           name: "lcm",
           path: path.resolve(__dirname, "./src/sunmao/lcm.json"),
         },
+        {
+          name: "logging",
+          path: path.resolve(__dirname, "./src/sunmao/logging.json"),
+        },
       ],
     }),
     linariaVitePlugin({ preprocessor: "none", extension: ".scss" }),
     react(),
+    applyK8sYamlPlugin(),
   ],
   css: {
     preprocessorOptions: {

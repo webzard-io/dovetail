@@ -15,7 +15,7 @@ const UnstructuredSidebarProps = Type.Object({
   defaultVisible: Type.Boolean(),
 });
 
-const UnstructuredTableState = Type.Object({
+const UnstructuredSidebarState = Type.Object({
   visible: Type.Boolean(),
 });
 
@@ -103,7 +103,7 @@ export const UnstructuredSidebar = implementRuntimeComponent({
   },
   spec: {
     properties: UnstructuredSidebarProps,
-    state: UnstructuredTableState,
+    state: UnstructuredSidebarState,
     methods: {
       setVisible: Type.Object({
         visible: Type.Boolean(),
