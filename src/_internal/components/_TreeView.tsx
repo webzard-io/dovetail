@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { isPlainObject, isArray } from "lodash-es";
 import { css, cx } from "@emotion/css";
 import { Row } from "./_Layout";
@@ -21,6 +21,13 @@ const EvenRow = css`
 const LightRow = css`
   color: #a3b4cc;
 `;
+const NotLeaf = css`
+  cursor: pointer;
+
+  label {
+    cursor: pointer;
+  }
+`;
 
 const colors = [
   "#41efc5",
@@ -32,35 +39,60 @@ const colors = [
   "#ff9eea",
 ];
 
-function flatten(value: Record<string, any>) {
-  const branches: { k: string; v: any; depth: number }[] = [];
+type BranchData = {
+  k: string;
+  v: any;
+  depth: number;
+  leaf: boolean;
+  path: string;
+};
 
-  const walk = (k: string, v: any, depth: number) => {
+function flatten(value: Record<string, any>): BranchData[] {
+  const branches: BranchData[] = [];
+
+  const walk = (k: string, v: any, depth: number, p: string) => {
     if (isArray(v)) {
       v.forEach((nestValue, index) => {
-        branches.push({ k, v: `${v.length} Item`, depth });
-        walk(`index ${index}`, nestValue, depth + 1);
+        const path = `${p}/${index}`;
+        branches.push({
+          k,
+          v: `${v.length} Item`,
+          depth,
+          leaf: false,
+          path,
+        });
+        walk(`index ${index}`, nestValue, depth + 1, path);
       });
     } else if (isPlainObject(v)) {
       const keys = Object.keys(v);
-      branches.push({ k, v: `${keys.length} Fields`, depth });
+      const path = `${p}/${k}`;
+      branches.push({
+        k,
+        v: `${keys.length} Fields`,
+        depth,
+        leaf: false,
+        path,
+      });
       keys.forEach((nestK) => {
-        walk(nestK, v[nestK], depth + 1);
+        walk(nestK, v[nestK], depth + 1, path);
       });
     } else {
-      branches.push({ k, v, depth });
+      branches.push({ k, v, depth, leaf: true, path: `${p}/${k}` });
     }
   };
 
-  Object.keys(value).forEach((k) => walk(k, value[k], 0));
+  Object.keys(value).forEach((k) => walk(k, value[k], 0, ""));
 
   return branches;
 }
 
-const Branch: React.FC<{ k: string; v: any; depth: number; index: number }> = (
-  props
-) => {
-  const { k, v, depth, index } = props;
+const Branch: React.FC<
+  BranchData & {
+    index: number;
+    onToggle?: () => void;
+  }
+> = (props) => {
+  const { k, v, depth, index, leaf, onToggle } = props;
   const light = String(v).includes("Fields") || String(v).includes("Items");
 
   return (
@@ -69,8 +101,10 @@ const Branch: React.FC<{ k: string; v: any; depth: number; index: number }> = (
         Row,
         BranchRow,
         index % 2 ? EvenRow : OddRow,
-        light && LightRow
+        light && LightRow,
+        !leaf && NotLeaf
       )}
+      onClick={leaf ? undefined : onToggle}
     >
       <label
         style={{
@@ -87,10 +121,50 @@ const Branch: React.FC<{ k: string; v: any; depth: number; index: number }> = (
 };
 
 const TreeView: React.FC<{ value: Record<string, any> }> = ({ value }) => {
+  const [expand, setExpand] = useState<Set<string>>(new Set());
+  const branches = useMemo(() => {
+    const _branches = flatten(value);
+    const filtered: BranchData[] = [];
+
+    let inCollapse = true;
+    let expandDepth = 0;
+    for (let idx = 0; idx < _branches.length; idx++) {
+      const b = _branches[idx];
+
+      if (expand.has(b.path) && expandDepth === b.depth) {
+        inCollapse = false;
+        expandDepth = b.depth + 1;
+      }
+      if (inCollapse && b.depth > expandDepth) {
+        continue;
+      }
+      if (!expand.has(b.path) && b.depth !== expandDepth + 1) {
+        inCollapse = true;
+        expandDepth = b.depth;
+      }
+      filtered.push(b);
+    }
+
+    return filtered;
+  }, [value, expand]);
+
   return (
     <>
-      {flatten(value).map((b, idx) => (
-        <Branch key={idx} index={idx} {...b} />
+      {branches.map((b, idx) => (
+        <Branch
+          key={b.path}
+          index={idx}
+          {...b}
+          onToggle={() => {
+            const clone = new Set(expand);
+            if (clone.has(b.path)) {
+              clone.delete(b.path);
+            } else {
+              clone.add(b.path);
+            }
+            setExpand(clone);
+          }}
+        />
       ))}
     </>
   );

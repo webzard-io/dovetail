@@ -17,6 +17,7 @@ const UnstructuredSidebarProps = Type.Object({
 
 const UnstructuredSidebarState = Type.Object({
   visible: Type.Boolean(),
+  item: Type.Boolean(),
 });
 
 const exampleItem = {
@@ -67,6 +68,10 @@ const Header = css`
   margin: 16px 0;
 `;
 
+const Toolbar = css`
+  margin-bottom: 16px;
+`;
+
 const CardWrapper = css`
   border-radius: 4px;
   background-color: white;
@@ -109,7 +114,11 @@ export const UnstructuredSidebar = implementRuntimeComponent({
         visible: Type.Boolean(),
       }),
     },
-    slots: {},
+    slots: {
+      toolbar: {
+        slotProps: Type.Object({}),
+      },
+    },
     styleSlots: [],
     events: ["onClose"],
   },
@@ -121,14 +130,16 @@ export const UnstructuredSidebar = implementRuntimeComponent({
     callbackMap,
     mergeState,
     subscribeMethods,
+    slotsElements,
   }) => {
     const kit = useContext(KitContext);
     const [visible, setVisible] = useState(defaultVisible);
     useEffect(() => {
       mergeState({
         visible,
+        item,
       });
-    }, [visible]);
+    }, [visible, item]);
     useEffect(() => {
       subscribeMethods({
         setVisible(params) {
@@ -151,6 +162,9 @@ export const UnstructuredSidebar = implementRuntimeComponent({
         width={600}
       >
         <div className={Header}>{item?.metadata.name}</div>
+        <div className={Toolbar}>
+          <>{slotsElements.toolbar ? slotsElements.toolbar({}) : null}</>
+        </div>
         <div className={CardWrapper}>
           <div className="card-body">
             <_ObjectMeta item={item} />

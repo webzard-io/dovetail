@@ -78,6 +78,8 @@ export const Select = implementRuntimeComponent({
           setValue(newV);
           callbackMap?.onChange();
         }}
+        showSearch
+        optionFilterProp="children"
       >
         {options.map((o) => {
           return (

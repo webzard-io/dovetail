@@ -24,6 +24,7 @@ type ButtonProps = {
   loading?: boolean;
   onClick?: () => void;
   className?: string;
+  disabled?: boolean;
 } & RefAndChildren;
 
 type TableProps = {

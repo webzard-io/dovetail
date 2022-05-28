@@ -151,14 +151,14 @@ export const UnstructuredTable = implementRuntimeComponent({
       mergeState({
         activeItem: data.items.find((item) => item.metadata.name === activeKey),
       });
-    }, [activeKey]);
+    }, [activeKey, data.items]);
     useEffect(() => {
       mergeState({
         selectedItems: data.items.filter((item) =>
           selectedKeys.includes(item.metadata.name!)
         ),
       });
-    }, [selectedKeys]);
+    }, [selectedKeys, data.items]);
 
     return (
       <kit.Table

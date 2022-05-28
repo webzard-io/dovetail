@@ -2,6 +2,7 @@ import { JSONSchema7 } from "json-schema";
 
 type WidgetOptions = Partial<{
   displayLabel: boolean;
+  section: string;
 }>;
 
 export type WidgetProps = {

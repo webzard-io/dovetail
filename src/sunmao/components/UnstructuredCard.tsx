@@ -117,7 +117,6 @@ export const UnstructuredCard = implementRuntimeComponent({
         api
           .list({ query: fieldSelector ? { fieldSelector } : {} })
           .then((res) => {
-            console.log(res);
             setResponse((prev) => ({
               ...prev,
               error: null,
@@ -132,7 +131,7 @@ export const UnstructuredCard = implementRuntimeComponent({
       doRequest(false);
       setInterval(() => {
         doRequest(true);
-      }, 30000);
+      }, 10000);
     }, [apiBase, kind, namespace]);
     useEffect(() => {
       mergeState({

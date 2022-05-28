@@ -11,6 +11,8 @@ import { UnstructuredForm } from "./components/UnstructuredForm";
 import { UnstructuredCard } from "./components/UnstructuredCard";
 import { Modal } from "./components/Modal";
 import { Select } from "./components/Select";
+import { Icon } from "./components/Icon";
+import _ from "lodash-es";
 
 const MessageParams = Type.Object({
   type: StringUnion(["success", "warn", "error", "info"]),
@@ -31,6 +33,7 @@ export const libs: SunmaoLib[] = [
       UnstructuredCard,
       Modal,
       Select,
+      Icon,
     ],
     utilMethods: [
       () => [
@@ -45,3 +48,17 @@ export const libs: SunmaoLib[] = [
     ],
   },
 ];
+
+const yaml = import.meta.glob("./dependencies/yaml/*.yaml", {
+  as: "raw",
+});
+
+export const dependencies = {
+  yaml: Object.keys(yaml).reduce<Record<string, string>>((prev, cur) => {
+    prev[cur.replace("./dependencies/yaml/", "").replace(".yaml", "")] = (yaml[
+      cur
+    ] as unknown) as string;
+    return prev;
+  }, {}),
+  _,
+};

@@ -15,7 +15,15 @@ export function generateFromSchema(spec: JSONSchema7, noOptional = false): any {
     case spec.type === "boolean":
       return false;
     case spec.type === "array":
-      return [];
+      if (
+        !spec.minItems ||
+        !spec.items ||
+        typeof spec.items === "boolean" ||
+        Array.isArray(spec.items)
+      ) {
+        return [];
+      }
+      return new Array(spec.minItems).fill(generateFromSchema(spec.items));
     case spec.type === "number":
     case spec.type === "integer":
       return 0;

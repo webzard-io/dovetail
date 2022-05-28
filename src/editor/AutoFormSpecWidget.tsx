@@ -138,7 +138,6 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
                         spec.current.type = "object";
                         spec.current.properties = {};
                       }
-                      console.log(addKey, resourceSpec);
                       spec.current.properties[addKey] = resourceSpec;
                       setForceKey(forceKey + 1);
                     }}

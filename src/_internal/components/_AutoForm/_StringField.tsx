@@ -7,9 +7,18 @@ const EnumField: React.FC<WidgetProps> = (props) => {
   const options = (spec.enum || []).map((item) => item?.toString() || "");
 
   return (
-    <Select value={value} onChange={(value) => onChange(value)}>
+    <Select
+      value={value}
+      onChange={(value) => onChange(value)}
+      showSearch
+      optionFilterProp="children"
+    >
       {options.map((value, idx) => {
-        return <Select.Option key={idx}>{value}</Select.Option>;
+        return (
+          <Select.Option key={idx} value={value}>
+            {value}
+          </Select.Option>
+        );
       })}
     </Select>
   );

@@ -1,5 +1,9 @@
 import { useContext, useEffect, useRef } from "react";
-import { implementRuntimeComponent } from "@sunmao-ui/runtime";
+import {
+  implementRuntimeComponent,
+  Text,
+  TextPropertySpec,
+} from "@sunmao-ui/runtime";
 import { css } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
 import { buttonTypes, KitContext } from "../../themes/theme-context";
@@ -7,6 +11,8 @@ import { StringUnion } from "../helper";
 
 const ButtonProps = Type.Object({
   type: StringUnion(buttonTypes),
+  disabled: Type.Boolean(),
+  text: TextPropertySpec,
 });
 
 const ButtonState = Type.Object({});
@@ -20,6 +26,10 @@ export const Button = implementRuntimeComponent({
     isResizable: true,
     exampleProperties: {
       type: "primary",
+      text: {
+        raw: "text",
+        format: "plain",
+      },
     },
     exampleSize: [2, 1],
     annotations: {
@@ -33,6 +43,9 @@ export const Button = implementRuntimeComponent({
       click: undefined,
     },
     slots: {
+      prefix: {
+        slotProps: Type.Object({}),
+      },
       content: {
         slotProps: Type.Object({}),
       },
@@ -48,6 +61,8 @@ export const Button = implementRuntimeComponent({
     callbackMap,
     customStyle,
     elementRef,
+    disabled,
+    text,
   }) => {
     const kit = useContext(KitContext);
     const buttonRef = useRef<HTMLElement | null>(null);
@@ -71,8 +86,22 @@ export const Button = implementRuntimeComponent({
         className={css`
           ${customStyle?.button}
         `}
+        disabled={disabled}
       >
-        <> {slotsElements.content ? slotsElements.content({}) : "text"}</>
+        <>
+          <span
+            className={css`
+              margin-right: 4px;
+            `}
+          >
+            <>{slotsElements.prefix ? slotsElements.prefix({}) : null}</>
+          </span>
+          {slotsElements.content ? (
+            slotsElements.content({})
+          ) : (
+            <Text value={text} />
+          )}
+        </>
       </kit.Button>
     );
   }

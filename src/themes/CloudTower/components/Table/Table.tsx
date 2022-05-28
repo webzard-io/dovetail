@@ -135,7 +135,7 @@ const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
       selectedKeys,
       onActive,
       activeKey,
-      empty,
+      empty = "no data",
       tableLayout = "fixed",
       initLoading,
       rowKey,

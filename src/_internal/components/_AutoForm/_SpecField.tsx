@@ -23,6 +23,7 @@ type TemplateProps = {
   required?: boolean;
   displayLabel?: boolean;
   displayDescription?: boolean;
+  spec: WidgetProps["spec"];
   children?: React.ReactNode;
 };
 
@@ -53,6 +54,16 @@ const HasMargin = css`
   margin-bottom: 16px;
 `;
 
+const FieldSection = css`
+  font-weight: 700;
+  color: #2d3a56;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(213, 219, 227, 0.6);
+  margin-bottom: 16px;
+  display: block;
+  width: 100%;
+`;
+
 const DefaultTemplate: React.FC<TemplateProps> = (props) => {
   const {
     id,
@@ -64,6 +75,7 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
     required,
     displayLabel,
     displayDescription,
+    spec,
   } = props;
 
   if (hidden) {
@@ -72,6 +84,9 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
 
   return (
     <Row className={cx(FormItem, displayLabel && HasMargin)}>
+      {spec.widgetOptions?.section && (
+        <div className={FieldSection}>{spec.widgetOptions.section}</div>
+      )}
       {displayLabel && (
         <Col span="6" className={FormLabel}>
           {label}
@@ -150,6 +165,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
         description={spec.description}
         displayLabel={displayLabel}
         displayDescription={displayDescription}
+        spec={spec}
       >
         {renderer?.(path, level, "widget") || (
           <Component
