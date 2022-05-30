@@ -89,13 +89,15 @@ export const Button = implementRuntimeComponent({
         disabled={disabled}
       >
         <>
-          <span
-            className={css`
-              margin-right: 4px;
-            `}
-          >
-            <>{slotsElements.prefix ? slotsElements.prefix({}) : null}</>
-          </span>
+          {slotsElements.prefix ? (
+            <span
+              className={css`
+                margin-right: 4px;
+              `}
+            >
+              <>{slotsElements.prefix({})}</>
+            </span>
+          ) : null}
           {slotsElements.content ? (
             slotsElements.content({})
           ) : (

@@ -12,12 +12,17 @@ import { UnstructuredCard } from "./components/UnstructuredCard";
 import { Modal } from "./components/Modal";
 import { Select } from "./components/Select";
 import { Icon } from "./components/Icon";
-import _ from "lodash-es";
+import { CodeEditor } from "./components/CodeEditor";
 
 const MessageParams = Type.Object({
   type: StringUnion(["success", "warn", "error", "info"]),
   message: Type.String(),
   duration: Type.Number(),
+});
+
+const OpenLinkParams = Type.Object({
+  newWindow: Type.Boolean(),
+  url: Type.String(),
 });
 
 export const libs: SunmaoLib[] = [
@@ -34,6 +39,7 @@ export const libs: SunmaoLib[] = [
       Modal,
       Select,
       Icon,
+      CodeEditor,
     ],
     utilMethods: [
       () => [
@@ -43,6 +49,13 @@ export const libs: SunmaoLib[] = [
             message[params.type](params.message, params.duration);
           },
           parameters: MessageParams,
+        },
+        {
+          name: "openLink",
+          method: (params: Static<typeof OpenLinkParams>) => {
+            window.open(params.url, params.newWindow ? "_blank" : undefined);
+          },
+          parameters: OpenLinkParams,
         },
       ],
     ],
@@ -60,5 +73,4 @@ export const dependencies = {
     ] as unknown) as string;
     return prev;
   }, {}),
-  _,
 };

@@ -51,21 +51,20 @@ function flatten(value: Record<string, any>): BranchData[] {
   const branches: BranchData[] = [];
 
   const walk = (k: string, v: any, depth: number, p: string) => {
+    const path = `${p}/${k}`;
     if (isArray(v)) {
-      v.forEach((nestValue, index) => {
-        const path = `${p}/${index}`;
-        branches.push({
-          k,
-          v: `${v.length} Item`,
-          depth,
-          leaf: false,
-          path,
-        });
-        walk(`index ${index}`, nestValue, depth + 1, path);
+      branches.push({
+        k,
+        v: `${v.length} Item(s)`,
+        depth,
+        leaf: false,
+        path,
+      });
+      v.forEach((nestValue: any, index: number) => {
+        walk(`index ${index}`, nestValue, depth + 1, `${path}/index`);
       });
     } else if (isPlainObject(v)) {
       const keys = Object.keys(v);
-      const path = `${p}/${k}`;
       branches.push({
         k,
         v: `${keys.length} Fields`,
@@ -77,7 +76,7 @@ function flatten(value: Record<string, any>): BranchData[] {
         walk(nestK, v[nestK], depth + 1, path);
       });
     } else {
-      branches.push({ k, v, depth, leaf: true, path: `${p}/${k}` });
+      branches.push({ k, v, depth, leaf: true, path });
     }
   };
 

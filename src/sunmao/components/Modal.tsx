@@ -93,7 +93,9 @@ export const Modal = implementRuntimeComponent({
             {slotsElements.footer ? (
               slotsElements.footer({})
             ) : (
-              <kit.Button type="text">取消</kit.Button>
+              <kit.Button type="text" onClick={callbackMap?.onClose}>
+                取消
+              </kit.Button>
             )}
           </>
         }

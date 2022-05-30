@@ -2,7 +2,12 @@ import React from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { css } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
-import { ExpandAltOutlined, NodeIndexOutlined } from "@ant-design/icons";
+import {
+  ExpandAltOutlined,
+  NodeIndexOutlined,
+  ProfileOutlined,
+  UnorderedListOutlined,
+} from "@ant-design/icons";
 
 const IconProps = Type.Object({
   name: Type.String(),
@@ -13,6 +18,8 @@ const IconState = Type.Object({});
 const iconMap: Record<string, React.ForwardRefExoticComponent<any>> = {
   ExpandAltOutlined,
   NodeIndexOutlined,
+  ProfileOutlined,
+  UnorderedListOutlined,
 };
 
 export const Icon = implementRuntimeComponent({
