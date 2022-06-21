@@ -1,10 +1,13 @@
 import React from "react";
-import { kit } from "./CloudTower";
-export { kit as CloudTowerKit } from "./CloudTower";
+import { kit as CloudTowerKit } from "./themes/CloudTower";
+export { CloudTowerKit };
 
 type RefAndChildren = {
   children?: React.ReactNode;
-  ref?: React.Ref<HTMLElement> | null;
+  ref?: React.Ref<any> | null;
+};
+type RefOnly = {
+  ref?: React.Ref<any> | null;
 };
 
 export const buttonTypes = [
@@ -18,7 +21,7 @@ export const buttonTypes = [
 
 export const buttonSizes = ["small", "middle", "large"];
 
-type ButtonProps = {
+export type ButtonProps = {
   type?: typeof buttonTypes[number];
   size?: typeof buttonSizes[number];
   loading?: boolean;
@@ -27,7 +30,7 @@ type ButtonProps = {
   disabled?: boolean;
 } & RefAndChildren;
 
-type TableProps = {
+export type TableProps = {
   data: any[];
   columns: {
     key: string;
@@ -44,7 +47,7 @@ type TableProps = {
   activeKey?: string;
 } & RefAndChildren;
 
-type SidebarProps = {
+export type SidebarProps = {
   className?: string;
   width?: number;
   visible?: boolean;
@@ -52,14 +55,14 @@ type SidebarProps = {
   getContainer: string | (() => HTMLElement);
 } & RefAndChildren;
 
-type TagProps = {
+export type TagProps = {
   className?: string;
   color?: string;
   closable?: boolean;
   onClose?: () => void;
 } & RefAndChildren;
 
-type ModalProps = {
+export type ModalProps = {
   className?: string;
   width?: number;
   visible?: boolean;
@@ -70,18 +73,26 @@ type ModalProps = {
   getContainer: string | (() => HTMLElement);
 } & RefAndChildren;
 
+export type CodeEditorProps = {
+  className?: string;
+  defaultValue?: string;
+  language?: string;
+  minimap?: boolean;
+} & RefAndChildren;
+
 export interface Kit {
   name: string;
   Button: React.FC<ButtonProps>;
   Table: React.FC<TableProps>;
-  Loading: React.FC;
+  Loading: React.FC<RefOnly>;
   Sidebar: React.FC<SidebarProps>;
   Tag: React.FC<TagProps>;
   Modal: React.FC<ModalProps>;
+  CodeEditor: React.FC<CodeEditorProps>;
 }
 
 export const createKitContext = (kit: Kit) => {
   return React.createContext(kit);
 };
 
-export const KitContext = createKitContext(kit);
+export const KitContext = createKitContext(CloudTowerKit);

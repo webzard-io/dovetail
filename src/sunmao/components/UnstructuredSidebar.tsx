@@ -1,14 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   implementRuntimeComponent,
   DIALOG_CONTAINER_ID,
 } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import { css } from "@emotion/css";
-import { KitContext } from "../../themes/theme-context";
-import _ObjectMeta from "../../_internal/components/_ObjectMeta";
-import _ObjectSpec from "../../_internal/components/_ObjectSpec";
-import _ObjectStatus from "../../_internal/components/_ObjectStatus";
+import _UnstructuredSidebar from "../../_internal/organisms/UnstructuredSidebar";
 
 const UnstructuredSidebarProps = Type.Object({
   item: Type.Any(),
@@ -59,37 +56,6 @@ const exampleItem = {
   },
 };
 
-const Header = css`
-  display: flex;
-  line-height: 22px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #2d3a56;
-  margin: 16px 0;
-`;
-
-const Toolbar = css`
-  margin-bottom: 16px;
-`;
-
-const CardWrapper = css`
-  border-radius: 4px;
-  background-color: white;
-  box-shadow: 0px 0.119595px 0.438513px rgba(129, 138, 153, 0.14),
-    0px 0.271728px 0.996336px rgba(129, 138, 153, 0.106447),
-    0px 0.472931px 1.73408px rgba(129, 138, 153, 0.0912224),
-    0px 0.751293px 2.75474px rgba(129, 138, 153, 0.0799253),
-    0px 1.15919px 4.25036px rgba(129, 138, 153, 0.07),
-    0px 1.80882px 6.63236px rgba(129, 138, 153, 0.0600747),
-    0px 3.00293px 11.0107px rgba(129, 138, 153, 0.0487776),
-    0px 6px 22px rgba(129, 138, 153, 0.0335534);
-  margin-bottom: 40px;
-
-  .card-body {
-    padding: 8px 16px;
-  }
-`;
-
 export const UnstructuredSidebar = implementRuntimeComponent({
   version: "kui/v1",
   metadata: {
@@ -132,7 +98,6 @@ export const UnstructuredSidebar = implementRuntimeComponent({
     subscribeMethods,
     slotsElements,
   }) => {
-    const kit = useContext(KitContext);
     const [visible, setVisible] = useState(defaultVisible);
     useEffect(() => {
       mergeState({
@@ -149,40 +114,21 @@ export const UnstructuredSidebar = implementRuntimeComponent({
     }, [subscribeMethods]);
 
     return (
-      <kit.Sidebar
+      <_UnstructuredSidebar
+        ref={elementRef}
+        item={item}
         visible={visible}
+        onVisibleChange={setVisible}
+        toolbar={
+          <>{slotsElements.toolbar ? slotsElements.toolbar({}) : null}</>
+        }
         onClose={() => {
-          setVisible(false);
           callbackMap?.onClose();
         }}
-        ref={elementRef}
         getContainer={() =>
           document.getElementById(DIALOG_CONTAINER_ID) || document.body
         }
-        width={600}
-      >
-        <div className={Header}>{item?.metadata.name}</div>
-        <div className={Toolbar}>
-          <>{slotsElements.toolbar ? slotsElements.toolbar({}) : null}</>
-        </div>
-        <div className={CardWrapper}>
-          <div className="card-body">
-            <_ObjectMeta item={item} />
-          </div>
-        </div>
-        <div className={Header}>Spec</div>
-        <div className={CardWrapper}>
-          <div className="card-body">
-            <_ObjectSpec item={item} />
-          </div>
-        </div>
-        <div className={Header}>Status</div>
-        <div className={CardWrapper}>
-          <div className="card-body">
-            <_ObjectStatus item={item} />
-          </div>
-        </div>
-      </kit.Sidebar>
+      />
     );
   }
 );

@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import { formatDuration } from "../utils/format-duration";
-import { Unstructured } from "../k8s-api/kube-api";
-import { KitContext } from "../../themes/theme-context";
-import { Row } from "./_Layout";
+import { Unstructured } from "../k8s-api-client/kube-api";
+import { KitContext } from "../atoms/kit-context";
+import { Row } from "./style/Layout.style";
 
 function kvToArr(
   raw: Record<string, string> = {}

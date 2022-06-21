@@ -5,7 +5,7 @@ import {
 } from "@sunmao-ui/runtime";
 import { css } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
-import { KitContext } from "../../themes/theme-context";
+import { KitContext } from "../../_internal/atoms/kit-context";
 
 const ModalProps = Type.Object({
   title: Type.String(),

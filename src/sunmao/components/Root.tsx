@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
-import { KitContext, CloudTowerKit } from "../../themes/theme-context";
+import { KitContext, CloudTowerKit } from "../../_internal/atoms/kit-context";
 
 const RootState = Type.Object({
   theme: Type.String(),

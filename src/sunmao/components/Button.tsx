@@ -6,7 +6,7 @@ import {
 } from "@sunmao-ui/runtime";
 import { css } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
-import { buttonTypes, KitContext } from "../../themes/theme-context";
+import { buttonTypes, KitContext } from "../../_internal/atoms/kit-context";
 import { StringUnion } from "../helper";
 
 const ButtonProps = Type.Object({

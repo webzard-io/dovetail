@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
-import AutoFrom from "../../_internal/components/_AutoForm/_AutoForm";
-import { generateFromSchema } from "../../_internal/utils/generate-from-schema";
+import _UnstructuredForm from "../../_internal/organisms/UnstructuredForm";
 
 const UnstructuredFormProps = Type.Object({
   spec: Type.Any({
@@ -70,25 +69,16 @@ export const UnstructuredForm = implementRuntimeComponent({
     subscribeMethods,
     slotsElements,
   }) => {
-    const [value, setValue] = useState(
-      defaultValue || generateFromSchema(spec)
-    );
-    useEffect(() => {
-      mergeState({
-        value,
-      });
-    }, [value]);
-
     return (
       <div ref={elementRef} style={{ width: "100%" }}>
-        <AutoFrom
+        <_UnstructuredForm
           spec={spec}
-          value={value}
+          defaultValue={defaultValue}
           onChange={(newV) => {
-            setValue(newV);
+            mergeState({
+              value: newV,
+            });
           }}
-          level={0}
-          path=""
           renderer={(path, level, position) => {
             if (position === "before") {
               return slotsElements.beforeField?.({

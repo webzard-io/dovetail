@@ -1,4 +1,5 @@
-import { Kit } from "../theme-context";
+import { Kit } from "../../kit-context";
+import { shared } from "../../kit-shared";
 import Button from "./components/Button/Button";
 import Table from "./components/Table/Table";
 import Loading from "./components/Loading/Loading";
@@ -11,9 +12,10 @@ import "./styles/font.scss";
 import "./styles/override.scss";
 
 export const kit: Kit = {
+  ...shared,
   name: "CloudTower",
-  Button,
-  Table,
+  Button: Button as Kit["Button"],
+  Table: Table as Kit["Table"],
   Loading,
   Sidebar,
   Tag,

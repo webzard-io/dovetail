@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Radio } from "antd";
-import SpecField from "./_SpecField";
+import SpecField from "./SpecField";
 import { WidgetProps } from "./widget";
 
 const _Field: React.FC<

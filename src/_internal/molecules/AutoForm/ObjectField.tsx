@@ -1,5 +1,5 @@
 import React from "react";
-import SpecField from "./_SpecField";
+import SpecField from "./SpecField";
 import { WidgetProps } from "./widget";
 
 export const ObjectField: React.FC<WidgetProps> = (props) => {

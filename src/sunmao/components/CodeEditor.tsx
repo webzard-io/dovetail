@@ -1,31 +1,8 @@
-import React, { useRef, useEffect } from "react";
+import React, { useContext } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { css } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
-import * as monaco from "monaco-editor";
-import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
-import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
-import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
-import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
-
-(self as any).MonacoEnvironment = {
-  getWorker(_: unknown, label: string) {
-    if (label === "json") {
-      return new jsonWorker();
-    }
-    if (label === "css" || label === "scss" || label === "less") {
-      return new cssWorker();
-    }
-    if (label === "html" || label === "handlebars" || label === "razor") {
-      return new htmlWorker();
-    }
-    if (label === "typescript" || label === "javascript") {
-      return new tsWorker();
-    }
-    return new editorWorker();
-  },
-};
+import { KitContext } from "../../_internal/atoms/kit-context";
 
 const CodeEditorProps = Type.Object({
   defaultValue: Type.String(),
@@ -60,35 +37,15 @@ export const CodeEditor = implementRuntimeComponent({
     events: [],
   },
 })(({ defaultValue, language, minimap, elementRef, customStyle }) => {
-  const elRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    if (typeof elementRef === "object") {
-      elRef.current = elementRef?.current;
-    }
-    if (!elRef.current) {
-      return;
-    }
-    const editor = monaco.editor.create(elRef.current, {
-      value: defaultValue,
-      language,
-      minimap: {
-        enabled: minimap,
-      },
-    });
-    return () => {
-      editor.dispose();
-      const model = editor.getModel();
-      if (model) {
-        model.dispose();
-      }
-    };
-  }, [defaultValue, language, minimap]);
+  const kit = useContext(KitContext);
   return (
-    <div
+    <kit.CodeEditor
       ref={elementRef}
+      defaultValue={defaultValue}
+      language={language}
+      minimap={minimap}
       className={css`
-        height: 500px;
-        ${customStyle?.editor}
+        ${customStyle}
       `}
     />
   );

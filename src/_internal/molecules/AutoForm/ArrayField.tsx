@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
-import SpecField from "./_SpecField";
+import SpecField from "./SpecField";
 import { WidgetProps } from "./widget";
 
 import { CloseOutlined } from "@ant-design/icons";
-import { KitContext } from "../../../themes/theme-context";
+import { KitContext } from "../../atoms/kit-context";
 import { generateFromSchema } from "../../utils/generate-from-schema";
 
 export const ArrayField: React.FC<WidgetProps> = (props) => {

@@ -5,14 +5,14 @@ import { Row, Col } from "antd";
 import { css, cx } from "@linaria/core";
 import { JSONSchema7 } from "json-schema";
 import { WidgetProps } from "./widget";
-import UnsupportedField from "./_UnsupportedField";
-import StringField from "./_StringField";
-import ArrayField from "./_ArrayField";
-import BooleanField from "./_BooleanField";
-import NumberField from "./_NumberField";
-import NullField from "./_NullField";
-import ObjectField from "./_ObjectField";
-import MultiSpecField from "./_MultiSpecField";
+import UnsupportedField from "./UnsupportedField";
+import StringField from "./StringField";
+import ArrayField from "./ArrayField";
+import BooleanField from "./BooleanField";
+import NumberField from "./NumberField";
+import NullField from "./NullField";
+import ObjectField from "./ObjectField";
+import MultiSpecField from "./MultiSpecField";
 
 type TemplateProps = {
   id?: string;

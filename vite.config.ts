@@ -9,7 +9,7 @@ import { getProxyConfig, applyK8sYamlPlugin } from "./tools/proxy-k8s";
 
 const globalSassPath = path.resolve(
   __dirname,
-  "./src/themes/CloudTower/styles/variables.scss"
+  "./src/_internal/atoms/themes/CloudTower/styles/variables.scss"
 );
 const globalSass = fs.readFileSync(globalSassPath, "utf-8");
 

@@ -1,10 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
-import { KitContext } from "../../themes/theme-context";
-import { KubeApi, UnstructuredList } from "../../_internal/k8s-api/kube-api";
-import _ObjectAge from "../../_internal/components/_ObjectAge";
+import { UnstructuredList } from "../../_internal/k8s-api-client/kube-api";
+import ObjectAge from "../../_internal/molecules/ObjectAge";
+import _UnstructuredTable, {
+  emptyData,
+} from "../../_internal/organisms/UnstructuredTable";
 
 const UnstructuredTableProps = Type.Object({
   kind: Type.String({
@@ -37,13 +39,6 @@ const UnstructuredTableState = Type.Object({
   activeItem: Type.Any(),
   selectedItems: Type.Array(Type.Any()),
 });
-
-const emptyData = {
-  apiVersion: "",
-  kind: "",
-  meatadata: {},
-  items: [],
-};
 
 export const UnstructuredTable = implementRuntimeComponent({
   version: "kui/v1",
@@ -105,8 +100,7 @@ export const UnstructuredTable = implementRuntimeComponent({
     fieldSelector,
     callbackMap,
   }) => {
-    const kit = useContext(KitContext);
-    const [{ data, loading, error }, setResponse] = useState<{
+    const [response, setResponse] = useState<{
       data: UnstructuredList;
       loading: boolean;
       error: null | Error;
@@ -115,58 +109,40 @@ export const UnstructuredTable = implementRuntimeComponent({
       loading: false,
       error: null,
     });
-    useEffect(() => {
-      const api = new KubeApi<UnstructuredList>({
-        objectConstructor: {
-          kind,
-          apiBase,
-          namespace,
-        },
-      });
-      const doRequest = (s: boolean) => {
-        setResponse((prev) => ({ ...prev, loading: s ? false : true }));
-        api
-          .list({ query: fieldSelector ? { fieldSelector } : {} })
-          .then((res) => {
-            setResponse((prev) => ({ ...prev, error: null, data: res }));
-          })
-          .catch((err) => {
-            setResponse((prev) => ({ ...prev, error: err, data: emptyData }));
-          })
-          .finally(() => setResponse((prev) => ({ ...prev, loading: false })));
-      };
-      doRequest(false);
-      setInterval(() => {
-        doRequest(true);
-      }, 5000);
-    }, [apiBase, kind, namespace]);
     const [activeKey, setActiveKey] = useState<string>("");
     const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
     useEffect(() => {
       mergeState({
-        items: data.items,
+        items: response.data.items,
       });
-    }, [data.items]);
+    }, [response]);
     useEffect(() => {
       mergeState({
-        activeItem: data.items.find((item) => item.metadata.name === activeKey),
+        activeItem: response.data.items.find(
+          (item) => item.metadata.name === activeKey
+        ),
       });
-    }, [activeKey, data.items]);
+    }, [activeKey, response]);
     useEffect(() => {
       mergeState({
-        selectedItems: data.items.filter((item) =>
+        selectedItems: response.data.items.filter((item) =>
           selectedKeys.includes(item.metadata.name!)
         ),
       });
-    }, [selectedKeys, data.items]);
+    }, [selectedKeys, response]);
 
     return (
-      <kit.Table
+      <_UnstructuredTable
         ref={elementRef}
+        kind={kind}
+        namespace={namespace}
+        apiBase={apiBase}
+        fieldSelector={fieldSelector}
+        onResponse={setResponse}
         columns={columns.map((col) => ({
           ...col,
           dataIndex: col.dataIndex.split("."),
-          render: (value, record, index) => {
+          render: (value: any, record: any, index: number) => {
             const slotEl = slotsElements.cell?.({
               value,
               record,
@@ -178,21 +154,18 @@ export const UnstructuredTable = implementRuntimeComponent({
               return slotEl;
             }
             if (col.dataIndex === "metadata.creationTimestamp") {
-              return <_ObjectAge date={value} />;
+              return <ObjectAge date={value} />;
             }
             return value;
           },
         }))}
-        data={data.items}
-        loading={loading}
-        rowKey={(row) => row.metadata.name}
         activeKey={activeKey}
-        onActive={(key) => {
+        onActive={(key: string) => {
           setActiveKey(key);
           callbackMap?.onActive();
         }}
         selectedKeys={selectedKeys}
-        onSelect={(keys) => {
+        onSelect={(keys: string[]) => {
           setSelectedKeys(keys);
           callbackMap?.onSelect();
         }}
