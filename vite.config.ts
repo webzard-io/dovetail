@@ -32,8 +32,8 @@ export default defineConfig({
           path: path.resolve(__dirname, "./src/sunmao/lcm.json"),
         },
         {
-          name: "logging",
-          path: path.resolve(__dirname, "./src/sunmao/logging.json"),
+          name: "mt",
+          path: path.resolve(__dirname, "./src/sunmao/mt.json"),
         },
       ],
     }),

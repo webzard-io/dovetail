@@ -21,17 +21,40 @@ const cluster = kubeConfig.clusters.find(
 const user = kubeConfig.users.find((u) => u.name === kubeContext.context.user);
 const serverUrl = new URL(cluster.cluster.server);
 
+function getKeyAndCert(): { key: string; cert: string } {
+  let key = "";
+  let cert = "";
+  if (user.user["client-key-data"]) {
+    key = Buffer.from(user.user["client-key-data"], "base64").toString();
+  } else if (user.user["client-key"]) {
+    key = fs.readFileSync(user.user["client-key"], "utf-8");
+  }
+
+  if (user.user["client-certificate-data"]) {
+    cert = Buffer.from(
+      user.user["client-certificate-data"],
+      "base64"
+    ).toString();
+  } else if (user.user["client-certificate"]) {
+    cert = fs.readFileSync(user.user["client-certificate"], "utf-8");
+  }
+
+  return {
+    key,
+    cert,
+  };
+}
+
+const { key, cert } = getKeyAndCert();
+
 export function getProxyConfig() {
   return {
     target: {
       host: serverUrl.hostname,
       port: serverUrl.port,
       protocol: "https:",
-      key: Buffer.from(user.user["client-key-data"], "base64").toString(),
-      cert: Buffer.from(
-        user.user["client-certificate-data"],
-        "base64"
-      ).toString(),
+      key,
+      cert,
     },
     rewrite: (path) => path.replace(/^\/proxy-k8s/, ""),
     secure: false,

@@ -48,16 +48,17 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
   const [resourceDefOptions, setResourceDefOptions] = useState<SelectOption[]>(
     []
   );
+  const [defKey, setDefKey] = useState("spec");
+  const [formKey, setFormKey] = useState("");
+  const [forceKey, setForceKey] = useState(0);
   useEffect(() => {
     if (!filter.base?.value) {
       return;
     }
-    getResources(filter.base.value).then((defs) =>
+    getResources(filter.base.value, defKey).then((defs) =>
       setResourceDefOptions(defs.map((v) => ({ label: v, value: v })))
     );
-  }, [filter.base]);
-  const [addKey, setAddKey] = useState("");
-  const [forceKey, setForceKey] = useState(0);
+  }, [filter.base, defKey]);
 
   return (
     <Box>
@@ -119,17 +120,26 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
                     width="100px"
                     placeholder="key"
                     ml={2}
-                    value={addKey}
-                    onChange={(evt) => setAddKey(evt.currentTarget.value)}
+                    value={defKey}
+                    onChange={(evt) => setDefKey(evt.currentTarget.value)}
+                  />
+                  <Input
+                    size="sm"
+                    width="100px"
+                    placeholder="form_key"
+                    ml={2}
+                    value={formKey}
+                    onChange={(evt) => setFormKey(evt.currentTarget.value)}
                   />
                   <Button
                     size="sm"
                     ml={2}
                     colorScheme="blue"
-                    disabled={!addKey || !filter.def?.value}
+                    disabled={!formKey || !filter.def?.value}
                     onClick={async () => {
                       const resourceSpec = await getResourceSpec(
-                        filter.def!.value
+                        filter.def!.value,
+                        defKey
                       );
                       if (
                         !spec.current.properties ||
@@ -138,7 +148,7 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
                         spec.current.type = "object";
                         spec.current.properties = {};
                       }
-                      spec.current.properties[addKey] = resourceSpec;
+                      spec.current.properties[formKey] = resourceSpec;
                       setForceKey(forceKey + 1);
                     }}
                   >

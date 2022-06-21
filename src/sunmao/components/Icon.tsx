@@ -7,6 +7,9 @@ import {
   NodeIndexOutlined,
   ProfileOutlined,
   UnorderedListOutlined,
+  RocketOutlined,
+  BarChartOutlined,
+  AlertOutlined,
 } from "@ant-design/icons";
 
 const IconProps = Type.Object({
@@ -20,6 +23,9 @@ const iconMap: Record<string, React.ForwardRefExoticComponent<any>> = {
   NodeIndexOutlined,
   ProfileOutlined,
   UnorderedListOutlined,
+  RocketOutlined,
+  BarChartOutlined,
+  AlertOutlined,
 };
 
 export const Icon = implementRuntimeComponent({
