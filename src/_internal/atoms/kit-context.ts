@@ -32,6 +32,7 @@ export type ButtonProps = {
 
 export type TableProps = {
   data: any[];
+  error?: React.ReactNode;
   columns: {
     key: string;
     title: string;

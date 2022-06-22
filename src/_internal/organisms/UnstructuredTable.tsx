@@ -19,7 +19,7 @@ type UnstructuredTableProps = {
 export const emptyData = {
   apiVersion: "",
   kind: "",
-  meatadata: {},
+  metadata: {},
   items: [],
 };
 
@@ -58,22 +58,17 @@ const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
           namespace,
         },
       });
-      const doRequest = (s: boolean) => {
-        setResponse((prev) => ({ ...prev, loading: s ? false : true }));
-        api
-          .list({ query: fieldSelector ? { fieldSelector } : {} })
-          .then((res) => {
-            setResponse((prev) => ({ ...prev, error: null, data: res }));
-          })
-          .catch((err) => {
-            setResponse((prev) => ({ ...prev, error: err, data: emptyData }));
-          })
-          .finally(() => setResponse((prev) => ({ ...prev, loading: false })));
-      };
-      doRequest(false);
-      setInterval(() => {
-        doRequest(true);
-      }, 5000);
+      setResponse((prev) => ({ ...prev, loading: true }));
+      api
+        .listWatch({
+          query: fieldSelector ? { fieldSelector } : {},
+          cb: (res) => {
+            setResponse(() => ({ loading: false, error: null, data: res }));
+          },
+        })
+        .catch((err) => {
+          setResponse(() => ({ loading: false, error: err, data: emptyData }));
+        });
     }, [apiBase, kind, namespace]);
     useEffect(() => {
       onResponse?.(response);
@@ -84,8 +79,9 @@ const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
         ref={ref}
         columns={columns}
         data={data.items}
+        error={error}
         loading={loading}
-        rowKey={(row) => row.metadata.name}
+        rowKey={(row) => `${row.metadata.namespace}/${row.metadata.name}`}
         activeKey={activeKey}
         onActive={onActive}
         selectedKeys={selectedKeys}

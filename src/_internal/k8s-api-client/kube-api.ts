@@ -1,5 +1,5 @@
 // highly inspired by https://github.com/lensapp/lens/blob/1a29759bff/src/common/k8s-api/kube-api.ts
-import ky from "ky";
+import ky, { SearchParamsOption } from "ky";
 import type { ListMeta, ObjectMeta } from "kubernetes-types/meta/v1";
 
 type KubeApiQueryParams = {
@@ -29,6 +29,10 @@ type ResourceDescriptor = {
 type KubeApiListOptions = {
   namespace?: string;
   query?: KubeApiQueryParams;
+};
+
+type KubeApiListWatchOptions<T> = KubeApiListOptions & {
+  cb?: (value: T) => void;
 };
 
 type KubeApiLinkRef = {
@@ -176,6 +180,22 @@ function parseKubeApi(path: string): KubeApiParsed {
   };
 }
 
+function findLine(buffer: string, fn: (line: string) => void): string {
+  const newLineIndex = buffer.indexOf("\n");
+  // if the buffer doesn't contain a new line, do nothing
+  if (newLineIndex === -1) {
+    return buffer;
+  }
+  const chunk = buffer.slice(0, buffer.indexOf("\n"));
+  const newBuffer = buffer.slice(buffer.indexOf("\n") + 1);
+
+  // found a new line! execute the callback
+  fn(chunk);
+
+  // there could be more lines, checking again
+  return findLine(newBuffer, fn);
+}
+
 export class KubeApi<T> {
   private apiVersion: string;
   private apiPrefix: string;
@@ -207,6 +227,82 @@ export class KubeApi<T> {
       .json<T>();
 
     return res;
+  }
+
+  public async listWatch({
+    namespace,
+    query,
+    cb,
+  }: KubeApiListWatchOptions<T> = {}) {
+    const url = this.getUrl({ namespace });
+    const res = await ky
+      .get(url, {
+        searchParams: query as URLSearchParams,
+        retry: 0,
+      })
+      .json<T>();
+
+    cb?.(res);
+    const streamRes = await ky.get(url, {
+      searchParams: {
+        watch: 1,
+        resourceVersion: ((res as unknown) as UnstructuredList).metadata
+          .resourceVersion,
+      } as SearchParamsOption,
+      timeout: false,
+    });
+    const stream = streamRes.body?.getReader();
+    const utf8Decoder = new TextDecoder("utf-8");
+    let buffer = "";
+    let items = ((res as unknown) as UnstructuredList).items;
+
+    // wait for an update and prepare to read it
+    return stream
+      ?.read()
+      .then(function onIncomingStream({
+        done,
+        value,
+      }): Promise<ReadableStreamReadResult<Uint8Array> | void> {
+        if (done) {
+          return Promise.resolve();
+        }
+        buffer += utf8Decoder.decode(value);
+        const remainingBuffer = findLine(buffer, (line) => {
+          try {
+            const event = JSON.parse(line);
+            console.log(event);
+            const name = event.object.metadata.name;
+            switch (event.type) {
+              case "ADDED":
+                items = items.concat(event.object);
+                break;
+              case "MODIFIED":
+                items = items.map((item) => {
+                  if (item.metadata.name === name) {
+                    return event.object;
+                  }
+                  return item;
+                });
+                break;
+              case "DELETED":
+                items = items.filter((item) => item.metadata.name !== name);
+                break;
+              default:
+            }
+            cb?.({
+              ...res,
+              items,
+            });
+          } catch (error) {
+            console.log("Error while parsing", line, "\n", error);
+          }
+        });
+
+        buffer = remainingBuffer;
+
+        // continue waiting & reading the stream of updates from the server
+        return stream.read().then(onIncomingStream);
+      });
   }
 
   private get apiVersionWithGroup() {
@@ -250,7 +346,7 @@ export class KubeApi<T> {
 export type UnstructuredList = {
   apiVersion: string;
   kind: string;
-  meatadata: ListMeta;
+  metadata: ListMeta;
   items: Unstructured[];
 };
 

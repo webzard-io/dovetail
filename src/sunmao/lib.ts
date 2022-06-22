@@ -1,5 +1,5 @@
-import { SunmaoLib } from "@sunmao-ui/runtime";
-import { Type, Static } from "@sinclair/typebox";
+import { SunmaoLib, implementUtilMethod } from "@sunmao-ui/runtime";
+import { Type } from "@sinclair/typebox";
 import { message } from "antd";
 import { StringUnion } from "./helper";
 import { Root } from "./components/Root";
@@ -43,20 +43,28 @@ export const libs: SunmaoLib[] = [
     ],
     utilMethods: [
       () => [
-        {
-          name: "message",
-          method: (params: Static<typeof MessageParams>) => {
-            message[params.type](params.message, params.duration);
+        implementUtilMethod({
+          version: "kui/v1",
+          metadata: {
+            name: "message",
           },
-          parameters: MessageParams,
-        },
-        {
-          name: "openLink",
-          method: (params: Static<typeof OpenLinkParams>) => {
-            window.open(params.url, params.newWindow ? "_blank" : undefined);
+          spec: {
+            parameters: MessageParams,
           },
-          parameters: OpenLinkParams,
-        },
+        })((params) => {
+          message[params.type](params.message, params.duration);
+        }),
+        implementUtilMethod({
+          version: "kui/v1",
+          metadata: {
+            name: "openLink",
+          },
+          spec: {
+            parameters: OpenLinkParams,
+          },
+        })((params) => {
+          window.open(params.url, params.newWindow ? "_blank" : undefined);
+        }),
       ],
     ],
   },

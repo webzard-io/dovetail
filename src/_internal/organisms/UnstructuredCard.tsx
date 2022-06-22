@@ -76,26 +76,21 @@ const UnstructuredCard = React.forwardRef<
         namespace,
       },
     });
-    const doRequest = (s: boolean) => {
-      setResponse((prev) => ({ ...prev, loading: s ? false : true }));
-      api
-        .list({ query: fieldSelector ? { fieldSelector } : {} })
-        .then((res) => {
-          setResponse((prev) => ({
-            ...prev,
+    setResponse((prev) => ({ ...prev, loading: true }));
+    api
+      .listWatch({
+        query: fieldSelector ? { fieldSelector } : {},
+        cb: (res) => {
+          setResponse(() => ({
+            loading: false,
             error: null,
             data: res.items[0] || null,
           }));
-        })
-        .catch((err) => {
-          setResponse((prev) => ({ ...prev, error: err, data: null }));
-        })
-        .finally(() => setResponse((prev) => ({ ...prev, loading: false })));
-    };
-    doRequest(false);
-    setInterval(() => {
-      doRequest(true);
-    }, 10000);
+        },
+      })
+      .catch((err) => {
+        setResponse(() => ({ loading: false, error: err, data: null }));
+      });
   }, [apiBase, kind, namespace]);
   useEffect(() => {
     onResponse?.(response);
