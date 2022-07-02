@@ -1,14 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import { css } from "@emotion/css";
-import { KitContext } from "../../_internal/atoms/kit-context";
-import ObjectMeta from "../../_internal/molecules/ObjectMeta";
-import ObjectSpec from "../../_internal/molecules/ObjectSpec";
-import ObjectStatus from "../../_internal/molecules/ObjectStatus";
+import { KitContext } from "../atoms/kit-context";
+import ObjectMeta from "../molecules/ObjectMeta";
+import ObjectSpec from "../molecules/ObjectSpec";
+import ObjectStatus from "../molecules/ObjectStatus";
 import {
   KubeApi,
   UnstructuredList,
   Unstructured,
-} from "../../_internal/k8s-api-client/kube-api";
+} from "../k8s-api-client/kube-api";
 
 type Response = {
   data: Unstructured | null;
@@ -16,7 +16,8 @@ type Response = {
   error: null | Error;
 };
 
-type UnstructuredCardProps = {
+type UnstructuredPageProps = {
+  basePath: string;
   kind: string;
   namespace: string;
   apiBase: string;
@@ -33,16 +34,11 @@ const Header = css`
   margin: 16px 0;
 `;
 
-const Card = css`
+const Page = css`
   padding: 16px;
   background: $white;
   border-radius: 8px;
   color: $text-light-primary;
-  border: 1px solid $strokes-light-trans-2;
-  box-shadow: 0px 0px 16px rgba(107, 125, 153, 0.075),
-    0px 0px 2.00345px rgba(107, 125, 153, 0.15);
-  width: 500px;
-  max-height: 400px;
   overflow: auto;
 `;
 
@@ -53,10 +49,10 @@ const Divider = css`
   margin: 3px 0;
 `;
 
-const UnstructuredCard = React.forwardRef<
+const UnstructuredPage = React.forwardRef<
   HTMLDivElement,
-  UnstructuredCardProps
->(({ kind, apiBase, namespace, fieldSelector, onResponse }, ref) => {
+  UnstructuredPageProps
+>(({ basePath, kind, apiBase, namespace, fieldSelector, onResponse }, ref) => {
   const kit = useContext(KitContext);
   const [response, setResponse] = useState<{
     data: Unstructured | null;
@@ -70,6 +66,7 @@ const UnstructuredCard = React.forwardRef<
   const { data, loading, error } = response;
   useEffect(() => {
     const api = new KubeApi<UnstructuredList>({
+      basePath,
       objectConstructor: {
         kind,
         apiBase,
@@ -125,10 +122,10 @@ const UnstructuredCard = React.forwardRef<
   };
 
   return (
-    <div className={Card} ref={ref}>
+    <div className={Page} ref={ref}>
       {getContent()}
     </div>
   );
 });
 
-export default UnstructuredCard;
+export default UnstructuredPage;

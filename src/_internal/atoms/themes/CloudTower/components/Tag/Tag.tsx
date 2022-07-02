@@ -41,9 +41,13 @@ const Tag = React.forwardRef<HTMLElement, TagProps>((props, ref) => {
       closable={closable}
       onClose={onClose}
       onClick={() => {
-        if (expandable) {
-          setExpanded(!expanded);
+        if (!expanded && !expandable) {
+          return;
         }
+        setExpanded(!expanded);
+        setTimeout(() => {
+          forceRender((prev) => prev + 1);
+        }, 0);
       }}
     >
       {children}

@@ -8,7 +8,7 @@ import { UnstructuredTable } from "./components/UnstructuredTable";
 import { ObjectAge } from "./components/ObjectAge";
 import { UnstructuredSidebar } from "./components/UnstructuredSidebar";
 import { UnstructuredForm } from "./components/UnstructuredForm";
-import { UnstructuredCard } from "./components/UnstructuredCard";
+import { UnstructuredPage } from "./components/UnstructuredPage";
 import { Modal } from "./components/Modal";
 import { Select } from "./components/Select";
 import { Icon } from "./components/Icon";
@@ -35,7 +35,7 @@ export const libs: SunmaoLib[] = [
       ObjectAge,
       UnstructuredSidebar,
       UnstructuredForm,
-      UnstructuredCard,
+      UnstructuredPage,
       Modal,
       Select,
       Icon,

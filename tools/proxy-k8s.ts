@@ -59,6 +59,8 @@ export function getProxyConfig() {
     rewrite: (path) => path.replace(/^\/proxy-k8s/, ""),
     secure: false,
     changeOrigin: true,
+    proxyTimeout: 0,
+    timeout: 0,
   };
 }
 

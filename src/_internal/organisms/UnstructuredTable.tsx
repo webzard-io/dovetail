@@ -6,6 +6,7 @@ import {
 } from "../../_internal/k8s-api-client/kube-api";
 
 type UnstructuredTableProps = {
+  basePath: string;
   kind: string;
   namespace: string;
   apiBase: string;
@@ -26,6 +27,7 @@ export const emptyData = {
 const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
   (
     {
+      basePath,
       columns,
       apiBase,
       kind,
@@ -52,6 +54,7 @@ const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
     const { data, loading, error } = response;
     useEffect(() => {
       const api = new KubeApi<UnstructuredList>({
+        basePath,
         objectConstructor: {
           kind,
           apiBase,

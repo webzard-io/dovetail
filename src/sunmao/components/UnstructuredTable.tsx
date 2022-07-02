@@ -9,6 +9,9 @@ import _UnstructuredTable, {
 } from "../../_internal/organisms/UnstructuredTable";
 
 const UnstructuredTableProps = Type.Object({
+  basePath: Type.String({
+    description: "K8s Api base path",
+  }),
   kind: Type.String({
     description: "K8s resource kind, e.g, Deployment",
   }),
@@ -99,6 +102,7 @@ export const UnstructuredTable = implementRuntimeComponent({
     namespace,
     fieldSelector,
     callbackMap,
+    basePath,
   }) => {
     const [response, setResponse] = useState<{
       data: UnstructuredList;
@@ -134,6 +138,7 @@ export const UnstructuredTable = implementRuntimeComponent({
     return (
       <_UnstructuredTable
         ref={elementRef}
+        basePath={basePath}
         kind={kind}
         namespace={namespace}
         apiBase={apiBase}

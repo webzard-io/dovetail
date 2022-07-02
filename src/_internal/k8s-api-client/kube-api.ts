@@ -50,6 +50,7 @@ type KubeObjectConstructor = {
 };
 
 type KubeApiOptions = {
+  basePath: string;
   /**
    * The constructor for the kube objects returned from the API
    */
@@ -197,6 +198,7 @@ function findLine(buffer: string, fn: (line: string) => void): string {
 }
 
 export class KubeApi<T> {
+  private basePath: string;
   private apiVersion: string;
   private apiPrefix: string;
   private apiGroup: string;
@@ -204,12 +206,13 @@ export class KubeApi<T> {
   public objectConstructor: KubeObjectConstructor;
 
   constructor(protected options: KubeApiOptions) {
-    const { objectConstructor } = options;
+    const { objectConstructor, basePath } = options;
     const { apiPrefix, apiGroup, apiVersion, resource } = parseKubeApi(
       objectConstructor.apiBase
     );
 
     this.options = options;
+    this.basePath = basePath;
     this.apiPrefix = apiPrefix ?? "";
     this.apiGroup = apiGroup;
     this.apiVersion = apiVersion;
@@ -243,6 +246,15 @@ export class KubeApi<T> {
       .json<T>();
 
     cb?.(res);
+
+    return this.watch(url, res, cb);
+  }
+
+  private async watch(
+    url: string,
+    res: T,
+    cb: KubeApiListWatchOptions<T>["cb"]
+  ) {
     const streamRes = await ky.get(url, {
       searchParams: {
         watch: 1,
@@ -326,7 +338,9 @@ export class KubeApi<T> {
     );
 
     return (
-      "/proxy-k8s" + resourcePath + (query ? `?${searchParams.toString()}` : "")
+      this.basePath +
+      resourcePath +
+      (query ? `?${searchParams.toString()}` : "")
     );
   }
 
