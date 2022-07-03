@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { isPlainObject, isArray } from "lodash-es";
+import isPlainObject from "lodash/isPlainObject";
+import isArray from "lodash/isArray";
 import { css, cx } from "@emotion/css";
 import { Row } from "./style/Layout.style";
 

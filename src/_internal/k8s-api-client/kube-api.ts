@@ -274,7 +274,7 @@ export class KubeApi<T> {
       .then(function onIncomingStream({
         done,
         value,
-      }): Promise<ReadableStreamReadResult<Uint8Array> | void> {
+      }): Promise<ReadableStreamDefaultReadResult<Uint8Array> | void> {
         if (done) {
           return Promise.resolve();
         }

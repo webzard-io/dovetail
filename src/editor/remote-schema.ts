@@ -1,5 +1,5 @@
 import ky from "ky";
-import _ from "lodash-es";
+import _ from "lodash";
 import { JSONSchema7 } from "json-schema";
 
 const cache: { apiBases: string[]; openApi: any } = {

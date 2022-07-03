@@ -1,5 +1,5 @@
 import React from "react";
-import { isEmpty } from "lodash-es";
+import isEmpty from "lodash/isEmpty";
 // TODO: use kit context when I have time:)
 import { Row, Col } from "antd";
 import { css, cx } from "@linaria/core";

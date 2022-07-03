@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { cx } from "@linaria/core";
 import { IconWrapper } from "./Icon.style";
-import pickBy from "lodash-es/pickBy";
+import pickBy from "lodash/pickBy";
 
 type IconProps = React.HTMLAttributes<HTMLSpanElement> & {
   type: string;
