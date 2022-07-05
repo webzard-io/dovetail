@@ -7,23 +7,23 @@ export const TableContainerStyle = css`
 export const TableStyle = css`
   height: 100%;
 
-  &.empty-table .ant-table-content {
+  &.empty-table .dovetail-ant-table-content {
     overflow: visible !important;
     height: 100%;
 
-    .ant-table-tbody .ant-table-placeholder td {
+    .dovetail-ant-table-tbody .dovetail-ant-table-placeholder td {
       height: 100%;
     }
 
     table {
       width: 100% !important;
       height: 100%;
-      .ant-table-placeholder .ant-table-expanded-row-fixed {
+      .dovetail-ant-table-placeholder .dovetail-ant-table-expanded-row-fixed {
         padding: 15px 0;
       }
     }
 
-    table thead.ant-table-thead {
+    table thead.dovetail-ant-table-thead {
       display: none;
     }
   }
@@ -35,34 +35,34 @@ export const TableStyle = css`
     font-weight: 700;
   }
 
-  .ant-spin-nested-loading {
+  .dovetail-ant-spin-nested-loading {
     height: 100%;
 
-    .ant-spin-container {
+    .dovetail-ant-spin-container {
       height: 100%;
       overflow: visible;
     }
-    .ant-spin {
+    .dovetail-ant-spin {
       max-height: none;
     }
   }
 
-  &.table-init-loading .ant-spin-blur {
+  &.table-init-loading .dovetail-ant-spin-blur {
     thead,
     tbody {
       display: none;
     }
   }
 
-  .ant-table-cell-fix-left {
+  .dovetail-ant-table-cell-fix-left {
     background: transparent;
   }
 
-  td.ant-table-column-sort {
+  td.dovetail-ant-table-column-sort {
     background: transparent;
   }
 
-  .ant-table-container {
+  .dovetail-ant-table-container {
     height: 100%;
     &::before,
     &::after {
@@ -70,7 +70,7 @@ export const TableStyle = css`
     }
   }
 
-  .ant-table {
+  .dovetail-ant-table {
     border-radius: 0px;
     border-left: none;
     border-right: none;
@@ -79,7 +79,7 @@ export const TableStyle = css`
     font-size: 12px;
     background: transparent;
 
-    .ant-table-header {
+    .dovetail-ant-table-header {
       position: relative;
       z-index: 3;
       border-bottom: 1px solid $strokes-light-trans-2;
@@ -96,11 +96,11 @@ export const TableStyle = css`
       color: $text-secondary-light;
     }
 
-    .ant-table-selection {
+    .dovetail-ant-table-selection {
       text-align: center;
     }
 
-    .ant-table-tbody > tr.ant-table-row-selected td {
+    .dovetail-ant-table-tbody > tr.dovetail-ant-table-row-selected td {
       background: $white;
     }
 
@@ -112,25 +112,25 @@ export const TableStyle = css`
       transform: translateY(-50%);
     }
 
-    &.ant-table-ping-left {
-      .ant-table-cell-fix-left-last::after {
+    &.dovetail-ant-table-ping-left {
+      .dovetail-ant-table-cell-fix-left-last::after {
         box-shadow: none;
         width: 1px;
         background: rgba(213, 219, 227, 0.6);
       }
     }
 
-    &.ant-table-ping-right {
-      .ant-table-cell-fix-right-first::after {
+    &.dovetail-ant-table-ping-right {
+      .dovetail-ant-table-cell-fix-right-first::after {
         box-shadow: none;
         width: 1px;
         background: rgba(213, 219, 227, 0.6);
       }
     }
 
-    .ant-table-tbody {
+    .dovetail-ant-table-tbody {
       position: relative;
-      .ant-table-row {
+      .dovetail-ant-table-row {
         td {
           border-top: 1px solid $strokes-light-trans-2;
           border-bottom: 1px solid white;
@@ -144,7 +144,7 @@ export const TableStyle = css`
             border-bottom-color: $fills-light-opaque-1;
           }
 
-          .ant-btn-link {
+          .dovetail-ant-btn-link {
             height: 16px;
             line-height: 16px;
             color: $gray-120;
@@ -226,7 +226,7 @@ export const TableStyle = css`
       }
     }
 
-    .ant-table-thead {
+    .dovetail-ant-table-thead {
       > tr > th {
         background: $white;
         font-weight: 400;
@@ -254,8 +254,8 @@ export const TableStyle = css`
           }
         }
 
-        &.ant-table-cell-ellipsis.ant-table-column-has-sorters
-          .ant-table-column-sorters {
+        &.dovetail-ant-table-cell-ellipsis.dovetail-ant-table-column-has-sorters
+          .dovetail-ant-table-column-sorters {
           width: 100%;
           overflow: hidden;
           white-space: nowrap;
@@ -266,10 +266,10 @@ export const TableStyle = css`
           }
         }
 
-        &.ant-table-column-has-sorters {
+        &.dovetail-ant-table-column-has-sorters {
           padding: 15px 28px 15px 8px;
 
-          .ant-table-column-sorters {
+          .dovetail-ant-table-column-sorters {
             padding: 0;
             .order-icon {
               position: absolute;
@@ -289,13 +289,13 @@ export const TableStyle = css`
               }
             }
           }
-          .ant-table-column-sorter {
+          .dovetail-ant-table-column-sorter {
             display: none;
           }
         }
 
         &:active {
-          .ant-table-column-sorters .order-icon {
+          .dovetail-ant-table-column-sorters .order-icon {
             &.descend {
               transform: translateY(-50%);
             }
@@ -307,17 +307,17 @@ export const TableStyle = css`
 
         &:hover:not(.is-blank) {
           background: $fills-light-opaque-1;
-          .ant-table-column-sorters .order-icon {
+          .dovetail-ant-table-column-sorters .order-icon {
             display: block;
           }
         }
       }
     }
 
-    .ant-table-selection-column {
+    .dovetail-ant-table-selection-column {
       padding: 0 !important;
 
-      .ant-checkbox-wrapper {
+      .dovetail-ant-checkbox-wrapper {
         position: absolute;
         left: 50%;
         top: 50%;
@@ -328,10 +328,10 @@ export const TableStyle = css`
       }
     }
 
-    .ant-table-hide-scrollbar {
+    .dovetail-ant-table-hide-scrollbar {
       background: $white;
     }
-    .ant-table-placeholder {
+    .dovetail-ant-table-placeholder {
       background: inherit;
 
       td {
@@ -343,7 +343,7 @@ export const TableStyle = css`
       }
 
       .table-default-empty,
-      .ant-table-expanded-row-fixed {
+      .dovetail-ant-table-expanded-row-fixed {
         font-weight: bold;
         font-size: 20px;
         color: $text-terdiary-light;

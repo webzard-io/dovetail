@@ -103,7 +103,9 @@ const useTableBodyHasScrollBar = (
     []
   );
   useEffect(() => {
-    const tableWrapper = tableBodyEl?.current?.querySelector(".ant-table-body");
+    const tableWrapper = tableBodyEl?.current?.querySelector(
+      ".dovetail-ant-table-body"
+    );
     if (tableWrapper) {
       if (antTableBodyRef.current) {
         observeTableBodyResize.unobserve(antTableBodyRef.current);

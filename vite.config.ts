@@ -68,7 +68,8 @@ export default defineConfig({
         additionalData: `${globalSass}\r\n`,
       },
       less: {
-        modifyVars: getThemeVariables({
+        modifyVars: {
+          "@ant-prefix": "dovetail-ant",
           "@primary-color": "#0080FF",
           "@link-color": "#0080FF",
           "@text-color": "#06101F",
@@ -78,7 +79,7 @@ export default defineConfig({
           "@screen-sm": "1536px",
           "@screen-md": "2176px",
           "@screen-lg": "2304px",
-        }),
+        },
         javascriptEnabled: true,
       },
     },
