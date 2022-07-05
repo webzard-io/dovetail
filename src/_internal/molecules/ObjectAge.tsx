@@ -6,11 +6,13 @@ const _ObjectAge = React.forwardRef<
   {
     date: string;
     className?: string;
+    template?: string;
   }
 >((props, ref) => {
+  const { className, date, template } = props;
   return (
-    <span className={props.className} ref={ref}>
-      {formatDuration(props.date)}
+    <span className={className} ref={ref}>
+      {formatDuration(date, template)}
     </span>
   );
 });

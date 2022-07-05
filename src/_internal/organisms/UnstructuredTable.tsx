@@ -62,7 +62,7 @@ const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
         },
       });
       setResponse((prev) => ({ ...prev, loading: true }));
-      api
+      const stopP = api
         .listWatch({
           query: fieldSelector ? { fieldSelector } : {},
           cb: (res) => {
@@ -72,6 +72,10 @@ const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
         .catch((err) => {
           setResponse(() => ({ loading: false, error: err, data: emptyData }));
         });
+
+      return () => {
+        stopP.then((stop) => stop?.());
+      };
     }, [apiBase, kind, namespace]);
     useEffect(() => {
       onResponse?.(response);
