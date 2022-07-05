@@ -7,7 +7,6 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import Tag from "./components/Tag/Tag";
 import Modal from "./components/Modal/Modal";
 
-import "antd/dist/antd.less";
 import "./styles/font.scss";
 import "./styles/override.scss";
 

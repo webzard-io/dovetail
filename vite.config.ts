@@ -2,6 +2,8 @@ import * as path from "path";
 import * as fs from "fs";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { getThemeVariables } from "antd/dist/theme";
+import vitePluginImp from "vite-plugin-imp";
 import sunmaoFsVitePlugin from "./tools/sunmao-fs-vite-plugin";
 import linariaVitePlugin from "./tools/linaria-vite-plugin";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -43,8 +45,16 @@ export default defineConfig({
           path: path.resolve(__dirname, "./src/sunmao/lcm.json"),
         },
         {
-          name: "mt",
-          path: path.resolve(__dirname, "./src/sunmao/mt.json"),
+          name: "fiddle",
+          path: path.resolve(__dirname, "./src/sunmao/fiddle.json"),
+        },
+      ],
+    }),
+    vitePluginImp({
+      libList: [
+        {
+          libName: "antd",
+          style: (name) => `antd/es/${name}/style`,
         },
       ],
     }),
@@ -58,7 +68,7 @@ export default defineConfig({
         additionalData: `${globalSass}\r\n`,
       },
       less: {
-        modifyVars: {
+        modifyVars: getThemeVariables({
           "@primary-color": "#0080FF",
           "@link-color": "#0080FF",
           "@text-color": "#06101F",
@@ -68,7 +78,7 @@ export default defineConfig({
           "@screen-sm": "1536px",
           "@screen-md": "2176px",
           "@screen-lg": "2304px",
-        },
+        }),
         javascriptEnabled: true,
       },
     },
