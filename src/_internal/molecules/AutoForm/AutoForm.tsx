@@ -1,7 +1,8 @@
 import React from "react";
-import { Form, FormInstance } from "antd";
+import { Form } from "antd";
 import { WidgetProps } from "./widget";
 import SpecField from "./SpecField";
+import { FormInstance } from "antd/lib/form";
 
 export type AutoFormProps = WidgetProps;
 

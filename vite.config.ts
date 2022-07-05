@@ -22,6 +22,9 @@ export default defineConfig({
       fileName: (format) => `index.${format}.js`,
       formats: ["es"],
     },
+    rollupOptions: {
+      external: ["react", "react-dom", "@sunmao-ui/core", "@sunmao-ui/runtime"],
+    },
   },
   server: {
     proxy: {
