@@ -17,6 +17,7 @@ export const ObjectField: React.FC<WidgetProps> = (props) => {
 
         return (
           <SpecField
+            {...props}
             key={name}
             spec={{
               ...subSpec,

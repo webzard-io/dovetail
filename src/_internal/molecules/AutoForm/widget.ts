@@ -2,7 +2,8 @@ import { JSONSchema7 } from "json-schema";
 
 type WidgetOptions = Partial<{
   displayLabel: boolean;
-  section: string;
+  section?: string;
+  step?: number;
 }>;
 
 export type WidgetProps = {
@@ -11,6 +12,11 @@ export type WidgetProps = {
   };
   level: number;
   path: string;
+  step?: number;
+  layout?: {
+    steps?: { paths: string[] }[];
+  };
+  stepElsRef: Record<number, HTMLElement | null>;
   value: any;
   onChange: (newV: any) => void;
   renderer?: (

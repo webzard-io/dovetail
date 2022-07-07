@@ -158,7 +158,6 @@ const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
         ref={ref}
         className={cx(TableContainerStyle, !hasScrollBard && "no-scroll-bar")}
       >
-        {error && <p>{error}</p>}
         <BaseTable
           className={cx(
             TableStyle,
