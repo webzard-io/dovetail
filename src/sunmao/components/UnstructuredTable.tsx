@@ -123,14 +123,17 @@ export const UnstructuredTable = implementRuntimeComponent({
     useEffect(() => {
       mergeState({
         activeItem: response.data.items.find(
-          (item) => item.metadata.name === activeKey
+          (item) =>
+            `${item.metadata.namespace}/${item.metadata.name}` === activeKey
         ),
       });
     }, [activeKey, response]);
     useEffect(() => {
       mergeState({
         selectedItems: response.data.items.filter((item) =>
-          selectedKeys.includes(item.metadata.name!)
+          selectedKeys.includes(
+            `${item.metadata.namespace}/${item.metadata.name}`
+          )
         ),
       });
     }, [selectedKeys, response]);
