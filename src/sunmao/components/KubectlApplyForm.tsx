@@ -6,7 +6,9 @@ import _ from "lodash";
 import _KubectlApplyForm from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 
 const UiConfigFieldSchema = Type.Object({
-  path: Type.String(),
+  path: Type.String({
+    widget: "kui/v1/KubectlApplyFormPathWidget",
+  }),
   label: Type.String(),
   helperText: Type.String(),
   sectionTitle: Type.String(),

@@ -41,10 +41,10 @@
     "@linaria/babel-preset": "3.0.0-beta.15",
     "@linaria/shaker": "3.0.0-beta.15",
     "@rollup/pluginutils": "^4.2.1",
-    "@sunmao-ui/core": "link:/Users/yanzhen/workspace/sunmao-ui/packages/core",
-    "@sunmao-ui/editor": "link:/Users/yanzhen/workspace/sunmao-ui/packages/editor",
-    "@sunmao-ui/editor-sdk": "link:/Users/yanzhen/workspace/sunmao-ui/packages/editor-sdk",
-    "@sunmao-ui/runtime": "link:/Users/yanzhen/workspace/sunmao-ui/packages/runtime",
+    "@sunmao-ui/core": "0.7.1",
+    "@sunmao-ui/editor": "0.5.9-slot-fallback.121+01404a2d",
+    "@sunmao-ui/editor-sdk": "0.1.9-slot-fallback.121",
+    "@sunmao-ui/runtime": "0.5.7-slot-fallback.121",
     "@types/js-yaml": "^4.0.5",
     "@types/json-schema": "^7.0.11",
     "@types/lodash": "^4.14.182",
@@ -65,10 +65,10 @@
     "vite-tsconfig-paths": "^3.4.1"
   },
   "peerDependencies": {
-    "@sunmao-ui/core": "link:/Users/yanzhen/workspace/sunmao-ui/packages/core",
-    "@sunmao-ui/editor": "link:/Users/yanzhen/workspace/sunmao-ui/packages/editor",
-    "@sunmao-ui/editor-sdk": "link:/Users/yanzhen/workspace/sunmao-ui/packages/editor-sdk",
-    "@sunmao-ui/runtime": "link:/Users/yanzhen/workspace/sunmao-ui/packages/runtime",
+    "@sunmao-ui/core": "0.7.1",
+    "@sunmao-ui/editor": "0.5.9-slot-fallback.121+01404a2d",
+    "@sunmao-ui/editor-sdk": "0.1.9-slot-fallback.121",
+    "@sunmao-ui/runtime": "0.5.7-slot-fallback.121",
     "react": "^17.0.0",
     "react-dom": "^17.0.0"
   }

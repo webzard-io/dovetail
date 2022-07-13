@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   implementWidget,
   WidgetProps,
@@ -41,6 +41,8 @@ import type {
   Field,
 } from "../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 import { UiConfigSchema } from "src/sunmao/components/KubectlApplyForm";
+import { getFields } from "src/_internal/molecules/AutoForm/get-fields";
+import { pathStore } from "./KubectlApplyFormPathWidget";
 
 injectGlobal`
 .chakra-popover__popper {
@@ -147,6 +149,7 @@ function fieldsIsEmpty(uiConfig: FormConfig["uiConfig"]): boolean {
 declare module "@sunmao-ui/editor-sdk" {
   interface WidgetOptionsMap {
     "kui/v1/KubectlApplyFormDesignWidget": {};
+    "kui/v1/KubectlApplyFormPathWidget": {};
   }
 }
 
@@ -165,6 +168,17 @@ const KubectlApplyFormDesignWidget: React.FC<
   const [loadingSchema, setLoadingSchema] = useState(false);
   const [jsonEditorMode, setJsonEditorMode] = useState(false);
   const [uiConfig, setUiConfig] = useState(formConfig.current.uiConfig);
+
+  function dispatchPaths() {
+    const paths = formConfig.current.schemas.reduce<string[]>((prev, cur) => {
+      return prev.concat(Object.keys(getFields(cur)));
+    }, []);
+    pathStore.updatePaths(paths);
+  }
+
+  useEffect(() => {
+    dispatchPaths();
+  }, []);
 
   return (
     <ChakraProvider theme={theme}>
@@ -267,6 +281,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                                         formConfig.current.schemas[
                                           idx
                                         ] = JSON.parse(newValue);
+                                        dispatchPaths();
                                       }}
                                     />
                                   ) : (
@@ -279,6 +294,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                                         formConfig.current.schemas[
                                           idx
                                         ] = JSON.parse(newValue);
+                                        dispatchPaths();
                                       }}
                                       language="json"
                                       minimap={false}
@@ -358,6 +374,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                             return _.omit(_schema, ["properties.status"]);
                           })
                         );
+                        dispatchPaths();
                         if (fieldsIsEmpty(formConfig.current.uiConfig)) {
                           formConfig.current.uiConfig.layout = {
                             type: "simple",
