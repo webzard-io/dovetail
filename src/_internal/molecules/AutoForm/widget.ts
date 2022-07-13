@@ -10,6 +10,7 @@ export type WidgetProps = {
   spec: JSONSchema7 & {
     widgetOptions?: WidgetOptions;
   };
+  widget?: string;
   level: number;
   path: string;
   step?: number;

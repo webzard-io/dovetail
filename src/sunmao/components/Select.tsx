@@ -45,7 +45,9 @@ export const Select = implementRuntimeComponent({
   spec: {
     properties: SelectProps,
     state: SelectState,
-    methods: {},
+    methods: {
+      setValue: Type.Any(),
+    },
     slots: {},
     styleSlots: ["select"],
     events: ["onChange"],
@@ -59,6 +61,7 @@ export const Select = implementRuntimeComponent({
     options,
     defaultValue,
     mergeState,
+    subscribeMethods,
   }) => {
     const [value, setValue] = useState(defaultValue);
     useEffect(() => {
@@ -66,10 +69,15 @@ export const Select = implementRuntimeComponent({
         value,
       });
     }, [value]);
+    useEffect(() => {
+      subscribeMethods({
+        setValue,
+      });
+    }, []);
 
     return (
       <BaseSelect
-        ref={elementRef}
+        // ref={elementRef}
         className={css`
           ${customStyle?.select}
         `}

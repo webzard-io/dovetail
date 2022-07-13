@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import AutoFrom, {
+import AutoForm, {
   AutoFormProps,
 } from "../../_internal/molecules/AutoForm/AutoForm";
 import { generateFromSchema } from "../../_internal/utils/generate-from-schema";
@@ -11,14 +11,14 @@ import { WidgetProps } from "../molecules/AutoForm/widget";
 import { KitContext } from "../atoms/kit-context";
 import { ButtonType } from "antd/lib/button";
 
-const WizardStyle = css`
+export const WizardStyle = css`
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 `;
 
-const WizardBodyStyle = css`
+export const WizardBodyStyle = css`
   max-width: 1120px;
   width: 100%;
   margin: 0 auto;
@@ -127,7 +127,7 @@ const WizardBodyStyle = css`
   }
 `;
 
-const WizardFooterStyle = css`
+export const WizardFooterStyle = css`
   background: rgba(237, 241, 250, 0.6);
   padding: 15px 0;
 
@@ -297,7 +297,7 @@ const UnstructuredForm = React.forwardRef<
             </div>
           )}
           <div className={cx(Boolean(wizard) && "middle")}>
-            <AutoFrom
+            <AutoForm
               spec={spec}
               value={value}
               onChange={(newV) => {

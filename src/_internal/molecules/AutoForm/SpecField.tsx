@@ -27,13 +27,13 @@ type TemplateProps = {
   children?: React.ReactNode;
 };
 
-const FormLabel = css`
+export const FormLabel = css`
   padding-right: 12px;
   font-size: 13px;
   color: rgba(44, 56, 82, 0.6);
 `;
 
-const FormErrorMessage = css`
+export const FormErrorMessage = css`
   font-size: 13px;
   line-height: 20px;
   color: #f0483e;
@@ -41,20 +41,20 @@ const FormErrorMessage = css`
   margin-bottom: 8px;
 `;
 
-const FormHelperText = css`
+export const FormHelperText = css`
   font-size: 12px;
   color: rgba(44, 56, 82, 0.6);
 `;
 
-const FormItem = css`
+export const FormItem = css`
   line-height: 32px;
 `;
 
-const HasMargin = css`
+export const HasMargin = css`
   margin-bottom: 16px;
 `;
 
-const FieldSection = css`
+export const FieldSection = css`
   font-weight: 700;
   color: #2d3a56;
   padding-bottom: 6px;

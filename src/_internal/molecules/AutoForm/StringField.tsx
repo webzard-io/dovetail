@@ -25,11 +25,20 @@ const EnumField: React.FC<WidgetProps> = (props) => {
 };
 
 export const StringField: React.FC<WidgetProps> = (props) => {
-  const { spec, value, onChange } = props;
+  const { spec, value, onChange, widget } = props;
 
   // enum
   if (Array.isArray(spec.enum)) {
     return <EnumField {...props} />;
+  }
+
+  if (widget === "textarea") {
+    return (
+      <Input.TextArea
+        value={value}
+        onChange={(evt) => onChange(evt.currentTarget.value)}
+      />
+    );
   }
 
   return (
