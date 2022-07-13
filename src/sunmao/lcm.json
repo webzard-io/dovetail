@@ -1,0 +1,2758 @@
+{
+  "application": {
+    "version": "sunmao/v1",
+    "kind": "Application",
+    "metadata": {
+      "name": "kui"
+    },
+    "spec": {
+      "components": [
+        {
+          "id": "root",
+          "type": "kui/v1/root",
+          "properties": {},
+          "traits": []
+        },
+        {
+          "id": "main",
+          "type": "core/v1/stack",
+          "properties": {
+            "spacing": 12,
+            "direction": "vertical",
+            "align": "auto",
+            "wrap": "",
+            "justify": ""
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "root",
+                  "slot": "root"
+                }
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": [
+                  {
+                    "styleSlot": "content",
+                    "style": "width: 100%;\npadding: 20px;"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "toolbar",
+          "type": "core/v1/stack",
+          "properties": {
+            "spacing": 12,
+            "direction": "horizontal",
+            "align": "auto",
+            "wrap": "",
+            "justify": "space-between"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "main",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": [
+                  {
+                    "styleSlot": "content",
+                    "style": "border-bottom: 1px solid rgba(211,218,235,.6);\npadding-bottom: 8px;\n"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "page_title",
+          "type": "core/v1/text",
+          "properties": {
+            "value": {
+              "raw": "K8s 集群",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "toolbar",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": [
+                  {
+                    "styleSlot": "content",
+                    "style": "font-size: 24px;\nline-height: 32px;\nfont-family: Inter;\nfont-style: normal;\nfont-weight: 700;"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "stack36",
+          "type": "core/v1/stack",
+          "properties": {
+            "spacing": 12,
+            "direction": "horizontal",
+            "align": "auto",
+            "wrap": "",
+            "justify": ""
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "toolbar",
+                  "slot": "content"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "delete_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "danger",
+            "disabled": "{{ k8s_cluster_table.selectedItems.length === 0 }}",
+            "text": {
+              "raw": "删除",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "stack36",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "delete_cluster",
+                    "method": {
+                      "name": "triggerFetch",
+                      "parameters": {}
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "create_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "primary",
+            "disabled": false,
+            "text": {
+              "raw": "创建 K8s 集群",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "stack36",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "show_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "true"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "create_modal",
+          "type": "kui/v1/modal",
+          "properties": {
+            "type": "primary",
+            "width": 800,
+            "visible": "{{ show_modal.value }}",
+            "maskClosable": true,
+            "title": "创建 K8s 集群"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "main",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClose",
+                    "componentId": "show_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "false"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "create_form_container",
+          "type": "core/v1/stack",
+          "properties": {
+            "spacing": 12,
+            "direction": "horizontal",
+            "align": "auto",
+            "wrap": "",
+            "justify": ""
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_modal",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": [
+                  {
+                    "styleSlot": "content",
+                    "style": "width: 650px;\nmargin: 0 auto;"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "create_form",
+          "type": "kui/v1/unstructured_form",
+          "properties": {
+            "spec": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "title": "名称",
+                  "type": "string"
+                },
+                "cloudProvider": {
+                  "type": "object",
+                  "properties": {
+                    "cloudtower": {
+                      "type": "object",
+                      "properties": {
+                        "elfCluster": {
+                          "title": "集群",
+                          "type": "string"
+                        },
+                        "zbsVip": {
+                          "type": "string",
+                          "title": "存储 VIP",
+                          "description": "",
+                          "properties": {}
+                        }
+                      }
+                    }
+                  }
+                },
+                "version": {
+                  "title": "K8s 集群版本",
+                  "type": "string",
+                  "enum": [
+                    "v1.22.8",
+                    "v1.23.6"
+                  ],
+                  "default": "v1.23.6",
+                  "description": ""
+                },
+                "clusterNetwork": {
+                  "type": "object",
+                  "properties": {
+                    "pods": {
+                      "type": "object",
+                      "required": [
+                        "cidrBlocks"
+                      ],
+                      "properties": {
+                        "cidrBlocks": {
+                          "title": "Pod 网络",
+                          "description": "The network ranges from which Pod networks are allocated.",
+                          "type": "array",
+                          "items": {
+                            "title": "CIDR",
+                            "type": "string"
+                          },
+                          "default": [
+                            ""
+                          ]
+                        }
+                      }
+                    },
+                    "services": {
+                      "type": "object",
+                      "required": [
+                        "cidrBlocks"
+                      ],
+                      "properties": {
+                        "cidrBlocks": {
+                          "title": "Service 网络",
+                          "description": "The network ranges from which service VIPs are allocated.",
+                          "type": "array",
+                          "items": {
+                            "title": "CIDR",
+                            "type": "string"
+                          },
+                          "default": [
+                            ""
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "cni": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "title": "CNI 名称",
+                      "type": "string",
+                      "enum": [
+                        "calico",
+                        "everoute"
+                      ],
+                      "default": "calico"
+                    },
+                    "version": {
+                      "title": "CNI 版本",
+                      "type": "string",
+                      "enum": [
+                        "3.22.2"
+                      ]
+                    }
+                  }
+                },
+                "controlPlaneEndpoint": {
+                  "type": "object",
+                  "required": [
+                    "host",
+                    "port"
+                  ],
+                  "properties": {
+                    "host": {
+                      "title": "VIP",
+                      "type": "string"
+                    },
+                    "port": {
+                      "title": "端口",
+                      "type": "integer",
+                      "format": "int32",
+                      "default": 6443
+                    }
+                  }
+                },
+                "topology": {
+                  "type": "object",
+                  "properties": {
+                    "controlPlane": {
+                      "type": "object",
+                      "properties": {
+                        "nodeConfig": {
+                          "type": "object",
+                          "properties": {
+                            "cloneMode": {
+                              "title": "克隆模式",
+                              "type": "string",
+                              "enum": [
+                                "FastClone",
+                                "FullClone"
+                              ],
+                              "default": "FastClone"
+                            },
+                            "cpuCores": {
+                              "title": "vCPU",
+                              "type": "integer",
+                              "format": "int32",
+                              "default": 2
+                            },
+                            "memoryMB": {
+                              "title": "内存（MiB）",
+                              "type": "integer",
+                              "format": "int32",
+                              "default": 4096
+                            },
+                            "diskSizeGB": {
+                              "title": "磁盘空间（GiB）",
+                              "type": "integer",
+                              "format": "int32",
+                              "default": 40
+                            },
+                            "network": {
+                              "type": "object",
+                              "required": [
+                                "devices"
+                              ],
+                              "properties": {
+                                "devices": {
+                                  "title": "虚拟网卡",
+                                  "type": "array",
+                                  "minItems": 2,
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "vlan": {
+                                        "title": "虚拟网络",
+                                        "type": "string"
+                                      },
+                                      "networkType": {
+                                        "title": "网络类型",
+                                        "type": "string",
+                                        "enum": [
+                                          "ipv4_dhcp"
+                                        ],
+                                        "default": "ipv4_dhcp"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "replicas": {
+                          "title": "管理节点数量",
+                          "type": "integer",
+                          "format": "int32",
+                          "default": 1
+                        }
+                      }
+                    },
+                    "workers": {
+                      "widgetOptions": {
+                        "displayLabel": false
+                      },
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "title": "计算节点组",
+                        "type": "object",
+                        "properties": {
+                          "nodeConfig": {
+                            "type": "object",
+                            "properties": {
+                              "cloneMode": {
+                                "title": "克隆模式",
+                                "type": "string",
+                                "enum": [
+                                  "FastClone",
+                                  "FullClone"
+                                ],
+                                "default": "FastClone"
+                              },
+                              "cpuCores": {
+                                "title": "vCPU",
+                                "type": "integer",
+                                "format": "int32",
+                                "default": 4
+                              },
+                              "memoryMB": {
+                                "title": "内存（MiB）",
+                                "type": "integer",
+                                "format": "int32",
+                                "default": 8192
+                              },
+                              "diskSizeGB": {
+                                "title": "磁盘空间（GiB）",
+                                "type": "integer",
+                                "format": "int32",
+                                "default": 40
+                              },
+                              "network": {
+                                "type": "object",
+                                "required": [
+                                  "devices"
+                                ],
+                                "properties": {
+                                  "devices": {
+                                    "title": "虚拟网卡",
+                                    "type": "array",
+                                    "minItems": 2,
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "vlan": {
+                                          "title": "虚拟网络",
+                                          "type": "string"
+                                        },
+                                        "networkType": {
+                                          "title": "网络类型",
+                                          "type": "string",
+                                          "enum": [
+                                            "ipv4_dhcp"
+                                          ],
+                                          "default": "ipv4_dhcp"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "replicas": {
+                            "title": "计算节点数量",
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 2
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "defaultValue": null
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_form_container",
+                  "slot": "content"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "create_sec_1",
+          "type": "core/v1/text",
+          "properties": {
+            "value": {
+              "raw": "基本信息",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_form",
+                  "slot": "beforeField"
+                },
+                "ifCondition": "{{ $slot.path === '.name' }}"
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": [
+                  {
+                    "styleSlot": "content",
+                    "style": "font-weight: 700;\ncolor: #2d3a56;\npadding-bottom: 6px;\nborder-bottom: 1px solid rgba(213, 219, 227, 0.6);\nmargin-bottom: 16px;\ndisplay: block;\nwidth: 100%;"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "create_sec_2",
+          "type": "core/v1/text",
+          "properties": {
+            "value": {
+              "raw": "容器网络插件",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_form",
+                  "slot": "beforeField"
+                },
+                "ifCondition": "{{ $slot.path === '.cni' }}"
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": [
+                  {
+                    "styleSlot": "content",
+                    "style": "font-weight: 700;\ncolor: #2d3a56;\npadding-bottom: 6px;\nborder-bottom: 1px solid rgba(213, 219, 227, 0.6);\nmargin-bottom: 16px;\ndisplay: block;\nwidth: 100%;"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "create_sec_3",
+          "type": "core/v1/text",
+          "properties": {
+            "value": {
+              "raw": "API Server",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_form",
+                  "slot": "beforeField"
+                },
+                "ifCondition": "{{ $slot.path === '.controlPlaneEndpoint' }}"
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": [
+                  {
+                    "styleSlot": "content",
+                    "style": "font-weight: 700;\ncolor: #2d3a56;\npadding-bottom: 6px;\nborder-bottom: 1px solid rgba(213, 219, 227, 0.6);\nmargin-bottom: 16px;\ndisplay: block;\nwidth: 100%;"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "create_sec_4",
+          "type": "core/v1/text",
+          "properties": {
+            "value": {
+              "raw": "管理节点配置",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_form",
+                  "slot": "beforeField"
+                },
+                "ifCondition": "{{ $slot.path === '.topology.controlPlane' }}"
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": [
+                  {
+                    "styleSlot": "content",
+                    "style": "font-weight: 700;\ncolor: #2d3a56;\npadding-bottom: 6px;\nborder-bottom: 1px solid rgba(213, 219, 227, 0.6);\nmargin-bottom: 16px;\ndisplay: block;\nwidth: 100%;"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "create_sec_5",
+          "type": "core/v1/text",
+          "properties": {
+            "value": {
+              "raw": "计算节点配置",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_form",
+                  "slot": "beforeField"
+                },
+                "ifCondition": "{{ $slot.path === '.topology.workers' }}"
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": [
+                  {
+                    "styleSlot": "content",
+                    "style": "font-weight: 700;\ncolor: #2d3a56;\npadding-bottom: 6px;\nborder-bottom: 1px solid rgba(213, 219, 227, 0.6);\nmargin-bottom: 16px;\ndisplay: block;\nwidth: 100%;"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "cluster_select",
+          "type": "kui/v1/select",
+          "properties": {
+            "options": "{{(() => {\n  if (!list_elf_cluster.fetch.data) {\n  \treturn []\n  }\n  return (list_elf_cluster.fetch.data.data.clusters || []).map(c => ({\n    \"text\": `${c.name}(${c.ip})`,\n    \"value\": c.local_id\n  }))\n})()}}"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_form",
+                  "slot": "field"
+                },
+                "ifCondition": "{{ $slot.path === '.cloudProvider.cloudtower.elfCluster' }}"
+              }
+            }
+          ]
+        },
+        {
+          "id": "control_plane_vlan_0",
+          "type": "kui/v1/select",
+          "properties": {
+            "options": "{{(() => {\n  if (!list_elf_vlan.fetch.data) {\n  \treturn []\n  }\n  return (list_elf_vlan.fetch.data.data.vlans || []).map(c => ({\n    \"text\": `${c.name}(${c.type})`,\n    \"value\": c.local_id\n  }))\n})()}}"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_form",
+                  "slot": "field"
+                },
+                "ifCondition": "{{ $slot.path === '.topology.controlPlane.nodeConfig.network.devices[0].vlan' }}"
+              }
+            }
+          ]
+        },
+        {
+          "id": "control_plane_vlan_1",
+          "type": "kui/v1/select",
+          "properties": {
+            "options": "{{(() => {\n  if (!list_elf_vlan.fetch.data) {\n  \treturn []\n  }\n  return (list_elf_vlan.fetch.data.data.vlans || []).map(c => ({\n    \"text\": `${c.name}(${c.type})`,\n    \"value\": c.local_id\n  }))\n})()}}"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_form",
+                  "slot": "field"
+                },
+                "ifCondition": "{{ $slot.path === '.topology.controlPlane.nodeConfig.network.devices[1].vlan' }}"
+              }
+            }
+          ]
+        },
+        {
+          "id": "worker_0_vlan_0",
+          "type": "kui/v1/select",
+          "properties": {
+            "options": "{{(() => {\n  if (!list_elf_vlan.fetch.data) {\n  \treturn []\n  }\n  return (list_elf_vlan.fetch.data.data.vlans || []).map(c => ({\n    \"text\": `${c.name}(${c.type})`,\n    \"value\": c.local_id\n  }))\n})()}}"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_form",
+                  "slot": "field"
+                },
+                "ifCondition": "{{ $slot.path === '.topology.workers[0].nodeConfig.network.devices[0].vlan' }}"
+              }
+            }
+          ]
+        },
+        {
+          "id": "worker_0_vlan_1",
+          "type": "kui/v1/select",
+          "properties": {
+            "options": "{{(() => {\n  if (!list_elf_vlan.fetch.data) {\n  \treturn []\n  }\n  return (list_elf_vlan.fetch.data.data.vlans || []).map(c => ({\n    \"text\": `${c.name}(${c.type})`,\n    \"value\": c.local_id\n  }))\n})()}}"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_form",
+                  "slot": "field"
+                },
+                "ifCondition": "{{ $slot.path === '.topology.workers[0].nodeConfig.network.devices[1].vlan' }}"
+              }
+            }
+          ]
+        },
+        {
+          "id": "cancel_create_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "text",
+            "disabled": false,
+            "text": {
+              "raw": "取消",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_modal",
+                  "slot": "footer"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "show_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "false"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "submit_create_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "primary",
+            "disabled": false,
+            "text": {
+              "raw": "创建",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "create_modal",
+                  "slot": "footer"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "create_cluster",
+                    "method": {
+                      "name": "triggerFetch",
+                      "parameters": {}
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "k8s_cluster_table",
+          "type": "kui/v1/unstructured_table",
+          "properties": {
+            "kind": "Deployment",
+            "apiBase": "/apis/kubesmart.smtx.io/v1alpha1/kubesmartclusters",
+            "columns": [
+              {
+                "key": "name",
+                "title": "Name",
+                "dataIndex": "metadata.name",
+                "width": 200
+              },
+              {
+                "key": "namespace",
+                "title": "Namespace",
+                "dataIndex": "metadata.namespace",
+                "width": 150
+              },
+              {
+                "key": "age",
+                "title": "Age",
+                "dataIndex": "metadata.creationTimestamp",
+                "width": 100
+              },
+              {
+                "key": "phase",
+                "title": "状态",
+                "dataIndex": "status",
+                "width": 100
+              },
+              {
+                "key": "vip",
+                "title": "VIP",
+                "dataIndex": "spec.controlPlaneEndpoint",
+                "width": 150
+              },
+              {
+                "key": "control-plane",
+                "title": "管理节点数量",
+                "dataIndex": "spec.topology.controlPlane.replicas",
+                "width": 100
+              },
+              {
+                "key": "worker",
+                "title": "计算节点数量",
+                "dataIndex": "spec.topology.workers.0.replicas",
+                "width": 100
+              }
+            ],
+            "namespace": "",
+            "fieldSelector": "",
+            "basePath": "/proxy-k8s"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "main",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": []
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onActive",
+                    "componentId": "k8s_cluster_sidebar",
+                    "method": {
+                      "name": "setVisible",
+                      "parameters": {
+                        "visible": true
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "vip_text",
+          "type": "core/v1/text",
+          "properties": {
+            "value": {
+              "raw": "{{ $slot.value.host }}",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "k8s_cluster_table",
+                  "slot": "cell"
+                },
+                "ifCondition": "{{ $slot.key === 'vip' }}"
+              }
+            }
+          ]
+        },
+        {
+          "id": "status_text",
+          "type": "core/v1/text",
+          "properties": {
+            "value": {
+              "raw": "{{ $slot.value && $slot.value.ready ? 'Ready' : 'Not Ready' }}",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "k8s_cluster_table",
+                  "slot": "cell"
+                },
+                "ifCondition": "{{ $slot.key === 'phase' }}"
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": [
+                  {
+                    "styleSlot": "content",
+                    "style": "color: {{ $slot.value && $slot.value.ready ? '#25c764' : '#ff9100' \n}};"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "k8s_cluster_sidebar",
+          "type": "kui/v1/unstructured_sidebar",
+          "properties": {
+            "item": "{{ k8s_cluster_table.activeItem }}",
+            "defaultVisible": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "main",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "cluster_toolbar",
+          "type": "core/v1/stack",
+          "properties": {
+            "spacing": 8,
+            "direction": "horizontal",
+            "align": "auto",
+            "wrap": "",
+            "justify": ""
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "k8s_cluster_sidebar",
+                  "slot": "toolbar"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "kubeconfig_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "primary",
+            "text": {
+              "raw": "Kubeconfig",
+              "format": "plain"
+            },
+            "disabled": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "cluster_toolbar",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "get_kubeconfig",
+                    "method": {
+                      "name": "triggerFetch",
+                      "parameters": {}
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "kubeconfig_icon",
+          "type": "kui/v1/icon",
+          "properties": {
+            "name": "ProfileOutlined"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "kubeconfig_btn",
+                  "slot": "prefix"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "scale_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "default",
+            "text": {
+              "raw": "伸缩",
+              "format": "plain"
+            },
+            "disabled": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "cluster_toolbar",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "show_scale_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "true"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "scale_icon",
+          "type": "kui/v1/icon",
+          "properties": {
+            "name": "ExpandAltOutlined"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "scale_btn",
+                  "slot": "prefix"
+                }
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "upgrade_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "default",
+            "text": {
+              "raw": "升级",
+              "format": "plain"
+            },
+            "disabled": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "cluster_toolbar",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "show_upgrade_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "true"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "upgrade_icon",
+          "type": "kui/v1/icon",
+          "properties": {
+            "name": "RocketOutlined"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "upgrade_btn",
+                  "slot": "prefix"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "component_button",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "default",
+            "text": {
+              "raw": "插件",
+              "format": "plain"
+            },
+            "disabled": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "cluster_toolbar",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": []
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "show_component_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "true"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "addon_icon",
+          "type": "kui/v1/icon",
+          "properties": {
+            "name": "NodeIndexOutlined"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "component_button",
+                  "slot": "prefix"
+                }
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "addons",
+          "type": "core/v1/stack",
+          "properties": {
+            "spacing": 8,
+            "direction": "horizontal",
+            "align": "auto",
+            "wrap": false,
+            "justify": ""
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "k8s_cluster_sidebar",
+                  "slot": "toolbar"
+                }
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": [
+                  {
+                    "styleSlot": "content",
+                    "style": "margin-top: 8px;\ndisplay: flex;\n"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "open_log_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "default",
+            "text": {
+              "raw": "日志",
+              "format": "plain"
+            },
+            "disabled": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "addons",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": []
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "$utils",
+                    "method": {
+                      "name": "openLink",
+                      "parameters": {
+                        "newWindow": true,
+                        "url": "http://{{k8s_cluster_sidebar.item.spec.controlPlaneEndpoint.host}}:32601/app/discover"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "core/v1/hidden",
+              "properties": {
+                "hidden": "{{(() => {\nconst loggingEnabled = _.get(k8s_cluster_sidebar, 'item.spec.components.logging.enabled', false)\nconst kibana = _.get(k8s_cluster_sidebar, 'item.spec.components.logging.kibana.enabled', loggingEnabled)\nreturn !kibana;\n})()}}"
+              }
+            }
+          ]
+        },
+        {
+          "id": "log_icon",
+          "type": "kui/v1/icon",
+          "properties": {
+            "name": "UnorderedListOutlined"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "open_log_btn",
+                  "slot": "prefix"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "grafana_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "default",
+            "text": {
+              "raw": "监控",
+              "format": "plain"
+            },
+            "disabled": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "addons",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": []
+              }
+            },
+            {
+              "type": "core/v1/hidden",
+              "properties": {
+                "hidden": "{{(() => {\nconst enabled = _.get(k8s_cluster_sidebar, 'item.spec.components.monitoring.enabled', false)\nreturn !enabled;\n})()}}"
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "$utils",
+                    "method": {
+                      "name": "openLink",
+                      "parameters": {
+                        "newWindow": true,
+                        "url": "http://{{k8s_cluster_sidebar.item.spec.controlPlaneEndpoint.host}}:30902"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "grafana_icon",
+          "type": "kui/v1/icon",
+          "properties": {
+            "name": "BarChartOutlined"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "grafana_btn",
+                  "slot": "prefix"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "alert_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "default",
+            "text": {
+              "raw": "告警",
+              "format": "plain"
+            },
+            "disabled": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "addons",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": []
+              }
+            },
+            {
+              "type": "core/v1/hidden",
+              "properties": {
+                "hidden": "{{(() => {\nconst enabled = _.get(k8s_cluster_sidebar, 'item.spec.components.monitoring.enabled', false)\nreturn !enabled;\n})()}}"
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "$utils",
+                    "method": {
+                      "name": "openLink",
+                      "parameters": {
+                        "newWindow": true,
+                        "url": "http://{{k8s_cluster_sidebar.item.spec.controlPlaneEndpoint.host}}:30903"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "alert_icon",
+          "type": "kui/v1/icon",
+          "properties": {
+            "name": "AlertOutlined"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "alert_btn",
+                  "slot": "prefix"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "scale_modal",
+          "type": "kui/v1/modal",
+          "properties": {
+            "title": "伸缩 K8s 集群",
+            "width": 600,
+            "visible": "{{ show_scale_modal.value }}",
+            "maskClosable": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "main",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClose",
+                    "componentId": "show_scale_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "false"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "cancel_scale_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "default",
+            "text": {
+              "raw": "取消",
+              "format": "plain"
+            },
+            "disabled": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "scale_modal",
+                  "slot": "footer"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "show_scale_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "false"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "submit_scale_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "primary",
+            "text": {
+              "raw": "保存",
+              "format": "plain"
+            },
+            "disabled": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "scale_modal",
+                  "slot": "footer"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "scale_cluster",
+                    "method": {
+                      "name": "triggerFetch",
+                      "parameters": {}
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  },
+                  {
+                    "type": "onClick",
+                    "componentId": "show_scale_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "false"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "scale_form",
+          "type": "kui/v1/unstructured_form",
+          "properties": {
+            "spec": {
+              "type": "object",
+              "title": "",
+              "description": "",
+              "properties": {
+                "controlPlaneReplicas": {
+                  "type": "number",
+                  "title": "管理节点数量",
+                  "description": "",
+                  "properties": {}
+                },
+                "workerReplicas": {
+                  "type": "number",
+                  "title": "计算节点数量",
+                  "description": "",
+                  "properties": {}
+                }
+              },
+              "required": [
+                "controlPlaneReplicas",
+                "workerReplicas"
+              ]
+            },
+            "defaultValue": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return\n  }\n  const { controlPlane, workers } = k8s_cluster_sidebar.item.spec.topology\n  return {\n    controlPlaneReplicas: controlPlane.replicas,\n    workerReplicas: workers[0].replicas,\n  }\n})()}}"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "scale_modal",
+                  "slot": "content"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "component_modal",
+          "type": "kui/v1/modal",
+          "properties": {
+            "title": "配置插件",
+            "width": 600,
+            "visible": "{{ show_component_modal.value }}",
+            "maskClosable": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "main",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClose",
+                    "componentId": "show_component_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "false"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "cancel_component_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "default",
+            "text": {
+              "raw": "取消",
+              "format": "plain"
+            },
+            "disabled": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "component_modal",
+                  "slot": "footer"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "show_component_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "false"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "submit_component_btn",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "primary",
+            "text": {
+              "raw": "保存",
+              "format": "plain"
+            },
+            "disabled": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "component_modal",
+                  "slot": "footer"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "show_component_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "false"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  },
+                  {
+                    "type": "onClick",
+                    "componentId": "update_components",
+                    "method": {
+                      "name": "triggerFetch",
+                      "parameters": {}
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "component_form",
+          "type": "kui/v1/unstructured_form",
+          "properties": {
+            "spec": {
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "components": {
+                      "description": "",
+                      "type": "object",
+                      "properties": {
+                        "logging": {
+                          "description": "",
+                          "type": "object",
+                          "widgetOptions": {
+                            "section": "日志"
+                          },
+                          "properties": {
+                            "elasticsearch": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean",
+                                  "title": "Elasticsearch",
+                                  "default": ""
+                                }
+                              },
+                              "description": "",
+                              "title": ""
+                            },
+                            "fluentbit": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean",
+                                  "title": "FluentBit",
+                                  "default": ""
+                                }
+                              },
+                              "title": ""
+                            },
+                            "kibana": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean",
+                                  "title": "Kibana",
+                                  "default": ""
+                                }
+                              },
+                              "title": ""
+                            }
+                          }
+                        },
+                        "monitoring": {
+                          "type": "object",
+                          "title": "",
+                          "description": "",
+                          "widgetOptions": {
+                            "section": "监控与告警"
+                          },
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "title": "Monitoring",
+                              "description": "",
+                              "properties": {}
+                            }
+                          },
+                          "required": []
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "defaultValue": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return\n  }\n  \n  const { logging, monitoring } = k8s_cluster_sidebar.item.spec.components || {}\n\n  const loggingEnabled = _.get(logging, 'enabled', false);\n  const monitoringEnabled = _.get(monitoring, 'enabled', false);\n  const cluster = {\n    components: {\n      logging: {\n        elasticsearch: {\n          enabled: loggingEnabled && !_.get(logging, 'elasticsearch.disabled')\n        },\n        kibana: {\n          enabled: loggingEnabled && !_.get(logging, 'kibana.disabled')\n        },\n        fluentbit: {\n          enabled: loggingEnabled && !_.get(logging, 'fluentbit.disabled')\n        }\n      },\n      monitoring: {\n        enabled: monitoringEnabled\n      }\n    }\n  }\n  \n  return { cluster };\n})()}}"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "component_modal",
+                  "slot": "content"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "kubeconfig_modal",
+          "type": "kui/v1/modal",
+          "properties": {
+            "title": "Kubeconfig",
+            "width": 600,
+            "visible": "{{ Boolean( kubeconfig_modal.value) }}",
+            "maskClosable": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "main",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/state",
+              "properties": {
+                "key": "value",
+                "initialValue": ""
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClose",
+                    "componentId": "kubeconfig_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": ""
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "kubeconfig_code",
+          "type": "kui/v1/code_editor",
+          "properties": {
+            "defaultValue": "{{ kubeconfig_modal.value }}",
+            "language": "yaml",
+            "minimap": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "kubeconfig_modal",
+                  "slot": "content"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "upgrade_modal",
+          "type": "kui/v1/modal",
+          "properties": {
+            "title": "升级集群",
+            "width": 600,
+            "visible": "{{ show_upgrade_modal.value }}",
+            "maskClosable": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "main",
+                  "slot": "content"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClose",
+                    "componentId": "show_upgrade_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "false"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "upgrade_form",
+          "type": "kui/v1/unstructured_form",
+          "properties": {
+            "spec": {
+              "type": "object",
+              "title": "",
+              "description": "",
+              "properties": {
+                "version": {
+                  "type": "string",
+                  "title": "版本",
+                  "description": "",
+                  "properties": {},
+                  "enum": [
+                    "v1.22.8",
+                    "v1.23.6"
+                  ]
+                }
+              },
+              "required": []
+            },
+            "defaultValue": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return\n  }\n  \n  return {\n    version: k8s_cluster_sidebar.item.spec.version\n  }\n})()}}"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "upgrade_modal",
+                  "slot": "content"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "button62",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "primary",
+            "text": {
+              "raw": "升级",
+              "format": "plain"
+            },
+            "disabled": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "upgrade_modal",
+                  "slot": "footer"
+                }
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "upgrade_cluster",
+                    "method": {
+                      "name": "triggerFetch",
+                      "parameters": {}
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "show_modal",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/state",
+              "properties": {
+                "key": "value",
+                "initialValue": "false"
+              }
+            }
+          ]
+        },
+        {
+          "id": "create_cluster",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/fetch",
+              "properties": {
+                "url": "/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/default/kubesmartclusters",
+                "method": "post",
+                "lazy": true,
+                "disabled": false,
+                "headers": {
+                  "content-type": "application/json"
+                },
+                "body": "{{(() => {\n    if (\n      typeof create_form === 'undefined' ||\n      typeof cluster_select === 'undefined' ||\n      typeof control_plane_vlan_0 === 'undefined' ||\n      typeof control_plane_vlan_1 === 'undefined' ||\n      typeof worker_0_vlan_0 === 'undefined' ||\n      typeof worker_0_vlan_1 === 'undefined' ||\n      !create_form.value\n  ) {\n      return {}\n  }\n  \n  const { name, ...rest } = create_form.value;\n  console.log(rest.version, templateMap.value)\n  const body = {\n    apiVersion: \"kubesmart.smtx.io/v1alpha1\",\n    kind: \"KubeSmartCluster\",\n    metadata: {\n      namespace: \"default\",\n      name,\n    },\n    spec: {\n        ...rest,\n      \"cloudProvider\": {\n          \"cloudtower\": {\n            \"authMode\": \"LOCAL\",\n          \"elfCluster\": cluster_select.value,\n          \"password\": \"K5yt3hcjtUE4Teqe\",\n          \"server\": \"192.168.31.181\",\n          \"username\": \"system-service\",\n          \"zbsVip\": rest.cloudProvider.cloudtower.zbsVip,\n        },\n        \"name\": \"cloudtower\"\n      },\n      \"topology\": {\n          \"controlPlane\": {\n            ...create_form.value.topology.controlPlane,\n          \"name\": \"controlplane\",\n          \"nodeConfig\": {\n              ...create_form.value.topology.controlPlane.nodeConfig,\n            network: {\n                devices: create_form.value.topology.controlPlane.nodeConfig.network.devices.map((d, idx) => ({\n                  networkIndex: idx,\n                networkType: d.networkType,\n                vlan: idx === 0 ? control_plane_vlan_0.value : control_plane_vlan_1.value\n              })),\n            },\n            vmTemplate: templateMap.value[rest.version],\n          },\n        },\n        workers: create_form.value.topology.workers.map((w, idx) => {\n            return {\n              ...w,\n            name: `workergroup${idx}`,\n            \"nodeConfig\": {\n                ...w.nodeConfig,\n              \"network\": {\n                  \"devices\": w.nodeConfig.network.devices.map((d, idx) => ({\n                  networkIndex: idx,\n                networkType: d.networkType,\n                vlan: idx === 0 ? worker_0_vlan_0.value : worker_0_vlan_1.value\n              })),\n              },\n              vmTemplate: templateMap.value[rest.version],\n            },\n          }\n        }),\n      }\n    }\n  }\n  \n  console.log('create body', body)\n  return body\n})()}}",
+                "bodyType": "json",
+                "onComplete": [
+                  {
+                    "componentId": "$utils",
+                    "method": {
+                      "name": "message",
+                      "parameters": {
+                        "type": "info",
+                        "message": "创建 K8s 集群",
+                        "duration": 2
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  },
+                  {
+                    "componentId": "show_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "false"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ],
+                "onError": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "token",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/state",
+              "properties": {
+                "key": "value",
+                "initialValue": "eyJhbGciOiJIUzI1NiJ9.Y2wzYmljaGVhNGs1czA3NTh6YjNwMWd1cQ.feO7CmZ9oS8M9v8NYBUmtWy9odYnT0aujrFKQRZC0rY"
+              }
+            }
+          ]
+        },
+        {
+          "id": "list_elf_cluster",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/fetch",
+              "properties": {
+                "url": "/api/",
+                "method": "post",
+                "lazy": false,
+                "disabled": "{{ !token.value }}",
+                "headers": {
+                  "content-type": "application/json",
+                  "authorization": "{{ token.value }}"
+                },
+                "body": {
+                  "variables": "{}",
+                  "query": "{ clusters { local_id name version ip } }"
+                },
+                "bodyType": "json",
+                "onComplete": [],
+                "onError": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "list_elf_template",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/fetch",
+              "properties": {
+                "url": "/api/",
+                "method": "post",
+                "lazy": false,
+                "disabled": "{{ !token.value || (!cluster_select.value && !k8s_cluster_sidebar.item) }}",
+                "headers": {
+                  "content-type": "application/json",
+                  "authorization": "{{ token.value }}"
+                },
+                "body": {
+                  "variables": "{}",
+                  "query": "{ vmTemplates(where: { cluster: { local_id: \"{{cluster_select.value || k8s_cluster_sidebar.item.spec.cloudProvider.cloudtower.elfCluster}}\" } }) { local_id name } }"
+                },
+                "bodyType": "json",
+                "onComplete": [],
+                "onError": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "list_elf_vlan",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/fetch",
+              "properties": {
+                "url": "/api/",
+                "method": "post",
+                "lazy": false,
+                "disabled": "{{ !token.value || (!cluster_select.value && !k8s_cluster_sidebar.item) }}",
+                "headers": {
+                  "content-type": "application/json",
+                  "authorization": "{{ token.value }}"
+                },
+                "body": {
+                  "variables": "{}",
+                  "query": "{ vlans(where: { vds: { cluster: { local_id: \"{{cluster_select.value || k8s_cluster_sidebar.item.spec.cloudProvider.cloudtower.elfCluster}}\" } } }) { local_id name type } }"
+                },
+                "bodyType": "json",
+                "onComplete": [],
+                "onError": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "delete_cluster",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/fetch",
+              "properties": {
+                "url": "/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/default/kubesmartclusters/{{ k8s_cluster_table.selectedItems.length ? k8s_cluster_table.selectedItems[0].metadata.name : '-' }}",
+                "method": "delete",
+                "lazy": true,
+                "disabled": "{{ k8s_cluster_table.selectedItems.length !== 1 }}",
+                "headers": {
+                  "content-type": "application/json"
+                },
+                "body": {},
+                "bodyType": "json",
+                "onComplete": [
+                  {
+                    "componentId": "$utils",
+                    "method": {
+                      "name": "message",
+                      "parameters": {
+                        "type": "info",
+                        "message": "删除 K8s 集群",
+                        "duration": 1
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ],
+                "onError": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "templateMap",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/transformer",
+              "properties": {
+                "value": "{{(() => {\n  if (!list_elf_template.fetch.data) {\n    return {}\n  }\n  const map = list_elf_template.fetch.data.data.vmTemplates\n  \t.reduce((prev, cur) => {\n      if (cur.name.includes('CaaS-k8s-1.22.8-0527-0')) {\n        prev['v1.22.8'] = cur.local_id;\n      } else if (cur.name.includes('CaaS-k8s-1.23.6-0518-1')) {\n        prev['v1.23.6'] = cur.local_id;\n      }\n      return prev\n    }, {})\n  return map\n})()}}",
+                "key": "value"
+              }
+            }
+          ]
+        },
+        {
+          "id": "show_scale_modal",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/state",
+              "properties": {
+                "key": "value",
+                "initialValue": "false"
+              }
+            }
+          ]
+        },
+        {
+          "id": "show_component_modal",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/state",
+              "properties": {
+                "key": "value",
+                "initialValue": "false"
+              }
+            }
+          ]
+        },
+        {
+          "id": "scale_cluster",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/fetch",
+              "properties": {
+                "url": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return ''\n  }\n  const { name, namespace } = k8s_cluster_sidebar.item.metadata\n  \n  return `/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/${namespace}/kubesmartclusters/${name}`\n})()}}",
+                "method": "patch",
+                "lazy": true,
+                "disabled": "{{ !k8s_cluster_sidebar.item }}",
+                "headers": {
+                  "Content-Type": "application/json-patch+json",
+                  "Connection": "keep-alive"
+                },
+                "body": "{{(() => {\n  if (!k8s_cluster_sidebar.item || typeof scale_form === 'undefined' || !scale_form.value) {\n      return []\n  }\n  return [\n    {\n      op: 'replace',\n      path: '/spec/topology/controlPlane/replicas',\n      value: scale_form.value.controlPlaneReplicas\n    },\n    {\n      op: 'replace',\n      path: '/spec/topology/workers/0/replicas',\n      value: scale_form.value.workerReplicas\n    },\n  ]\n})()}}",
+                "bodyType": "json",
+                "onComplete": [
+                  {
+                    "componentId": "$utils",
+                    "method": {
+                      "name": "message",
+                      "parameters": {
+                        "type": "info",
+                        "message": "伸缩 K8s 集群",
+                        "duration": 1
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ],
+                "onError": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "update_components",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/fetch",
+              "properties": {
+                "url": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return ''\n  }\n  const { name, namespace } = k8s_cluster_sidebar.item.metadata\n  \n  return `/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/${namespace}/kubesmartclusters/${name}`\n})()}}",
+                "method": "patch",
+                "lazy": true,
+                "disabled": "{{ !k8s_cluster_sidebar.item }}",
+                "headers": {
+                  "Content-Type": "application/json-patch+json"
+                },
+                "body": "{{(() => {\n  if (!k8s_cluster_sidebar.item || typeof component_form === 'undefined' || !component_form.value) {\n      return []\n  }\n  \n  const components = {\n    logging: {},\n    monitoring: {},\n  };\n  const logging = component_form.value.cluster.components.logging;\n  const es = logging.elasticsearch.enabled;\n  const ki = logging.kibana.enabled;\n  const fb = logging.fluentbit.enabled;\n  components.logging.enabled = es || ki || fb;\n  if (components.logging.enabled) {\n    if (!es) {\n     components.logging.elasticsearch = {\n       disabled: true,\n     }\n    }\n    if (!ki) {\n     components.logging.kibana = {\n       disabled: true,\n     }\n    }\n    if (!fb) {\n     components.logging.fluentbit = {\n       disabled: true,\n     }\n    }\n  }\n  const monitoring = component_form.value.cluster.components.monitoring;\n  components.monitoring.enabled = monitoring.enabled\n  \n  console.log('components', components)\n  return [\n    {\n      op: 'replace',\n      path: '/spec/components',\n      value: components\n    },\n  ]\n})()}}",
+                "bodyType": "json",
+                "onComplete": [
+                  {
+                    "componentId": "$utils",
+                    "method": {
+                      "name": "message",
+                      "parameters": {
+                        "type": "info",
+                        "message": "配置插件",
+                        "duration": 1
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ],
+                "onError": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "get_kubeconfig",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/fetch",
+              "properties": {
+                "url": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return ''\n  }\n  const { name, namespace } = k8s_cluster_sidebar.item.metadata\n  \n  return `/proxy-k8s/api/v1/namespaces/${namespace}/secrets/${name}-kubeconfig`\n})()}}",
+                "method": "get",
+                "lazy": true,
+                "disabled": "{{ !k8s_cluster_sidebar.item }}",
+                "headers": {},
+                "body": {},
+                "bodyType": "json",
+                "onComplete": [
+                  {
+                    "componentId": "kubeconfig_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "{{ atob(_.get(get_kubeconfig, 'fetch.data.data.value')) }}"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ],
+                "onError": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "show_upgrade_modal",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/state",
+              "properties": {
+                "key": "value",
+                "initialValue": "false"
+              }
+            }
+          ]
+        },
+        {
+          "id": "upgrade_cluster",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/fetch",
+              "properties": {
+                "url": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return ''\n  }\n  const { name, namespace } = k8s_cluster_sidebar.item.metadata\n  \n  return `/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/${namespace}/kubesmartclusters/${name}`\n})()}}",
+                "method": "patch",
+                "lazy": true,
+                "disabled": "{{ !k8s_cluster_sidebar.item }}",
+                "headers": {
+                  "Content-Type": "application/json-patch+json"
+                },
+                "body": "{{(() => {\n  if (!k8s_cluster_sidebar.item || typeof upgrade_form === 'undefined' || !upgrade_form.value) {\n      return []\n  }\n  \n  const newTpl = templateMap.value[upgrade_form.value.version];\n  console.log(newTpl)\n  \n  return [\n    {\n      op: 'replace',\n      path: '/spec/version',\n      value: upgrade_form.value.version\n    },\n    {\n      op: 'replace',\n      path: '/spec/topology/workers/0/nodeConfig/vmTemplate',\n      value: newTpl\n    },\n    {\n      op: 'replace',\n      path: '/spec/topology/controlPlane/nodeConfig/vmTemplate',\n      value: newTpl\n    },\n  ]\n})()}}",
+                "bodyType": "json",
+                "onComplete": [
+                  {
+                    "componentId": "show_upgrade_modal",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "false"
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  },
+                  {
+                    "componentId": "$utils",
+                    "method": {
+                      "name": "message",
+                      "parameters": {
+                        "type": "info",
+                        "message": "升级 K8s 集群",
+                        "duration": 1
+                      }
+                    },
+                    "disabled": false,
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    }
+                  }
+                ],
+                "onError": []
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "modules": []
+}
