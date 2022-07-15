@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { implementRuntimeTrait } from "@sunmao-ui/runtime";
-import _ from "lodash";
+import get from "lodash/get";
 
 const TransformerTraitPropertiesSpec = Type.Object({
   value: Type.Any({
@@ -54,7 +54,7 @@ export default implementRuntimeTrait({
       hasInitializedMap.set(componentId, true);
       subscribeMethods({
         syncToComponent({ value: formValue }: any) {
-          const valueInForm = _.get(formValue, fieldPath);
+          const valueInForm = get(formValue, fieldPath);
           const currentValue = valueCache.get(componentId);
           if (currentValue !== valueInForm) {
             services.apiService.send("uiMethod", {

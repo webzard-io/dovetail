@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import { UnstructuredList } from "../../_internal/k8s-api-client/kube-api";
@@ -30,6 +29,7 @@ const UnstructuredTableProps = Type.Object({
       width: Type.Number(),
     }),
     {
+      widget: "core/v1/array",
       widgetOptions: {
         displayedKeys: ["title"],
       },
@@ -151,20 +151,19 @@ export const UnstructuredTable = implementRuntimeComponent({
           ...col,
           dataIndex: col.dataIndex.split("."),
           render: (value: any, record: any, index: number) => {
-            const slotEl = slotsElements.cell?.({
-              value,
-              record,
-              index,
-              key: col.key,
-            });
-            const len = renderToStaticMarkup(<>{slotEl}</>).length;
-            if (len) {
-              return slotEl;
-            }
+            let fallback = value;
             if (col.dataIndex === "metadata.creationTimestamp") {
-              return <ObjectAge date={value} />;
+              fallback = <ObjectAge date={value} />;
             }
-            return value;
+            return slotsElements.cell?.(
+              {
+                value,
+                record,
+                index,
+                key: col.key,
+              },
+              fallback
+            );
           },
         }))}
         activeKey={activeKey}

@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import _UnstructuredForm from "../../_internal/organisms/UnstructuredForm";
@@ -7,7 +6,7 @@ import { css as dCss, cx } from "@emotion/css";
 
 const UnstructuredFormProps = Type.Object({
   spec: Type.Any({
-    widget: "kui/v1/AutoFormSpecWidget",
+    // widget: "kui/v1/AutoFormSpecWidget",
   }),
   defaultValue: Type.Any(),
   wizard: Type.Optional(
@@ -18,6 +17,7 @@ const UnstructuredFormProps = Type.Object({
           disabled: Type.Boolean(),
         }),
         {
+          widget: "core/v1/array",
           widgetOptions: {
             displayedKeys: ["title"],
           },
@@ -156,17 +156,13 @@ export const UnstructuredForm = implementRuntimeComponent({
               }) as React.ReactNode;
             }
             if (position === "widget") {
-              const fieldEl = slotsElements.field?.({
-                path,
-                level,
-              }) as React.ReactNode;
-              const _ = window.document.createElement;
-              window.document.createElement = null as any;
-              const len = renderToStaticMarkup(<>{fieldEl}</>).length;
-              window.document.createElement = _;
-              if (len) {
-                return fieldEl;
-              }
+              return slotsElements.field?.(
+                {
+                  path,
+                  level,
+                },
+                null
+              ) as React.ReactNode;
             }
             return null;
           }}

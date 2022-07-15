@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   DIALOG_CONTAINER_ID,
   implementRuntimeComponent,
@@ -82,11 +82,15 @@ export const Modal = implementRuntimeComponent({
         },
       });
     }, []);
+    const onClose = useCallback(() => {
+      setVisible(false);
+      callbackMap?.onClose();
+    }, [callbackMap?.onClose]);
 
     return (
       <kit.Modal
         ref={elementRef}
-        onClose={callbackMap?.onClose}
+        onClose={onClose}
         className={css`
           ${customStyle?.modal}
         `}
@@ -99,13 +103,15 @@ export const Modal = implementRuntimeComponent({
         title={title}
         footer={
           <>
-            {showFooter ? null : slotsElements.footer ? (
-              slotsElements.footer({})
-            ) : (
-              <kit.Button type="text" onClick={callbackMap?.onClose}>
-                取消
-              </kit.Button>
-            )}
+            {showFooter ? (
+              slotsElements.footer ? (
+                slotsElements.footer({})
+              ) : (
+                <kit.Button type="text" onClick={onClose}>
+                  取消
+                </kit.Button>
+              )
+            ) : null}
           </>
         }
       >

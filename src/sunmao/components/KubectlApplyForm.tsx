@@ -2,7 +2,8 @@ import { Type } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { useEffect, useState } from "react";
 import { generateFromSchema } from "../../_internal/utils/generate-from-schema";
-import _ from "lodash";
+import merge from "lodash/merge";
+import set from "lodash/set";
 import _KubectlApplyForm from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 
 const UiConfigFieldSchema = Type.Object({
@@ -164,7 +165,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
   }) => {
     const [values, setValues] = useState<any[]>(() => {
       const initValues = (formConfig.schemas || []).map((s, idx) => {
-        return _.merge(generateFromSchema(s), formConfig.defaultValues?.[idx]);
+        return merge(generateFromSchema(s), formConfig.defaultValues?.[idx]);
       });
 
       mergeState({ value: initValues });
@@ -174,7 +175,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
       subscribeMethods({
         setField({ fieldPath, value }) {
           setValues((prevValues) => {
-            _.set(prevValues, fieldPath, value);
+            set(prevValues, fieldPath, value);
             const newValues = [...prevValues];
             mergeState({
               value: newValues,

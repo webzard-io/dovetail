@@ -1,6 +1,7 @@
 import { JSONSchema7 } from "json-schema";
 import React, { useMemo, useState } from "react";
-import _ from "lodash";
+import get from "lodash/get";
+import set from "lodash/set";
 import { getFields } from "../../molecules/AutoForm/get-fields";
 import CodeEditor from "../../atoms/CodeEditor";
 import yaml, { dump } from "js-yaml";
@@ -123,7 +124,7 @@ const KubectlApplyForm = React.forwardRef<
     const [indexStr, path] = f.path.split(/\.(.*)/s);
     const index = parseInt(indexStr, 10);
     const { Component, spec } = fieldsArray[index][`.${path}`];
-    const value = _.get(values, getDataPath(f));
+    const value = get(values, getDataPath(f));
     const slotElement = getSlot?.(
       f,
       <Component
@@ -136,7 +137,7 @@ const KubectlApplyForm = React.forwardRef<
         value={value}
         onChange={(newValue) => {
           const valuesSlice = [...values];
-          _.set(valuesSlice, getDataPath(f), newValue);
+          set(valuesSlice, getDataPath(f), newValue);
           onChange(valuesSlice);
         }}
       />

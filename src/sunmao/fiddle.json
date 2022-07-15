@@ -4768,6 +4768,63 @@
               }
             }
           ]
+        },
+        {
+          "id": "button3",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "primary",
+            "text": {
+              "raw": "text",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "root1",
+                  "slot": "root"
+                },
+                "ifCondition": true
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "modal5",
+                    "method": {
+                      "name": "open",
+                      "parameters": {}
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "modal5",
+          "type": "kui/v1/modal",
+          "properties": {
+            "title": "Header"
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "root1",
+                  "slot": "root"
+                },
+                "ifCondition": true
+              }
+            }
+          ]
         }
       ]
     }

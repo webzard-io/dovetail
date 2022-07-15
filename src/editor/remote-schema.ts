@@ -1,5 +1,5 @@
 import ky from "ky";
-import _ from "lodash";
+import pick from "lodash/pick";
 import { JSONSchema7 } from "json-schema";
 
 const cache: { apiBases: string[]; openApi: any } = {
@@ -137,7 +137,7 @@ function resolveRef(schema: JSONSchema7, options: ResolveOptions) {
       ].some((k) => refKey.includes(k)) &&
       schema.properties
     ) {
-      schema.properties = _.pick(schema.properties, [
+      schema.properties = pick(schema.properties, [
         "name",
         "namespace",
         "annotations",

@@ -35,7 +35,8 @@ import JsonSchemaEditor from "@optum/json-schema-editor";
 import { loadAll } from "js-yaml";
 import CodeEditor from "../_internal/atoms/CodeEditor";
 import { getResourceSchema } from "./remote-schema";
-import _ from "lodash";
+import get from "lodash/get";
+import omit from "lodash/omit";
 import type {
   KubectlApplyFormProps,
   Field,
@@ -241,7 +242,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                         >
                           <TabList>
                             {formConfig.current.schemas.map((s, idx) => {
-                              const resource = _.get(
+                              const resource = get(
                                 s,
                                 "x-kubernetes-group-version-kind[0].kind",
                                 `Resource ${idx + 1}`
@@ -371,7 +372,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                               r.apiVersion,
                               r.kind
                             );
-                            return _.omit(_schema, ["properties.status"]);
+                            return omit(_schema, ["properties.status"]);
                           })
                         );
                         dispatchPaths();
