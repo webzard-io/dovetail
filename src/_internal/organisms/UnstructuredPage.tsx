@@ -74,7 +74,7 @@ const UnstructuredPage = React.forwardRef<
       },
     });
     setResponse((prev) => ({ ...prev, loading: true }));
-    api
+    const stopP = api
       .listWatch({
         query: fieldSelector ? { fieldSelector } : {},
         cb: (res) => {
@@ -88,6 +88,9 @@ const UnstructuredPage = React.forwardRef<
       .catch((err) => {
         setResponse(() => ({ loading: false, error: err, data: null }));
       });
+    return () => {
+      stopP.then((stop) => stop?.());
+    };
   }, [apiBase, kind, namespace]);
   useEffect(() => {
     onResponse?.(response);

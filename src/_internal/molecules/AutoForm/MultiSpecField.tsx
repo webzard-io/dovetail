@@ -27,6 +27,7 @@ const _Field: React.FC<
         }))}
       ></Radio.Group>
       <SpecField
+        {...props}
         spec={subSpec}
         path={path}
         renderer={renderer}
@@ -44,6 +45,7 @@ export const MultiSpecField: React.FC<WidgetProps> = (props) => {
   if (spec.anyOf) {
     return (
       <_Field
+        {...props}
         value={value}
         path={path}
         renderer={renderer}
@@ -57,6 +59,7 @@ export const MultiSpecField: React.FC<WidgetProps> = (props) => {
   if (spec.oneOf) {
     return (
       <_Field
+        {...props}
         value={value}
         path={path}
         renderer={renderer}

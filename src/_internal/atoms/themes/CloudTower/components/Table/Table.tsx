@@ -103,7 +103,9 @@ const useTableBodyHasScrollBar = (
     []
   );
   useEffect(() => {
-    const tableWrapper = tableBodyEl?.current?.querySelector(".ant-table-body");
+    const tableWrapper = tableBodyEl?.current?.querySelector(
+      ".dovetail-ant-table-body"
+    );
     if (tableWrapper) {
       if (antTableBodyRef.current) {
         observeTableBodyResize.unobserve(antTableBodyRef.current);
@@ -123,7 +125,6 @@ const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
   (props, ref) => {
     const {
       loading = false,
-      error,
       data,
       columns,
       onSorterChange,
@@ -143,6 +144,10 @@ const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
     } = props;
     const orderRef = useRef<"descend" | "ascend" | undefined | null>(null);
     const hasScrollBard = useTableBodyHasScrollBar(wrapper, data);
+    let error = props.error;
+    if (error instanceof Error) {
+      error = error.message;
+    }
 
     const getKey = (record: any) => {
       return typeof rowKey === "string" ? record[rowKey] : rowKey?.(record);
@@ -153,7 +158,6 @@ const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
         ref={ref}
         className={cx(TableContainerStyle, !hasScrollBard && "no-scroll-bar")}
       >
-        {error && <p>{error}</p>}
         <BaseTable
           className={cx(
             TableStyle,

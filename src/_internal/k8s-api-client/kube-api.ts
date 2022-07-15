@@ -197,6 +197,8 @@ function findLine(buffer: string, fn: (line: string) => void): string {
   return findLine(newBuffer, fn);
 }
 
+type StopWatchHandler = () => void;
+
 export class KubeApi<T> {
   private basePath: string;
   private apiVersion: string;
@@ -236,7 +238,7 @@ export class KubeApi<T> {
     namespace,
     query,
     cb,
-  }: KubeApiListWatchOptions<T> = {}) {
+  }: KubeApiListWatchOptions<T> = {}): Promise<StopWatchHandler> {
     const url = this.getUrl({ namespace });
     const res = await ky
       .get(url, {
@@ -254,7 +256,7 @@ export class KubeApi<T> {
     url: string,
     res: T,
     cb: KubeApiListWatchOptions<T>["cb"]
-  ) {
+  ): Promise<StopWatchHandler> {
     const streamRes = await ky.get(url, {
       searchParams: {
         watch: 1,
@@ -269,7 +271,7 @@ export class KubeApi<T> {
     let items = ((res as unknown) as UnstructuredList).items;
 
     // wait for an update and prepare to read it
-    return stream
+    stream
       ?.read()
       .then(function onIncomingStream({
         done,
@@ -315,6 +317,8 @@ export class KubeApi<T> {
         // continue waiting & reading the stream of updates from the server
         return stream.read().then(onIncomingStream);
       });
+
+    return () => stream?.cancel();
   }
 
   private get apiVersionWithGroup() {

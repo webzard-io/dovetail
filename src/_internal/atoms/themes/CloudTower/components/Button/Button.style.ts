@@ -1,35 +1,35 @@
 import { css } from "@linaria/core";
 
 export const ButtonStyle = css`
-  &.ant-btn {
+  &.dovetail-ant-btn {
     height: 32px;
     border-radius: 6px;
     line-height: 22px;
     transition: transform 160ms ease, background 160ms ease, opacity 160ms ease;
     transform: scale(var(--scale)) translateY(var(--transY)) translateZ(0);
 
-    &.ant-btn-lg {
+    &.dovetail-ant-btn-lg {
       height: 40px;
       line-height: 24px;
     }
 
-    &.ant-btn-sm {
+    &.dovetail-ant-btn-sm {
       height: 24px;
       line-height: 20px;
     }
 
-    &.ant-btn-circle,
-    &.ant-btn-circle-outline {
+    &.dovetail-ant-btn-circle,
+    &.dovetail-ant-btn-circle-outline {
       border-radius: 50%;
     }
   }
 
-  &.ant-btn.ant-btn-primary,
-  &.ant-btn.ant-btn-secondary,
-  &.ant-btn.ant-btn-tertiary,
-  &.ant-btn.ant-btn-ordinary,
-  &.ant-btn.ant-btn-ordinary-onTint,
-  &.ant-btn.ant-btn-quiet {
+  &.dovetail-ant-btn.dovetail-ant-btn-primary,
+  &.dovetail-ant-btn.dovetail-ant-btn-secondary,
+  &.dovetail-ant-btn.dovetail-ant-btn-tertiary,
+  &.dovetail-ant-btn.dovetail-ant-btn-ordinary,
+  &.dovetail-ant-btn.dovetail-ant-btn-ordinary-onTint,
+  &.dovetail-ant-btn.dovetail-ant-btn-quiet {
     color: var(--color, #06101f);
     font-weight: var(--font-weight);
     background: var(--background-color, #fff);
@@ -82,14 +82,14 @@ export const ButtonStyle = css`
     }
   }
 
-  &.ant-btn-link {
+  &.dovetail-ant-btn-link {
     &[disabled] {
       color: $text-light-general;
       opacity: 0.5;
     }
   }
 
-  &.ant-btn-primary {
+  &.dovetail-ant-btn-primary {
     --color: #{$white};
     --font-weight: bold;
     --border-width: 0;
@@ -101,7 +101,7 @@ export const ButtonStyle = css`
     --box-shadow-color-focus: #{$strokes-light-outstanding-light};
   }
 
-  &.ant-btn-primary.ant-btn-dangerous {
+  &.dovetail-ant-btn-primary.dovetail-ant-btn-dangerous {
     --background-color: #{$fills-light-serious-serious};
     --background-color-hover: #{$fills-light-serious-serious-bright};
     --background-color-active: #{$fills-light-serious-serious-dark};
@@ -109,14 +109,14 @@ export const ButtonStyle = css`
     --box-shadow-color-focus: #{$strokes-light-serious-light};
   }
 
-  &.ant-btn-primary.btn-primary-orange {
+  &.dovetail-ant-btn-primary.btn-primary-orange {
     --background-color: #{$fills-light-notice-notice};
     --background-color-hover: #{$fills-light-notice-notice-bright};
     --background-color-active: #{$fills-light-notice-notice-dark};
     --background-color-focus: #{$fills-light-notice-notice};
   }
 
-  &.ant-btn-secondary {
+  &.dovetail-ant-btn-secondary {
     --color: #{$text-light-general};
     --font-weight: bold;
     --border-width: 0;
@@ -128,7 +128,7 @@ export const ButtonStyle = css`
     --box-shadow-color-focus: #{$strokes-light-outstanding-light};
   }
 
-  &.ant-btn-secondary.ant-btn-dangerous {
+  &.dovetail-ant-btn-secondary.dovetail-ant-btn-dangerous {
     --color: #{$text-light-serious};
 
     --background-color: #{$fills-light-serious-serious-light};
@@ -138,7 +138,7 @@ export const ButtonStyle = css`
     --box-shadow-color-focus: #{$fills-interaction-light-serious-hover};
   }
 
-  &.ant-btn-secondary.btn-primary-orange {
+  &.dovetail-ant-btn-secondary.btn-primary-orange {
     --color: #{$text-light-notice};
     --background-color: #{$fills-light-notice-notice-light};
     --background-color-hover: #{$fills-interaction-light-notice-hover};
@@ -146,7 +146,7 @@ export const ButtonStyle = css`
     --background-color-focus: #{$fills-light-notice-notice-light};
   }
 
-  &.ant-btn-tertiary {
+  &.dovetail-ant-btn-tertiary {
     --color: #{$text-light-general};
     --font-weight: bold;
     --border-width: 0;
@@ -167,7 +167,7 @@ export const ButtonStyle = css`
     }
   }
 
-  &.ant-btn-tertiary.ant-btn-dangerous {
+  &.dovetail-ant-btn-tertiary.dovetail-ant-btn-dangerous {
     --color: #{$text-light-serious};
 
     --background-color: #{$white};
@@ -184,7 +184,7 @@ export const ButtonStyle = css`
     }
   }
 
-  &.ant-btn-tertiary.btn-primary-orange {
+  &.dovetail-ant-btn-tertiary.btn-primary-orange {
     --color: #{$text-light-notice};
     --background-color: #{$white};
 
@@ -199,7 +199,7 @@ export const ButtonStyle = css`
     }
   }
 
-  &.ant-btn-ordinary {
+  &.dovetail-ant-btn-ordinary {
     --color: #{$text-light-super};
     --border-color: #{$strokes-light-opaque-3};
 
@@ -216,7 +216,7 @@ export const ButtonStyle = css`
     }
   }
 
-  &.ant-btn-ordinary.ordinary-blue {
+  &.dovetail-ant-btn-ordinary.ordinary-blue {
     --color: #{$text-light-general};
     --border-color: #{$fills-light-general-general};
 
@@ -238,7 +238,7 @@ export const ButtonStyle = css`
     box-shadow: 0px 1px 2px -1px rgba(44, 56, 82, 0.18);
   }
 
-  &.ant-btn-ordinary.ant-btn-dangerous {
+  &.dovetail-ant-btn-ordinary.dovetail-ant-btn-dangerous {
     --color: #{$text-light-serious};
     --border-color: #{$fills-light-serious-serious};
 
@@ -258,7 +258,7 @@ export const ButtonStyle = css`
     --box-shadow-color-focus: #{$strokes-light-serious-light};
   }
 
-  &.ant-btn-ordinary-onTint {
+  &.dovetail-ant-btn-ordinary-onTint {
     --color: #{$text-light-super};
     --border-color: #{$white};
 
@@ -270,7 +270,7 @@ export const ButtonStyle = css`
     box-shadow: none;
   }
 
-  &.ant-btn-ordinary-onTint.ordinary-blue {
+  &.dovetail-ant-btn-ordinary-onTint.ordinary-blue {
     --color: #{$text-light-general};
     --border-color: #{$white};
 
@@ -282,7 +282,7 @@ export const ButtonStyle = css`
     box-shadow: none;
   }
 
-  &.ant-btn-ordinary-onTint.ant-btn-dangerous {
+  &.dovetail-ant-btn-ordinary-onTint.dovetail-ant-btn-dangerous {
     --color: #{$text-light-serious};
 
     --background-color-hover: #{$fills-interaction-light-serious-hover};
@@ -290,7 +290,7 @@ export const ButtonStyle = css`
     --box-shadow-color-focus: #{$strokes-light-serious-light};
   }
 
-  &.ant-btn-quiet {
+  &.dovetail-ant-btn-quiet {
     --color: #{$text-light-secondary};
     --border-width: 0;
 
@@ -302,7 +302,7 @@ export const ButtonStyle = css`
     box-shadow: none;
   }
 
-  &.ant-btn-quiet.ant-btn-dangerous {
+  &.dovetail-ant-btn-quiet.dovetail-ant-btn-dangerous {
     --color: #{$text-light-serious};
 
     --background-color-hover: #{$fills-interaction-light-serious-hover};
@@ -310,7 +310,7 @@ export const ButtonStyle = css`
     --box-shadow-color-focus: #{$strokes-light-serious-light};
   }
 
-  &.ant-btn-quiet.quiet-blue {
+  &.dovetail-ant-btn-quiet.quiet-blue {
     --color: #{$text-light-general};
 
     --background-color: transparent;

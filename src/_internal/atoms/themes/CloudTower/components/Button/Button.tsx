@@ -55,8 +55,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           size === "large" && Typo.Label.l1_regular_title,
           size === "middle" && Typo.Label.l2_regular_title,
           size === "small" && Typo.Label.l3_regular_title,
-          type && `ant-btn-${type}`,
-          !children && children !== 0 && restProps.icon && "ant-btn-icon-only"
+          type && `dovetail-ant-btn-${type}`,
+          !children &&
+            children !== 0 &&
+            restProps.icon &&
+            "dovetail-ant-btn-icon-only"
         )}
         type={isAntdButtonTypes(type) ? type : undefined}
         onMouseEnter={(e) => {

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   DIALOG_CONTAINER_ID,
   implementRuntimeComponent,
@@ -10,8 +10,9 @@ import { KitContext } from "../../_internal/atoms/kit-context";
 const ModalProps = Type.Object({
   title: Type.String(),
   width: Type.Number(),
-  visible: Type.Boolean(),
+  defaultVisible: Type.Boolean(),
   maskClosable: Type.Boolean(),
+  showFooter: Type.Boolean(),
 });
 
 const ModalState = Type.Object({
@@ -36,7 +37,10 @@ export const Modal = implementRuntimeComponent({
   spec: {
     properties: ModalProps,
     state: ModalState,
-    methods: {},
+    methods: {
+      open: Type.Null(),
+      close: Type.Null(),
+    },
     slots: {
       content: {
         slotProps: Type.Object({}),
@@ -55,12 +59,14 @@ export const Modal = implementRuntimeComponent({
     callbackMap,
     customStyle,
     elementRef,
-    visible,
+    defaultVisible,
     maskClosable,
     width,
     title,
+    showFooter,
   }) => {
     const kit = useContext(KitContext);
+    const [visible, setVisible] = useState(defaultVisible || false);
     const buttonRef = useRef<HTMLElement | null>(null);
     useEffect(() => {
       if (typeof elementRef === "object") {
@@ -68,16 +74,23 @@ export const Modal = implementRuntimeComponent({
       }
 
       subscribeMethods({
-        click: () => {
-          buttonRef.current?.click();
+        open() {
+          setVisible(true);
+        },
+        close() {
+          setVisible(false);
         },
       });
     }, []);
+    const onClose = useCallback(() => {
+      setVisible(false);
+      callbackMap?.onClose();
+    }, [callbackMap?.onClose]);
 
     return (
       <kit.Modal
         ref={elementRef}
-        onClose={callbackMap?.onClose}
+        onClose={onClose}
         className={css`
           ${customStyle?.modal}
         `}
@@ -90,13 +103,15 @@ export const Modal = implementRuntimeComponent({
         title={title}
         footer={
           <>
-            {slotsElements.footer ? (
-              slotsElements.footer({})
-            ) : (
-              <kit.Button type="text" onClick={callbackMap?.onClose}>
-                取消
-              </kit.Button>
-            )}
+            {showFooter ? (
+              slotsElements.footer ? (
+                slotsElements.footer({})
+              ) : (
+                <kit.Button type="text" onClick={onClose}>
+                  取消
+                </kit.Button>
+              )
+            ) : null}
           </>
         }
       >

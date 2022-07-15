@@ -27,13 +27,13 @@ type TemplateProps = {
   children?: React.ReactNode;
 };
 
-const FormLabel = css`
+export const FormLabel = css`
   padding-right: 12px;
   font-size: 13px;
   color: rgba(44, 56, 82, 0.6);
 `;
 
-const FormErrorMessage = css`
+export const FormErrorMessage = css`
   font-size: 13px;
   line-height: 20px;
   color: #f0483e;
@@ -41,20 +41,20 @@ const FormErrorMessage = css`
   margin-bottom: 8px;
 `;
 
-const FormHelperText = css`
+export const FormHelperText = css`
   font-size: 12px;
   color: rgba(44, 56, 82, 0.6);
 `;
 
-const FormItem = css`
+export const FormItem = css`
   line-height: 32px;
 `;
 
-const HasMargin = css`
+export const HasMargin = css`
   margin-bottom: 16px;
 `;
 
-const FieldSection = css`
+export const FieldSection = css`
   font-weight: 700;
   color: #2d3a56;
   padding-bottom: 6px;
@@ -125,7 +125,17 @@ type SpecFieldProps = WidgetProps & {
 };
 
 const SpecField: React.FC<SpecFieldProps> = (props) => {
-  const { spec, level, path, value, onChange, renderer } = props;
+  const {
+    spec,
+    level,
+    path,
+    step,
+    value,
+    onChange,
+    renderer,
+    stepElsRef,
+    layout,
+  } = props;
   const { title, widgetOptions } = spec;
   const label = title ?? "";
   const displayLabel =
@@ -137,10 +147,12 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   }
 
   let Component = UnsupportedField;
+  let isNest = false;
 
   // type fields
   if (spec.type === "object") {
     Component = ObjectField;
+    isNest = true;
   } else if (spec.type === "string") {
     Component = StringField;
   } else if (spec.type === "array") {
@@ -153,11 +165,25 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     Component = NullField;
   } else if ("anyOf" in spec || "oneOf" in spec) {
     Component = MultiSpecField;
+    isNest = true;
   } else {
     console.info("Found unsupported spec", spec);
   }
 
-  return (
+  const FieldComponent = (
+    <Component
+      spec={spec}
+      value={value}
+      path={path}
+      level={level}
+      onChange={onChange}
+      renderer={renderer}
+      step={step}
+      stepElsRef={stepElsRef}
+      layout={layout}
+    />
+  );
+  const FieldComponentWithRenderer = (
     <>
       {renderer?.(path, level, "before")}
       <DefaultTemplate
@@ -167,20 +193,38 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
         displayDescription={displayDescription}
         spec={spec}
       >
-        {renderer?.(path, level, "widget") || (
-          <Component
-            spec={spec}
-            value={value}
-            path={path}
-            level={level}
-            onChange={onChange}
-            renderer={renderer}
-          />
-        )}
+        {renderer?.(path, level, "widget") || FieldComponent}
       </DefaultTemplate>
       {renderer?.(path, level, "after")}
     </>
   );
+
+  if (typeof step === "number" && stepElsRef[step] && layout?.steps?.[step]) {
+    const { paths: inStepPaths } = layout?.steps?.[step];
+    let notInStep = true;
+    for (const p of inStepPaths) {
+      if (p === path) {
+        notInStep = false;
+        break;
+      }
+      const [prefix, pattern] = p.split("/");
+      if (!pattern) {
+        continue;
+      }
+      if (pattern === "*" && path.startsWith(prefix)) {
+        notInStep = false;
+        break;
+      }
+    }
+    if (notInStep && !isNest) {
+      return null;
+    }
+    if (notInStep && isNest) {
+      return FieldComponent;
+    }
+  }
+
+  return FieldComponentWithRenderer;
 };
 
 export default SpecField;

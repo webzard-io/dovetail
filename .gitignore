@@ -26,5 +26,5 @@ lib
 
 # App
 
-src/sunmao/*.json
+# src/sunmao/*.json
 src/sunmao/**/*.yaml

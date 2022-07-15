@@ -25,7 +25,9 @@ export const ColumnTitle: React.FC<{
 export const TableLoading: React.FC = () => {
   const [ref, sizes] = useMeasure();
   useEffect(() => {
-    const spinEl = document.querySelector(".ant-table-wrapper .ant-spin");
+    const spinEl = document.querySelector(
+      ".dovetail-ant-table-wrapper .dovetail-ant-spin"
+    );
     if (spinEl) {
       ref(spinEl);
     }

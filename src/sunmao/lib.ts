@@ -11,8 +11,11 @@ import { UnstructuredForm } from "./components/UnstructuredForm";
 import { UnstructuredPage } from "./components/UnstructuredPage";
 import { Modal } from "./components/Modal";
 import { Select } from "./components/Select";
-// import { Icon } from "./components/Icon";
+import { Icon } from "./components/Icon";
 import { CodeEditor } from "./components/CodeEditor";
+import { KubectlApplyForm } from "./components/KubectlApplyForm";
+
+import SyncKubectlApplyForm from "./traits/SyncKubectlApplyForm";
 
 const MessageParams = Type.Object({
   type: StringUnion(["success", "warn", "error", "info"]),
@@ -27,7 +30,7 @@ const OpenLinkParams = Type.Object({
 
 export const libs: SunmaoLib[] = [
   {
-    traits: [],
+    traits: [SyncKubectlApplyForm],
     components: [
       Root,
       Button,
@@ -38,8 +41,9 @@ export const libs: SunmaoLib[] = [
       UnstructuredPage,
       Modal,
       Select,
-      // Icon,
+      Icon,
       CodeEditor,
+      KubectlApplyForm,
     ],
     utilMethods: [
       () => [

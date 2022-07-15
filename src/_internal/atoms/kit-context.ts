@@ -79,6 +79,8 @@ export type CodeEditorProps = {
   defaultValue?: string;
   language?: string;
   minimap?: boolean;
+  onChange?: (newValue: string) => void;
+  onBlur?: (newValue: string) => void;
 } & RefAndChildren;
 
 export interface Kit {

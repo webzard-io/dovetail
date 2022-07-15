@@ -65,7 +65,7 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
       <Button onClick={onOpen} size="sm" variant="outline" mb={1}>
         Form Spec Designer
       </Button>
-      {!isOpen && (
+      {/* {!isOpen && (
         <ExpressionWidget
           {...props}
           onChange={(newValue) => {
@@ -73,7 +73,7 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
             onChange(newValue);
           }}
         />
-      )}
+      )} */}
       <Modal
         isOpen={isOpen}
         onClose={onClose}
