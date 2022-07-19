@@ -1,11 +1,16 @@
 import { JSONSchema7 } from "json-schema";
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import get from "lodash/get";
 import set from "lodash/set";
+import groupBy from "lodash/groupBy";
 import { getFields } from "../../molecules/AutoForm/get-fields";
 import CodeEditor from "../../atoms/CodeEditor";
 import yaml, { dump } from "js-yaml";
-import { WizardBodyStyle, WizardStyle } from "../UnstructuredForm";
+import {
+  WizardBodyStyle,
+  WizardFooterStyle,
+  WizardStyle,
+} from "../UnstructuredForm";
 import { cx, css as dCss } from "@emotion/css";
 import { Steps, Row, Col } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
@@ -28,6 +33,8 @@ import {
   Tab,
   TabPanel,
 } from "@chakra-ui/react";
+import { KitContext } from "src/_internal/atoms/kit-context";
+import { ButtonType } from "antd/lib/button";
 
 export type Field = {
   path: string;
@@ -37,6 +44,8 @@ export type Field = {
   error: string;
   widget: string;
 };
+
+type TransformedField = Field & { dataPath: string; value: any };
 
 type Layout =
   | {
@@ -59,6 +68,7 @@ type Layout =
         prevText?: string;
         nextText?: string;
       }[];
+      cancelText: string;
     };
 
 export type KubectlApplyFormProps = {
@@ -71,6 +81,7 @@ export type KubectlApplyFormProps = {
   };
   schemas: JSONSchema7[];
   uiConfig: {
+    allowTogggleYaml: boolean;
     layout: Layout;
   };
   values: any[];
@@ -103,6 +114,94 @@ const FieldWrapper: React.FC<
   );
 };
 
+function getDataPath(p: string) {
+  const [indexStr] = p.split(/\.(.*)/s);
+  const index = parseInt(indexStr, 10);
+  let dataPath = String(p.endsWith(".*") ? index : p);
+  dataPath = dataPath.replace(/.\$add$/, "");
+  return dataPath;
+}
+
+function iterateArrPath(
+  p: string,
+  values: any[],
+  cb: (f: { itemDataPath: string; itemValue: any }) => void
+) {
+  const arrPathMatch = p.split(/\.\$i(.*)/s);
+  if (arrPathMatch.length === 1) {
+    const itemPath = arrPathMatch[0];
+    const itemDataPath = getDataPath(itemPath);
+    const itemValue = get(values, itemDataPath);
+    cb({
+      itemDataPath,
+      itemValue,
+    });
+    return;
+  }
+  const [arrPath] = arrPathMatch;
+  const value = get(values, getDataPath(arrPath));
+  if (!Array.isArray(value)) {
+    return;
+  }
+  value.forEach((__, idx) => {
+    const nextP = p.replace("$i", String(idx));
+    iterateArrPath(nextP, values, cb);
+  });
+}
+
+function transformFields(fields: Field[], values: any[]): TransformedField[] {
+  const newFields = [];
+  for (const f of fields) {
+    if (f.path.includes(".$i")) {
+      iterateArrPath(f.path, values, ({ itemDataPath, itemValue }) => {
+        newFields.push({
+          ...f,
+          dataPath: itemDataPath,
+          value: itemValue,
+        });
+      });
+    } else {
+      const dataPath = getDataPath(f.path);
+      newFields.push({
+        ...f,
+        dataPath,
+        value: get(values, dataPath),
+      });
+    }
+  }
+
+  return heuristicGroupArray(newFields);
+}
+
+// magic heuristic infer array struct, we should be able to find better way
+function heuristicGroupArray(fields: TransformedField[]): TransformedField[] {
+  const newFields = [];
+
+  const groupedByPrefix = groupBy(fields, (f) => {
+    const arrPathMatch = f.path.split(/\.\$i(.*)/s);
+    if (arrPathMatch.length === 1) {
+      return arrPathMatch[0];
+    }
+    return arrPathMatch[0].concat(".$i");
+  });
+
+  for (const subFields of Object.values(groupedByPrefix)) {
+    if (subFields.length === 1) {
+      newFields.push(subFields[0]);
+      continue;
+    }
+    const groupedByPath = groupBy(subFields, "path");
+    const subSubFieldsArr = Object.values(groupedByPath);
+    for (let idx = 0; idx < subSubFieldsArr[0].length; idx++) {
+      for (const subSubFields of subSubFieldsArr) {
+        newFields.push(subSubFields[idx]);
+      }
+    }
+  }
+
+  return newFields;
+}
+
 const KubectlApplyForm = React.forwardRef<
   HTMLDivElement,
   KubectlApplyFormProps
@@ -111,37 +210,36 @@ const KubectlApplyForm = React.forwardRef<
   const fieldsArray = useMemo(() => {
     return schemas.map((s) => getFields(s));
   }, [schemas]);
+  const kit = useContext(KitContext);
   // wizard
   const [step, setStep] = useState(0);
 
-  function getDataPath(f: Field) {
-    const [indexStr] = f.path.split(/\.(.*)/s);
-    const index = parseInt(indexStr, 10);
-    return f.path.endsWith(".*") ? index : f.path;
-  }
-
-  function getComponent(f: Field) {
+  function getComponent(f: TransformedField) {
     const [indexStr, path] = f.path.split(/\.(.*)/s);
     const index = parseInt(indexStr, 10);
     const { Component, spec } = fieldsArray[index][`.${path}`];
-    const value = get(values, getDataPath(f));
-    const slotElement = getSlot?.(
-      f,
+    if (f.widget === "none") {
+      return {
+        component: null,
+      };
+    }
+    const fallback = (
       <Component
-        key={f.path}
+        key={f.dataPath}
         widget={f.widget}
         spec={spec}
         level={0}
         path=""
         stepElsRef={{}}
-        value={value}
+        value={f.value}
         onChange={(newValue) => {
           const valuesSlice = [...values];
-          set(valuesSlice, getDataPath(f), newValue);
+          set(valuesSlice, f.dataPath, newValue);
           onChange(valuesSlice);
         }}
       />
     );
+    const slotElement = getSlot?.(f, fallback);
     return {
       component: slotElement,
     };
@@ -153,10 +251,10 @@ const KubectlApplyForm = React.forwardRef<
       case "simple": {
         return (
           <>
-            {layout.fields.map((f) => {
+            {transformFields(layout.fields, values).map((f) => {
               const { component } = getComponent(f);
               return (
-                <FieldWrapper key={f.path} {...f}>
+                <FieldWrapper key={f.path.concat(f.dataPath)} {...f}>
                   {component}
                 </FieldWrapper>
               );
@@ -176,10 +274,10 @@ const KubectlApplyForm = React.forwardRef<
               {layout.tabs.map((t, idx) => {
                 return (
                   <TabPanel key={idx}>
-                    {t.fields.map((f) => {
+                    {transformFields(t.fields, values).map((f) => {
                       const { component } = getComponent(f);
                       return (
-                        <FieldWrapper key={f.path} {...f}>
+                        <FieldWrapper key={f.path.concat(f.dataPath)} {...f}>
                           {component}
                         </FieldWrapper>
                       );
@@ -192,6 +290,7 @@ const KubectlApplyForm = React.forwardRef<
         );
       }
       case "wizard": {
+        const currentStep = layout.steps[step];
         return (
           <div className={cx(WizardStyle)}>
             <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
@@ -226,16 +325,52 @@ const KubectlApplyForm = React.forwardRef<
                 </Steps>
               </div>
               <div className="middle">
-                {layout.steps[step].fields.map((f) => {
+                {transformFields(layout.steps[step].fields, values).map((f) => {
                   const { component } = getComponent(f);
                   return (
-                    <FieldWrapper key={f.path} {...f}>
+                    <FieldWrapper key={f.path.concat(f.dataPath)} {...f}>
                       {component}
                     </FieldWrapper>
                   );
                 })}
               </div>
               <div className="right"></div>
+            </div>
+            <div className={WizardFooterStyle}>
+              <div className="footer-content">
+                <div className="wizard-footer-left">
+                  {step !== 0 && (
+                    <span
+                      className="prev-step"
+                      onClick={() => {
+                        setStep(step - 1);
+                      }}
+                    >
+                      {currentStep?.prevText || "previous"}
+                    </span>
+                  )}
+                </div>
+                <div className="wizard-footer-btn-group">
+                  <kit.Button
+                    type={(`quiet` as unknown) as ButtonType}
+                    onClick={() => {}}
+                  >
+                    {layout.cancelText}
+                  </kit.Button>
+                  <kit.Button
+                    type="primary"
+                    onClick={() => {
+                      if (step === layout.steps.length - 1) {
+                        // submit
+                      } else {
+                        setStep(step + 1);
+                      }
+                    }}
+                  >
+                    {currentStep?.nextText || "next"}
+                  </kit.Button>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -247,21 +382,23 @@ const KubectlApplyForm = React.forwardRef<
 
   return (
     <div ref={ref}>
-      <FormControl
-        display="flex"
-        alignItems="center"
-        justifyContent="flex-end"
-        mb="2"
-      >
-        <FormLabel htmlFor="mode" mb="0" fontSize="sm">
-          yaml
-        </FormLabel>
-        <Switch
-          id="mode"
-          checked={yamlMode}
-          onChange={(evt) => setYamlMode(evt.currentTarget.checked)}
-        />
-      </FormControl>
+      {uiConfig.allowTogggleYaml && (
+        <FormControl
+          display="flex"
+          alignItems="center"
+          justifyContent="flex-end"
+          mb="2"
+        >
+          <FormLabel htmlFor="mode" mb="0" fontSize="sm">
+            yaml
+          </FormLabel>
+          <Switch
+            id="mode"
+            checked={yamlMode}
+            onChange={(evt) => setYamlMode(evt.currentTarget.checked)}
+          />
+        </FormControl>
+      )}
       {yamlMode && (
         <CodeEditor
           defaultValue={values

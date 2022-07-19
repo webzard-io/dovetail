@@ -3,7 +3,7 @@ import { JSONSchema7 } from "json-schema";
 import { WidgetProps } from "./widget";
 import UnsupportedField from "./UnsupportedField";
 import StringField from "./StringField";
-import ArrayField from "./ArrayField";
+import ArrayField, { AddToArrayField } from "./ArrayField";
 import BooleanField from "./BooleanField";
 import NumberField from "./NumberField";
 import NullField from "./NullField";
@@ -50,6 +50,17 @@ function recursiveGetFields(spec: JSONSchema7, ctx: RecursiveContext) {
     Component = StringField;
   } else if (spec.type === "array") {
     Component = ArrayField;
+    const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
+    if (itemSpec && typeof itemSpec === "object") {
+      recursiveGetFields(itemSpec, {
+        ...ctx,
+        path: ctx.path.concat(`.$i`),
+      });
+    }
+    ctx.fields[ctx.path.concat(`.$add`)] = {
+      Component: AddToArrayField,
+      spec,
+    };
   } else if (spec.type === "boolean") {
     Component = BooleanField;
   } else if (spec.type === "integer" || spec.type === "number") {

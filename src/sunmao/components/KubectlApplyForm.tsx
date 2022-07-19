@@ -18,6 +18,7 @@ const UiConfigFieldSchema = Type.Object({
 });
 
 export const UiConfigSchema = Type.Object({
+  allowTogggleYaml: Type.Boolean(),
   layout: Type.Object({
     type: Type.KeyOf(
       Type.Object({
@@ -77,6 +78,14 @@ export const UiConfigSchema = Type.Object({
         ],
       }
     ),
+    cancelText: Type.String({
+      conditions: [
+        {
+          key: "type",
+          value: "wizard",
+        },
+      ],
+    }),
   }),
 });
 
@@ -115,6 +124,7 @@ const exampleProperties = {
     schemas: [],
     defaultValues: [],
     uiConfig: {
+      allowTogggleYaml: false,
       layout: {
         type: "simple",
         fields: [],
@@ -201,7 +211,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
           callbackMap?.onChange();
         }}
         getSlot={(f, fallback) => {
-          return slotsElements.field?.(f, fallback);
+          return slotsElements.field
+            ? slotsElements.field(f, fallback)
+            : fallback;
         }}
       />
     );

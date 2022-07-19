@@ -127,6 +127,7 @@ function inferLayout(
               fields,
             },
           ],
+          cancelText: "cancel",
         },
       };
     default:
@@ -171,9 +172,14 @@ const KubectlApplyFormDesignWidget: React.FC<
   const [uiConfig, setUiConfig] = useState(formConfig.current.uiConfig);
 
   function dispatchPaths() {
-    const paths = formConfig.current.schemas.reduce<string[]>((prev, cur) => {
-      return prev.concat(Object.keys(getFields(cur)));
-    }, []);
+    const paths = formConfig.current.schemas.reduce<string[]>(
+      (prev, cur, index) => {
+        return prev.concat(
+          Object.keys(getFields(cur)).map((k) => `${index}${k}`)
+        );
+      },
+      []
+    );
     pathStore.updatePaths(paths);
   }
 
