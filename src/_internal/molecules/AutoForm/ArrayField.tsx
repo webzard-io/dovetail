@@ -6,7 +6,7 @@ import { CloseOutlined } from "@ant-design/icons";
 import { KitContext } from "../../atoms/kit-context";
 import { generateFromSchema } from "../../utils/generate-from-schema";
 
-export const ArrayField: React.FC<WidgetProps> = (props) => {
+const ArrayField: React.FC<WidgetProps> = (props) => {
   const { spec, value = [], path, level, onChange, renderer } = props;
   const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
   const kit = useContext(KitContext);
@@ -80,6 +80,29 @@ export const ArrayField: React.FC<WidgetProps> = (props) => {
         </kit.Button>
       </div>
     </>
+  );
+};
+
+export const AddToArrayField: React.FC<WidgetProps> = (props) => {
+  const kit = useContext(KitContext);
+  const { spec, value = [], onChange } = props;
+  const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
+
+  if (typeof itemSpec === "boolean" || !itemSpec) {
+    return null;
+  }
+
+  return (
+    <div>
+      <kit.Button
+        size="medium"
+        onClick={() => {
+          onChange(value.concat(generateFromSchema(itemSpec)));
+        }}
+      >
+        添加
+      </kit.Button>
+    </div>
   );
 };
 
