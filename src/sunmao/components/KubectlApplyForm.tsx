@@ -78,15 +78,8 @@ export const UiConfigSchema = Type.Object({
         ],
       }
     ),
-    cancelText: Type.String({
-      conditions: [
-        {
-          key: "type",
-          value: "wizard",
-        },
-      ],
-    }),
   }),
+  cancelText: Type.String({}),
 });
 
 const KubectlApplyFormProps = Type.Object({
@@ -161,7 +154,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
       },
     },
     styleSlots: [],
-    events: ["onChange"],
+    events: ["onChange", "onSubmit", "onCancel"],
   },
 })(
   ({
@@ -210,6 +203,8 @@ export const KubectlApplyForm = implementRuntimeComponent({
           });
           callbackMap?.onChange();
         }}
+        onSubmit={callbackMap?.onSubmit}
+        onCancel={callbackMap?.onCancel}
         getSlot={(f, fallback) => {
           return slotsElements.field
             ? slotsElements.field(f, fallback)

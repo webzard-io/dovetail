@@ -68,7 +68,6 @@ type Layout =
         prevText?: string;
         nextText?: string;
       }[];
-      cancelText: string;
     };
 
 export type KubectlApplyFormProps = {
@@ -83,10 +82,13 @@ export type KubectlApplyFormProps = {
   uiConfig: {
     allowTogggleYaml: boolean;
     layout: Layout;
+    cancelText: string;
   };
   values: any[];
-  onChange: (values: any[]) => void;
   getSlot?: (f: Field, fallback: React.ReactNode) => React.ReactNode;
+  onChange: (values: any[]) => void;
+  onSubmit?: (values: any[]) => void;
+  onCancel?: () => void;
 };
 
 const FieldWrapper: React.FC<
@@ -205,218 +207,227 @@ function heuristicGroupArray(fields: TransformedField[]): TransformedField[] {
 const KubectlApplyForm = React.forwardRef<
   HTMLDivElement,
   KubectlApplyFormProps
->(({ schemas = [], uiConfig, values, onChange, getSlot }, ref) => {
-  const [yamlMode, setYamlMode] = useState(false);
-  const fieldsArray = useMemo(() => {
-    return schemas.map((s) => getFields(s));
-  }, [schemas]);
-  const kit = useContext(KitContext);
-  // wizard
-  const [step, setStep] = useState(0);
+>(
+  (
+    { schemas = [], uiConfig, values, onChange, getSlot, onCancel, onSubmit },
+    ref
+  ) => {
+    const [yamlMode, setYamlMode] = useState(false);
+    const fieldsArray = useMemo(() => {
+      return schemas.map((s) => getFields(s));
+    }, [schemas]);
+    const kit = useContext(KitContext);
+    // wizard
+    const [step, setStep] = useState(0);
 
-  function getComponent(f: TransformedField) {
-    const [indexStr, path] = f.path.split(/\.(.*)/s);
-    const index = parseInt(indexStr, 10);
-    const { Component, spec } = fieldsArray[index][`.${path}`];
-    if (f.widget === "none") {
+    function getComponent(f: TransformedField) {
+      const [indexStr, path] = f.path.split(/\.(.*)/s);
+      const index = parseInt(indexStr, 10);
+      const { Component, spec } = fieldsArray[index][`.${path}`];
+      if (f.widget === "none") {
+        return {
+          component: null,
+        };
+      }
+      const fallback = (
+        <Component
+          key={f.dataPath}
+          widget={f.widget}
+          spec={spec}
+          level={0}
+          path=""
+          stepElsRef={{}}
+          value={f.value}
+          onChange={(newValue) => {
+            const valuesSlice = [...values];
+            set(valuesSlice, f.dataPath, newValue);
+            onChange(valuesSlice);
+          }}
+        />
+      );
+      const slotElement = getSlot?.(f, fallback);
       return {
-        component: null,
+        component: slotElement,
       };
     }
-    const fallback = (
-      <Component
-        key={f.dataPath}
-        widget={f.widget}
-        spec={spec}
-        level={0}
-        path=""
-        stepElsRef={{}}
-        value={f.value}
-        onChange={(newValue) => {
-          const valuesSlice = [...values];
-          set(valuesSlice, f.dataPath, newValue);
-          onChange(valuesSlice);
-        }}
-      />
-    );
-    const slotElement = getSlot?.(f, fallback);
-    return {
-      component: slotElement,
-    };
-  }
 
-  function renderFields() {
-    const { layout } = uiConfig;
-    switch (layout.type) {
-      case "simple": {
-        return (
-          <>
-            {transformFields(layout.fields, values).map((f) => {
-              const { component } = getComponent(f);
-              return (
-                <FieldWrapper key={f.path.concat(f.dataPath)} {...f}>
-                  {component}
-                </FieldWrapper>
-              );
-            })}
-          </>
-        );
-      }
-      case "tabs": {
-        return (
-          <Tabs isLazy>
-            <TabList>
-              {layout.tabs.map((t, idx) => {
-                return <Tab key={idx}>{t.title}</Tab>;
-              })}
-            </TabList>
-            <TabPanels>
-              {layout.tabs.map((t, idx) => {
+    function renderFields() {
+      const { layout, cancelText } = uiConfig;
+      switch (layout.type) {
+        case "simple": {
+          return (
+            <>
+              {transformFields(layout.fields, values).map((f) => {
+                const { component } = getComponent(f);
                 return (
-                  <TabPanel key={idx}>
-                    {transformFields(t.fields, values).map((f) => {
+                  <FieldWrapper key={f.path.concat(f.dataPath)} {...f}>
+                    {component}
+                  </FieldWrapper>
+                );
+              })}
+            </>
+          );
+        }
+        case "tabs": {
+          return (
+            <Tabs isLazy>
+              <TabList>
+                {layout.tabs.map((t, idx) => {
+                  return <Tab key={idx}>{t.title}</Tab>;
+                })}
+              </TabList>
+              <TabPanels>
+                {layout.tabs.map((t, idx) => {
+                  return (
+                    <TabPanel key={idx}>
+                      {transformFields(t.fields, values).map((f) => {
+                        const { component } = getComponent(f);
+                        return (
+                          <FieldWrapper key={f.path.concat(f.dataPath)} {...f}>
+                            {component}
+                          </FieldWrapper>
+                        );
+                      })}
+                    </TabPanel>
+                  );
+                })}
+              </TabPanels>
+            </Tabs>
+          );
+        }
+        case "wizard": {
+          const currentStep = layout.steps[step];
+          return (
+            <div className={cx(WizardStyle)}>
+              <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
+                <div className="left">
+                  <Steps
+                    style={{ minWidth: 192 }}
+                    current={step}
+                    onChange={(value) => {
+                      setStep(value);
+                    }}
+                    direction="vertical"
+                  >
+                    {(layout.steps || []).map((s, idx) => (
+                      <Steps.Step
+                        key={idx}
+                        title={
+                          <>
+                            {idx >= step ? (
+                              <span className="step-index">{idx + 1}</span>
+                            ) : (
+                              <CheckOutlined className="step-index" />
+                            )}
+                            {s.title}
+                          </>
+                        }
+                        disabled={
+                          s.disabled || idx > step
+                          // (wizard?.disablePrevStep && idx !== step)
+                        }
+                      />
+                    ))}
+                  </Steps>
+                </div>
+                <div className="middle">
+                  {transformFields(layout.steps[step].fields, values).map(
+                    (f) => {
                       const { component } = getComponent(f);
                       return (
                         <FieldWrapper key={f.path.concat(f.dataPath)} {...f}>
                           {component}
                         </FieldWrapper>
                       );
-                    })}
-                  </TabPanel>
-                );
-              })}
-            </TabPanels>
-          </Tabs>
-        );
-      }
-      case "wizard": {
-        const currentStep = layout.steps[step];
-        return (
-          <div className={cx(WizardStyle)}>
-            <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
-              <div className="left">
-                <Steps
-                  style={{ minWidth: 192 }}
-                  current={step}
-                  onChange={(value) => {
-                    setStep(value);
-                  }}
-                  direction="vertical"
-                >
-                  {(layout.steps || []).map((s, idx) => (
-                    <Steps.Step
-                      key={idx}
-                      title={
-                        <>
-                          {idx >= step ? (
-                            <span className="step-index">{idx + 1}</span>
-                          ) : (
-                            <CheckOutlined className="step-index" />
-                          )}
-                          {s.title}
-                        </>
-                      }
-                      disabled={
-                        s.disabled || idx > step
-                        // (wizard?.disablePrevStep && idx !== step)
-                      }
-                    />
-                  ))}
-                </Steps>
-              </div>
-              <div className="middle">
-                {transformFields(layout.steps[step].fields, values).map((f) => {
-                  const { component } = getComponent(f);
-                  return (
-                    <FieldWrapper key={f.path.concat(f.dataPath)} {...f}>
-                      {component}
-                    </FieldWrapper>
-                  );
-                })}
-              </div>
-              <div className="right"></div>
-            </div>
-            <div className={WizardFooterStyle}>
-              <div className="footer-content">
-                <div className="wizard-footer-left">
-                  {step !== 0 && (
-                    <span
-                      className="prev-step"
-                      onClick={() => {
-                        setStep(step - 1);
-                      }}
-                    >
-                      {currentStep?.prevText || "previous"}
-                    </span>
+                    }
                   )}
                 </div>
-                <div className="wizard-footer-btn-group">
-                  <kit.Button
-                    type={(`quiet` as unknown) as ButtonType}
-                    onClick={() => {}}
-                  >
-                    {layout.cancelText}
-                  </kit.Button>
-                  <kit.Button
-                    type="primary"
-                    onClick={() => {
-                      if (step === layout.steps.length - 1) {
-                        // submit
-                      } else {
-                        setStep(step + 1);
-                      }
-                    }}
-                  >
-                    {currentStep?.nextText || "next"}
-                  </kit.Button>
+                <div className="right"></div>
+              </div>
+              <div className={WizardFooterStyle}>
+                <div className="footer-content">
+                  <div className="wizard-footer-left">
+                    {step !== 0 && (
+                      <span
+                        className="prev-step"
+                        onClick={() => {
+                          setStep(step - 1);
+                        }}
+                      >
+                        {currentStep?.prevText || "previous"}
+                      </span>
+                    )}
+                  </div>
+                  <div className="wizard-footer-btn-group">
+                    <kit.Button
+                      type={(`quiet` as unknown) as ButtonType}
+                      onClick={() => {
+                        onCancel?.();
+                      }}
+                    >
+                      {cancelText}
+                    </kit.Button>
+                    <kit.Button
+                      type="primary"
+                      onClick={() => {
+                        if (step === layout.steps.length - 1) {
+                          onSubmit?.(values);
+                        } else {
+                          setStep(step + 1);
+                        }
+                      }}
+                    >
+                      {currentStep?.nextText || "next"}
+                    </kit.Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        );
+          );
+        }
+        default:
+          return null;
       }
-      default:
-        return null;
     }
-  }
 
-  return (
-    <div ref={ref}>
-      {uiConfig.allowTogggleYaml && (
-        <FormControl
-          display="flex"
-          alignItems="center"
-          justifyContent="flex-end"
-          mb="2"
-        >
-          <FormLabel htmlFor="mode" mb="0" fontSize="sm">
-            yaml
-          </FormLabel>
-          <Switch
-            id="mode"
-            checked={yamlMode}
-            onChange={(evt) => setYamlMode(evt.currentTarget.checked)}
+    return (
+      <div ref={ref}>
+        {uiConfig.allowTogggleYaml && (
+          <FormControl
+            display="flex"
+            alignItems="center"
+            justifyContent="flex-end"
+            mb="2"
+          >
+            <FormLabel htmlFor="mode" mb="0" fontSize="sm">
+              yaml
+            </FormLabel>
+            <Switch
+              id="mode"
+              checked={yamlMode}
+              onChange={(evt) => setYamlMode(evt.currentTarget.checked)}
+            />
+          </FormControl>
+        )}
+        {yamlMode && (
+          <CodeEditor
+            defaultValue={values
+              .map((v) => dump(v, { noRefs: true }))
+              .join("---\n")}
+            onBlur={(newValue) => {
+              onChange(yaml.loadAll(newValue));
+            }}
+            language="yaml"
           />
-        </FormControl>
-      )}
-      {yamlMode && (
-        <CodeEditor
-          defaultValue={values
-            .map((v) => dump(v, { noRefs: true }))
-            .join("---\n")}
-          onBlur={(newValue) => {
-            onChange(yaml.loadAll(newValue));
-          }}
-          language="yaml"
-        />
-      )}
-      {
-        <div className={cx(yamlMode && dCss`display: none;`)}>
-          {renderFields()}
-        </div>
-      }
-    </div>
-  );
-});
+        )}
+        {
+          <div className={cx(yamlMode && dCss`display: none;`)}>
+            {renderFields()}
+          </div>
+        }
+      </div>
+    );
+  }
+);
 
 export default KubectlApplyForm;

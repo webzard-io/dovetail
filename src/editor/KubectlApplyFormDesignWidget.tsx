@@ -127,7 +127,6 @@ function inferLayout(
               fields,
             },
           ],
-          cancelText: "cancel",
         },
       };
     default:

@@ -987,9 +987,9 @@
                       "prevText": "上一步",
                       "nextText": "创建"
                     }
-                  ],
-                  "cancelText": "取消"
-                }
+                  ]
+                },
+                "cancelText": "取消"
               }
             },
             "k8sConfig": {
@@ -1005,6 +1005,12 @@
                   "slot": "root"
                 },
                 "ifCondition": true
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": []
               }
             }
           ]
