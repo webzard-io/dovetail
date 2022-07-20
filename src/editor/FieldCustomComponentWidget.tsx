@@ -88,8 +88,8 @@ const FieldCustomComponentWidget = implementWidget<"kui/v1/FieldCustomComponentW
             type: "createComponent" as const,
             props: {
               componentId: newComponentId,
-              componentType: newType, // design widget 的输入
-              parentId: component.id, // kaf component id
+              componentType: newType,
+              parentId: component.id,
               slot: "field",
             },
           },
@@ -103,7 +103,7 @@ const FieldCustomComponentWidget = implementWidget<"kui/v1/FieldCustomComponentW
                   id: component.id,
                   slot: "field",
                 },
-                ifCondition: `{{ $slot.path === '${filedPath}' }}`, // $slot.path === 字段 path
+                ifCondition: `{{ $slot.path === '${filedPath}' }}`,
               },
             },
           },
@@ -123,6 +123,7 @@ const FieldCustomComponentWidget = implementWidget<"kui/v1/FieldCustomComponentW
         ];
 
         if (value) {
+          // if this filed already has the custom widget, then remove it first
           operations.unshift({
             type: "removeComponent" as const,
             props: {
