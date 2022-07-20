@@ -15,6 +15,17 @@ const UiConfigFieldSchema = Type.Object({
   sectionTitle: Type.String(),
   error: Type.String(),
   widget: Type.String(),
+  componentId: Type.String({
+    isComponentId: true,
+    widget: 'kui/v1/FieldCustomComponentWidget',
+    widgetOptions: {
+      isDisplayLabel: false,
+    },
+    conditions: [{
+      key: 'widget',
+      value: 'component'
+    }]
+  }),
 });
 
 export const UiConfigSchema = Type.Object({
