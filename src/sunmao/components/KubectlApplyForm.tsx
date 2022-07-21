@@ -176,6 +176,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
     slotsElements,
     subscribeMethods,
     callbackMap,
+    elementRef,
   }) => {
     const [values, setValues] = useState<any[]>(() => {
       const initValues = (formConfig.schemas || []).map((s, idx) => {
@@ -202,6 +203,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
 
     return (
       <_KubectlApplyForm
+        ref={elementRef}
         k8sConfig={k8sConfig}
         applyConfig={applyConfig}
         schemas={formConfig.schemas}

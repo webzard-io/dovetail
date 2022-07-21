@@ -1,0 +1,13 @@
+{
+  "application": {
+    "version": "sunmao/v1",
+    "kind": "Application",
+    "metadata": {
+      "name": "yz-fiddle"
+    },
+    "spec": {
+      "components": []
+    }
+  },
+  "modules": []
+}
