@@ -48,9 +48,8 @@ export default defineConfig({
           name: "fiddle",
           path: path.resolve(__dirname, "./src/sunmao/fiddle.json"),
         },
-
         {
-          name: "yz-fiddle",
+          name: "yzFiddle",
           path: path.resolve(__dirname, "./src/sunmao/yz-fiddle.json"),
         },
       ],

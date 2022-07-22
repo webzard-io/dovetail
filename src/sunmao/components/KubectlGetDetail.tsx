@@ -9,8 +9,8 @@ const KubectlGetDetailState = Type.Object({});
 export const KubectlGetDetail = implementRuntimeComponent({
   version: "kui/v1",
   metadata: {
-    name: "kubectl_describe_detail",
-    displayName: "Kubectl Describe Detail",
+    name: "kubectl_get_detail",
+    displayName: "Kubectl Get Detail",
     isDraggable: true,
     isResizable: true,
     exampleSize: [4, 4],
@@ -28,5 +28,19 @@ export const KubectlGetDetail = implementRuntimeComponent({
     events: [],
   },
 })(({ elementRef }) => {
-  return <_KubectlGetDetail ref={elementRef} />;
+  return (
+    <_KubectlGetDetail
+      ref={elementRef}
+      k8sConfig={{
+        basePath: "/proxy-k8s",
+      }}
+      objectConstructor={{
+        kind: "Pod",
+        apiBase: "/api/v1/pods",
+        name: "grafana-7cd8ccfd88-g7z9l",
+        // name: "elasticsearch-master-0",
+        namespace: "default",
+      }}
+    />
+  );
 });
