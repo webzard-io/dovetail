@@ -14,7 +14,6 @@ import { Select } from "./components/Select";
 import { Icon } from "./components/Icon";
 import { CodeEditor } from "./components/CodeEditor";
 import { KubectlApplyForm } from "./components/KubectlApplyForm";
-
 import SyncKubectlApplyForm from "./traits/SyncKubectlApplyForm";
 
 const MessageParams = Type.Object({
