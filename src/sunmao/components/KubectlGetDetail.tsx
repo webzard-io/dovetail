@@ -2,9 +2,23 @@ import { Type } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import _KubectlGetDetail from "../../_internal/organisms/KubectlGetDetail/KubectlGetDetail";
 
-const KubectlGetDetailProps = Type.Object({});
+const KubectlGetDetailProps = Type.Object({
+  k8sConfig: Type.Object({
+    basePath: Type.String(),
+  }),
+  objectConstructor: Type.Object({
+    kind: Type.String(),
+    apiBase: Type.String(),
+    name: Type.String(),
+    namespace: Type.String(),
+  }),
+});
 
-const KubectlGetDetailState = Type.Object({});
+const KubectlGetDetailState = Type.Object({
+  data: Type.Any(),
+  loading: Type.Boolean(),
+  error: Type.String(),
+});
 
 export const KubectlGetDetail = implementRuntimeComponent({
   version: "kui/v1",
@@ -14,7 +28,17 @@ export const KubectlGetDetail = implementRuntimeComponent({
     isDraggable: true,
     isResizable: true,
     exampleSize: [4, 4],
-    exampleProperties: {},
+    exampleProperties: {
+      k8sConfig: {
+        basePath: "/proxy-k8s",
+      },
+      objectConstructor: {
+        kind: "Deployment",
+        apiBase: "/apis/apps/v1/deployments",
+        namespace: "kube-system",
+        name: "coredns",
+      },
+    },
     annotations: {
       category: "Display",
     },
@@ -27,19 +51,18 @@ export const KubectlGetDetail = implementRuntimeComponent({
     styleSlots: [],
     events: [],
   },
-})(({ elementRef }) => {
+})(({ elementRef, k8sConfig, objectConstructor, mergeState }) => {
   return (
     <_KubectlGetDetail
       ref={elementRef}
-      k8sConfig={{
-        basePath: "/proxy-k8s",
-      }}
-      objectConstructor={{
-        kind: "Pod",
-        apiBase: "/api/v1/pods",
-        name: "grafana-7cd8ccfd88-g7z9l",
-        // name: "elasticsearch-master-0",
-        namespace: "default",
+      k8sConfig={k8sConfig}
+      objectConstructor={objectConstructor}
+      onResponse={(res) => {
+        mergeState({
+          data: res.data,
+          loading: res.loading,
+          error: res.error ? String(res.error) : "",
+        });
       }}
     />
   );

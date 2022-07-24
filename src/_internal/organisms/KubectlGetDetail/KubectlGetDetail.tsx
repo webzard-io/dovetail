@@ -7,6 +7,12 @@ import {
 } from "../../k8s-api-client/kube-api";
 import { KitContext } from "../../atoms/kit-context";
 
+type DetailResponse = {
+  data: Unstructured | null;
+  loading: boolean;
+  error: null | Error;
+};
+
 type KubectlGetDetailProps = {
   k8sConfig: {
     basePath: string;
@@ -17,22 +23,22 @@ type KubectlGetDetailProps = {
     name: string;
     namespace?: string;
   };
+  onResponse?: (res: DetailResponse) => void;
 };
 
 const KubectlGetDetail = React.forwardRef<
   HTMLDivElement,
   KubectlGetDetailProps
->(({ k8sConfig, objectConstructor }, ref) => {
+>(({ k8sConfig, objectConstructor, onResponse }, ref) => {
   const kit = useContext(KitContext);
-  const [response, setResponse] = useState<{
-    data: Unstructured | null;
-    loading: boolean;
-    error: null | Error;
-  }>({
+  const [response, setResponse] = useState<DetailResponse>({
     data: null,
     loading: false,
     error: null,
   });
+  useEffect(() => {
+    onResponse?.(response);
+  }, [response]);
   const { data, loading, error } = response;
 
   useEffect(() => {
@@ -66,7 +72,7 @@ const KubectlGetDetail = React.forwardRef<
     return () => {
       stopP.then((stop) => stop?.());
     };
-  }, []);
+  }, [k8sConfig, objectConstructor]);
 
   return (
     <div ref={ref}>
