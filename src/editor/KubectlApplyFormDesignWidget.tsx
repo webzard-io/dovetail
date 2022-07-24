@@ -147,17 +147,10 @@ function fieldsIsEmpty(uiConfig: FormConfig["uiConfig"]): boolean {
   }
 }
 
-declare module "@sunmao-ui/editor-sdk" {
-  interface WidgetOptionsMap {
-    "kui/v1/KubectlApplyFormDesignWidget": {};
-    "kui/v1/KubectlApplyFormPathWidget": {};
-  }
-}
-
 const KubectlApplyFormDesignWidget: React.FC<
   WidgetProps<"kui/v1/KubectlApplyFormDesignWidget">
 > = (props) => {
-  const { value, services, onChange } = props;
+  const { value, services, onChange, path } = props;
   const formConfig = useRef<FormConfig>(
     isExpression(value) ? services.stateManager.maskedEval(value) : value
   );
@@ -320,7 +313,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                         <SpecWidget
                           component={props.component}
                           services={props.services}
-                          path={[]}
+                          path={path.concat(['uiConfig'])}
                           level={0}
                           spec={UiConfigSchema}
                           value={uiConfig}
