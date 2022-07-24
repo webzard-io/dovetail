@@ -17,14 +17,16 @@ const UiConfigFieldSchema = Type.Object({
   widget: Type.String(),
   componentId: Type.String({
     isComponentId: true,
-    widget: 'kui/v1/FieldCustomComponentWidget',
+    widget: "kui/v1/FieldCustomComponentWidget",
     widgetOptions: {
       isDisplayLabel: false,
     },
-    conditions: [{
-      key: 'widget',
-      value: 'component'
-    }]
+    conditions: [
+      {
+        key: "widget",
+        value: "component",
+      },
+    ],
   }),
 });
 
@@ -118,25 +120,6 @@ const KubectlApplyFormState = Type.Object({
   value: Type.Any(),
 });
 
-const exampleProperties = {
-  applyConfig: {
-    create: true,
-    patch: true,
-  },
-  formConfig: {
-    yaml: "",
-    schemas: [],
-    defaultValues: [],
-    uiConfig: {
-      allowTogggleYaml: false,
-      layout: {
-        type: "simple",
-        fields: [],
-      },
-    },
-  },
-};
-
 export const KubectlApplyForm = implementRuntimeComponent({
   version: "kui/v1",
   metadata: {
@@ -145,7 +128,24 @@ export const KubectlApplyForm = implementRuntimeComponent({
     isDraggable: true,
     isResizable: true,
     exampleSize: [4, 4],
-    exampleProperties,
+    exampleProperties: {
+      applyConfig: {
+        create: true,
+        patch: true,
+      },
+      formConfig: {
+        yaml: "",
+        schemas: [],
+        defaultValues: [],
+        uiConfig: {
+          allowTogggleYaml: false,
+          layout: {
+            type: "simple",
+            fields: [],
+          },
+        },
+      },
+    },
     annotations: {
       category: "Input",
     },
@@ -176,6 +176,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
     slotsElements,
     subscribeMethods,
     callbackMap,
+    elementRef,
   }) => {
     const [values, setValues] = useState<any[]>(() => {
       const initValues = (formConfig.schemas || []).map((s, idx) => {
@@ -202,6 +203,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
 
     return (
       <_KubectlApplyForm
+        ref={elementRef}
         k8sConfig={k8sConfig}
         applyConfig={applyConfig}
         schemas={formConfig.schemas}

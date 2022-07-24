@@ -257,68 +257,81 @@ export class KubeApi<T> {
     res: T,
     cb: KubeApiListWatchOptions<T>["cb"]
   ): Promise<StopWatchHandler> {
-    const streamRes = await ky.get(url, {
+    const controller = new AbortController();
+    const { signal } = controller;
+    ky.get(url, {
       searchParams: {
         watch: 1,
         resourceVersion: ((res as unknown) as UnstructuredList).metadata
           .resourceVersion,
       } as SearchParamsOption,
       timeout: false,
-    });
-    const stream = streamRes.body?.getReader();
-    const utf8Decoder = new TextDecoder("utf-8");
-    let buffer = "";
-    let items = ((res as unknown) as UnstructuredList).items;
+      signal,
+    })
+      .then((streamRes) => {
+        const stream = streamRes.body?.getReader();
+        const utf8Decoder = new TextDecoder("utf-8");
+        let buffer = "";
+        let items = ((res as unknown) as UnstructuredList).items;
 
-    // wait for an update and prepare to read it
-    stream
-      ?.read()
-      .then(function onIncomingStream({
-        done,
-        value,
-      }): Promise<ReadableStreamDefaultReadResult<Uint8Array> | void> {
-        if (done) {
-          return Promise.resolve();
-        }
-        buffer += utf8Decoder.decode(value);
-        const remainingBuffer = findLine(buffer, (line) => {
-          try {
-            const event = JSON.parse(line);
-            console.log(event);
-            const name = event.object.metadata.name;
-            switch (event.type) {
-              case "ADDED":
-                items = items.concat(event.object);
-                break;
-              case "MODIFIED":
-                items = items.map((item) => {
-                  if (item.metadata.name === name) {
-                    return event.object;
-                  }
-                  return item;
-                });
-                break;
-              case "DELETED":
-                items = items.filter((item) => item.metadata.name !== name);
-                break;
-              default:
+        // wait for an update and prepare to read it
+        stream
+          ?.read()
+          .then(function onIncomingStream({
+            done,
+            value,
+          }): Promise<ReadableStreamDefaultReadResult<Uint8Array> | void> {
+            if (done) {
+              return Promise.resolve();
             }
-            cb?.({
-              ...res,
-              items,
+            buffer += utf8Decoder.decode(value);
+            const remainingBuffer = findLine(buffer, (line) => {
+              try {
+                const event = JSON.parse(line);
+                console.log(event);
+                const name = event.object.metadata.name;
+                switch (event.type) {
+                  case "ADDED":
+                    items = items.concat(event.object);
+                    break;
+                  case "MODIFIED":
+                    items = items.map((item) => {
+                      if (item.metadata.name === name) {
+                        return event.object;
+                      }
+                      return item;
+                    });
+                    break;
+                  case "DELETED":
+                    items = items.filter((item) => item.metadata.name !== name);
+                    break;
+                  default:
+                }
+                cb?.({
+                  ...res,
+                  items,
+                });
+              } catch (error) {
+                console.log("Error while parsing", line, "\n", error);
+              }
             });
-          } catch (error) {
-            console.log("Error while parsing", line, "\n", error);
-          }
-        });
 
-        buffer = remainingBuffer;
+            buffer = remainingBuffer;
 
-        // continue waiting & reading the stream of updates from the server
-        return stream.read().then(onIncomingStream);
+            // continue waiting & reading the stream of updates from the server
+            return stream.read().then(onIncomingStream);
+          });
+      })
+      .catch((err) => {
+        if (err.name === "AbortError") {
+          return; // ignore
+        }
+        console.log("watch error:", err);
       });
 
-    return () => stream?.cancel();
+    return () => {
+      controller.abort();
+    };
   }
 
   private get apiVersionWithGroup() {

@@ -43,6 +43,7 @@ export type Field = {
   sectionTitle: string;
   error: string;
   widget: string;
+  componentId: string;
 };
 
 type TransformedField = Field & { dataPath: string; value: any };
