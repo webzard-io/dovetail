@@ -11,9 +11,9 @@ import {
   DISPLAY_WIDGETS_MAP,
   DISPLAY_WIDGET_OPTIONS_MAP,
 } from "../../_internal/molecules/display";
-import _UnstructuredTable, {
+import BaseKubectlGetTable, {
   emptyData,
-} from "../../_internal/organisms/UnstructuredTable";
+} from "../../_internal/organisms/KubectlGetTable";
 import { css } from "@emotion/css";
 
 const ColumnSpec = Type.Object({
@@ -98,7 +98,7 @@ const ColumnSpec = Type.Object({
   }),
 });
 
-const UnstructuredTableProps = Type.Object({
+const KubectlGetTableProps = Type.Object({
   basePath: Type.String({
     title: "Base path",
     description: "K8s Api base path",
@@ -174,7 +174,7 @@ const UnstructuredTableProps = Type.Object({
   }),
 });
 
-const UnstructuredTableState = Type.Object({
+const KubectlGetTableState = Type.Object({
   items: Type.Array(Type.Any()),
   activeItem: Type.Any(),
   selectedItems: Type.Array(Type.Any()),
@@ -211,11 +211,11 @@ const renderColumn = (
   return slot?.({ ...data, key, dataIndex }, node) || node;
 };
 
-export const UnstructuredTable = implementRuntimeComponent({
+export const KubectlGetTable = implementRuntimeComponent({
   version: "kui/v1",
   metadata: {
-    name: "unstructured_table",
-    displayName: "Unstructured Table",
+    name: "kubectl_get_table",
+    displayName: "Kubectl Get Table",
     isDraggable: true,
     isResizable: true,
     exampleProperties: {
@@ -253,8 +253,8 @@ export const UnstructuredTable = implementRuntimeComponent({
     },
   },
   spec: {
-    properties: UnstructuredTableProps,
-    state: UnstructuredTableState,
+    properties: KubectlGetTableProps,
+    state: KubectlGetTableState,
     methods: {
       setSelectedRows: Type.Object({
         keys: Type.Array(Type.String()),
@@ -382,7 +382,7 @@ export const UnstructuredTable = implementRuntimeComponent({
 
     return (
       <div ref={elementRef} className={css(customStyle?.content)}>
-        <_UnstructuredTable
+        <BaseKubectlGetTable
           basePath={basePath}
           resource={resource}
           namespace={namespace}

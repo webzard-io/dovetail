@@ -1,6 +1,5 @@
 import React from "react";
 import { kit as CloudTowerKit } from "./themes/CloudTower";
-import { TableProps as BaseTableProps } from "./themes/CloudTower/components/Table/Table";
 export { CloudTowerKit };
 
 type RefAndChildren = {
@@ -31,8 +30,29 @@ export type ButtonProps = {
   disabled?: boolean;
 } & RefAndChildren;
 
-export type TableProps<T extends { id: string }> = BaseTableProps<T> &
-  RefAndChildren;
+export type TableProps = {
+  data: any[];
+  error?: React.ReactNode;
+  columns: {
+    key: string;
+    title: string;
+    dataIndex: string | number | Array<string | number>;
+    width?: number;
+    render?: (val: any, record: any, index: number) => React.ReactNode;
+  }[];
+  loading?: boolean;
+  rowKey: string | ((record: any, index?: number) => string);
+  onSelect?: (keys: string[], records: any[]) => void;
+  selectedKeys?: string[];
+  onActive?: (key: string, record: any) => void;
+  activeKey?: string;
+  tableLayout?: "auto" | "fixed";
+  scroll?: { x?: string; y?: string; }
+  empty?: string;
+  bordered?: boolean;
+  resizable?: boolean;
+  onSorterChange?: (order: string, key: string)=> void;
+} & RefAndChildren;
 
 export type SidebarProps = {
   className?: string;

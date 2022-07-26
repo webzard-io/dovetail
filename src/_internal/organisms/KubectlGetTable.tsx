@@ -1,18 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
-import { KitContext, TableProps } from "../../_internal/atoms/kit-context";
+import { KitContext, TableProps } from "../atoms/kit-context";
 import {
   KubeApi,
   UnstructuredList,
-} from "../../_internal/k8s-api-client/kube-api";
+} from "../k8s-api-client/kube-api";
 
-type UnstructuredTableProps = {
+type KubectlGetTableProps = {
   basePath: string;
   resource: string;
   namespace: string;
   apiBase: string;
   fieldSelector: string;
   onResponse?: (res: any) => void;
-} & Omit<TableProps<{ id: string } & UnstructuredList["items"][0]>, 'data'>;
+} & Omit<TableProps, 'data' | 'rowKey'>;
 
 export const emptyData = {
   apiVersion: "",
@@ -21,7 +21,7 @@ export const emptyData = {
   items: [],
 };
 
-const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
+const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
   (
     {
       basePath,
@@ -90,4 +90,4 @@ const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
   }
 );
 
-export default UnstructuredTable;
+export default KubectlGetTable;

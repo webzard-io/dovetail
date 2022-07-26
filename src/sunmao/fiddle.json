@@ -29,7 +29,7 @@
               "patch": true
             },
             "formConfig": {
-              "yaml": "apiVersion: kubesmart.smtx.io/v1alpha1\nkind: KubeSmartCluster\nmetadata:\n  name: myclustera\n  namespace: default\nspec:\n  version: v1.23.6\n  controlPlaneEndpoint:\n    host: YOUR_INPUT_VIP\n    port: 6443\n  network:\n    services:\n      cidrBlocks:\n      - 10.96.0.0/12\n    pods:\n      cidrBlocks:\n      - 172.0.0.0/24\n  cni:\n    name: calico\n  topology:\n    controlPlane:\n      name: controlplane\n      replicas: 1\n      nodeConfig:\n        cpuCores: 2\n        memoryMB: 4096\n        diskSizeGB: 40\n        cloneMode: FastClone\n        network:\n          devices:\n          - networkType: IPV4_DHCP\n            vlan: YOUR_INPUT_MGMT_NETWORK_VLAN\n          - networkType: IPV4_DHCP\n            vlan: YOUR_INPUT_STORAGE_NETWORK_VLAN\n    workers:\n    - name: workergroup\n      replicas: 1\n      nodeConfig:\n        cpuCores: 4\n        memoryMB: 12288\n        diskSizeGB: 40\n        cloneMode: FastClone\n        network:\n          devices:\n          - networkType: IPV4_DHCP\n            vlan: YOUR_INPUT_MGMT_NETWORK_VLAN\n            routes:\n            - gateway: 1.2.3.4\n          - networkType: IPV4_DHCP\n            vlan: YOUR_INPUT_STORAGE_NETWORK_VLAN\n            routes:\n            - gateway: 4.3.2.1\n\n  cloudProvider:\n    name: cloudtower\n    cloudtower:\n      server: YOUR_INPUT\n      authMode:\n      username:\n      password:\n      elfCluster:\n      elfVlan:\n      elfVmTemplate:\n      zbsVip:\n  clusterNetwork:\n    pods:\n      cidrBlocks:\n      - \"\"\n    services:\n      cidrBlocks:\n      - \"\"\n  # optional cluster configuration          \n  clusterConfiguration:\n    customImageRegistry: \"registry.smtx.io/kubesmart\"\n    security:\n      sshAuthorizedPubicKey: \"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG05SWM1VyU8lwLjvFVx/crv1IXc10am3bMU1LokWCgz fedora\"\n      sshPassword: \"abc123!@#\"",
+              "yaml": "apiVersion: kubesmart.smtx.io/v1alpha1\nkind: KubeSmartCluster\nmetadata:\n  name: mycluster\n  namespace: default\nspec:\n  version: v1.23.6\n  controlPlaneEndpoint:\n    host: YOUR_INPUT_VIP\n    port: 6443\n  network:\n    services:\n      cidrBlocks:\n      - 10.96.0.0/12\n    pods:\n      cidrBlocks:\n      - 172.0.0.0/24\n  cni:\n    name: calico\n  topology:\n    controlPlane:\n      name: controlplane\n      replicas: 1\n      nodeConfig:\n        cpuCores: 2\n        memoryMB: 4096\n        diskSizeGB: 40\n        cloneMode: FastClone\n        network:\n          devices:\n          - networkType: IPV4_DHCP\n            vlan: YOUR_INPUT_MGMT_NETWORK_VLAN\n          - networkType: IPV4_DHCP\n            vlan: YOUR_INPUT_STORAGE_NETWORK_VLAN\n    workers:\n    - name: workergroup\n      replicas: 1\n      nodeConfig:\n        cpuCores: 4\n        memoryMB: 12288\n        diskSizeGB: 40\n        cloneMode: FastClone\n        network:\n          devices:\n          - networkType: IPV4_DHCP\n            vlan: YOUR_INPUT_MGMT_NETWORK_VLAN\n            routes:\n            - gateway: 1.2.3.4\n          - networkType: IPV4_DHCP\n            vlan: YOUR_INPUT_STORAGE_NETWORK_VLAN\n            routes:\n            - gateway: 4.3.2.1\n\n  cloudProvider:\n    name: cloudtower\n    cloudtower:\n      server: YOUR_INPUT\n      authMode:\n      username:\n      password:\n      elfCluster:\n      elfVlan:\n      elfVmTemplate:\n      zbsVip:\n  clusterNetwork:\n    pods:\n      cidrBlocks:\n      - \"\"\n    services:\n      cidrBlocks:\n      - \"\"\n  # optional cluster configuration          \n  clusterConfiguration:\n    customImageRegistry: \"registry.smtx.io/kubesmart\"\n    security:\n      sshAuthorizedPubicKey: \"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG05SWM1VyU8lwLjvFVx/crv1IXc10am3bMU1LokWCgz fedora\"\n      sshPassword: \"abc123!@#\"",
               "schemas": [
                 {
                   "type": "object",
@@ -147,6 +147,61 @@
                                   "type": "string"
                                 }
                               }
+                            }
+                          }
+                        },
+                        "clusterNetwork": {
+                          "type": "object",
+                          "properties": {
+                            "apiServerPort": {
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pods": {
+                              "type": "object",
+                              "required": [
+                                "cidrBlocks"
+                              ],
+                              "properties": {
+                                "cidrBlocks": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            },
+                            "serviceDomain": {
+                              "type": "string"
+                            },
+                            "services": {
+                              "type": "object",
+                              "required": [
+                                "cidrBlocks"
+                              ],
+                              "properties": {
+                                "cidrBlocks": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "cni": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "enum": [
+                                "calico",
+                                "everoute"
+                              ]
+                            },
+                            "version": {
+                              "type": "string"
                             }
                           }
                         },
@@ -405,121 +460,6 @@
                             }
                           }
                         },
-                        "network": {
-                          "type": "object",
-                          "properties": {
-                            "apiServerPort": {
-                              "type": "integer",
-                              "format": "int32"
-                            },
-                            "cni": {
-                              "type": "object",
-                              "properties": {
-                                "config": {
-                                  "type": "object",
-                                  "properties": {
-                                    "secretRef": {
-                                      "type": "object",
-                                      "properties": {
-                                        "name": {
-                                          "type": "string"
-                                        },
-                                        "namespace": {
-                                          "type": "string"
-                                        }
-                                      }
-                                    },
-                                    "yaml": {
-                                      "type": "string"
-                                    }
-                                  }
-                                },
-                                "name": {
-                                  "type": "string",
-                                  "enum": [
-                                    "calico",
-                                    "everoute"
-                                  ]
-                                },
-                                "version": {
-                                  "type": "string"
-                                }
-                              }
-                            },
-                            "managementNetworkInterface": {
-                              "type": "string"
-                            },
-                            "pods": {
-                              "type": "object",
-                              "required": [
-                                "cidrBlocks"
-                              ],
-                              "properties": {
-                                "cidrBlocks": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                }
-                              }
-                            },
-                            "serviceDomain": {
-                              "type": "string"
-                            },
-                            "services": {
-                              "type": "object",
-                              "required": [
-                                "cidrBlocks"
-                              ],
-                              "properties": {
-                                "cidrBlocks": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        "storage": {
-                          "type": "object",
-                          "properties": {
-                            "csi": {
-                              "type": "object",
-                              "properties": {
-                                "config": {
-                                  "type": "object",
-                                  "properties": {
-                                    "secretRef": {
-                                      "type": "object",
-                                      "properties": {
-                                        "name": {
-                                          "type": "string"
-                                        },
-                                        "namespace": {
-                                          "type": "string"
-                                        }
-                                      }
-                                    },
-                                    "yaml": {
-                                      "type": "string"
-                                    }
-                                  }
-                                },
-                                "name": {
-                                  "type": "string",
-                                  "enum": [
-                                    "iomesh"
-                                  ]
-                                },
-                                "version": {
-                                  "type": "string"
-                                }
-                              }
-                            }
-                          }
-                        },
                         "topology": {
                           "type": "object",
                           "properties": {
@@ -726,7 +666,7 @@
                   "apiVersion": "kubesmart.smtx.io/v1alpha1",
                   "kind": "KubeSmartCluster",
                   "metadata": {
-                    "name": "myclustera",
+                    "name": "mycluster",
                     "namespace": "default"
                   },
                   "spec": {
@@ -1074,39 +1014,6 @@
               }
             }
           ]
-        },
-        {
-          "id": "unstructured_table2",
-          "type": "kui/v1/unstructured_table",
-          "properties": {
-            "kind": "Deployment",
-            "apiBase": "/apis/kubesmart.smtx.io/v1alpha1",
-            "columns": [
-              {
-                "key": "name",
-                "title": "Name",
-                "dataIndex": "metadata.name",
-                "width": 100
-              },
-              {
-                "key": "namespace",
-                "title": "Namespace",
-                "dataIndex": "metadata.namespace",
-                "width": 200
-              },
-              {
-                "key": "age",
-                "title": "Age",
-                "dataIndex": "metadata.creationTimestamp",
-                "width": 100
-              }
-            ],
-            "basePath": "",
-            "namespace": "",
-            "resource": "kubesmartclusters",
-            "fieldSelector": ""
-          },
-          "traits": []
         }
       ]
     }
