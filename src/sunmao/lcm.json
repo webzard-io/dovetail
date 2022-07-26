@@ -2750,6 +2750,76 @@
               }
             }
           ]
+        },
+        {
+          "id": "__dovetail_config__",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/state",
+              "properties": {
+                "key": "value",
+                "initialValue": "{{{\n  basePath: \"/proxy-k8s\"\n}}}"
+              }
+            }
+          ]
+        },
+        {
+          "id": "unstructured_table72",
+          "type": "kui/v1/unstructured_table",
+          "properties": {
+            "kind": "Deployment",
+            "apiBase": "/apis/kubesmart.smtx.io/v1alpha1",
+            "columns": [
+              {
+                "key": "name",
+                "title": "Name",
+                "dataIndex": "metadata.name",
+                "width": 100
+              },
+              {
+                "key": "namespace",
+                "title": "Namespace",
+                "dataIndex": "metadata.namespace",
+                "width": 200
+              },
+              {
+                "key": "age",
+                "title": "Age",
+                "dataIndex": "metadata.creationTimestamp",
+                "width": 100
+              }
+            ],
+            "basePath": "/proxy-k8s",
+            "namespace": "",
+            "resource": "kubesmartclusters",
+            "fieldSelector": ""
+          },
+          "traits": []
+        },
+        {
+          "id": "kubectl_apply_form73",
+          "type": "kui/v1/kubectl_apply_form",
+          "properties": {
+            "applyConfig": {
+              "create": true,
+              "patch": true
+            },
+            "formConfig": {
+              "yaml": "",
+              "schemas": [],
+              "defaultValues": [],
+              "uiConfig": {
+                "allowTogggleYaml": false,
+                "layout": {
+                  "type": "simple",
+                  "fields": []
+                }
+              }
+            }
+          },
+          "traits": []
         }
       ]
     }

@@ -3,13 +3,23 @@ import { ImplementedWidget } from "@sunmao-ui/editor-sdk";
 import AutoFormSpecWidget from "./AutoFormSpecWidget";
 import KubectlApplyFormDesignWidget from "./KubectlApplyFormDesignWidget";
 import ConstWidget from "./ConstWidget";
-import KubectlApplyFormPathWidget from "./KubectlApplyFormPathWidget";
+import PathWidget from "./PathWidget";
 import FieldCustomComponentWidget from './FieldCustomComponentWidget';
+import CustomComponentWidget from './CustomComponentWidget';
+import KindWidget from './KindWidget';
+import ApiBaseWidget from './ApiBaseWidget';
+import ResourceWidget from './ResourceWidget';
+import OptionsWidget from './OptionsWidget';
 
 export const widgets: ImplementedWidget<any>[] = [
   AutoFormSpecWidget,
   KubectlApplyFormDesignWidget,
   ConstWidget,
-  KubectlApplyFormPathWidget,
-  FieldCustomComponentWidget
+  PathWidget,
+  FieldCustomComponentWidget,
+  CustomComponentWidget,
+  KindWidget,
+  ApiBaseWidget,
+  ResourceWidget,
+  OptionsWidget
 ];

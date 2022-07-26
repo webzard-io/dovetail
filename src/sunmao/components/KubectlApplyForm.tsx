@@ -8,7 +8,7 @@ import _KubectlApplyForm from "../../_internal/organisms/KubectlApplyForm/Kubect
 
 const UiConfigFieldSchema = Type.Object({
   path: Type.String({
-    widget: "kui/v1/KubectlApplyFormPathWidget",
+    widget: "kui/v1/PathWidget",
   }),
   label: Type.String(),
   helperText: Type.String(),

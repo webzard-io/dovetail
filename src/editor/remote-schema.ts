@@ -2,9 +2,16 @@ import ky from "ky";
 import pick from "lodash/pick";
 import { JSONSchema7 } from "json-schema";
 
-const cache: { apiBases: string[]; openApi: any } = {
+type Cache = {
+  apiBases: string[];
+  openApi: any;
+  kinds: string[];
+};
+
+const cache: Cache = {
   apiBases: [],
   openApi: {},
+  kinds: [],
 };
 
 export async function getApiBases(): Promise<string[]> {
@@ -19,7 +26,47 @@ export async function getApiBases(): Promise<string[]> {
   return bases;
 }
 
-export async function getResources(
+export async function getKinds(): Promise<string[]> {
+  if (cache.kinds.length) {
+    return cache.kinds;
+  }
+
+  const openApi = cache.openApi.swagger
+    ? cache.openApi
+    : await ky.get("/proxy-k8s/openapi/v2").json<any>();
+  const kinds = new Set<string>();
+
+  Object.keys(openApi.definitions).forEach((key) => {
+    const definition = openApi.definitions[key];
+
+    if (definition["x-kubernetes-group-version-kind"]) {
+      definition["x-kubernetes-group-version-kind"].forEach(
+        ({ kind }: { kind: string }) => {
+          kinds.add(kind);
+        }
+      );
+    }
+  });
+
+  cache.openApi = openApi;
+  cache.kinds = [...kinds];
+
+  return [...kinds];
+}
+
+export type Resource = {
+  name: string;
+};
+
+export async function getResources(api: string): Promise<Resource[]> {
+  const { resources } = await ky
+    .get(`/proxy-k8s${api}`)
+    .json<{ resources: Resource[] }>();
+
+  return resources;
+}
+
+export async function getDefinitions(
   base: string,
   key: string
 ): Promise<string[]> {
@@ -70,9 +117,9 @@ export async function getResourceSpec(def: string, key: string): Promise<any> {
 }
 
 export async function getResourceSchema(
-  apiVersion: string,
+  apiVersionWithGroup: string,
   kind: string
-): Promise<any> {
+): Promise<JSONSchema7 | null> {
   if (!cache.openApi.swagger) {
     cache.openApi = await ky.get("/proxy-k8s/openapi/v2").json<any>();
   }
@@ -85,7 +132,8 @@ export async function getResourceSchema(
     }
     const gvk = value["x-kubernetes-group-version-kind"][0];
     if (
-      `${gvk.group ? `${gvk.group}/` : ""}${gvk.version}` === apiVersion &&
+      `${gvk.group ? `${gvk.group}/` : ""}${gvk.version}` ===
+        apiVersionWithGroup &&
       value["x-kubernetes-group-version-kind"][0].kind === kind
     ) {
       schema = value;
@@ -93,7 +141,7 @@ export async function getResourceSchema(
     }
   }
   if (!schema) {
-    return {};
+    return null;
   }
   resolveRef(schema, {
     prune: {

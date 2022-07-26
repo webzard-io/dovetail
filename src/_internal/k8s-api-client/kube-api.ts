@@ -95,7 +95,7 @@ function splitArray<T>(array: T[], element: T): [T[], T[], boolean] {
   return [array.slice(0, index), array.slice(index + 1, array.length), true];
 }
 
-function parseKubeApi(path: string): KubeApiParsed {
+export function parseKubeApi(path: string): KubeApiParsed {
   const apiPath = new URL(path, "http://localhost").pathname;
   const [, prefix, ...parts] = apiPath.split("/");
   const apiPrefix = `/${prefix}`;

@@ -19,7 +19,7 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { Select } from "chakra-react-select";
-import { getApiBases, getResources, getResourceSpec } from "./remote-schema";
+import { getApiBases, getDefinitions, getResourceSpec } from "./remote-schema";
 import JsonSchemaEditor from "@optum/json-schema-editor";
 
 type Props = WidgetProps;
@@ -55,7 +55,7 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
     if (!filter.base?.value) {
       return;
     }
-    getResources(filter.base.value, defKey).then((defs) =>
+    getDefinitions(filter.base.value, defKey).then((defs) =>
       setResourceDefOptions(defs.map((v) => ({ label: v, value: v })))
     );
   }, [filter.base, defKey]);

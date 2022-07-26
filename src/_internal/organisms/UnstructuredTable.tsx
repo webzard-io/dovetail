@@ -7,15 +7,12 @@ import {
 
 type UnstructuredTableProps = {
   basePath: string;
-  kind: string;
+  resource: string;
   namespace: string;
   apiBase: string;
   fieldSelector: string;
   onResponse?: (res: any) => void;
-} & Pick<
-  TableProps,
-  "columns" | "onActive" | "onSelect" | "activeKey" | "selectedKeys"
->;
+} & Omit<TableProps<{ id: string } & UnstructuredList["items"][0]>, 'data'>;
 
 export const emptyData = {
   apiVersion: "",
@@ -28,16 +25,12 @@ const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
   (
     {
       basePath,
-      columns,
       apiBase,
-      kind,
       namespace,
+      resource,
       fieldSelector,
-      onActive,
-      onSelect,
-      activeKey,
-      selectedKeys,
       onResponse,
+      ...tableProps
     },
     ref
   ) => {
@@ -52,12 +45,13 @@ const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
       error: null,
     });
     const { data, loading, error } = response;
+
     useEffect(() => {
       const api = new KubeApi<UnstructuredList>({
         basePath,
         objectConstructor: {
-          kind,
-          apiBase,
+          kind: "",
+          apiBase: `${apiBase}/${resource}`,
           namespace,
         },
       });
@@ -76,23 +70,21 @@ const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
       return () => {
         stopP.then((stop) => stop?.());
       };
-    }, [apiBase, kind, namespace]);
+    }, [apiBase, resource, namespace]);
     useEffect(() => {
       onResponse?.(response);
     }, [response]);
 
     return (
       <kit.Table
+        {...tableProps}
         ref={ref}
-        columns={columns}
         data={data.items}
         error={error}
         loading={loading}
-        rowKey={(row) => `${row.metadata.namespace}/${row.metadata.name}`}
-        activeKey={activeKey}
-        onActive={onActive}
-        selectedKeys={selectedKeys}
-        onSelect={onSelect}
+        rowKey={(row: UnstructuredList["items"][0]) =>
+          `${row.metadata.namespace}/${row.metadata.name}`
+        }
       />
     );
   }

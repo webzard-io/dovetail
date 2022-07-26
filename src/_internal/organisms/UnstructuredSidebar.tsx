@@ -62,7 +62,7 @@ const UnstructuredSidebar = React.forwardRef<
       getContainer={getContainer}
       width={600}
     >
-      <div className={Header}>{item?.metadata.name}</div>
+      <div className={Header}>{item?.metadata?.name}</div>
       <div className={Toolbar}>{toolbar}</div>
       <div className={CardWrapper}>
         <div className="card-body">

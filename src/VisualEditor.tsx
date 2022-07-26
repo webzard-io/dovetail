@@ -6,7 +6,7 @@ import "./init";
 function VisualEditor() {
   const search = new URLSearchParams(location.search);
   const PageEditor = registerSunmaoEditor(
-    { name: search.get("app") || "lcm" },
+    { name: search.get("app") || "fiddle" },
     { libs, dependencies }
   );
 

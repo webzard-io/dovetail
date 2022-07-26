@@ -28,7 +28,7 @@ interface RequiredColumnProps<T>
   title: React.ReactNode;
 }
 
-interface TableProps<T extends { id: string }> {
+export interface TableProps<T extends { id: string }> {
   bordered?: boolean;
   loading?: boolean;
   error?: React.ReactNode | string;
