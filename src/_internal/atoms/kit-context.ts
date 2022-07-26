@@ -46,6 +46,12 @@ export type TableProps = {
   selectedKeys?: string[];
   onActive?: (key: string, record: any) => void;
   activeKey?: string;
+  tableLayout?: "auto" | "fixed";
+  scroll?: { x?: string; y?: string; }
+  empty?: string;
+  bordered?: boolean;
+  resizable?: boolean;
+  onSorterChange?: (order: string, key: string)=> void;
 } & RefAndChildren;
 
 export type SidebarProps = {

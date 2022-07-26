@@ -224,7 +224,7 @@ const KubectlApplyForm = React.forwardRef<
     function getComponent(f: TransformedField) {
       const [indexStr, path] = f.path.split(/\.(.*)/s);
       const index = parseInt(indexStr, 10);
-      const { Component, spec } = fieldsArray[index][`.${path}`];
+      const { Component, spec } = fieldsArray[index][path];
       if (f.widget === "none") {
         return {
           component: null,

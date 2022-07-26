@@ -35,7 +35,7 @@ export const ObjectAge = implementRuntimeComponent({
 })(({ date, elementRef, customStyle }) => {
   return (
     <_ObjectAge
-      date={date}
+      value={date}
       ref={elementRef}
       className={css`
         ${customStyle?.text}

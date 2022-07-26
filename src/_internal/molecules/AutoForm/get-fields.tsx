@@ -42,7 +42,7 @@ function recursiveGetFields(spec: JSONSchema7, ctx: RecursiveContext) {
       if (typeof subSpec !== "boolean") {
         recursiveGetFields(subSpec, {
           ...ctx,
-          path: ctx.path.concat(`.${name}`),
+          path: ctx.path.concat(ctx.path ? `.${name}` : name),
         });
       }
     }

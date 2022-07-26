@@ -3763,6 +3763,13 @@ packages:
       lodash: 4.17.21
     dev: true
 
+  /@sunmao-ui/shared/0.2.3:
+    resolution: {integrity: sha512-AZqvQCJdOHTl1nWUSIV0CQX2uDHcNvrpyZcpNycuASN3kFNWAqrK+3bF9lMxvh6RcuLsM72GFRuJ5SOfKjPlcQ==}
+    dependencies:
+      '@sinclair/typebox': 0.21.2
+      lodash: 4.17.21
+    dev: true
+
   /@szmarczak/http-timer/4.0.6:
     resolution: {integrity: sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==}
     engines: {node: '>=10'}

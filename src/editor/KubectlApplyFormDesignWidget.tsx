@@ -34,7 +34,6 @@ import { css, injectGlobal } from "@emotion/css";
 import JsonSchemaEditor from "@optum/json-schema-editor";
 import { loadAll } from "js-yaml";
 import CodeEditor from "../_internal/atoms/CodeEditor";
-import { getResourceSchema } from "./remote-schema";
 import get from "lodash/get";
 import omit from "lodash/omit";
 import type {
@@ -42,8 +41,7 @@ import type {
   Field,
 } from "../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 import { UiConfigSchema } from "src/sunmao/components/KubectlApplyForm";
-import { getFields } from "src/_internal/molecules/AutoForm/get-fields";
-import { pathStore } from "./KubectlApplyFormPathWidget";
+import store from "./store";
 
 injectGlobal`
 .chakra-popover__popper {
@@ -163,20 +161,8 @@ const KubectlApplyFormDesignWidget: React.FC<
   const [jsonEditorMode, setJsonEditorMode] = useState(false);
   const [uiConfig, setUiConfig] = useState(formConfig.current.uiConfig);
 
-  function dispatchPaths() {
-    const paths = formConfig.current.schemas.reduce<string[]>(
-      (prev, cur, index) => {
-        return prev.concat(
-          Object.keys(getFields(cur)).map((k) => `${index}${k}`)
-        );
-      },
-      []
-    );
-    pathStore.updatePaths(paths);
-  }
-
   useEffect(() => {
-    dispatchPaths();
+    store.schemas = formConfig.current.schemas;
   }, []);
 
   return (
@@ -277,10 +263,10 @@ const KubectlApplyFormDesignWidget: React.FC<
                                         if (newValue === JSON.stringify(s)) {
                                           return;
                                         }
-                                        formConfig.current.schemas[
-                                          idx
-                                        ] = JSON.parse(newValue);
-                                        dispatchPaths();
+                                        formConfig.current.schemas[idx] =
+                                          JSON.parse(newValue);
+                                        store.schemas =
+                                          formConfig.current.schemas;
                                       }}
                                     />
                                   ) : (
@@ -290,10 +276,10 @@ const KubectlApplyFormDesignWidget: React.FC<
                                         if (newValue === JSON.stringify(s)) {
                                           return;
                                         }
-                                        formConfig.current.schemas[
-                                          idx
-                                        ] = JSON.parse(newValue);
-                                        dispatchPaths();
+                                        formConfig.current.schemas[idx] =
+                                          JSON.parse(newValue);
+                                        store.schemas =
+                                          formConfig.current.schemas;
                                       }}
                                       language="json"
                                       minimap={false}
@@ -313,7 +299,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                         <SpecWidget
                           component={props.component}
                           services={props.services}
-                          path={path.concat(['uiConfig'])}
+                          path={path.concat(["uiConfig"])}
                           level={0}
                           spec={UiConfigSchema}
                           value={uiConfig}
@@ -362,18 +348,13 @@ const KubectlApplyFormDesignWidget: React.FC<
                           apiVersion: string;
                           kind: string;
                         }[];
+
                         formConfig.current.defaultValues = resources;
                         setLoadingSchema(true);
-                        formConfig.current.schemas = await Promise.all(
-                          resources.map(async (r) => {
-                            const _schema = await getResourceSchema(
-                              r.apiVersion,
-                              r.kind
-                            );
-                            return omit(_schema, ["properties.status"]);
-                          })
-                        );
-                        dispatchPaths();
+                        formConfig.current.schemas = (
+                          await store.fetchResourcesSchemas(resources)
+                        ).map((schema) => omit(schema, ["properties.status"]));
+
                         if (fieldsIsEmpty(formConfig.current.uiConfig)) {
                           formConfig.current.uiConfig.layout = {
                             type: "simple",

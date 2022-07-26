@@ -1,21 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
-import { KitContext, TableProps } from "../../_internal/atoms/kit-context";
+import { KitContext, TableProps } from "../atoms/kit-context";
 import {
   KubeApi,
   UnstructuredList,
-} from "../../_internal/k8s-api-client/kube-api";
+} from "../k8s-api-client/kube-api";
 
-type UnstructuredTableProps = {
+type KubectlGetTableProps = {
   basePath: string;
-  kind: string;
+  resource: string;
   namespace: string;
   apiBase: string;
   fieldSelector: string;
   onResponse?: (res: any) => void;
-} & Pick<
-  TableProps,
-  "columns" | "onActive" | "onSelect" | "activeKey" | "selectedKeys"
->;
+} & Omit<TableProps, 'data' | 'rowKey'>;
 
 export const emptyData = {
   apiVersion: "",
@@ -24,20 +21,16 @@ export const emptyData = {
   items: [],
 };
 
-const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
+const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
   (
     {
       basePath,
-      columns,
       apiBase,
-      kind,
       namespace,
+      resource,
       fieldSelector,
-      onActive,
-      onSelect,
-      activeKey,
-      selectedKeys,
       onResponse,
+      ...tableProps
     },
     ref
   ) => {
@@ -52,12 +45,13 @@ const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
       error: null,
     });
     const { data, loading, error } = response;
+
     useEffect(() => {
       const api = new KubeApi<UnstructuredList>({
         basePath,
         objectConstructor: {
-          kind,
-          apiBase,
+          kind: "",
+          apiBase: `${apiBase}/${resource}`,
           namespace,
         },
       });
@@ -76,26 +70,24 @@ const UnstructuredTable = React.forwardRef<HTMLElement, UnstructuredTableProps>(
       return () => {
         stopP.then((stop) => stop?.());
       };
-    }, [apiBase, kind, namespace]);
+    }, [apiBase, resource, namespace]);
     useEffect(() => {
       onResponse?.(response);
     }, [response]);
 
     return (
       <kit.Table
+        {...tableProps}
         ref={ref}
-        columns={columns}
         data={data.items}
         error={error}
         loading={loading}
-        rowKey={(row) => `${row.metadata.namespace}/${row.metadata.name}`}
-        activeKey={activeKey}
-        onActive={onActive}
-        selectedKeys={selectedKeys}
-        onSelect={onSelect}
+        rowKey={(row: UnstructuredList["items"][0]) =>
+          `${row.metadata.namespace}/${row.metadata.name}`
+        }
       />
     );
   }
 );
 
-export default UnstructuredTable;
+export default KubectlGetTable;

@@ -4,7 +4,7 @@ import { message } from "antd";
 import { StringUnion } from "./helper";
 import { Root } from "./components/Root";
 import { Button } from "./components/Button";
-import { UnstructuredTable } from "./components/UnstructuredTable";
+import { KubectlGetTable } from "./components/KubectlGetTable";
 import { ObjectAge } from "./components/ObjectAge";
 import { UnstructuredSidebar } from "./components/UnstructuredSidebar";
 import { UnstructuredForm } from "./components/UnstructuredForm";
@@ -35,7 +35,7 @@ export const libs: SunmaoLib[] = [
     components: [
       Root,
       Button,
-      UnstructuredTable,
+      KubectlGetTable,
       ObjectAge,
       UnstructuredSidebar,
       UnstructuredForm,

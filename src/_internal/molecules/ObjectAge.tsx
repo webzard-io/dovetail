@@ -4,15 +4,15 @@ import { formatDuration } from "../utils/format-duration";
 const _ObjectAge = React.forwardRef<
   HTMLSpanElement,
   {
-    date: string;
+    value: string;
     className?: string;
     template?: string;
   }
 >((props, ref) => {
-  const { className, date, template } = props;
+  const { className, value, template } = props;
   return (
     <span className={className} ref={ref}>
-      {formatDuration(date, template)}
+      {formatDuration(value, template)}
     </span>
   );
 });
