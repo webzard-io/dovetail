@@ -21,5 +21,5 @@ export const widgets: ImplementedWidget<any>[] = [
   KindWidget,
   ApiBaseWidget,
   ResourceWidget,
-  OptionsWidget
+  OptionsWidget,
 ];

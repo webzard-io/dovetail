@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
-import {
-  StringUnion,
-  PRESET_PROPERTY_CATEGORY,
-} from "@sunmao-ui/shared";
+import { StringUnion, PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
 import { Type, Static } from "@sinclair/typebox";
 import { UnstructuredList } from "../../_internal/k8s-api-client/kube-api";
 import ObjectAge from "../../_internal/molecules/ObjectAge";
@@ -14,6 +11,7 @@ import {
 import BaseKubectlGetTable, {
   emptyData,
 } from "../../_internal/organisms/KubectlGetTable";
+import { renderWidget } from "../utils/widget";
 import { css } from "@emotion/css";
 
 const ColumnSpec = Type.Object({
@@ -57,8 +55,8 @@ const ColumnSpec = Type.Object({
       },
     ],
   }),
-  transformer: Type.Any({
-    title: "Transformer",
+  transform: Type.Any({
+    title: "Transform",
   }),
   fixed: StringUnion(["none", "left", "right"], {
     title: "Fixed",
@@ -89,8 +87,8 @@ const ColumnSpec = Type.Object({
     { title: "Filter items", description: "The filter items." }
   ),
   onFilter: Type.Any({
-    title: 'Filter',
-    description: 'The filter function: `(value, record)=> boolean`.'
+    title: "Filter",
+    description: "The filter function: `(value, record)=> boolean`.",
   }),
   filterMultiple: Type.Boolean({
     title: "Filter multiple",
@@ -181,36 +179,6 @@ const KubectlGetTableState = Type.Object({
   columnSortOrder: Type.Record(Type.String(), Type.String()),
 });
 
-const renderColumn = (
-  col: Static<typeof ColumnSpec>,
-  data: { value: any; record: Record<string, any>; index: number },
-  slot?: Function
-) => {
-  const { value, record } = data;
-  const { widget, widgetOptions = {}, transformer, key, dataIndex } = col;
-  const transformedValue = transformer ? transformer(col, data) : value;
-  let node = transformedValue;
-
-  if (widget && widget !== "none") {
-    // use the widget
-    const WidgetComponent =
-      DISPLAY_WIDGETS_MAP[widget as keyof typeof DISPLAY_WIDGETS_MAP];
-
-    node = WidgetComponent ? (
-      <WidgetComponent {...widgetOptions} value={transformedValue} />
-    ) : (
-      value
-    );
-  } else {
-    // apply the widget by path
-    if (col.dataIndex === "metadata.creationTimestamp") {
-      node = <ObjectAge value={value} />;
-    }
-  }
-
-  return slot?.({ ...data, key, dataIndex }, node) || node;
-};
-
 export const KubectlGetTable = implementRuntimeComponent({
   version: "kui/v1",
   metadata: {
@@ -219,7 +187,7 @@ export const KubectlGetTable = implementRuntimeComponent({
     isDraggable: true,
     isResizable: true,
     exampleProperties: {
-      basePath: 'proxy-k8s',
+      basePath: "proxy-k8s",
       apiBase: "apis/kubesmart.smtx.io/v1alpha1",
       resource: "kubesmartclusters",
       columns: [
@@ -394,8 +362,8 @@ export const KubectlGetTable = implementRuntimeComponent({
             fixed: col.fixed === "none" ? undefined : col.fixed,
             dataIndex: col.dataIndex.split("."),
             render: (value: any, record: any, index: number) => {
-              return renderColumn(
-                col,
+              return renderWidget(
+                { ...col, path: col.dataIndex },
                 {
                   value,
                   record,

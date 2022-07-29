@@ -47,11 +47,11 @@ export type TableProps = {
   onActive?: (key: string, record: any) => void;
   activeKey?: string;
   tableLayout?: "auto" | "fixed";
-  scroll?: { x?: string; y?: string; }
+  scroll?: { x?: string; y?: string };
   empty?: string;
   bordered?: boolean;
   resizable?: boolean;
-  onSorterChange?: (order: string, key: string)=> void;
+  onSorterChange?: (order: string, key: string) => void;
 } & RefAndChildren;
 
 export type SidebarProps = {
@@ -89,6 +89,52 @@ export type CodeEditorProps = {
   onBlur?: (newValue: string) => void;
 } & RefAndChildren;
 
+export type CardProps = {
+  collapsible?: boolean;
+  defaultOpen?: boolean;
+  title?: React.ReactNode | string;
+  subInfo?: React.ReactNode;
+} & RefAndChildren;
+
+export type InfoRowProps = {
+  label: React.ReactNode;
+  content: boolean | {} | string | number | JSX.Element;
+  className?: string;
+};
+
+type TabMenuTab =
+  | {
+      key: string;
+      title: string | React.ReactNode;
+      items?: {
+        key: string;
+        title: string | React.ReactNode;
+        onClick?: () => void;
+        children: React.ReactNode;
+        isOverview?: boolean;
+      }[];
+      children?: React.ReactNode;
+      isAsync?: boolean;
+      skeleton?: React.ReactNode;
+      isOverview?: boolean;
+    }
+  | {
+      key: string;
+      title: string | React.ReactNode;
+      children?: React.ReactNode;
+      isAsync?: boolean;
+      skeleton?: React.ReactNode;
+      isOverview?: boolean;
+    };
+
+export type TabMenuProps = {
+  size?: "small" | "medium";
+  theme?: "default" | "light";
+  selectedKey: string;
+  tabs: TabMenuTab[];
+  onChange?: (activeKey: string) => void;
+};
+
 export interface Kit {
   name: string;
   Button: React.FC<ButtonProps>;
@@ -98,6 +144,9 @@ export interface Kit {
   Tag: React.FC<TagProps>;
   Modal: React.FC<ModalProps>;
   CodeEditor: React.FC<CodeEditorProps>;
+  Card: React.FC<CardProps>;
+  InfoRow: React.FC<InfoRowProps>;
+  TabMenu: React.FC<TabMenuProps>;
 }
 
 export const createKitContext = (kit: Kit) => {

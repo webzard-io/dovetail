@@ -6,6 +6,9 @@ import Loading from "./components/Loading/Loading";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Tag from "./components/Tag/Tag";
 import Modal from "./components/Modal/Modal";
+import Card from './components/Card';
+import InfoRow from './components/InfoRow';
+import TabMenu from './components/TabMenu';
 
 import "./styles/font.scss";
 import "./styles/override.scss";
@@ -19,4 +22,7 @@ export const kit: Kit = {
   Sidebar,
   Tag,
   Modal,
+  Card,
+  InfoRow,
+  TabMenu
 };
