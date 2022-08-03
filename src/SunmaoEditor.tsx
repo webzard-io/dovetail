@@ -2,7 +2,7 @@ import { initSunmaoUIEditor } from "@sunmao-ui/editor";
 import { useState, useEffect, useMemo } from "react";
 import { SunmaoUIRuntimeProps } from "@sunmao-ui/runtime";
 import type { Application, Module } from "@sunmao-ui/core";
-import { widgets as editorWidgets } from "./editor";
+import { widgets as editorWidgets } from "./editor/widgets";
 
 type FsManagerOptions = { name: string };
 class FsManager {

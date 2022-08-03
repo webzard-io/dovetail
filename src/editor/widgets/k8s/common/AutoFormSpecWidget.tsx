@@ -19,7 +19,7 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { Select } from "chakra-react-select";
-import { getApiBases, getDefinitions, getResourceSpec } from "./remote-schema";
+import { getApiBases, getDefinitions, getResourceSpec } from "../remote-schema";
 import JsonSchemaEditor from "@optum/json-schema-editor";
 
 type Props = WidgetProps;

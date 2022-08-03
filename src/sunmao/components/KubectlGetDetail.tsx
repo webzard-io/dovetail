@@ -15,8 +15,8 @@ const InfoSpec = Type.Object({
     title: "Path",
     widget: "kui/v1/PathWidget",
     widgetOptions: {
-      withIndex: false
-    }
+      withIndex: false,
+    },
   }),
   widget: StringUnion(
     ["none", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
@@ -32,7 +32,7 @@ const InfoSpec = Type.Object({
     },
   }),
   transform: Type.Any({
-    title: 'Transform'
+    title: "Transform",
   }),
   componentId: Type.String({
     title: "Component ID",
@@ -152,6 +152,7 @@ const KubectlGetDetailProps = Type.Object({
     {
       title: "Layout",
       category: PRESET_PROPERTY_CATEGORY.Layout,
+      widget: "kui/v1/KubectlGetDetailLayoutWidget",
     }
   ),
 });
@@ -174,7 +175,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
     exampleProperties: {
       basePath: "proxy-k8s",
       apiBase: "/apis/apps/v1",
-      namespace: 'kube-system',
+      namespace: "kube-system",
       resource: "deployments",
       name: "coredns",
       layout: {
@@ -195,7 +196,8 @@ export const KubectlGetDetail = implementRuntimeComponent({
                     {
                       label: "Labels",
                       path: "metadata.labels",
-                      transform: '{{ function(field, data) { return Object.values(data.value || {}); } }}'
+                      transform:
+                        "{{ function(field, data) { return Object.values(data.value || {}); } }}",
                     },
                     {
                       label: "Age",

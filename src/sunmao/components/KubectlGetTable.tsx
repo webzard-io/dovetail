@@ -188,7 +188,7 @@ export const KubectlGetTable = implementRuntimeComponent({
     isResizable: true,
     exampleProperties: {
       basePath: "proxy-k8s",
-      apiBase: "apis/kubesmart.smtx.io/v1alpha1",
+      apiBase: "/apis/kubesmart.smtx.io/v1alpha1",
       resource: "kubesmartclusters",
       columns: [
         {

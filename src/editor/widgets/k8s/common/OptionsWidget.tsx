@@ -1,7 +1,4 @@
 import { implementWidget, SpecWidget } from "@sunmao-ui/editor-sdk";
-import { StringUnion } from "@sunmao-ui/shared";
-import { getKinds } from "./remote-schema";
-import { useState, useEffect } from "react";
 import { Type, Static } from "@sinclair/typebox";
 import { get } from "lodash";
 

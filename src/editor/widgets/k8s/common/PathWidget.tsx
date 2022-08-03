@@ -6,7 +6,7 @@ import {
 import { Select } from "chakra-react-select";
 import { Box } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import store from "./store";
+import store from "../store";
 import { Type } from "@sinclair/typebox";
 
 const PathWidgetOptionsSpec = Type.Object({

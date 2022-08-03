@@ -18,6 +18,7 @@ declare module "@sunmao-ui/editor-sdk" {
     "kui/v1/OptionsWidget": {
       optionsMap: Record<string, JSONSchema7>;
     };
+    "kui/v1/KubectlGetDetailLayoutWidget": {};
   }
 }
 

@@ -1,9 +1,9 @@
 import { implementWidget, StringField } from "@sunmao-ui/editor-sdk";
 import { StringUnion } from "@sunmao-ui/shared";
-import { getDefinitions, getResources, type Resource } from "./remote-schema";
+import { getResources, type Resource } from "../remote-schema";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { get } from "lodash";
-import store from "./store";
+import { first } from "lodash";
+import store from "../store";
 import { observer } from "mobx-react-lite";
 import { parseKubeApi } from "src/_internal/k8s-api-client/kube-api";
 
@@ -16,7 +16,6 @@ export default implementWidget({
   observer(function ResourceWidget(props) {
     const { component } = props;
     const [resources, setResources] = useState<Resource[]>([]);
-    const [isInit, setIsInit] = useState<boolean>(false);
     const apiBase = component.properties.apiBase as string;
 
     const map = useMemo(() => {
@@ -47,20 +46,21 @@ export default implementWidget({
     );
 
     useEffect(() => {
+      // fetch the resources list
       (async function () {
-        if (apiBase) { 
+        if (apiBase) {
           const resources = await getResources(apiBase);
-  
+
           setResources(resources);
         }
       })();
     }, [apiBase]);
     useEffect(() => {
-      if (props.value && isInit === false && resources.length) {
-        onChange(props.value);
-        setIsInit(true);
+      // select the first resource when the resources change
+      if (!Object.keys(map).includes(props.value)) {
+        onChange(first(resources)?.name || '');
       }
-    }, [props.value, isInit, resources, onChange]);
+    }, [props.value, map, resources, onChange]);
 
     return (
       <StringField

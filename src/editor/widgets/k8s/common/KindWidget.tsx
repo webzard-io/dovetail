@@ -3,7 +3,7 @@ import {
   StringField,
 } from "@sunmao-ui/editor-sdk";
 import { StringUnion } from "@sunmao-ui/shared";
-import { getKinds } from "./remote-schema";
+import { getKinds } from "../remote-schema";
 import { useState, useEffect } from "react";
 
 export default implementWidget({
