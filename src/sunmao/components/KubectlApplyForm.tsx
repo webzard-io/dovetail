@@ -21,6 +21,7 @@ const UiConfigFieldSpecProperties = {
   helperText: Type.String({ title: "Helper text" }),
   sectionTitle: Type.String({ title: "Section title" }),
   error: Type.String({ title: "Error" }),
+  condition: Type.Boolean({ title: 'Condition' }),
   widget: StringUnion(
     ["default", "component"].concat(Object.keys(FORM_WIDGETS_MAP)),
     {

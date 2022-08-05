@@ -145,7 +145,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   const displayLabel = shouldDisplayLabel(spec, label);
   const displayDescription = shouldDisplayDescdisplayDescription(spec);
 
-  if (isEmpty(spec)) {
+  if (isEmpty(spec) || field?.condition === false) {
     return null;
   }
 

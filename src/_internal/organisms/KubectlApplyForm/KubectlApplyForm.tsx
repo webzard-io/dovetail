@@ -43,6 +43,7 @@ export type Field = {
   helperText: string;
   sectionTitle: string;
   error: string;
+  condition?: boolean;
   widget?: string;
   widgetOptions?: Record<string, any>;
   componentId: string;
