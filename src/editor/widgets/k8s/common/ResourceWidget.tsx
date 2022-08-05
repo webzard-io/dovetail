@@ -26,47 +26,48 @@ export default implementWidget({
       }, {});
     }, [resources]);
 
-    const onChange = useCallback(
-      (value: string) => {
-        if (value && map[value]) {
-          const apiPath = `${apiBase}/${value}`;
-          const { apiVersionWithGroup } = parseKubeApi(apiPath);
+    const fetchResourceSchema = useCallback(
+      (resource: string) => {
+        const apiPath = `${apiBase}/${resource}`;
+        const { apiVersionWithGroup } = parseKubeApi(apiPath);
 
-          store.fetchResourcesSchemas([
-            {
-              apiVersionWithGroup,
-              kind: map[value].kind,
-            },
-          ]);
-
-          props.onChange(value);
-        }
+        store.fetchResourcesSchemas([
+          {
+            apiVersionWithGroup,
+            kind: map[resource].kind,
+          },
+        ]);
       },
-      [store, props.onChange, map]
+      [apiBase, map]
     );
 
     useEffect(() => {
       // fetch the resources list
       (async function () {
+        const oldResources = resources;
+
         if (apiBase) {
           const resources = await getResources(apiBase);
 
           setResources(resources);
+          if (oldResources.length) {
+            // the resources was changed
+            props.onChange(first(resources)?.name || "");
+          }
         }
       })();
+      // only execute when the `apiBase` change
     }, [apiBase]);
     useEffect(() => {
-      // select the first resource when the resources change
-      if (!Object.keys(map).includes(props.value)) {
-        onChange(first(resources)?.name || '');
+      if (props.value && map[props.value]) {
+        fetchResourceSchema(props.value);
       }
-    }, [props.value, map, resources, onChange]);
+    }, [props.value, map, fetchResourceSchema]);
 
     return (
       <StringField
         {...props}
         spec={StringUnion(resources.map(({ name }) => name))}
-        onChange={onChange}
       ></StringField>
     );
   })
