@@ -1,5 +1,6 @@
 import { DISPLAY_WIDGETS_MAP } from "../../_internal/molecules/display";
 import ObjectAge from "../../_internal/molecules/ObjectAge";
+import ObjectLabel from "../../_internal/molecules/ObjectLabel";
 
 export type Field = {
   path: string;
@@ -36,6 +37,17 @@ export function renderWidget(
     // apply the widget by path
     if (field.path === "metadata.creationTimestamp") {
       node = <ObjectAge value={value} />;
+    } else if (
+      field.path === "metadata.labels" ||
+      field.path === "metadata.annotations"
+    ) {
+      node = (
+        <ObjectLabel
+          value={Object.entries(value || {}).map(
+            ([key, value]) => `${key}: ${value}`
+          )}
+        />
+      );
     }
   }
 

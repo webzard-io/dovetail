@@ -31,9 +31,6 @@ const InfoSpec = Type.Object({
       optionsMap: DISPLAY_WIDGET_OPTIONS_MAP,
     },
   }),
-  transform: Type.Any({
-    title: "Transform",
-  }),
   componentId: Type.String({
     title: "Component ID",
     widget: "kui/v1/CustomComponentWidget",
@@ -196,8 +193,6 @@ export const KubectlGetDetail = implementRuntimeComponent({
                     {
                       label: "Labels",
                       path: "metadata.labels",
-                      transform:
-                        "{{ function(field, data) { return Object.values(data.value || {}); } }}",
                     },
                     {
                       label: "Age",
