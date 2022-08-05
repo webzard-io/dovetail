@@ -48,8 +48,11 @@ export default implementRuntimeTrait({
     subscribeMethods,
     setValueMethod,
   }) => {
-    valueCache.set(componentId, value);
+    const cachedValue = valueCache.get(componentId);
     const hasInitialized = hasInitializedMap.get(componentId);
+
+    valueCache.set(componentId, value);
+
     if (!hasInitialized) {
       hasInitializedMap.set(componentId, true);
       subscribeMethods({
@@ -66,17 +69,33 @@ export default implementRuntimeTrait({
         },
       });
     }
-    services.apiService.send("uiMethod", {
-      componentId: formId,
-      name: "setField",
-      parameters: {
-        fieldPath,
-        value,
-      },
-    });
+
+    function setField() {
+      if (value !== cachedValue) {
+        services.apiService.send("uiMethod", {
+          componentId: formId,
+          name: "setField",
+          parameters: {
+            fieldPath,
+            value,
+          },
+        });
+      }
+    }
 
     return {
-      props: {},
+      props: {
+        componentDidMount: [
+          () => {
+            setField();
+          },
+        ],
+        componentDidUpdate: [
+          () => {
+            setField();
+          },
+        ],
+      },
     };
   };
 });
