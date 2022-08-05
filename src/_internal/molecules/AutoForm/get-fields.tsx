@@ -54,10 +54,10 @@ function recursiveGetFields(spec: JSONSchema7, ctx: RecursiveContext) {
     if (itemSpec && typeof itemSpec === "object") {
       recursiveGetFields(itemSpec, {
         ...ctx,
-        path: ctx.path.concat(`.$i`),
+        path: ctx.path.concat(ctx.path ? `.$i` : '$i'),
       });
     }
-    ctx.fields[ctx.path.concat(`.$add`)] = {
+    ctx.fields[ctx.path.concat(ctx.path ? `.$add` : '$add')] = {
       Component: AddToArrayField,
       spec,
     };

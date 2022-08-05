@@ -17,8 +17,12 @@ export default implementWidget<"kui/v1/OptionsWidget">({
 })((props) => {
   const { spec, component, path } = props;
   const optionsMap = spec.widgetOptions?.optionsMap || {};
-  const widget = get(component.properties, path.slice(0, -1).concat(["widget"]).join('.'));
-  const optionsSpec = optionsMap[widget as keyof typeof optionsMap] || Type.Any();
+  const widget = get(
+    component.properties,
+    path.slice(0, -1).concat(["widget"]).join(".")
+  );
+  const optionsSpec =
+    optionsMap[widget as keyof typeof optionsMap] || Type.Any();
 
   return <SpecWidget {...props} spec={optionsSpec}></SpecWidget>;
 });

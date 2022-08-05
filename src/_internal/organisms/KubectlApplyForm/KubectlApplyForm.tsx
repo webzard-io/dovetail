@@ -14,7 +14,7 @@ import {
 import { cx, css as dCss } from "@emotion/css";
 import { Steps, Row, Col } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
-import {
+import SpecField, {
   FormItem,
   HasMargin,
   FormLabel as FormLabelStyle,
@@ -37,12 +37,14 @@ import { KitContext } from "src/_internal/atoms/kit-context";
 import { ButtonType } from "antd/lib/button";
 
 export type Field = {
+  fields?: Field[];
   path: string;
   label: string;
   helperText: string;
   sectionTitle: string;
   error: string;
-  widget: string;
+  widget?: string;
+  widgetOptions?: Record<string, any>;
   componentId: string;
 };
 
@@ -72,16 +74,15 @@ type Layout =
     };
 
 export type KubectlApplyFormProps = {
-  k8sConfig: {
-    basePath: string;
-  };
+  className?: string;
+  basePath: string;
   applyConfig: {
     create?: boolean;
     patch?: boolean;
   };
   schemas: JSONSchema7[];
   uiConfig: {
-    allowTogggleYaml: boolean;
+    allowToggleYaml: boolean;
     layout: Layout;
     cancelText: string;
   };
@@ -210,7 +211,16 @@ const KubectlApplyForm = React.forwardRef<
   KubectlApplyFormProps
 >(
   (
-    { schemas = [], uiConfig, values, onChange, getSlot, onCancel, onSubmit },
+    {
+      className,
+      schemas = [],
+      uiConfig,
+      values,
+      onChange,
+      getSlot,
+      onCancel,
+      onSubmit,
+    },
     ref
   ) => {
     const [yamlMode, setYamlMode] = useState(false);
@@ -224,21 +234,20 @@ const KubectlApplyForm = React.forwardRef<
     function getComponent(f: TransformedField) {
       const [indexStr, path] = f.path.split(/\.(.*)/s);
       const index = parseInt(indexStr, 10);
-      const { Component, spec } = fieldsArray[index][path];
-      if (f.widget === "none") {
-        return {
-          component: null,
-        };
-      }
-      const fallback = (
-        <Component
+      const { spec } = fieldsArray[index][path];
+
+      const component = (
+        <SpecField
           key={f.dataPath}
+          field={f}
           widget={f.widget}
-          spec={spec}
+          widgetOptions={f.widgetOptions}
+          spec={{...spec, title: f.label}}
           level={0}
           path=""
           stepElsRef={{}}
           value={f.value}
+          slot={getSlot}
           onChange={(newValue) => {
             const valuesSlice = [...values];
             set(valuesSlice, f.dataPath, newValue);
@@ -246,9 +255,9 @@ const KubectlApplyForm = React.forwardRef<
           }}
         />
       );
-      const slotElement = getSlot?.(f, fallback);
+
       return {
-        component: slotElement,
+        component,
       };
     }
 
@@ -260,11 +269,7 @@ const KubectlApplyForm = React.forwardRef<
             <>
               {transformFields(layout.fields, values).map((f) => {
                 const { component } = getComponent(f);
-                return (
-                  <FieldWrapper key={f.path.concat(f.dataPath)} {...f}>
-                    {component}
-                  </FieldWrapper>
-                );
+                return component;
               })}
             </>
           );
@@ -274,20 +279,16 @@ const KubectlApplyForm = React.forwardRef<
             <Tabs isLazy>
               <TabList>
                 {layout.tabs.map((t, idx) => {
-                  return <Tab key={idx}>{t.title}</Tab>;
+                  return <Tab key={t.title + idx}>{t.title}</Tab>;
                 })}
               </TabList>
               <TabPanels>
                 {layout.tabs.map((t, idx) => {
                   return (
-                    <TabPanel key={idx}>
+                    <TabPanel key={t.title + idx}>
                       {transformFields(t.fields, values).map((f) => {
                         const { component } = getComponent(f);
-                        return (
-                          <FieldWrapper key={f.path.concat(f.dataPath)} {...f}>
-                            {component}
-                          </FieldWrapper>
-                        );
+                        return component;
                       })}
                     </TabPanel>
                   );
@@ -298,6 +299,7 @@ const KubectlApplyForm = React.forwardRef<
         }
         case "wizard": {
           const currentStep = layout.steps[step];
+          
           return (
             <div className={cx(WizardStyle)}>
               <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
@@ -312,7 +314,7 @@ const KubectlApplyForm = React.forwardRef<
                   >
                     {(layout.steps || []).map((s, idx) => (
                       <Steps.Step
-                        key={idx}
+                        key={s.title + idx}
                         title={
                           <>
                             {idx >= step ? (
@@ -335,11 +337,8 @@ const KubectlApplyForm = React.forwardRef<
                   {transformFields(layout.steps[step].fields, values).map(
                     (f) => {
                       const { component } = getComponent(f);
-                      return (
-                        <FieldWrapper key={f.path.concat(f.dataPath)} {...f}>
-                          {component}
-                        </FieldWrapper>
-                      );
+                      
+                      return component;
                     }
                   )}
                 </div>
@@ -361,7 +360,7 @@ const KubectlApplyForm = React.forwardRef<
                   </div>
                   <div className="wizard-footer-btn-group">
                     <kit.Button
-                      type={(`quiet` as unknown) as ButtonType}
+                      type={`quiet` as unknown as ButtonType}
                       onClick={() => {
                         onCancel?.();
                       }}
@@ -392,8 +391,8 @@ const KubectlApplyForm = React.forwardRef<
     }
 
     return (
-      <div ref={ref}>
-        {uiConfig.allowTogggleYaml && (
+      <div ref={ref} className={className}>
+        {uiConfig.allowToggleYaml && (
           <FormControl
             display="flex"
             alignItems="center"

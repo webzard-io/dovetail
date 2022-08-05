@@ -53,6 +53,7 @@ const ArrayField: React.FC<WidgetProps> = (props) => {
           </div>
           <SpecField
             {...props}
+            widget="default"
             value={itemValue}
             spec={{
               ...itemSpec,

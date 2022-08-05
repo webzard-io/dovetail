@@ -19,7 +19,9 @@ const LabelStyle = css`
   }
 `;
 
-const FieldCustomComponentWidgetOptionsSpec = Type.Object({});
+const FieldCustomComponentWidgetOptionsSpec = Type.Object({
+  parentPath: Type.String(),
+});
 
 const FieldCustomComponentWidget = implementWidget<"kui/v1/FieldCustomComponentWidget">({
   version: "kui/v1",
@@ -30,9 +32,10 @@ const FieldCustomComponentWidget = implementWidget<"kui/v1/FieldCustomComponentW
     options: FieldCustomComponentWidgetOptionsSpec,
   },
 })(
-  observer(({ services, component, value, path, level, onChange }) => {
+  observer(({ spec, services, component, value, path, level, onChange }) => {
+    const parentPath = spec.widgetOptions?.parentPath || '';
     const { registry, editorStore, appModelManager } = services;
-    const filedPath = useMemo(
+    const fieldPath = useMemo(
       () =>
         get(
           component.properties,
@@ -103,7 +106,7 @@ const FieldCustomComponentWidget = implementWidget<"kui/v1/FieldCustomComponentW
                   id: component.id,
                   slot: "field",
                 },
-                ifCondition: `{{ $slot.path === '${filedPath}' }}`,
+                ifCondition: `{{ $slot.path === '${fieldPath}' }}`,
               },
             },
           },
@@ -116,7 +119,7 @@ const FieldCustomComponentWidget = implementWidget<"kui/v1/FieldCustomComponentW
                 value: `{{ ${newComponentId}.value }}`,
                 setValueMethod: "setValue",
                 formId: component.id,
-                fieldPath: filedPath,
+                fieldPath: parentPath ? `${parentPath}.${fieldPath}` : fieldPath,
               },
             },
           },

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { WidgetProps } from "./widget";
-import { Select, Input } from "antd";
+import Input from "../Form/Input";
+import Select from "../Form/Select";
+import Textarea from "../Form/Textarea";
 
 const EnumField: React.FC<WidgetProps> = (props) => {
   const { spec, value, onChange } = props;
@@ -10,17 +12,11 @@ const EnumField: React.FC<WidgetProps> = (props) => {
     <Select
       value={value}
       onChange={(value) => onChange(value)}
-      showSearch
-      optionFilterProp="children"
-    >
-      {options.map((value, idx) => {
-        return (
-          <Select.Option key={idx} value={value}>
-            {value}
-          </Select.Option>
-        );
-      })}
-    </Select>
+      options={options.map((value) => ({
+        value,
+        label: value,
+      }))}
+    />
   );
 };
 
@@ -33,18 +29,15 @@ export const StringField: React.FC<WidgetProps> = (props) => {
   }
 
   if (widget === "textarea") {
-    return (
-      <Input.TextArea
-        value={value}
-        onChange={(evt) => onChange(evt.currentTarget.value)}
-      />
-    );
+    return <Textarea value={value} onChange={(value) => onChange(value)} />;
   }
 
   return (
     <Input
       value={value}
-      onChange={(evt) => onChange(evt.currentTarget.value)}
+      onChange={(value) => {
+        onChange(value);
+      }}
     />
   );
 };

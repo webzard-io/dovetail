@@ -10,7 +10,10 @@ import ResourceWidget from "./k8s/common/ResourceWidget";
 import OptionsWidget from "./k8s/common/OptionsWidget";
 import AutoFormSpecWidget from "./k8s/common/AutoFormSpecWidget";
 import KubectlApplyFormDesignWidget from "./k8s/KubectlApplyForm/KubectlApplyFormDesignWidget";
-import KubectrlGetDetailLayoutWidget from "./k8s/KubectlGetDetail/KubectrlGetDetailLayoutWidget";
+import KubectlApplyFormFieldWidget from "./k8s/KubectlApplyForm/KubectlApplyFormFieldWidget";
+import KubectlGetDetailLayoutWidget from "./k8s/KubectlGetDetail/KubectlGetDetailLayoutWidget";
+import KubectlGetDetailFieldWidget from "./k8s/KubectlGetDetail/KubectlGetDetailFieldWidget";
+import KubectlGetTableColumnWidget from "./k8s/KubectlGetTable/KubectlGetTableColumnWidget";
 
 export const widgets: ImplementedWidget<any>[] = [
   AutoFormSpecWidget,
@@ -23,5 +26,8 @@ export const widgets: ImplementedWidget<any>[] = [
   ResourceWidget,
   OptionsWidget,
   KubectlApplyFormDesignWidget,
-  KubectrlGetDetailLayoutWidget,
+  KubectlApplyFormFieldWidget,
+  KubectlGetDetailLayoutWidget,
+  KubectlGetDetailFieldWidget,
+  KubectlGetTableColumnWidget,
 ];
