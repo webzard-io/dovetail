@@ -33,15 +33,15 @@ import { Step, Steps, useSteps, StepsStyleConfig } from "chakra-ui-steps";
 import { css, injectGlobal } from "@emotion/css";
 import JsonSchemaEditor from "@optum/json-schema-editor";
 import { loadAll } from "js-yaml";
-import CodeEditor from "../_internal/atoms/CodeEditor";
+import CodeEditor from "src/_internal/atoms/CodeEditor";
 import get from "lodash/get";
 import omit from "lodash/omit";
 import type {
   KubectlApplyFormProps,
   Field,
-} from "../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
+} from "src/_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 import { UiConfigSchema } from "src/sunmao/components/KubectlApplyForm";
-import store from "./store";
+import store from "../store";
 
 injectGlobal`
 .chakra-popover__popper {
