@@ -71,7 +71,7 @@ function recursiveGetFields(spec: JSONSchema7, ctx: RecursiveContext) {
     Component = MultiSpecField;
   }
 
-  ctx.fields[ctx.path || ".*"] = {
+  ctx.fields[ctx.path || "*"] = {
     Component,
     spec,
   };

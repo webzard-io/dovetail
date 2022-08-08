@@ -2,7 +2,8 @@ import {
   makeObservable,
   observable,
   computed,
-  flow,
+  action,
+  runInAction,
 } from "mobx";
 import { JSONSchema7 } from "json-schema";
 import { getFields } from "src/_internal/molecules/AutoForm/get-fields";
@@ -17,7 +18,7 @@ export class WidgetStore {
       resources: observable,
       schemas: observable,
       paths: computed,
-      fetchResourcesSchemas: flow,
+      fetchResourcesSchemas: action,
     });
   }
 
@@ -33,7 +34,7 @@ export class WidgetStore {
     const schemas = (
       await Promise.all(
         resources.map(async (resource) => {
-          const { apiVersionWithGroup, kind } = resource;
+          const { apiVersion: apiVersionWithGroup, kind } = resource;
 
           if (apiVersionWithGroup && kind) {
             const schema = await getResourceSchema(apiVersionWithGroup, kind);
@@ -46,7 +47,9 @@ export class WidgetStore {
       )
     ).filter((schema): schema is JSONSchema7 => schema !== null);
 
-    this.schemas = schemas;
+    runInAction(() => {
+      this.schemas = schemas;
+    });
 
     return schemas;
   }
