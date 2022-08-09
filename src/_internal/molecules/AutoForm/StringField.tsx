@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { WidgetProps } from "./widget";
-import Input from "../Form/Input";
-import Select from "../Form/Select";
-import Textarea from "../Form/Textarea";
+import Input from "../Input";
+import Select from "../Select";
+import Textarea from "../Textarea";
 
 const EnumField: React.FC<WidgetProps> = (props) => {
   const { spec, value, onChange } = props;

@@ -1,5 +1,5 @@
 import React from "react";
-import { formatDuration } from "../../utils/format-duration";
+import { formatDuration } from "../utils/date";
 
 const _ObjectAge = React.forwardRef<
   HTMLSpanElement,

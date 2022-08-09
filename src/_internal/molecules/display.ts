@@ -1,5 +1,5 @@
-import ObjectAge from "./Display/ObjectAge";
-import ObjectLabel, { OptionsSpec as LabelOptionsSpec } from "./Display/ObjectLabel";
+import ObjectAge from "./ObjectAge";
+import ObjectLabel, { OptionsSpec as LabelOptionsSpec } from "./ObjectLabel";
 
 export const DISPLAY_WIDGETS_MAP = {
   time: ObjectAge,

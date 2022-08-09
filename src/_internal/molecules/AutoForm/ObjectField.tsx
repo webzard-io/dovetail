@@ -2,7 +2,7 @@ import React from "react";
 import SpecField from "./SpecField";
 import { WidgetProps } from "./widget";
 import type { Field } from "../../organisms/KubectlApplyForm/KubectlApplyForm";
-import { getJsonSchemaByPath } from "../../../editor/utils/schema";
+import { getJsonSchemaByPath } from 'src/_internal/utils/schema';
 import { immutableSet } from "../../../editor/utils/object";
 import { get } from "lodash";
 

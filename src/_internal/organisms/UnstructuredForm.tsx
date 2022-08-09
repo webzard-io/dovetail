@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import AutoForm, {
   AutoFormProps,
 } from "../../_internal/molecules/AutoForm/AutoForm";
-import { generateFromSchema } from "../../_internal/utils/generate-from-schema";
+import { generateFromSchema } from "../utils/schema";
 import { css as dCss, cx } from "@emotion/css";
 import { css } from "@linaria/core";
 import { CheckOutlined } from "@ant-design/icons";

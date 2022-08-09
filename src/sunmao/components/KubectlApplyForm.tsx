@@ -2,7 +2,7 @@ import { Type } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
 import { useEffect, useState } from "react";
-import { generateFromSchema } from "../../_internal/utils/generate-from-schema";
+import { generateFromSchema } from "../../_internal/utils/schema";
 import merge from "lodash/merge";
 import set from "lodash/set";
 import _KubectlApplyForm from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";

@@ -4,7 +4,7 @@ import { WidgetProps } from "./widget";
 
 import { CloseOutlined } from "@ant-design/icons";
 import { KitContext } from "../../atoms/kit-context";
-import { generateFromSchema } from "../../utils/generate-from-schema";
+import { generateFromSchema } from "../../utils/schema";
 
 const ArrayField: React.FC<WidgetProps> = (props) => {
   const { spec, value = [], path, level, onChange, renderer } = props;

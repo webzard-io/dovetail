@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { WidgetProps } from "./widget";
-import Switch from "../Form/Switch";
+import Switch from "../Switch";
 
 export const BooleanField: React.FC<WidgetProps> = (props) => {
   const { value, onChange } = props;

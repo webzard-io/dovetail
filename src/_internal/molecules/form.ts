@@ -1,10 +1,10 @@
-import Input, { OptionsSpec as InputOptionsSpec } from "./Form/Input";
-import Select, { OptionsSpec as SelectOptionsSpec } from "./Form/Select";
-import Textarea, { OptionsSpec as TextareaOptionsSpec } from "./Form/Textarea";
+import Input, { OptionsSpec as InputOptionsSpec } from "./Input";
+import Select, { OptionsSpec as SelectOptionsSpec } from "./Select";
+import Textarea, { OptionsSpec as TextareaOptionsSpec } from "./Textarea";
 import InputNumber, {
   OptionsSpec as InputNumberOptionsSpec,
-} from "./Form/InputNumber";
-import Switch, { OptionsSpec as SwitchOptionsSpec } from "./Form/Switch";
+} from "./InputNumber";
+import Switch, { OptionsSpec as SwitchOptionsSpec } from "./Switch";
 
 export const FORM_WIDGETS_MAP = {
   input: Input,

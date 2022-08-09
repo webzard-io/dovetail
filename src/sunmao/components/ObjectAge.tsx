@@ -1,7 +1,7 @@
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { css } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
-import _ObjectAge from "../../_internal/molecules/Display/ObjectAge";
+import _ObjectAge from "../../_internal/molecules/ObjectAge";
 
 const ObjectAgeProps = Type.Object({
   date: Type.String(),

@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { formatDuration } from "../utils/format-duration";
+import { formatDuration } from "../utils/date";
 import { Unstructured } from "../k8s-api-client/kube-api";
 import { KitContext } from "../atoms/kit-context";
 import { Row } from "./style/Layout.style";

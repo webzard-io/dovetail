@@ -5,8 +5,8 @@ import {
 import React, { useMemo } from "react";
 import { omit } from "lodash";
 import { Type } from "@sinclair/typebox";
+import { getJsonSchemaByPath } from 'src/_internal/utils/schema';
 import {
-  getJsonSchemaByPath,
   mergeWidgetOptionsByPath,
 } from "../../../utils/schema";
 import { JSONSchema7 } from 'json-schema';

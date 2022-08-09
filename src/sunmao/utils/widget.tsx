@@ -1,6 +1,6 @@
 import { DISPLAY_WIDGETS_MAP } from "../../_internal/molecules/display";
-import ObjectAge from "../../_internal/molecules/Display/ObjectAge";
-import ObjectLabel from "../../_internal/molecules/Display/ObjectLabel";
+import ObjectAge from "../../_internal/molecules/ObjectAge";
+import ObjectLabel from "../../_internal/molecules/ObjectLabel";
 
 export type Field = {
   path: string;

@@ -1,6 +1,6 @@
 import React from "react";
 import { WidgetProps } from "./widget";
-import InputNumber from "../Form/InputNumber";
+import InputNumber from "../InputNumber";
 
 export const NumberField: React.FC<WidgetProps> = (props) => {
   const { value, onChange } = props;

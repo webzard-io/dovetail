@@ -40,9 +40,9 @@ import type {
   KubectlApplyFormProps,
   Field,
 } from "src/_internal/organisms/KubectlApplyForm/KubectlApplyForm";
+import { getJsonSchemaByPath } from 'src/_internal/utils/schema';
 import { UiConfigSpec } from "src/sunmao/components/KubectlApplyForm";
 import {
-  getJsonSchemaByPath,
   mergeWidgetOptionsByPath,
 } from "../../../utils/schema";
 import { getFields } from "src/_internal/molecules/AutoForm/get-fields";
