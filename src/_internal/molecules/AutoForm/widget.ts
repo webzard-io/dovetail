@@ -1,4 +1,5 @@
 import { JSONSchema7 } from "json-schema";
+import type { Field } from '../../organisms/KubectlApplyForm/KubectlApplyForm';
 
 type WidgetOptions = Partial<{
   displayLabel: boolean;
@@ -7,10 +8,10 @@ type WidgetOptions = Partial<{
 }>;
 
 export type WidgetProps = {
-  spec: JSONSchema7 & {
-    widgetOptions?: WidgetOptions;
-  };
+  field?: Field;
+  spec: JSONSchema7;
   widget?: string;
+  widgetOptions?: Record<string, any>;
   level: number;
   path: string;
   step?: number;
@@ -25,4 +26,5 @@ export type WidgetProps = {
     level: number,
     position: "before" | "after" | "widget"
   ) => React.ReactNode;
+  slot?: Function;
 };

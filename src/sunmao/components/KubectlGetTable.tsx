@@ -3,7 +3,6 @@ import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { StringUnion, PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
 import { Type, Static } from "@sinclair/typebox";
 import { UnstructuredList } from "../../_internal/k8s-api-client/kube-api";
-import ObjectAge from "../../_internal/molecules/ObjectAge";
 import {
   DISPLAY_WIDGETS_MAP,
   DISPLAY_WIDGET_OPTIONS_MAP,
@@ -19,9 +18,7 @@ const ColumnSpec = Type.Object({
     title: "Data index",
     description: "The key of the column data.",
     widget: "kui/v1/PathWidget",
-    widgetOptions: {
-      withIndex: false,
-    },
+    widgetOptions: {},
   }),
   key: Type.String({
     title: "Key",
@@ -94,6 +91,8 @@ const ColumnSpec = Type.Object({
     title: "Filter multiple",
     description: "Can select multiple filters?",
   }),
+}, {
+  widget: 'kui/v1/KubectlGetTableColumnWidget'
 });
 
 const KubectlGetTableProps = Type.Object({

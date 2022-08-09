@@ -1,4 +1,5 @@
 import { JSONSchema7 } from "json-schema";
+import { first } from "lodash";
 
 export function generateFromSchema(spec: JSONSchema7, noOptional = false): any {
   if (!spec) {
@@ -49,4 +50,25 @@ export function generateFromSchema(spec: JSONSchema7, noOptional = false): any {
     default:
       return undefined;
   }
+}
+
+export function getJsonSchemaByPath(
+  schema: JSONSchema7,
+  path: string
+): JSONSchema7 | null {
+  if (path === "") {
+    return schema;
+  }
+
+  const pathArray = path.split(".");
+  const nextPath = pathArray.slice(1).join(".");
+  const key = first(pathArray) || "";
+
+  if (schema.type === "object" && schema.properties?.[key]) {
+    return getJsonSchemaByPath(schema.properties[key] as JSONSchema7, nextPath);
+  } else if (schema.type === "array" && schema.items) {
+    return getJsonSchemaByPath(schema.items as JSONSchema7, nextPath);
+  }
+
+  return null;
 }

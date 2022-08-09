@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import {
   implementWidget,
   WidgetProps,
@@ -40,7 +40,12 @@ import type {
   KubectlApplyFormProps,
   Field,
 } from "src/_internal/organisms/KubectlApplyForm/KubectlApplyForm";
-import { UiConfigSchema } from "src/sunmao/components/KubectlApplyForm";
+import { getJsonSchemaByPath } from 'src/_internal/utils/schema';
+import { UiConfigSpec } from "src/sunmao/components/KubectlApplyForm";
+import {
+  mergeWidgetOptionsByPath,
+} from "../../../utils/schema";
+import { getFields } from "src/_internal/molecules/AutoForm/get-fields";
 import store from "../store";
 
 injectGlobal`
@@ -160,6 +165,28 @@ const KubectlApplyFormDesignWidget: React.FC<
   const [loadingSchema, setLoadingSchema] = useState(false);
   const [jsonEditorMode, setJsonEditorMode] = useState(false);
   const [uiConfig, setUiConfig] = useState(formConfig.current.uiConfig);
+
+  const UIConfigSpec = useMemo(() => {
+    const paths = formConfig.current.schemas
+      .map((schema, index) => Object.keys(getFields(schema)).map((path)=> `${index}.${path}`))
+      .flat();
+    let spec = getJsonSchemaByPath(props.spec, "uiConfig");
+
+    if (spec) {
+      spec =
+        mergeWidgetOptionsByPath(spec, "layout.fields.$i.path", {
+          paths,
+        }) || spec;
+      spec =
+        mergeWidgetOptionsByPath(spec, "layout.tabs.$i.fields.$i.path", { paths }) ||
+        spec;
+      spec =
+        mergeWidgetOptionsByPath(spec, "layout.steps.$i.fields.$i.path", { paths }) ||
+        spec;
+    }
+
+    return spec || UiConfigSpec;
+  }, [formConfig.current.schemas, props.spec]);
 
   useEffect(() => {
     store.schemas = formConfig.current.schemas;
@@ -301,7 +328,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                           services={props.services}
                           path={path.concat(["uiConfig"])}
                           level={0}
-                          spec={UiConfigSchema}
+                          spec={UIConfigSpec}
                           value={uiConfig}
                           onChange={(_newValue) => {
                             const newValue = inferLayout(uiConfig, _newValue);

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { WidgetProps } from "./widget";
-import { Switch } from "antd";
+import Switch from "../Switch";
 
 export const BooleanField: React.FC<WidgetProps> = (props) => {
   const { value, onChange } = props;
@@ -11,7 +11,7 @@ export const BooleanField: React.FC<WidgetProps> = (props) => {
     [onChange]
   );
 
-  return <Switch checked={value} onChange={onValueChange} />;
+  return <Switch value={value} onChange={onValueChange} />;
 };
 
 export default BooleanField;

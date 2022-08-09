@@ -13,6 +13,9 @@ import NumberField from "./NumberField";
 import NullField from "./NullField";
 import ObjectField from "./ObjectField";
 import MultiSpecField from "./MultiSpecField";
+import {
+  FORM_WIDGETS_MAP,
+} from "../../molecules/form";
 
 type TemplateProps = {
   id?: string;
@@ -84,9 +87,6 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
 
   return (
     <Row className={cx(FormItem, displayLabel && HasMargin)}>
-      {spec.widgetOptions?.section && (
-        <div className={FieldSection}>{spec.widgetOptions.section}</div>
-      )}
       {displayLabel && (
         <Col span="6" className={FormLabel}>
           {label}
@@ -126,31 +126,36 @@ type SpecFieldProps = WidgetProps & {
 
 const SpecField: React.FC<SpecFieldProps> = (props) => {
   const {
+    field,
     spec,
+    widget,
+    widgetOptions,
     level,
     path,
     step,
     value,
-    onChange,
-    renderer,
     stepElsRef,
     layout,
+    slot,
+    onChange,
+    renderer,
   } = props;
-  const { title, widgetOptions } = spec;
+  const { title } = spec;
   const label = title ?? "";
-  const displayLabel =
-    widgetOptions?.displayLabel !== false && shouldDisplayLabel(spec, label);
+  const displayLabel = shouldDisplayLabel(spec, label);
   const displayDescription = shouldDisplayDescdisplayDescription(spec);
 
-  if (isEmpty(spec)) {
+  if (isEmpty(spec) || field?.condition === false) {
     return null;
   }
 
-  let Component = UnsupportedField;
+  let Component: React.FC<any> = UnsupportedField;
   let isNest = false;
 
   // type fields
-  if (spec.type === "object") {
+  if (widget && widget in FORM_WIDGETS_MAP) {
+    Component = FORM_WIDGETS_MAP[widget as keyof typeof FORM_WIDGETS_MAP];
+  } else if (spec.type === "object") {
     Component = ObjectField;
     isNest = true;
   } else if (spec.type === "string") {
@@ -172,6 +177,8 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
 
   const FieldComponent = (
     <Component
+      {...widgetOptions}
+      field={field}
       spec={spec}
       value={value}
       path={path}
@@ -181,11 +188,11 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       step={step}
       stepElsRef={stepElsRef}
       layout={layout}
+      slot={slot}
     />
   );
   const FieldComponentWithRenderer = (
     <>
-      {renderer?.(path, level, "before")}
       <DefaultTemplate
         label={label}
         description={spec.description}
@@ -193,9 +200,8 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
         displayDescription={displayDescription}
         spec={spec}
       >
-        {renderer?.(path, level, "widget") || FieldComponent}
+        {slot?.(field, FieldComponent) || FieldComponent}
       </DefaultTemplate>
-      {renderer?.(path, level, "after")}
     </>
   );
 

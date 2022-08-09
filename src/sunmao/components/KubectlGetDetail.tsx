@@ -46,6 +46,8 @@ const InfoSpec = Type.Object({
       },
     ],
   }),
+}, {
+  widget: "kui/v1/KubectlGetDetailFieldWidget"
 });
 
 const SectionSpec = Type.Object({
