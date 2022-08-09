@@ -1,5 +1,6 @@
 import React from "react";
 import { kit as CloudTowerKit } from "./themes/CloudTower";
+import { DropDownProps } from 'antd/lib/dropdown';
 export { CloudTowerKit };
 
 type RefAndChildren = {
@@ -35,13 +36,19 @@ export type TableProps = {
   error?: React.ReactNode;
   columns: {
     key: string;
-    title: string;
+    title: string | React.ReactNode;
     dataIndex: string | number | Array<string | number>;
     width?: number;
+    isActionColumn?: boolean;
+    canCustomizable?: boolean;
+    isDefaultDisplay?: boolean;
+    ellipsis?: boolean;
     render?: (val: any, record: any, index: number) => React.ReactNode;
   }[];
   loading?: boolean;
   rowKey: string | ((record: any, index?: number) => string);
+  customizable?: boolean;
+  customizableKey?: string;
   onSelect?: (keys: string[], records: any[]) => void;
   selectedKeys?: string[];
   onActive?: (key: string, record: any) => void;
@@ -135,6 +142,40 @@ export type TabMenuProps = {
   onChange?: (activeKey: string) => void;
 };
 
+interface CheckboxChangeEvent {
+  target: CheckboxChangeEventTarget;
+  stopPropagation: () => void;
+  preventDefault: () => void;
+  nativeEvent: MouseEvent;
+}
+
+interface CheckboxChangeEventTarget extends CheckboxProps {
+  checked: boolean;
+}
+
+export type CheckboxProps = {
+  prefixCls?: string;
+  className?: string;
+  defaultChecked?: boolean;
+  checked?: boolean;
+  style?: React.CSSProperties;
+  disabled?: boolean;
+  onChange?: (e: CheckboxChangeEvent) => void;
+  onClick?: React.MouseEventHandler<HTMLElement>;
+  onMouseEnter?: React.MouseEventHandler<HTMLElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLElement>;
+  onKeyPress?: React.KeyboardEventHandler<HTMLElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLElement>;
+  value?: any;
+  tabIndex?: number;
+  name?: string;
+  children?: React.ReactNode;
+  id?: string;
+  autoFocus?: boolean;
+  type?: string;
+  indeterminate?: boolean;
+}
+
 export interface Kit {
   name: string;
   Button: React.FC<ButtonProps>;
@@ -147,6 +188,8 @@ export interface Kit {
   Card: React.FC<CardProps>;
   InfoRow: React.FC<InfoRowProps>;
   TabMenu: React.FC<TabMenuProps>;
+  Checkbox: React.FC<CheckboxProps>;
+  Dropdown: React.FC<DropDownProps>;
 }
 
 export const createKitContext = (kit: Kit) => {
