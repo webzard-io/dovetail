@@ -54,12 +54,20 @@ export const TableStyle = css`
     }
   }
 
-  .dovetail-ant-table-cell-fix-left {
+  td.dovetail-ant-table-column-sort {
     background: transparent;
   }
 
-  td.dovetail-ant-table-column-sort {
-    background: transparent;
+  td.dovetail-ant-table-cell-fix-left,
+  td.dovetail-ant-table-cell-fix-right {
+    background: #fff;
+    padding: 0 !important;
+    .dovetail-ant-table-cell-content {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 8px;
+    }
   }
 
   .dovetail-ant-table-container {
@@ -190,6 +198,25 @@ export const TableStyle = css`
               > * {
                 border-top: 1px solid transparent;
                 border-radius: 0 8px 8px 0;
+                background: $fills-trans-secondary-light;
+              }
+            }
+            &.dovetail-ant-table-cell-fix-right {
+              background: white;
+              .dovetail-ant-table-cell-content {
+                display: flex;
+                align-items: center;
+                height: 100%;
+                background: $fills-trans-secondary-light;
+              }
+            }
+
+            &.dovetail-ant-table-cell-fix-left {
+              background: white;
+              .dovetail-ant-table-cell-content {
+                display: flex;
+                align-items: center;
+                height: 100%;
                 background: $fills-trans-secondary-light;
               }
             }
