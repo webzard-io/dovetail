@@ -34,7 +34,7 @@ export class WidgetStore {
     const schemas = (
       await Promise.all(
         resources.map(async (resource) => {
-          const { apiVersion: apiVersionWithGroup, kind } = resource;
+          const { apiVersionWithGroup, kind } = resource;
 
           if (apiVersionWithGroup && kind) {
             const schema = await getResourceSchema(apiVersionWithGroup, kind);

@@ -24,6 +24,15 @@ const ColumnSpec = Type.Object({
     title: "Key",
   }),
   title: Type.String({ title: "Title" }),
+  isActionColumn: Type.Boolean({
+    title: "Is action column",
+  }),
+  canCustomizable: Type.Boolean({
+    title: "Can customizable",
+  }),
+  isDefaultDisplay: Type.Boolean({
+    title: "Is default display",
+  }),
   widget: StringUnion(
     ["none", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
     {
@@ -138,6 +147,14 @@ const KubectlGetTableProps = Type.Object({
     },
     category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
+  customizable: Type.Boolean({
+    title: "Customizable",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+  }),
+  customizableKey: Type.String({
+    title: "Customizable key",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+  }),
   empty: Type.String({
     title: "Empty",
     description: "The text display when the data is empty.",
@@ -186,8 +203,8 @@ export const KubectlGetTable = implementRuntimeComponent({
     isDraggable: true,
     isResizable: true,
     exampleProperties: {
-      basePath: "proxy-k8s",
-      apiBase: "/apis/kubesmart.smtx.io/v1alpha1",
+      basePath: 'proxy-k8s',
+      apiBase: "apis/kubesmart.smtx.io/v1alpha1",
       resource: "kubesmartclusters",
       columns: [
         {
@@ -249,6 +266,8 @@ export const KubectlGetTable = implementRuntimeComponent({
     resource,
     fieldSelector,
     columns,
+    customizable,
+    customizableKey,
     empty,
     resizable,
     enableRowSelection,
@@ -374,6 +393,8 @@ export const KubectlGetTable = implementRuntimeComponent({
             sortOrder: columnSortOrder[col.key],
             filters: col.filters?.length ? col.filters : undefined,
           }))}
+          customizable={customizable}
+          customizableKey={customizableKey}
           activeKey={activeKey}
           scroll={scroll}
           tableLayout={tableLayout}

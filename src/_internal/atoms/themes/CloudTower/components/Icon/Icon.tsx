@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { cx } from "@linaria/core";
 import { IconWrapper } from "./Icon.style";
 import pickBy from "lodash/pickBy";
@@ -46,9 +46,26 @@ const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
     ...restProps
   } = props;
   const [hover, setHover] = useState(false);
+  const [src, setSrc] = useState('');
   const defaultWidth = 16;
   const _iconWidth = iconWidth || (type.includes("24") ? 24 : defaultWidth);
   const _iconHeight = iconHeight || _iconWidth;
+
+  useEffect(() => {
+    (async ()=> {
+      let src = ''
+      
+      if (active && activeType) {
+        src = (await import(`../../images/${activeType}.${fileFormat}`)).default;
+      } else if (hover && hoverType) {
+        src = (await import(`../../images/${hoverType}.${fileFormat}`)).default;
+      } else {
+        src = (await import(`../../images/${type}.${fileFormat}`)).default;
+      }
+  
+      setSrc(src);
+    })()
+  }, [active, activeType, hoverType, type, hover, fileFormat]);
 
   return (
     <span
@@ -84,7 +101,7 @@ const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
       <span className="icon-inner">
         <img
           alt={type}
-          src={arrowUp}
+          src={src}
           width={`${_iconWidth}px`}
           height={
             typeof _iconHeight === "string" ? _iconHeight : `${_iconWidth}px`

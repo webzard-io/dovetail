@@ -9,6 +9,8 @@ import Modal from "./components/Modal/Modal";
 import Card from './components/Card';
 import InfoRow from './components/InfoRow';
 import TabMenu from './components/TabMenu';
+import Checkbox from './components/Checkbox/Checkbox';
+import { Dropdown } from 'antd';
 
 import "./styles/font.scss";
 import "./styles/override.scss";
@@ -24,5 +26,9 @@ export const kit: Kit = {
   Modal,
   Card,
   InfoRow,
-  TabMenu
+  TabMenu,
+  Checkbox,
+  Dropdown: props => {
+    return <Dropdown {...props} />;
+  }
 };
