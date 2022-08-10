@@ -4,6 +4,11 @@ import { Select } from "chakra-react-select";
 import { Box } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { Type } from "@sinclair/typebox";
+import { css } from '@emotion/css';
+
+const SelectStyle = css`
+  z-index: 3;
+`
 
 const PathWidgetOptionsSpec = Type.Object({
   paths: Type.Array(Type.String()),
@@ -28,6 +33,7 @@ export default implementWidget<"kui/v1/PathWidget">({
     return (
       <Box>
         <Select
+          className={SelectStyle}
           value={{ label: path.current, value: path.current }}
           options={paths.map((pathStr) => ({
             label: pathStr,
