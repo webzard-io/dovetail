@@ -173,6 +173,18 @@ export type CheckboxProps = {
   indeterminate?: boolean;
 }
 
+export type PaginationProps = {
+  current: number;
+  count: number;
+  size: number;
+  onChange: (page: number) => void;
+  onSizeChange?: (size: number) => void;
+  simple?: boolean;
+  showTotal?: (total: number, range: [number, number]) => string;
+  selectorVisible?: boolean;
+  className?: string;
+}
+
 export interface Kit {
   name: string;
   Button: React.FC<ButtonProps>;
@@ -187,6 +199,7 @@ export interface Kit {
   TabMenu: React.FC<TabMenuProps>;
   Checkbox: React.FC<CheckboxProps>;
   Dropdown: React.FC<DropDownProps>;
+  Pagination: React.FC<PaginationProps>;
 }
 
 export const createKitContext = (kit: Kit) => {

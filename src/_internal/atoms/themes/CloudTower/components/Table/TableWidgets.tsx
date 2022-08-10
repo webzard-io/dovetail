@@ -1,8 +1,17 @@
-import { useEffect } from "react";
-import { cx } from "@linaria/core";
+import { useEffect, useContext } from "react";
+import { cx, css } from "@linaria/core";
+import { styled } from '@linaria/react';
 import { useMeasure } from "react-use";
 import Icon from "../Icon/Icon";
 import { TableLoadingStyle } from "./Table.style";
+import { KitContext } from "../../../../kit-context";
+
+type SearchOperation = {
+  pick?: string | string[];
+  omit?: string | string[];
+  preventRender?: boolean;
+  control?: "push" | "replace";
+};
 
 export const ColumnTitle: React.FC<{
   sortOrder?: "descend" | "ascend" | null;
@@ -48,3 +57,79 @@ export const TableLoading: React.FC = () => {
     </div>
   );
 };
+
+const TablePaginationStyle = css``;
+
+export const TablePagination = <T,>(props: {
+  count?: number;
+  skip: number;
+  size: number;
+  setQuery: (
+    val: T | ((val: T) => T),
+    operation?: SearchOperation | undefined
+  ) => void;
+  onChange?: (page?: number, size?: number) => void;
+}) => {
+  const { count, skip, size, setQuery, onChange } = props;
+  const kit = useContext(KitContext);
+
+  useEffect(() => {
+    if (!count || skip < count) return;
+    setQuery((query) => ({
+      ...query,
+      first: size,
+      // reset skip when size changed
+      skip: 0,
+    }));
+  }, [skip, count, setQuery, size]);
+
+  return (
+    <kit.Pagination
+      current={(skip || 0) / size + 1}
+      count={count || 0}
+      size={size}
+      className={TablePaginationStyle}
+      onChange={(page) => {
+        setQuery((query) => ({
+          ...query,
+          skip: (page - 1) * size,
+        }));
+        if (typeof onChange === "function") {
+          onChange(page, undefined);
+        }
+      }}
+      onSizeChange={(newSize) => {
+        setQuery((query) => ({
+          ...query,
+          first: newSize,
+          // reset skip when size changed
+          skip: 0,
+        }));
+        if (typeof onChange === "function") {
+          onChange(undefined, newSize);
+        }
+      }}
+    />
+  );
+};
+
+export const AuxiliaryLine = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  background: $blue-60;
+  transform: translateX(-9999px);
+  z-index: 999;
+
+  &::before {
+    content: "";
+    position: absolute;
+    height: 34px;
+    width: 3px;
+    top: 0;
+    left: -1px;
+    background: $blue-60;
+  }
+`;

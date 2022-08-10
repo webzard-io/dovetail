@@ -1,11 +1,31 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import { KitContext, TableProps } from "../atoms/kit-context";
+import { AuxiliaryLine } from "../atoms/themes/CloudTower/components/Table/TableWidgets";
 import CustomizeColumn from "../atoms/themes/CloudTower/components/Table/CustomizeColumn";
 import {
   useCustomizeColumn,
   type CustomizeColumnType,
 } from "../atoms/themes/CloudTower/components/Table/customize-column";
 import { KubeApi, UnstructuredList } from "../k8s-api-client/kube-api";
+import { styled } from "@linaria/react";
+
+const TableWrapper = styled.div`
+  overflow: auto;
+  min-height: 150px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+const TableContent = styled.div`
+  overflow: hidden;
+  position: relative;
+`;
 
 type Columns = (TableProps['columns'][0] & {
   isActionColumn?: boolean;
@@ -18,8 +38,11 @@ type KubectlGetTableProps = {
   namespace: string;
   apiBase: string;
   fieldSelector: string;
+  defaultSize?: number;
   columns: Columns;
   onResponse?: (res: any) => void;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (size: number) => void;
 } & Omit<TableProps, "data" | "rowKey" | "columns">;
 
 export const emptyData = {
@@ -37,7 +60,10 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       namespace,
       resource,
       fieldSelector,
+      defaultSize,
       onResponse,
+      onPageChange,
+      onPageSizeChange,
       ...tableProps
     },
     ref
@@ -52,6 +78,8 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       loading: false,
       error: null,
     });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [currentSize, setCurrentSize] = useState(defaultSize ?? 10);
     const { data, loading, error } = response;
 
     const defaultCustomizeColumn: [string, () => CustomizeColumnType[]] =
@@ -121,6 +149,21 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
         ),
     }));
 
+    const onTablePageChange = useCallback(
+      (page) => {
+        onPageChange?.(page);
+        setCurrentPage(page);
+      },
+      [onPageChange]
+    );
+    const onTableSizeChange = useCallback(
+      (size) => {
+        onPageSizeChange?.(size);
+        setCurrentSize(size);
+      },
+      [onPageSizeChange]
+    );
+
     useEffect(() => {
       const api = new KubeApi<UnstructuredList>({
         basePath,
@@ -151,17 +194,32 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
     }, [response]);
 
     return (
-      <kit.Table
-        {...tableProps}
-        columns={columns}
-        ref={ref}
-        data={data.items}
-        error={error}
-        loading={loading}
-        rowKey={(row: UnstructuredList["items"][0]) =>
-          `${row.metadata.namespace}/${row.metadata.name}`
-        }
-      />
+      <TableWrapper>
+        <TableContent>
+          <kit.Table
+            {...tableProps}
+            columns={columns}
+            ref={ref}
+            data={data.items.slice(
+              (currentPage - 1) * currentSize,
+              currentPage * currentSize
+            )}
+            error={error}
+            loading={loading}
+            rowKey={(row: UnstructuredList["items"][0]) =>
+              `${row.metadata.namespace}/${row.metadata.name}`
+            }
+          />
+          <AuxiliaryLine></AuxiliaryLine>
+        </TableContent>
+        <kit.Pagination
+          current={currentPage}
+          size={currentSize}
+          count={data.items.length}
+          onChange={onTablePageChange}
+          onSizeChange={onTableSizeChange}
+        />
+      </TableWrapper>
     );
   }
 );

@@ -4,6 +4,7 @@ import { ButtonProps as AntdButtonProps, ButtonType } from "antd/lib/button";
 import { Typo } from "../../styles/typo.style";
 import { cx } from "@linaria/core";
 import { ButtonStyle, NoPadding } from "./Button.style";
+import Icon from '../Icon/Icon';
 
 const isAntdButtonTypes = (type?: string): type is ButtonType => {
   return Boolean(
@@ -13,10 +14,10 @@ const isAntdButtonTypes = (type?: string): type is ButtonType => {
 };
 
 type ButtonProps = {
-  prefixIcon?: React.ReactNode;
-  hoverPrefixIcon?: React.ReactNode;
-  suffixIcon?: React.ReactNode;
-  hoverSuffixIcon?: React.ReactNode;
+  prefixIcon?: string;
+  hoverPrefixIcon?: string;
+  suffixIcon?: string;
+  hoverSuffixIcon?: string;
   type?:
     | ButtonType
     | "secondary"
@@ -77,9 +78,27 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         size={size}
         {...restProps}
       >
-        {status === "hover" ? hoverPrefixIcon : prefixIcon}
+        {prefixIcon && (
+          <Icon
+            type={
+              status === "hover" && hoverPrefixIcon
+                ? hoverPrefixIcon
+                : prefixIcon
+            }
+            className="button-prefix-icon"
+          />
+        )}
         {children}
-        {status === "hover" ? hoverSuffixIcon : suffixIcon}
+        {suffixIcon && (
+          <Icon
+            type={
+              status === "hover" && hoverSuffixIcon
+                ? hoverSuffixIcon
+                : suffixIcon
+            }
+            className="button-suffix-icon"
+          />
+        )}
       </AntdButton>
     );
   }
