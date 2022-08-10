@@ -39,9 +39,6 @@ export type TableProps = {
     title: string | React.ReactNode;
     dataIndex: string | number | Array<string | number>;
     width?: number;
-    isActionColumn?: boolean;
-    canCustomizable?: boolean;
-    isDefaultDisplay?: boolean;
     ellipsis?: boolean;
     render?: (val: any, record: any, index: number) => React.ReactNode;
   }[];

@@ -7,14 +7,20 @@ import {
 } from "../atoms/themes/CloudTower/components/Table/customize-column";
 import { KubeApi, UnstructuredList } from "../k8s-api-client/kube-api";
 
+type Columns = (TableProps['columns'][0] & {
+  isActionColumn?: boolean;
+  canCustomizable?: boolean;
+  isDefaultDisplay?: boolean;
+})[];
 type KubectlGetTableProps = {
   basePath: string;
   resource: string;
   namespace: string;
   apiBase: string;
   fieldSelector: string;
+  columns: Columns;
   onResponse?: (res: any) => void;
-} & Omit<TableProps, "data" | "rowKey">;
+} & Omit<TableProps, "data" | "rowKey" | "columns">;
 
 export const emptyData = {
   apiVersion: "",
@@ -63,7 +69,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       }, [tableProps.columns, tableProps.customizableKey]);
     const [customizeColumns] = useCustomizeColumn(...defaultCustomizeColumn);
 
-    let columns: TableProps["columns"] = [];
+    let columns: Columns = [];
 
     customizeColumns.forEach((customizableColumn) => {
       if (!customizableColumn.display) return;
