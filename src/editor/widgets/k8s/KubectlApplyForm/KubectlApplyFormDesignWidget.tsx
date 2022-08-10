@@ -379,7 +379,10 @@ const KubectlApplyFormDesignWidget: React.FC<
                         formConfig.current.defaultValues = resources;
                         setLoadingSchema(true);
                         formConfig.current.schemas = (
-                          await store.fetchResourcesSchemas(resources)
+                          await store.fetchResourcesSchemas(resources.map(resource=> ({
+                            apiVersionWithGroup: resource.apiVersion,
+                            kind: resource.kind
+                          })))
                         ).map((schema) => omit(schema, ["properties.status"]));
 
                         if (fieldsIsEmpty(formConfig.current.uiConfig)) {
