@@ -50,7 +50,7 @@ import store from "../store";
 
 injectGlobal`
 .chakra-popover__popper {
-  z-index: 9999999 !important;
+  z-index: 1401 !important;
 }
 `;
 
