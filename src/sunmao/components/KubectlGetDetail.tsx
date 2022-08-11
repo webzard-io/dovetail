@@ -19,7 +19,7 @@ const InfoSpec = Type.Object({
     },
   }),
   widget: StringUnion(
-    ["none", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
+    ["default", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
     {
       title: "Widget",
     }
