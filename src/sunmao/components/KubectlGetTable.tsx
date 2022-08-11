@@ -12,6 +12,7 @@ import BaseKubectlGetTable, {
 } from "../../_internal/organisms/KubectlGetTable";
 import { renderWidget } from "../utils/widget";
 import { css } from "@emotion/css";
+import { get } from 'lodash';
 
 const ColumnSpec = Type.Object({
   dataIndex: Type.String({
@@ -88,14 +89,14 @@ const ColumnSpec = Type.Object({
       Type.Object({
         text: Type.String(),
         value: Type.String(),
+        compare: StringUnion([
+          'equal',
+          'includes'
+        ])
       })
     ),
     { title: "Filter items", description: "The filter items." }
   ),
-  onFilter: Type.Any({
-    title: "Filter",
-    description: "The filter function: `(value, record)=> boolean`.",
-  }),
   filterMultiple: Type.Boolean({
     title: "Filter multiple",
     description: "Can select multiple filters?",
@@ -430,6 +431,21 @@ export const KubectlGetTable = implementRuntimeComponent({
             },
             sortOrder: columnSortOrder[col.key],
             filters: col.filters?.length ? col.filters : undefined,
+            onFilter(value, record) {
+              const compare = col.filters.find((filter)=> filter.value === value)?.compare;
+              const cellValue = get(record, col.dataIndex)
+
+              switch (compare) {
+                case 'equal': {
+                  return cellValue === value;
+                }
+                case 'includes': {
+                  return cellValue.includes(value);
+                }
+              }
+
+              return true;
+            }
           }))}
           customizable={customizable}
           customizableKey={customizableKey}
