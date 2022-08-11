@@ -62,9 +62,6 @@ const ColumnSpec = Type.Object({
       },
     ],
   }),
-  transform: Type.Any({
-    title: "Transform",
-  }),
   fixed: StringUnion(["none", "left", "right"], {
     title: "Fixed",
     description: "Is the column fixed?",
