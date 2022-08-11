@@ -12,95 +12,87 @@ import BaseKubectlGetTable, {
 } from "../../_internal/organisms/KubectlGetTable";
 import { renderWidget } from "../utils/widget";
 import { css } from "@emotion/css";
-import { get } from 'lodash';
+import { get } from "lodash";
 
-const ColumnSpec = Type.Object({
-  dataIndex: Type.String({
-    title: "Data index",
-    description: "The key of the column data.",
-    widget: "kui/v1/PathWidget",
-    widgetOptions: {},
-  }),
-  key: Type.String({
-    title: "Key",
-  }),
-  title: Type.String({ title: "Title" }),
-  isActionColumn: Type.Boolean({
-    title: "Is action column",
-  }),
-  canCustomizable: Type.Boolean({
-    title: "Can customizable",
-  }),
-  isDefaultDisplay: Type.Boolean({
-    title: "Is default display",
-  }),
-  widget: StringUnion(
-    ["default", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
-    {
-      title: "Widget",
-    }
-  ),
-  widgetOptions: Type.Record(Type.String(), Type.Any(), {
-    title: "Widget options",
-    widget: "kui/v1/OptionsWidget",
-    widgetOptions: {
-      optionsMap: DISPLAY_WIDGET_OPTIONS_MAP,
-    },
-  }),
-  componentId: Type.String({
-    title: "Component ID",
-    widget: "kui/v1/CustomComponentWidget",
-    widgetOptions: {
-      isDisplayLabel: false,
-      keyOfPath: "dataIndex",
-      slot: "cell",
-    },
-    conditions: [
+const ColumnSpec = Type.Object(
+  {
+    dataIndex: Type.String({
+      title: "Data index",
+      description: "The key of the column data.",
+      widget: "kui/v1/PathWidget",
+      widgetOptions: {},
+    }),
+    key: Type.String({
+      title: "Key",
+    }),
+    title: Type.String({ title: "Title" }),
+    isActionColumn: Type.Boolean({
+      title: "Is action column",
+    }),
+    canCustomizable: Type.Boolean({
+      title: "Can customizable",
+    }),
+    isDefaultDisplay: Type.Boolean({
+      title: "Is default display",
+    }),
+    widget: StringUnion(
+      ["default", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
       {
-        key: "widget",
-        value: "component",
-      },
-    ],
-  }),
-  fixed: StringUnion(["none", "left", "right"], {
-    title: "Fixed",
-    description: "Is the column fixed?",
-  }),
-  width: Type.Number({ title: "Width" }),
-  ellipsis: Type.Boolean({ title: "Ellipsis" }),
-  align: StringUnion(["left", "center", "right"], { title: "Align" }),
-  sorter: Type.Any({
-    title: "Sorter",
-    description: "The sorter function. Set it as `true` to use server sorting.",
-  }),
-  defaultSortOrder: StringUnion(["ascend", "descend"], {
-    title: "Default sort order",
-  }),
-  sortDirections: Type.Array(StringUnion(["ascend", "descend"]), {
-    title: "Sort directions",
-    description: "The sort directions.",
-    widget: "core/v1/expression",
-  }),
-  filters: Type.Array(
-    Type.Optional(
-      Type.Object({
-        text: Type.String(),
-        value: Type.String(),
-        compare: StringUnion([
-          'equal',
-          'includes'
-        ])
-      })
+        title: "Widget",
+      }
     ),
-    { title: "Filter items", description: "The filter items." }
-  ),
-  filterMultiple: Type.Boolean({
-    title: "Filter multiple",
-    description: "Can select multiple filters?",
-  }),
-}, {
-  widget: 'kui/v1/KubectlGetTableColumnWidget'
-});
+    widgetOptions: Type.Record(Type.String(), Type.Any(), {
+      title: "Widget options",
+      widget: "kui/v1/OptionsWidget",
+      widgetOptions: {
+        optionsMap: DISPLAY_WIDGET_OPTIONS_MAP,
+      },
+    }),
+    componentId: Type.String({
+      title: "Component ID",
+      widget: "kui/v1/CustomComponentWidget",
+      widgetOptions: {
+        isDisplayLabel: false,
+        keyOfPath: "dataIndex",
+        slot: "cell",
+      },
+      conditions: [
+        {
+          key: "widget",
+          value: "component",
+        },
+      ],
+    }),
+    fixed: StringUnion(["none", "left", "right"], {
+      title: "Fixed",
+      description: "Is the column fixed?",
+    }),
+    width: Type.Number({ title: "Width" }),
+    ellipsis: Type.Boolean({ title: "Ellipsis" }),
+    align: StringUnion(["left", "center", "right"], { title: "Align" }),
+    sortType: StringUnion(["none", "auto", "server"], { title: "Sort type" }),
+    defaultSortOrder: StringUnion(["ascend", "descend"], {
+      title: "Default sort order",
+    }),
+    filters: Type.Array(
+      Type.Optional(
+        Type.Object({
+          text: Type.String(),
+          value: Type.String(),
+          compare: StringUnion(["equal", "includes"]),
+        })
+      ),
+      { title: "Filter items", description: "The filter items." }
+    ),
+    filterMultiple: Type.Boolean({
+      title: "Filter multiple",
+      description: "Can select multiple filters?",
+    }),
+  },
+  {
+    widget: "kui/v1/KubectlGetTableColumnWidget",
+  }
+);
 
 const KubectlGetTableProps = Type.Object({
   basePath: Type.String({
@@ -216,12 +208,14 @@ export const KubectlGetTable = implementRuntimeComponent({
           title: "Name",
           dataIndex: "metadata.name",
           width: 100,
+          sortType: "auto",
           filters: [],
         },
         {
           key: "namespace",
           title: "Namespace",
           dataIndex: "metadata.namespace",
+          sortType: "none",
           width: 200,
           filters: [],
         },
@@ -229,6 +223,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           key: "age",
           title: "Age",
           dataIndex: "metadata.creationTimestamp",
+          sortType: "auto",
           width: 100,
           filters: [],
         },
@@ -324,7 +319,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           ...columnSortOrder,
           [key]: order,
         };
-
+        
         setColumnSortOrder(newColumnSortOrder);
         mergeState({
           columnSortOrder: newColumnSortOrder,
@@ -427,22 +422,47 @@ export const KubectlGetTable = implementRuntimeComponent({
               );
             },
             sortOrder: columnSortOrder[col.key],
+            sortDirections:
+              col.sortType === "none" ? null : ["", "ascend", "descend"],
+            sorter:
+              col.sortType === "none"
+                ? undefined
+                : col.sortType === "server"
+                ? true
+                : (
+                    a: UnstructuredList["items"][0],
+                    b: UnstructuredList["items"][0]
+                  ) => {
+                    const valueA = get(a, col.dataIndex);
+                    const valueB = get(b, col.dataIndex);
+
+                    if (
+                      typeof valueA === "number" &&
+                      typeof valueB === "number"
+                    ) {
+                      return valueA - valueB;
+                    }
+
+                    return String(valueA).localeCompare(String(valueB));
+                  },
             filters: col.filters?.length ? col.filters : undefined,
-            onFilter(value, record) {
-              const compare = col.filters.find((filter)=> filter.value === value)?.compare;
-              const cellValue = get(record, col.dataIndex)
+            onFilter(value: string, record: UnstructuredList["items"][0]) {
+              const compare = col.filters.find(
+                (filter) => filter.value === value
+              )?.compare;
+              const cellValue = get(record, col.dataIndex);
 
               switch (compare) {
-                case 'equal': {
+                case "equal": {
                   return cellValue === value;
                 }
-                case 'includes': {
+                case "includes": {
                   return cellValue.includes(value);
                 }
               }
 
               return true;
-            }
+            },
           }))}
           customizable={customizable}
           customizableKey={customizableKey}
