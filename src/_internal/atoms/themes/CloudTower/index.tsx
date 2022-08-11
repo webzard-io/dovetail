@@ -11,6 +11,7 @@ import InfoRow from './components/InfoRow';
 import TabMenu from './components/TabMenu';
 import Checkbox from './components/Checkbox/Checkbox';
 import { Dropdown } from 'antd';
+import Pagination from './components/Pagination/Pagination';
 
 import "./styles/font.scss";
 import "./styles/override.scss";
@@ -30,5 +31,6 @@ export const kit: Kit = {
   Checkbox,
   Dropdown: props => {
     return <Dropdown {...props} />;
-  }
+  },
+  Pagination
 };

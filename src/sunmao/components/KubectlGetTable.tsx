@@ -13,96 +13,100 @@ import BaseKubectlGetTable, {
 import { renderWidget } from "../utils/widget";
 import { css } from "@emotion/css";
 
-const ColumnSpec = Type.Object({
-  dataIndex: Type.String({
-    title: "Data index",
-    description: "The key of the column data.",
-    widget: "kui/v1/PathWidget",
-    widgetOptions: {},
-  }),
-  key: Type.String({
-    title: "Key",
-  }),
-  title: Type.String({ title: "Title" }),
-  isActionColumn: Type.Boolean({
-    title: "Is action column",
-  }),
-  canCustomizable: Type.Boolean({
-    title: "Can customizable",
-  }),
-  isDefaultDisplay: Type.Boolean({
-    title: "Is default display",
-  }),
-  widget: StringUnion(
-    ["none", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
-    {
-      title: "Widget",
-    }
-  ),
-  widgetOptions: Type.Record(Type.String(), Type.Any(), {
-    title: "Widget options",
-    widget: "kui/v1/OptionsWidget",
-    widgetOptions: {
-      optionsMap: DISPLAY_WIDGET_OPTIONS_MAP,
-    },
-  }),
-  componentId: Type.String({
-    title: "Component ID",
-    widget: "kui/v1/CustomComponentWidget",
-    widgetOptions: {
-      isDisplayLabel: false,
-      keyOfPath: "dataIndex",
-      slot: "cell",
-    },
-    conditions: [
+const ColumnSpec = Type.Object(
+  {
+    dataIndex: Type.String({
+      title: "Data index",
+      description: "The key of the column data.",
+      widget: "kui/v1/PathWidget",
+      widgetOptions: {},
+    }),
+    key: Type.String({
+      title: "Key",
+    }),
+    title: Type.String({ title: "Title" }),
+    isActionColumn: Type.Boolean({
+      title: "Is action column",
+    }),
+    canCustomizable: Type.Boolean({
+      title: "Can customizable",
+    }),
+    isDefaultDisplay: Type.Boolean({
+      title: "Is default display",
+    }),
+    widget: StringUnion(
+      ["none", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
       {
-        key: "widget",
-        value: "component",
-      },
-    ],
-  }),
-  transform: Type.Any({
-    title: "Transform",
-  }),
-  fixed: StringUnion(["none", "left", "right"], {
-    title: "Fixed",
-    description: "Is the column fixed?",
-  }),
-  width: Type.Number({ title: "Width" }),
-  ellipsis: Type.Boolean({ title: "Ellipsis" }),
-  align: StringUnion(["left", "center", "right"], { title: "Align" }),
-  sorter: Type.Any({
-    title: "Sorter",
-    description: "The sorter function. Set it as `true` to use server sorting.",
-  }),
-  defaultSortOrder: StringUnion(["ascend", "descend"], {
-    title: "Default sort order",
-  }),
-  sortDirections: Type.Array(StringUnion(["ascend", "descend"]), {
-    title: "Sort directions",
-    description: "The sort directions.",
-    widget: "core/v1/expression",
-  }),
-  filters: Type.Array(
-    Type.Optional(
-      Type.Object({
-        text: Type.String(),
-        value: Type.String(),
-      })
+        title: "Widget",
+      }
     ),
-    { title: "Filter items", description: "The filter items." }
-  ),
-  onFilter: Type.Any({
-    title: "Filter",
-    description: "The filter function: `(value, record)=> boolean`.",
-  }),
-  filterMultiple: Type.Boolean({
-    title: "Filter multiple",
-    description: "Can select multiple filters?",
-  }),
-}, {
-  widget: 'kui/v1/KubectlGetTableColumnWidget'
-});
+    widgetOptions: Type.Record(Type.String(), Type.Any(), {
+      title: "Widget options",
+      widget: "kui/v1/OptionsWidget",
+      widgetOptions: {
+        optionsMap: DISPLAY_WIDGET_OPTIONS_MAP,
+      },
+    }),
+    componentId: Type.String({
+      title: "Component ID",
+      widget: "kui/v1/CustomComponentWidget",
+      widgetOptions: {
+        isDisplayLabel: false,
+        keyOfPath: "dataIndex",
+        slot: "cell",
+      },
+      conditions: [
+        {
+          key: "widget",
+          value: "component",
+        },
+      ],
+    }),
+    transform: Type.Any({
+      title: "Transform",
+    }),
+    fixed: StringUnion(["none", "left", "right"], {
+      title: "Fixed",
+      description: "Is the column fixed?",
+    }),
+    width: Type.Number({ title: "Width" }),
+    ellipsis: Type.Boolean({ title: "Ellipsis" }),
+    align: StringUnion(["left", "center", "right"], { title: "Align" }),
+    sorter: Type.Any({
+      title: "Sorter",
+      description:
+        "The sorter function. Set it as `true` to use server sorting.",
+    }),
+    defaultSortOrder: StringUnion(["ascend", "descend"], {
+      title: "Default sort order",
+    }),
+    sortDirections: Type.Array(StringUnion(["ascend", "descend"]), {
+      title: "Sort directions",
+      description: "The sort directions.",
+      widget: "core/v1/expression",
+    }),
+    filters: Type.Array(
+      Type.Optional(
+        Type.Object({
+          text: Type.String(),
+          value: Type.String(),
+        })
+      ),
+      { title: "Filter items", description: "The filter items." }
+    ),
+    onFilter: Type.Any({
+      title: "Filter",
+      description: "The filter function: `(value, record)=> boolean`.",
+    }),
+    filterMultiple: Type.Boolean({
+      title: "Filter multiple",
+      description: "Can select multiple filters?",
+    }),
+  },
+  {
+    widget: "kui/v1/KubectlGetTableColumnWidget",
+  }
+);
 
 const KubectlGetTableProps = Type.Object({
   basePath: Type.String({
@@ -155,6 +159,10 @@ const KubectlGetTableProps = Type.Object({
     title: "Customizable key",
     category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
+  defaultSize: Type.Number({
+    title: "Default size",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+  }),
   empty: Type.String({
     title: "Empty",
     description: "The text display when the data is empty.",
@@ -193,6 +201,8 @@ const KubectlGetTableState = Type.Object({
   activeItem: Type.Any(),
   selectedItems: Type.Array(Type.Any()),
   columnSortOrder: Type.Record(Type.String(), Type.String()),
+  currentPage: Type.Number(),
+  currentSize: Type.Number(),
 });
 
 export const KubectlGetTable = implementRuntimeComponent({
@@ -203,7 +213,7 @@ export const KubectlGetTable = implementRuntimeComponent({
     isDraggable: true,
     isResizable: true,
     exampleProperties: {
-      basePath: 'proxy-k8s',
+      basePath: "proxy-k8s",
       apiBase: "apis/kubesmart.smtx.io/v1alpha1",
       resource: "kubesmartclusters",
       columns: [
@@ -229,6 +239,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           filters: [],
         },
       ],
+      defaultSize: 10,
       empty: "No Data.",
     },
     exampleSize: [8, 4],
@@ -256,7 +267,13 @@ export const KubectlGetTable = implementRuntimeComponent({
       },
     },
     styleSlots: ["content"],
-    events: ["onActive", "onSelect", "onSort"],
+    events: [
+      "onActive",
+      "onSelect",
+      "onSort",
+      "onPageChange",
+      "onPageSizeChange",
+    ],
   },
 })(
   ({
@@ -268,6 +285,7 @@ export const KubectlGetTable = implementRuntimeComponent({
     columns,
     customizable,
     customizableKey,
+    defaultSize,
     empty,
     resizable,
     enableRowSelection,
@@ -328,6 +346,24 @@ export const KubectlGetTable = implementRuntimeComponent({
       },
       [setActiveKey, callbackMap]
     );
+    const onPageChange = useCallback(
+      (currentPage) => {
+        callbackMap?.onPageChange?.();
+        mergeState({
+          currentPage,
+        });
+      },
+      [callbackMap, mergeState]
+    );
+    const onPageSizeChange = useCallback(
+      (currentSize) => {
+        callbackMap?.onPageSizeChange?.();
+        mergeState({
+          currentSize,
+        });
+      },
+      [callbackMap, mergeState]
+    );
 
     useEffect(() => {
       subscribeMethods({
@@ -365,6 +401,12 @@ export const KubectlGetTable = implementRuntimeComponent({
         ),
       });
     }, [selectedKeys, response]);
+    useEffect(() => {
+      mergeState({
+        currentPage: 1,
+        currentSize: defaultSize ?? 10,
+      });
+    }, []);
 
     return (
       <div ref={elementRef} className={css(customStyle?.content)}>
@@ -398,6 +440,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           activeKey={activeKey}
           scroll={scroll}
           tableLayout={tableLayout}
+          defaultSize={defaultSize}
           empty={empty}
           bordered={bordered}
           resizable={resizable}
@@ -405,6 +448,8 @@ export const KubectlGetTable = implementRuntimeComponent({
           onSelect={enableRowSelection ? onSelectChange : undefined}
           onActive={onActive}
           onSorterChange={onSorterChange}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
         />
       </div>
     );
