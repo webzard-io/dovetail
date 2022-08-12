@@ -1,6 +1,6 @@
 import useLocalStorage from 'src/_internal/atoms/hooks/useLocalStorage';
 import { useMemo, useCallback, useRef } from 'react';
-import _ from 'lodash';
+import { isEqual, omit } from 'lodash';
 import { getValue } from 'src/_internal/atoms/hooks/utils';
 
 export type CustomizeColumnType = {
@@ -49,7 +49,7 @@ export const useCustomizeColumn = (
 
   const removeValue = useCallback(
     (_key?: string) => {
-      setStorage(storage => _.omit(storage, _key || keyRef.current));
+      setStorage(storage => omit(storage, _key || keyRef.current));
     },
     [setStorage]
   );
@@ -60,7 +60,7 @@ export const useCustomizeColumn = (
 export function useEqualAllColumnKeys<T>(nextAllColumnKeys: T): T | undefined {
   const _allColumnKeys = useRef<T | undefined>();
 
-  if (!_.isEqual(_allColumnKeys.current, nextAllColumnKeys)) {
+  if (!isEqual(_allColumnKeys.current, nextAllColumnKeys)) {
     _allColumnKeys.current = nextAllColumnKeys;
   }
 
