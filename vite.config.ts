@@ -25,7 +25,13 @@ export default defineConfig({
       formats: ["es"],
     },
     rollupOptions: {
-      external: ["react", "react-dom", "@sunmao-ui/core", "@sunmao-ui/runtime"],
+      external: [
+        "react",
+        "react-dom",
+        "@sunmao-ui/core",
+        "@sunmao-ui/runtime",
+        "@sunmao-ui/editor-sdk",
+      ],
     },
   },
   server: {

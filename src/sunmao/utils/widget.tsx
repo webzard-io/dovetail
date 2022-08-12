@@ -23,7 +23,7 @@ export function renderWidget(
   const transformedValue = transform ? transform(restField, data) : value;
   let node = transformedValue;
 
-  if (widget && widget !== "none") {
+  if (widget && widget !== "default") {
     // use the widget
     const WidgetComponent =
       DISPLAY_WIDGETS_MAP[widget as keyof typeof DISPLAY_WIDGETS_MAP];

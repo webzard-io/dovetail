@@ -12,6 +12,7 @@ import BaseKubectlGetTable, {
 } from "../../_internal/organisms/KubectlGetTable";
 import { renderWidget } from "../utils/widget";
 import { css } from "@emotion/css";
+import { get } from "lodash";
 
 const ColumnSpec = Type.Object(
   {
@@ -35,7 +36,7 @@ const ColumnSpec = Type.Object(
       title: "Is default display",
     }),
     widget: StringUnion(
-      ["none", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
+      ["default", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
       {
         title: "Widget",
       }
@@ -62,9 +63,6 @@ const ColumnSpec = Type.Object(
         },
       ],
     }),
-    transform: Type.Any({
-      title: "Transform",
-    }),
     fixed: StringUnion(["none", "left", "right"], {
       title: "Fixed",
       description: "Is the column fixed?",
@@ -72,32 +70,20 @@ const ColumnSpec = Type.Object(
     width: Type.Number({ title: "Width" }),
     ellipsis: Type.Boolean({ title: "Ellipsis" }),
     align: StringUnion(["left", "center", "right"], { title: "Align" }),
-    sorter: Type.Any({
-      title: "Sorter",
-      description:
-        "The sorter function. Set it as `true` to use server sorting.",
-    }),
+    sortType: StringUnion(["none", "auto", "server"], { title: "Sort type" }),
     defaultSortOrder: StringUnion(["ascend", "descend"], {
       title: "Default sort order",
-    }),
-    sortDirections: Type.Array(StringUnion(["ascend", "descend"]), {
-      title: "Sort directions",
-      description: "The sort directions.",
-      widget: "core/v1/expression",
     }),
     filters: Type.Array(
       Type.Optional(
         Type.Object({
           text: Type.String(),
           value: Type.String(),
+          compare: StringUnion(["equal", "includes"]),
         })
       ),
       { title: "Filter items", description: "The filter items." }
     ),
-    onFilter: Type.Any({
-      title: "Filter",
-      description: "The filter function: `(value, record)=> boolean`.",
-    }),
     filterMultiple: Type.Boolean({
       title: "Filter multiple",
       description: "Can select multiple filters?",
@@ -222,12 +208,14 @@ export const KubectlGetTable = implementRuntimeComponent({
           title: "Name",
           dataIndex: "metadata.name",
           width: 100,
+          sortType: "auto",
           filters: [],
         },
         {
           key: "namespace",
           title: "Namespace",
           dataIndex: "metadata.namespace",
+          sortType: "none",
           width: 200,
           filters: [],
         },
@@ -235,6 +223,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           key: "age",
           title: "Age",
           dataIndex: "metadata.creationTimestamp",
+          sortType: "auto",
           width: 100,
           filters: [],
         },
@@ -330,7 +319,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           ...columnSortOrder,
           [key]: order,
         };
-
+        
         setColumnSortOrder(newColumnSortOrder);
         mergeState({
           columnSortOrder: newColumnSortOrder,
@@ -433,7 +422,47 @@ export const KubectlGetTable = implementRuntimeComponent({
               );
             },
             sortOrder: columnSortOrder[col.key],
+            sortDirections:
+              col.sortType === "none" ? null : ["", "ascend", "descend"],
+            sorter:
+              col.sortType === "none"
+                ? undefined
+                : col.sortType === "server"
+                ? true
+                : (
+                    a: UnstructuredList["items"][0],
+                    b: UnstructuredList["items"][0]
+                  ) => {
+                    const valueA = get(a, col.dataIndex);
+                    const valueB = get(b, col.dataIndex);
+
+                    if (
+                      typeof valueA === "number" &&
+                      typeof valueB === "number"
+                    ) {
+                      return valueA - valueB;
+                    }
+
+                    return String(valueA).localeCompare(String(valueB));
+                  },
             filters: col.filters?.length ? col.filters : undefined,
+            onFilter(value: string, record: UnstructuredList["items"][0]) {
+              const compare = col.filters.find(
+                (filter) => filter.value === value
+              )?.compare;
+              const cellValue = get(record, col.dataIndex);
+
+              switch (compare) {
+                case "equal": {
+                  return cellValue === value;
+                }
+                case "includes": {
+                  return cellValue.includes(value);
+                }
+              }
+
+              return true;
+            },
           }))}
           customizable={customizable}
           customizableKey={customizableKey}
