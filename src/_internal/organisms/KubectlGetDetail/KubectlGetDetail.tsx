@@ -37,7 +37,7 @@ type DetailResponse = {
   error: null | Error;
 };
 
-type Item = {
+export type Item = {
   label: string;
   path: string;
   widget?: string;
@@ -54,17 +54,23 @@ type RenderFieldParams = {
   category: string;
 } & Omit<Item, "transform">;
 
-type Info = Record<string, Item[]>;
+export type Info = Record<string, Item[]>;
 
-type Section = {
+export type Section = {
   title: string;
   info: Info;
 };
 
-type Tab = {
+export type Tab = {
   key: string;
   label: string;
   sections: Section[];
+};
+
+export type Layout = {
+  type: "simple" | "tabs";
+  tabs?: Tab[];
+  sections?: Section[];
 };
 
 type KubectlGetDetailProps = {
@@ -73,11 +79,7 @@ type KubectlGetDetailProps = {
   namespace?: string;
   resource: string;
   name: string;
-  layout: {
-    type: "simple" | "tabs";
-    tabs?: Tab[];
-    sections?: Section[];
-  };
+  layout: Layout;
   renderTab?: (
     params: { tab: string; tabIndex: number },
     data: { detail: Unstructured | null },

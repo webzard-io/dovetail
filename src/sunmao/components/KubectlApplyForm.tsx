@@ -1,4 +1,4 @@
-import { Type } from "@sinclair/typebox";
+import { Type, Static } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
 import { useEffect, useState } from "react";
@@ -21,7 +21,7 @@ const UiConfigFieldSpecProperties = {
   helperText: Type.String({ title: "Helper text" }),
   sectionTitle: Type.String({ title: "Section title" }),
   error: Type.String({ title: "Error" }),
-  condition: Type.Boolean({ title: 'Condition' }),
+  condition: Type.Boolean({ title: "Condition" }),
   widget: StringUnion(
     ["default", "component"].concat(Object.keys(FORM_WIDGETS_MAP)),
     {
@@ -38,7 +38,7 @@ const UiConfigFieldSpecProperties = {
   componentId: Type.String({
     title: "ComponentId",
     isComponentId: true,
-    widget: "kui/v1/FieldCustomComponentWidget",
+    widget: "kui/v1/FieldCustomComponentWidget" as any,
     widgetOptions: {
       isDisplayLabel: false,
     },
@@ -279,7 +279,12 @@ export const KubectlApplyForm = implementRuntimeComponent({
         onSubmit={callbackMap?.onSubmit}
         onCancel={callbackMap?.onCancel}
         getSlot={(f, fallback) => {
-          return slotsElements.field?.(f, fallback) || fallback;
+          return (
+            slotsElements.field?.(
+              f as Static<typeof UiConfigFieldSpec>,
+              fallback
+            ) || fallback
+          );
         }}
       />
     );

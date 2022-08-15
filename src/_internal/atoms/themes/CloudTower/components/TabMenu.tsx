@@ -1,12 +1,9 @@
-import React, { useMemo, useContext, useRef, useEffect, useState } from 'react';
-import { Menu, Dropdown } from 'antd';
-import { css } from '@linaria/core';
-import cs from 'classnames';
-import { Typo } from '../styles/typo.style';
-import ArrowDown from '../images/1-arrow-chevron-down-16-blue.svg';
-import ArrowDownBold from '../images/1-arrow-chevron-down-16-bold-blue.svg';
-import ArrowDownSmall from '../images/1-arrow-chevron-down-small-16-blue.svg';
-import ArrowDownSmallBold from '../images/1-arrow-chevron-down-small-16-bold-blue.svg';
+import React, { useMemo, useContext, useRef, useEffect, useState } from "react";
+import { Menu, Dropdown } from "antd";
+import { css } from "@linaria/core";
+import cs from "classnames";
+import { Typo } from "../styles/typo.style";
+import Icon from "./Icon/Icon";
 
 const TabMenuStyle = css`
   display: flex;
@@ -251,7 +248,7 @@ const TabMenuSubMenu = css`
 
       &:not(:first-child) {
         &::before {
-          content: ' ';
+          content: " ";
           height: 1px;
           width: calc(100% + 10px);
           background: $strokes-translucent-1-light;
@@ -268,17 +265,34 @@ const TabMenuSubMenu = css`
 `;
 
 const renderExpandArrow = (size: string, isBold: boolean) => {
-  if (size === 'medium' && !isBold)
-    return <ArrowDown className="expand-arrow" />;
+  if (size === "medium" && !isBold)
+    return (
+      <Icon type="1-arrow-chevron-down-16-blue" className="expand-arraw"></Icon>
+    );
 
-  if (size === 'medium' && isBold)
-    return <ArrowDownBold className="expand-arrow"></ArrowDownBold>;
+  if (size === "medium" && isBold)
+    return (
+      <Icon
+        type="1-arrow-chevron-down-16-bold-blue"
+        className="expand-arraw"
+      ></Icon>
+    );
 
-  if (size === 'small' && !isBold)
-    return <ArrowDownSmall className="expand-arrow"></ArrowDownSmall>;
+  if (size === "small" && !isBold)
+    return (
+      <Icon
+        type="1-arrow-chevron-down-small-16-blue"
+        className="expand-arraw"
+      ></Icon>
+    );
 
-  if (size === 'small' && isBold)
-    return <ArrowDownSmallBold className="expand-arrow"></ArrowDownSmallBold>;
+  if (size === "small" && isBold)
+    return (
+      <Icon
+        type="1-arrow-chevron-down-small-16-bold-blue"
+        className="expand-arraw"
+      ></Icon>
+    );
 };
 
 export type TabMenuTab =
@@ -307,20 +321,20 @@ export type TabMenuTab =
     };
 
 export type TabMenuProps = {
-  size?: 'small' | 'medium';
-  theme?: 'default' | 'light';
+  size?: "small" | "medium";
+  theme?: "default" | "light";
   selectedKey: string;
   tabs: TabMenuTab[];
   onChange?: (activeKey: string) => void;
 };
 
-const TabMenu: React.FC<TabMenuProps> = props => {
+const TabMenu: React.FC<TabMenuProps> = (props) => {
   const {
     tabs,
     onChange,
     selectedKey,
-    size = 'medium',
-    theme = 'default',
+    size = "medium",
+    theme = "default",
   } = props;
   const onChangeRef = useRef(onChange);
   const view = useMemo(() => {
@@ -337,9 +351,9 @@ const TabMenu: React.FC<TabMenuProps> = props => {
         }
       | undefined;
 
-    tabs.some(tab => {
-      if ('items' in tab) {
-        const select = tab.items?.find(item => item.key === selectedKey);
+    tabs.some((tab) => {
+      if ("items" in tab) {
+        const select = tab.items?.find((item) => item.key === selectedKey);
         result = select
           ? {
               key: tab.key,
@@ -374,7 +388,7 @@ const TabMenu: React.FC<TabMenuProps> = props => {
 
     return result;
   }, [tabs, selectedKey]);
-  const isMedium = size === 'medium';
+  const isMedium = size === "medium";
   const viewKey = view?.key;
   const isAsync = view?.isAsync;
   const [transitioned, setTransitioned] = useState(false);
@@ -413,11 +427,12 @@ const TabMenu: React.FC<TabMenuProps> = props => {
     <div
       className={cs(
         TabMenuStyle,
-        'tab-menu',
-        view?.isOverview && 'is-overview'
-      )}>
+        "tab-menu",
+        view?.isOverview && "is-overview"
+      )}
+    >
       <div className="tab-bar">
-        {tabs.map(tab => {
+        {tabs.map((tab) => {
           const isSelected = view?.key === tab.key;
 
           let typo = Typo.Label.l2_regular_title;
@@ -429,7 +444,7 @@ const TabMenu: React.FC<TabMenuProps> = props => {
             typo = Typo.Label.l2_bold_title;
           }
 
-          if ('items' in tab) {
+          if ("items" in tab) {
             // Tab Group
             return (
               <Dropdown
@@ -439,35 +454,40 @@ const TabMenu: React.FC<TabMenuProps> = props => {
                 overlay={
                   <Menu
                     selectedKeys={[selectedKey]}
-                    onClick={params => onChange?.(params.key as string)}>
-                    {tab.items?.map(item => (
+                    onClick={(params) => onChange?.(params.key as string)}
+                  >
+                    {tab.items?.map((item) => (
                       <Menu.Item data-test={item.key} key={item.key}>
                         {item.title}
                       </Menu.Item>
                     ))}
                   </Menu>
                 }
-                trigger={['click']}>
+                trigger={["click"]}
+              >
                 <span
                   className={cs([
-                    'tab-menu-item',
-                    'tab-menu-item-group',
-                    isSelected && 'tab-menu-item-selected',
-                    isMedium && 'tab-menu-item-medium',
-                    theme === 'light' && 'tab-menu-item-light',
-                  ])}>
+                    "tab-menu-item",
+                    "tab-menu-item-group",
+                    isSelected && "tab-menu-item-selected",
+                    isMedium && "tab-menu-item-medium",
+                    theme === "light" && "tab-menu-item-light",
+                  ])}
+                >
                   <span
                     className={cs([
-                      'main-title',
+                      "main-title",
                       isMedium
                         ? Typo.Label.l1_regular_title
                         : Typo.Label.l2_regular_title,
-                    ])}>
+                    ])}
+                  >
                     {tab.title}
                   </span>
                   <span
-                    className={cs(['sub-title', typo])}
-                    data-test={isSelected ? view?.title : tab.title}>
+                    className={cs(["sub-title", typo])}
+                    data-test={isSelected ? view?.title : tab.title}
+                  >
                     {/* FIXME: 这个 icon 的 svg 文件设计还没整理，待设计输出 svg 后，应该抽离为统一的 svg 文件，而不是在代码里写死。 */}
                     <svg
                       className="slash-arrow"
@@ -475,7 +495,8 @@ const TabMenu: React.FC<TabMenuProps> = props => {
                       height="8"
                       viewBox="0 0 8 8"
                       fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <path d="M4.81662 3.33203C5.15455 3.555 5.32351 3.66649 5.38224 3.80736C5.43358 3.93049 5.43358 4.06904 5.38224 4.19218C5.32351 4.33305 5.15455 4.44454 4.81662 4.66751L1.81921 6.64529C1.4159 6.91141 1.21424 7.04446 1.04715 7.03393C0.901576 7.02475 0.767265 6.95246 0.679429 6.836C0.578613 6.70234 0.578613 6.46074 0.578613 5.97755L0.578613 2.02199C0.578613 1.53879 0.578613 1.2972 0.679429 1.16353C0.767265 1.04708 0.901576 0.974785 1.04715 0.965607C1.21424 0.955073 1.4159 1.08813 1.81921 1.35425L4.81662 3.33203Z" />
                     </svg>
                     <span className="sub-title-text">
@@ -491,15 +512,16 @@ const TabMenu: React.FC<TabMenuProps> = props => {
           return (
             <span
               className={cs([
-                'tab-menu-item',
-                isSelected && 'tab-menu-item-selected',
-                isMedium && 'tab-menu-item-medium',
-                theme === 'light' && 'tab-menu-item-light',
+                "tab-menu-item",
+                isSelected && "tab-menu-item-selected",
+                isMedium && "tab-menu-item-medium",
+                theme === "light" && "tab-menu-item-light",
                 typo,
               ])}
               key={tab.key}
               data-test={tab.title}
-              onClick={() => onChange?.(tab.key)}>
+              onClick={() => onChange?.(tab.key)}
+            >
               {tab.title}
             </span>
           );

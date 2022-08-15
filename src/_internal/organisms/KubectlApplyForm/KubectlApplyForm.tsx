@@ -46,7 +46,7 @@ export type Field = {
   condition?: boolean;
   widget?: string;
   widgetOptions?: Record<string, any>;
-  componentId: string;
+  componentId?: string;
 };
 
 type TransformedField = Field & { dataPath: string; value: any };

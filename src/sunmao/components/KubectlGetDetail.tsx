@@ -14,9 +14,6 @@ const InfoSpec = Type.Object({
   path: Type.String({
     title: "Path",
     widget: "kui/v1/PathWidget",
-    widgetOptions: {
-      withIndex: false,
-    },
   }),
   widget: StringUnion(
     ["default", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),

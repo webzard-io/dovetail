@@ -1,4 +1,9 @@
-import { Serializable } from '@tower/utils';
+export declare type SerializableBasic = null | undefined | string | number | boolean;
+export declare type SerializableArray = Serializable[];
+export declare type SerializableObject = {
+    [key: string]: Serializable;
+};
+export declare type Serializable = SerializableBasic | SerializableArray | SerializableObject;
 
 export const getSearch = <T extends Serializable>(
   searchString: string,

@@ -20,7 +20,6 @@ const ColumnSpec = Type.Object(
       title: "Data index",
       description: "The key of the column data.",
       widget: "kui/v1/PathWidget",
-      widgetOptions: {},
     }),
     key: Type.String({
       title: "Key",
@@ -319,7 +318,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           ...columnSortOrder,
           [key]: order,
         };
-        
+
         setColumnSortOrder(newColumnSortOrder);
         mergeState({
           columnSortOrder: newColumnSortOrder,

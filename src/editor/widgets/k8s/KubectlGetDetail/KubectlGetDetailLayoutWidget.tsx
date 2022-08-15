@@ -1,8 +1,9 @@
-import {
-  implementWidget,
-  ObjectField,
-} from "@sunmao-ui/editor-sdk";
+import { implementWidget, ObjectField } from "@sunmao-ui/editor-sdk";
 import React, { useCallback } from "react";
+import {
+  Layout,
+  Section,
+} from "../../../../_internal/organisms/KubectlGetDetail/KubectlGetDetail";
 
 export default implementWidget<"kui/v1/KubectlGetDetailLayoutWidget">({
   version: "kui/v1",
@@ -12,19 +13,21 @@ export default implementWidget<"kui/v1/KubectlGetDetailLayoutWidget">({
 })(function KubectlGetDetailLayoutWidget(props) {
   const onChange = useCallback(
     (layout) => {
-      const oldLayout = props.value;
-      let result = layout;
+      const oldLayout: Layout = props.value;
+      let result: Layout = layout;
 
       if (layout.type !== oldLayout.type) {
-        let sections = [];
+        let sections: Section[] = [];
 
         switch (oldLayout.type) {
           case "simple": {
-            sections = oldLayout.sections;
+            sections = oldLayout.sections || [];
             break;
           }
           case "tabs": {
-            sections = oldLayout.tabs.map(({ sections }) => sections).flat();
+            sections = (oldLayout.tabs || [])
+              .map(({ sections }) => sections)
+              .flat();
             break;
           }
         }
