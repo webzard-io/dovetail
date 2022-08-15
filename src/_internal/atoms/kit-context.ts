@@ -18,6 +18,7 @@ export const buttonTypes = [
   "dashed",
   "link",
   "text",
+  "quiet"
 ] as const;
 
 export const buttonSizes = ["small", "middle", "large"];
@@ -29,6 +30,8 @@ export type ButtonProps = {
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
+  prefixIcon?: string;
+  suffixIcon?: string;
 } & RefAndChildren;
 
 export type TableProps = {

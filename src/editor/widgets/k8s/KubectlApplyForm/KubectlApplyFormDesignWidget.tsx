@@ -155,7 +155,7 @@ const KubectlApplyFormDesignWidget: React.FC<
 > = (props) => {
   const { value, services, onChange, path } = props;
   const formConfig = useRef<FormConfig>(
-    isExpression(value) ? services.stateManager.maskedEval(value) : value
+    isExpression(value) ? services.stateManager.deepEval(value) : value
   );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { nextStep, prevStep, activeStep, setStep } = useSteps({

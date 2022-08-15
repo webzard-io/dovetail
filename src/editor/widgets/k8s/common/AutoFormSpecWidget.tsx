@@ -29,7 +29,7 @@ type SelectOption = { label: string; value: string };
 export const AutoFormSpecWidget: React.FC<Props> = (props) => {
   const { value, services, onChange } = props;
   const spec = useRef<any>(
-    isExpression(value) ? services.stateManager.maskedEval(value) : value
+    isExpression(value) ? services.stateManager.deepEval(value) : value
   );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [apiBaseOptions, setApiBaseOptions] = useState<SelectOption[]>([]);
