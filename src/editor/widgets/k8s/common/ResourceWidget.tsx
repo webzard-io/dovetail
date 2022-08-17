@@ -18,12 +18,19 @@ export default implementWidget({
     const { component, path } = props;
     const [resources, setResources] = useState<Resource[]>([]);
     const apiBase = component.properties.apiBase as string;
-    const basePath = (get(
-      component.properties,
-      path.slice(0, -1).concat(["basePath"]).join(".")
-    ) || "") as string;
+    const basePath = useMemo(
+      () =>
+        (get(
+          component.properties,
+          path.slice(0, -1).concat(["basePath"]).join(".")
+        ) || "") as string,
+      [component.properties, path]
+    );
 
-    const api = k8sOpenAPIMap[basePath] || new K8sOpenAPI({ basePath });
+    const api = useMemo(
+      () => k8sOpenAPIMap[basePath] || new K8sOpenAPI({ basePath }),
+      [basePath]
+    );
 
     k8sOpenAPIMap[basePath] = api;
 

@@ -1,7 +1,7 @@
 import { implementWidget, StringField } from "@sunmao-ui/editor-sdk";
 import { StringUnion } from "@sunmao-ui/shared";
 import K8sOpenAPI, { k8sOpenAPIMap } from "../remote-schema";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { get } from "lodash";
 
 export default implementWidget({
@@ -12,12 +12,19 @@ export default implementWidget({
 })((props) => {
   const [kinds, setKinds] = useState<string[]>([]);
   const { component, path } = props;
-  const basePath = (get(
-    component.properties,
-    path.slice(0, -1).concat(["basePath"]).join(".")
-  ) || "") as string;
+  const basePath = useMemo(
+    () =>
+      (get(
+        component.properties,
+        path.slice(0, -1).concat(["basePath"]).join(".")
+      ) || "") as string,
+    [component.properties, path]
+  );
 
-  const api = k8sOpenAPIMap[basePath] || new K8sOpenAPI({ basePath });
+  const api = useMemo(
+    () => k8sOpenAPIMap[basePath] || new K8sOpenAPI({ basePath }),
+    [basePath]
+  );
 
   k8sOpenAPIMap[basePath] = api;
 
