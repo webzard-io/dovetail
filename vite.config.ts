@@ -31,10 +31,12 @@ export default defineConfig({
         "@sunmao-ui/core",
         "@sunmao-ui/runtime",
         "@sunmao-ui/editor-sdk",
+        "chakra-react-select"
       ],
     },
   },
   server: {
+    port: 3000,
     proxy: {
       "/proxy-k8s": getProxyConfig(),
       "/api": {
