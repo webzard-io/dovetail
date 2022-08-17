@@ -18,6 +18,7 @@ const RowStyle = css`
 `;
 const InfoListBlock = styled.div`
   padding: 16px 24px;
+  padding-bottom: 10px;
 
   &:not(:last-child) {
     box-shadow: inset 0px -1px 0px rgba(225, 230, 241, 0.6);
