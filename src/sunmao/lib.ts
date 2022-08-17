@@ -15,6 +15,7 @@ import { Icon } from "./components/Icon";
 import { CodeEditor } from "./components/CodeEditor";
 import { KubectlApplyForm } from "./components/KubectlApplyForm";
 import { KubectlGetDetail } from "./components/KubectlGetDetail";
+import { KubectlGetList } from './components/KubectlGetList';
 
 import SyncKubectlApplyForm from "./traits/SyncKubectlApplyForm";
 
@@ -46,6 +47,7 @@ export const libs: SunmaoLib[] = [
       CodeEditor,
       KubectlApplyForm,
       KubectlGetDetail,
+      KubectlGetList
     ],
     utilMethods: [
       () => [
