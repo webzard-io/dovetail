@@ -40,11 +40,9 @@ import type {
   KubectlApplyFormProps,
   Field,
 } from "src/_internal/organisms/KubectlApplyForm/KubectlApplyForm";
-import { getJsonSchemaByPath } from 'src/_internal/utils/schema';
+import { getJsonSchemaByPath } from "src/_internal/utils/schema";
 import { UiConfigSpec } from "src/sunmao/components/KubectlApplyForm";
-import {
-  mergeWidgetOptionsByPath,
-} from "../../../utils/schema";
+import { mergeWidgetOptionsByPath } from "../../../utils/schema";
 import { getFields } from "src/_internal/molecules/AutoForm/get-fields";
 import store from "../store";
 
@@ -153,7 +151,7 @@ function fieldsIsEmpty(uiConfig: FormConfig["uiConfig"]): boolean {
 const KubectlApplyFormDesignWidget: React.FC<
   WidgetProps<"kui/v1/KubectlApplyFormDesignWidget">
 > = (props) => {
-  const { value, services, onChange, path } = props;
+  const { component, value, services, onChange, path } = props;
   const formConfig = useRef<FormConfig>(
     isExpression(value) ? services.stateManager.deepEval(value) : value
   );
@@ -165,10 +163,16 @@ const KubectlApplyFormDesignWidget: React.FC<
   const [loadingSchema, setLoadingSchema] = useState(false);
   const [jsonEditorMode, setJsonEditorMode] = useState(false);
   const [uiConfig, setUiConfig] = useState(formConfig.current.uiConfig);
+  const basePath = (get(
+    component.properties,
+    path.slice(0, -1).concat(["basePath"]).join(".")
+  ) || "") as string;
 
   const UIConfigSpec = useMemo(() => {
     const paths = formConfig.current.schemas
-      .map((schema, index) => Object.keys(getFields(schema)).map((path)=> `${index}.${path}`))
+      .map((schema, index) =>
+        Object.keys(getFields(schema)).map((path) => `${index}.${path}`)
+      )
       .flat();
     let spec = getJsonSchemaByPath(props.spec, "uiConfig");
 
@@ -178,11 +182,13 @@ const KubectlApplyFormDesignWidget: React.FC<
           paths,
         }) || spec;
       spec =
-        mergeWidgetOptionsByPath(spec, "layout.tabs.$i.fields.$i.path", { paths }) ||
-        spec;
+        mergeWidgetOptionsByPath(spec, "layout.tabs.$i.fields.$i.path", {
+          paths,
+        }) || spec;
       spec =
-        mergeWidgetOptionsByPath(spec, "layout.steps.$i.fields.$i.path", { paths }) ||
-        spec;
+        mergeWidgetOptionsByPath(spec, "layout.steps.$i.fields.$i.path", {
+          paths,
+        }) || spec;
     }
 
     return spec || UiConfigSpec;
@@ -379,10 +385,13 @@ const KubectlApplyFormDesignWidget: React.FC<
                         formConfig.current.defaultValues = resources;
                         setLoadingSchema(true);
                         formConfig.current.schemas = (
-                          await store.fetchResourcesSchemas(resources.map(resource=> ({
-                            apiVersionWithGroup: resource.apiVersion,
-                            kind: resource.kind
-                          })))
+                          await store.fetchResourcesSchemas(
+                            basePath,
+                            resources.map((resource) => ({
+                              apiVersionWithGroup: resource.apiVersion,
+                              kind: resource.kind,
+                            }))
+                          )
                         ).map((schema) => omit(schema, ["properties.status"]));
 
                         if (fieldsIsEmpty(formConfig.current.uiConfig)) {

@@ -1,11 +1,12 @@
 import { implementWidget, StringField } from "@sunmao-ui/editor-sdk";
 import { StringUnion } from "@sunmao-ui/shared";
-import { getResources, type Resource } from "../remote-schema";
+import K8sOpenAPI, { k8sOpenAPIMap, type Resource } from "../remote-schema";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { first } from "lodash";
 import store from "../store";
 import { observer } from "mobx-react-lite";
 import { parseKubeApi } from "src/_internal/k8s-api-client/kube-api";
+import { get } from "lodash";
 
 export default implementWidget({
   version: "kui/v1",
@@ -14,9 +15,17 @@ export default implementWidget({
   },
 })(
   observer(function ResourceWidget(props) {
-    const { component } = props;
+    const { component, path } = props;
     const [resources, setResources] = useState<Resource[]>([]);
     const apiBase = component.properties.apiBase as string;
+    const basePath = (get(
+      component.properties,
+      path.slice(0, -1).concat(["basePath"]).join(".")
+    ) || "") as string;
+
+    const api = k8sOpenAPIMap[basePath] || new K8sOpenAPI({ basePath });
+
+    k8sOpenAPIMap[basePath] = api;
 
     const map = useMemo(() => {
       return resources.reduce((result: Record<string, any>, resource) => {
@@ -31,7 +40,7 @@ export default implementWidget({
         const apiPath = `${apiBase}/${resource}`;
         const { apiVersionWithGroup } = parseKubeApi(apiPath);
 
-        store.fetchResourcesSchemas([
+        store.fetchResourcesSchemas(basePath || "", [
           {
             apiVersionWithGroup,
             kind: map[resource].kind,
@@ -47,7 +56,7 @@ export default implementWidget({
         const oldResources = resources;
 
         if (apiBase) {
-          const resources = await getResources(apiBase);
+          const resources = await api.getResources(apiBase);
 
           setResources(resources);
           if (oldResources.length) {
