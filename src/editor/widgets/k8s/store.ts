@@ -7,7 +7,7 @@ import {
 } from "mobx";
 import { JSONSchema7 } from "json-schema";
 import { getFields } from "src/_internal/molecules/AutoForm/get-fields";
-import { getResourceSchema } from "./remote-schema";
+import K8sOpenAPI, { k8sOpenAPIMap } from "./remote-schema";
 
 export class WidgetStore {
   resources = [];
@@ -30,14 +30,17 @@ export class WidgetStore {
     return [];
   }
 
-  async fetchResourcesSchemas(resources: any[]) {
+  async fetchResourcesSchemas(basePath: string, resources: any[]) {
     const schemas = (
       await Promise.all(
         resources.map(async (resource) => {
           const { apiVersionWithGroup, kind } = resource;
+          const api = k8sOpenAPIMap[basePath] || new K8sOpenAPI({basePath});
+
+          k8sOpenAPIMap[basePath] = api;
 
           if (apiVersionWithGroup && kind) {
-            const schema = await getResourceSchema(apiVersionWithGroup, kind);
+            const schema = await api.getResourceSchema(apiVersionWithGroup, kind);
 
             return schema;
           }

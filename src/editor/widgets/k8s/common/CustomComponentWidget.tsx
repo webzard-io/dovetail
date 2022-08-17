@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useMemo } from "react";
-import { Select, Input, FormControl, FormLabel } from "@chakra-ui/react";
+import { Input, FormControl, FormLabel } from "@chakra-ui/react";
+import { Select } from "chakra-react-select";
 import { implementWidget, ExpressionWidget } from "@sunmao-ui/editor-sdk";
 import { Type } from "@sinclair/typebox";
 import { last, get } from "lodash";
@@ -21,7 +22,7 @@ const LabelStyle = css`
 
 const CustomComponentWidgetOptionsSpec = Type.Object({
   keyOfPath: Type.String(),
-  slot: Type.String()
+  slot: Type.String(),
 });
 
 const CustomComponentWidget = implementWidget<"kui/v1/CustomComponentWidget">({
@@ -69,8 +70,8 @@ const CustomComponentWidget = implementWidget<"kui/v1/CustomComponentWidget">({
     );
 
     const onTypeChange = useCallback(
-      (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const newType = event.target.value;
+      (item) => {
+        const newType = item?.value;
         const newComponentId = `${component.id}_${last(
           newType.split("/")
         )}_${String(Date.now()).slice(-6)}`;
@@ -121,13 +122,14 @@ const CustomComponentWidget = implementWidget<"kui/v1/CustomComponentWidget">({
       <div>
         <FormControl className={FormItemStyle}>
           <FormLabel className={LabelStyle}>Component Type</FormLabel>
-          <Select value={type} onChange={onTypeChange}>
-            {[""].concat(componentTypes).map((type) => (
-              <option value={type} key={type}>
-                {type}
-              </option>
-            ))}
-          </Select>
+          <Select
+            value={{ label: type, value: type }}
+            options={componentTypes.map((type) => ({
+              label: type,
+              value: type,
+            }))}
+            onChange={onTypeChange}
+          ></Select>
         </FormControl>
         {type ? (
           <FormControl className={FormItemStyle}>

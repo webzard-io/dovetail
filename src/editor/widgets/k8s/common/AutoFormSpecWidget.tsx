@@ -19,12 +19,14 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { Select } from "chakra-react-select";
-import { getApiBases, getDefinitions, getResourceSpec } from "../remote-schema";
+import K8sOpenAPI from "../remote-schema";
 import JsonSchemaEditor from "@optum/json-schema-editor";
 
 type Props = WidgetProps;
 
 type SelectOption = { label: string; value: string };
+
+const api = new K8sOpenAPI({ basePath: '' });
 
 export const AutoFormSpecWidget: React.FC<Props> = (props) => {
   const { value, services, onChange } = props;
@@ -34,7 +36,7 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [apiBaseOptions, setApiBaseOptions] = useState<SelectOption[]>([]);
   useEffect(() => {
-    getApiBases().then((res) =>
+    api.getApiBases().then((res) =>
       setApiBaseOptions(res.map((v) => ({ label: v, value: v })))
     );
   }, []);
@@ -55,7 +57,7 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
     if (!filter.base?.value) {
       return;
     }
-    getDefinitions(filter.base.value, defKey).then((defs) =>
+    api.getDefinitions(filter.base.value, defKey).then((defs) =>
       setResourceDefOptions(defs.map((v) => ({ label: v, value: v })))
     );
   }, [filter.base, defKey]);
@@ -137,7 +139,7 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
                     colorScheme="blue"
                     disabled={!formKey || !filter.def?.value}
                     onClick={async () => {
-                      const resourceSpec = await getResourceSpec(
+                      const resourceSpec = await api.getResourceSpec(
                         filter.def!.value,
                         defKey
                       );
