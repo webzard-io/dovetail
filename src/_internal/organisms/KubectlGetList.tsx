@@ -78,7 +78,7 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
       return () => {
         stopP.then((stop) => stop?.());
       };
-    }, [apiBase, resource, namespace]);
+    }, [apiBase, resource, namespace, basePath, fieldSelector]);
     useEffect(() => {
       onResponse?.(response);
     }, [response]);
