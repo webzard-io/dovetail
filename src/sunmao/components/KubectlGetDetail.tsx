@@ -30,6 +30,7 @@ const InfoSpec = Type.Object({
   }),
   componentId: Type.String({
     title: "Component ID",
+    isComponentId: true,
     widget: "kui/v1/CustomComponentWidget",
     widgetOptions: {
       isDisplayLabel: false,
