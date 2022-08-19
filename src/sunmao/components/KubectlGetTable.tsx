@@ -103,7 +103,7 @@ const KubectlGetTableProps = Type.Object({
   apiBase: Type.String({
     title: "Api base",
     widget: "kui/v1/ApiBaseWidget",
-    description: "K8s resource api base, e.g, /apis/apps/v1/deployments",
+    description: "K8s resource api base, e.g, /apis/apps/v1",
     category: PRESET_PROPERTY_CATEGORY.Data,
   }),
   namespace: Type.String({
