@@ -188,7 +188,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       return () => {
         stopP.then((stop) => stop?.());
       };
-    }, [apiBase, resource, namespace]);
+    }, [apiBase, resource, namespace, basePath, fieldSelector]);
     useEffect(() => {
       onResponse?.(response);
     }, [response]);
