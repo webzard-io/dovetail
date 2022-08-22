@@ -115,7 +115,7 @@ export default implementRuntimeTrait({
               name && `metadata.name=${name}`,
               namespace && `metadata.namespace=${namespace}`,
               fieldSelector,
-            ]).join(','),
+            ]).join(","),
           },
           cb: (response) => {
             responseMap.set(componentId, response);
@@ -135,8 +135,16 @@ export default implementRuntimeTrait({
       stop,
     });
 
+    watch();
+
     return {
-      props: {},
+      props: {
+        componentDidUnmount: [
+          () => {
+            stop();
+          },
+        ],
+      },
     };
   };
 });
