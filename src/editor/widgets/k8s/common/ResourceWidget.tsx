@@ -6,7 +6,7 @@ import { first } from "lodash";
 import store from "../store";
 import { observer } from "mobx-react-lite";
 import { parseKubeApi } from "src/_internal/k8s-api-client/kube-api";
-import { get } from "lodash";
+import useProperty from "../../../hooks/useProperty";
 
 export default implementWidget({
   version: "kui/v1",
@@ -17,15 +17,16 @@ export default implementWidget({
   observer(function ResourceWidget(props) {
     const { component, path } = props;
     const [resources, setResources] = useState<Resource[]>([]);
-    const apiBase = component.properties.apiBase as string;
-    const basePath = useMemo(
-      () =>
-        (get(
-          component.properties,
-          path.slice(0, -1).concat(["basePath"]).join(".")
-        ) || "") as string,
-      [component.properties, path]
-    );
+    const apiBase = useProperty({
+      component,
+      path,
+      key: "apiBase",
+    });
+    const basePath = useProperty({
+      component,
+      path,
+      key: "basePath",
+    });
 
     const api = useMemo(
       () => k8sOpenAPIMap[basePath] || new K8sOpenAPI({ basePath }),

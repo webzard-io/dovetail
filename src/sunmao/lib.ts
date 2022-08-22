@@ -18,6 +18,7 @@ import { KubectlGetDetail } from "./components/KubectlGetDetail";
 import { KubectlGetList } from './components/KubectlGetList';
 
 import SyncKubectlApplyForm from "./traits/SyncKubectlApplyForm";
+import KubeAPITrait from './traits/KubeAPITrait';
 
 const MessageParams = Type.Object({
   type: StringUnion(["success", "warn", "error", "info"]),
@@ -32,7 +33,7 @@ const OpenLinkParams = Type.Object({
 
 export const libs: SunmaoLib[] = [
   {
-    traits: [SyncKubectlApplyForm],
+    traits: [SyncKubectlApplyForm, KubeAPITrait],
     components: [
       Root,
       Button,

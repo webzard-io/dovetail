@@ -45,6 +45,7 @@ import { UiConfigSpec } from "src/sunmao/components/KubectlApplyForm";
 import { mergeWidgetOptionsByPath } from "../../../utils/schema";
 import { getFields } from "src/_internal/molecules/AutoForm/get-fields";
 import store from "../store";
+import useProperty from "../../../hooks/useProperty";
 
 injectGlobal`
 .chakra-popover__popper {
@@ -163,10 +164,11 @@ const KubectlApplyFormDesignWidget: React.FC<
   const [loadingSchema, setLoadingSchema] = useState(false);
   const [jsonEditorMode, setJsonEditorMode] = useState(false);
   const [uiConfig, setUiConfig] = useState(formConfig.current.uiConfig);
-  const basePath = (get(
-    component.properties,
-    path.slice(0, -1).concat(["basePath"]).join(".")
-  ) || "") as string;
+  const basePath = useProperty({
+    component,
+    path,
+    key: "basePath",
+  });
 
   const UIConfigSpec = useMemo(() => {
     const paths = formConfig.current.schemas
