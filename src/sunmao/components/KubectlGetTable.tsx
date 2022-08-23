@@ -409,7 +409,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           columns={columns.map((col) => ({
             ...col,
             fixed: col.fixed === "none" ? undefined : col.fixed,
-            dataIndex: col.dataIndex.split("."),
+            dataIndex: typeof col.dataIndex === 'string' ? col.dataIndex.split(".") : col.dataIndex,
             render: (value: any, record: any, index: number) => {
               return renderWidget(
                 { ...col, path: col.dataIndex },
