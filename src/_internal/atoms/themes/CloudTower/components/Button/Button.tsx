@@ -4,7 +4,7 @@ import { ButtonProps as AntdButtonProps, ButtonType } from "antd/lib/button";
 import { Typo } from "../../styles/typo.style";
 import { cx } from "@linaria/core";
 import { ButtonStyle, NoPadding } from "./Button.style";
-import Icon from '../Icon/Icon';
+import Icon, { type IconTypes } from "../Icon/Icon";
 
 const isAntdButtonTypes = (type?: string): type is ButtonType => {
   return Boolean(
@@ -14,10 +14,10 @@ const isAntdButtonTypes = (type?: string): type is ButtonType => {
 };
 
 type ButtonProps = {
-  prefixIcon?: string;
-  hoverPrefixIcon?: string;
-  suffixIcon?: string;
-  hoverSuffixIcon?: string;
+  prefixIcon?: IconTypes;
+  hoverPrefixIcon?: IconTypes;
+  suffixIcon?: IconTypes;
+  hoverSuffixIcon?: IconTypes;
   type?:
     | ButtonType
     | "secondary"

@@ -31,7 +31,9 @@ export default defineConfig({
         "@sunmao-ui/core",
         "@sunmao-ui/runtime",
         "@sunmao-ui/editor-sdk",
-        "chakra-react-select"
+        "chakra-react-select",
+        "i18next",
+        "react-i18next"
       ],
     },
   },
