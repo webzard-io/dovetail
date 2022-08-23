@@ -4,6 +4,7 @@ import cs from "classnames";
 import Icon from "../Icon/Icon";
 import { KitContext } from "../../../../kit-context";
 import { Menu } from "antd";
+import { useTranslation } from "react-i18next";
 
 export interface PaginationProps {
   current: number;
@@ -95,6 +96,7 @@ const Pagination: React.FC<PaginationProps> = (props) => {
     selectorVisible = true,
   } = props;
   const kit = useContext(KitContext);
+  const { t } = useTranslation();
   const sizeRef = useRef(size);
   useEffect(() => {
     if (sizeRef.current === size) return;
@@ -109,17 +111,24 @@ const Pagination: React.FC<PaginationProps> = (props) => {
       const lastRange = value + size;
       return {
         value: i + 1,
-        text: `Item ${value + 1} - ${lastRange > count ? count : lastRange}`
+        text: t("dovetail.pagination_range", {
+          range1: value + 1,
+          range2: lastRange > count ? count : lastRange,
+        }),
       };
     });
-  }, [selectorVisible, count, size]);
+  }, [selectorVisible, count, size, t]);
 
   let lastRange = current * size;
   lastRange = lastRange > count ? count : lastRange;
 
   const renderLeft = () => {
     if (!showTotal) return null;
-    const content = `Item ${(current - 1) * size + 1} – ${lastRange}, ${count} in total`;
+    const content = t("dovetail.pagination_total", {
+      range1: (current - 1) * size + 1,
+      range2: lastRange,
+      total: count,
+    });
     if (selectorVisible) {
       return (
         <kit.Dropdown
@@ -127,7 +136,7 @@ const Pagination: React.FC<PaginationProps> = (props) => {
           overlayClassName={DropdownOverlayStyle}
           overlay={
             <Menu>
-              <Menu.ItemGroup title="Jump to">
+              <Menu.ItemGroup title={t("dovetail.push_to")}>
                 {selectOptions.map((option) => (
                   <Menu.Item
                     key={option.value}
@@ -178,7 +187,7 @@ const Pagination: React.FC<PaginationProps> = (props) => {
               onChange?.(current - 1);
             }}
           >
-            Previous {size} items
+            {t("dovetail.previous_items", { size })}
           </kit.Button>
         )}
         {current * size < count && (
@@ -191,7 +200,7 @@ const Pagination: React.FC<PaginationProps> = (props) => {
               onChange?.(current + 1);
             }}
           >
-            Next {size} items
+            {t("dovetail.next_items", { size })}
           </kit.Button>
         )}
       </span>
