@@ -74,6 +74,7 @@ export default implementRuntimeTrait({
 })(() => {
   const responseMap = new Map();
   const stopMap = new Map();
+  const timeMap = new Map();
 
   return ({
     componentId,
@@ -102,6 +103,10 @@ export default implementRuntimeTrait({
     }
 
     async function watch() {
+      const currentTime = (timeMap.get(componentId) ?? 0) + 1;
+
+      timeMap.set(componentId, currentTime);
+
       mergeState({
         loading: true,
       });
@@ -127,7 +132,13 @@ export default implementRuntimeTrait({
           mergeState({ loading: false, error: err, response: emptyData });
         });
 
-      stopMap.set(componentId, stopFn);
+      // if the last one didn't return and do the next watch
+      // then stop the previous watch
+      if (timeMap.get(componentId) > currentTime) {
+        stopFn?.();
+      } else {
+        stopMap.set(componentId, stopFn);
+      }
     }
 
     subscribeMethods({
