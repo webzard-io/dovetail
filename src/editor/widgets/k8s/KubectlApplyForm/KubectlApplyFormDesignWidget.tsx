@@ -408,6 +408,8 @@ const KubectlApplyFormDesignWidget: React.FC<
                                   sectionTitle: "",
                                   widget: "",
                                   error: "",
+                                  layout: "horizontal",
+                                  isDisplayLabel: true
                                 };
                               }
                             ),

@@ -3,9 +3,7 @@ import { WidgetProps } from "./widget";
 import InputNumber from "../InputNumber";
 
 export const NumberField: React.FC<WidgetProps> = (props) => {
-  const { value, onChange } = props;
-
-  return <InputNumber value={value} onChange={onChange}></InputNumber>;
+  return <InputNumber {...props}></InputNumber>;
 };
 
 export default NumberField;

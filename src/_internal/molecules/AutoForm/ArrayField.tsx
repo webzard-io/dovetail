@@ -1,15 +1,14 @@
 import React, { useContext } from "react";
 import SpecField from "./SpecField";
 import { WidgetProps } from "./widget";
-
-import { CloseOutlined } from "@ant-design/icons";
 import { KitContext } from "../../atoms/kit-context";
 import { generateFromSchema } from "../../utils/schema";
+import ArrayGroups from "../ArrayGroups";
+import ArrayItems from '../ArrayItems';
 
 const ArrayField: React.FC<WidgetProps> = (props) => {
-  const { spec, value = [], path, level, onChange, renderer } = props;
+  const { spec, value = [], path, level, widgetOptions, onChange } = props;
   const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
-  const kit = useContext(KitContext);
 
   if (typeof itemSpec === "boolean" || !itemSpec) {
     return null;
@@ -24,64 +23,11 @@ const ArrayField: React.FC<WidgetProps> = (props) => {
     );
   }
 
-  return (
-    <>
-      {value.map((itemValue, itemIndex) => (
-        <div key={itemIndex}>
-          <div
-            style={{
-              display: "flex",
-              width: "100%",
-              borderBottom: "1px solid rgba(225, 230, 241, 0.6)",
-              justifyContent: "space-between",
-              paddingBottom: 4,
-              marginBottom: 4,
-            }}
-          >
-            <div>
-              {itemSpec.title ? `${itemSpec.title} ${itemIndex + 1}` : ""}
-            </div>
-            <kit.Button
-              size="small"
-              type="text"
-              onClick={() => {
-                onChange(value.filter((v) => v !== itemValue));
-              }}
-            >
-              <CloseOutlined />
-            </kit.Button>
-          </div>
-          <SpecField
-            {...props}
-            widget="default"
-            value={itemValue}
-            spec={{
-              ...itemSpec,
-              title: itemSpec.title,
-            }}
-            path={path.concat(`[${itemIndex}]`)}
-            level={level + 1}
-            renderer={renderer}
-            onChange={(newItemValue: any) => {
-              const newValue = [...value];
-              newValue[itemIndex] = newItemValue;
-              onChange(newValue);
-            }}
-          />
-        </div>
-      ))}
-      <div>
-        <kit.Button
-          size="medium"
-          onClick={() => {
-            onChange(value.concat(generateFromSchema(itemSpec)));
-          }}
-        >
-          添加
-        </kit.Button>
-      </div>
-    </>
-  );
+  if (itemSpec.type === "object") {
+    return <ArrayGroups {...props}></ArrayGroups>;
+  }
+
+  return <ArrayItems {...props}></ArrayItems>;
 };
 
 export const AddToArrayField: React.FC<WidgetProps> = (props) => {

@@ -8,7 +8,7 @@ const _Field: React.FC<
     specs: NonNullable<WidgetProps["spec"]["anyOf"]>;
   }
 > = (props) => {
-  const { specs, value, level, path, onChange, renderer } = props;
+  const { specs, value, level, path, onChange } = props;
   const [specIdx, setSpecIdx] = useState(0);
   const subSpec: WidgetProps["spec"] | boolean = specs[specIdx];
 
@@ -30,7 +30,6 @@ const _Field: React.FC<
         {...props}
         spec={subSpec}
         path={path}
-        renderer={renderer}
         level={level}
         value={value}
         onChange={(newValue) => onChange(newValue)}
@@ -40,7 +39,7 @@ const _Field: React.FC<
 };
 
 export const MultiSpecField: React.FC<WidgetProps> = (props) => {
-  const { spec, value, path, level, onChange, renderer } = props;
+  const { spec, value, path, level, onChange } = props;
 
   if (spec.anyOf) {
     return (
@@ -48,7 +47,6 @@ export const MultiSpecField: React.FC<WidgetProps> = (props) => {
         {...props}
         value={value}
         path={path}
-        renderer={renderer}
         level={level}
         specs={spec.anyOf}
         onChange={onChange}
@@ -62,7 +60,6 @@ export const MultiSpecField: React.FC<WidgetProps> = (props) => {
         {...props}
         value={value}
         path={path}
-        renderer={renderer}
         level={level}
         specs={spec.oneOf}
         onChange={onChange}

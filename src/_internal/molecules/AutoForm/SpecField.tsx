@@ -1,7 +1,7 @@
 import React from "react";
 import isEmpty from "lodash/isEmpty";
 // TODO: use kit context when I have time:)
-import { Row, Col } from "antd";
+import { Form } from "antd";
 import { css, cx } from "@linaria/core";
 import { JSONSchema7 } from "json-schema";
 import { WidgetProps } from "./widget";
@@ -13,14 +13,14 @@ import NumberField from "./NumberField";
 import NullField from "./NullField";
 import ObjectField from "./ObjectField";
 import MultiSpecField from "./MultiSpecField";
-import {
-  FORM_WIDGETS_MAP,
-} from "../../molecules/form";
+import { FORM_WIDGETS_MAP } from "../../molecules/form";
+import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
 
 type TemplateProps = {
   id?: string;
   label?: string;
-  errors?: React.ReactElement;
+  layout?: "horizontal" | "vertical";
+  error?: string;
   description?: string;
   hidden?: boolean;
   required?: boolean;
@@ -29,29 +29,6 @@ type TemplateProps = {
   spec: WidgetProps["spec"];
   children?: React.ReactNode;
 };
-
-export const FormLabel = css`
-  padding-right: 12px;
-  font-size: 13px;
-  color: rgba(44, 56, 82, 0.6);
-`;
-
-export const FormErrorMessage = css`
-  font-size: 13px;
-  line-height: 20px;
-  color: #f0483e;
-  margin-top: -4px;
-  margin-bottom: 8px;
-`;
-
-export const FormHelperText = css`
-  font-size: 12px;
-  color: rgba(44, 56, 82, 0.6);
-`;
-
-export const FormItem = css`
-  line-height: 32px;
-`;
 
 export const HasMargin = css`
   margin-bottom: 16px;
@@ -67,12 +44,42 @@ export const FieldSection = css`
   width: 100%;
 `;
 
+const FormItemStyle = css`
+  margin-bottom: 18px;
+
+  .dovetail-ant-form-item-explain {
+    display: none;
+  }
+
+  &.dovetail-ant-form-item-has-error {
+    & .dovetail-ant-form-item-explain {
+      display: block;
+    }
+
+  }
+  
+  .dovetail-ant-form-item-label {
+    padding: 0;
+  }
+`;
+
+const FormItemLabelStyle = css`
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 20px;
+  color: rgba(44, 56, 82, 0.6);
+`;
+
+const FormItemContentStyle = css`
+`;
+
 const DefaultTemplate: React.FC<TemplateProps> = (props) => {
   const {
     id,
+    layout,
     label,
     children,
-    errors,
+    error,
     description,
     hidden,
     required,
@@ -80,26 +87,31 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
     displayDescription,
     spec,
   } = props;
+  const isHorizontal = layout === "horizontal" || layout === undefined;
 
   if (hidden) {
     return <div className="hidden">{children}</div>;
   }
 
   return (
-    <Row className={cx(FormItem, displayLabel && HasMargin)}>
-      {displayLabel && (
-        <Col span="6" className={FormLabel}>
-          {label}
-        </Col>
-      )}
-      <Col span={displayLabel ? 18 : 24}>
-        {children}
-        {errors && <div className={FormErrorMessage}>{errors}</div>}
-        {description && displayDescription && (
-          <div className={FormHelperText}>{description}</div>
-        )}
-      </Col>
-    </Row>
+    <Form.Item
+      className={FormItemStyle}
+      labelCol={{ span: isHorizontal ? 6 : 24 }}
+      label={
+        displayLabel ? (
+          <span className={cx(Typo.Label.l3_regular_title, FormItemLabelStyle)}>
+            {label}
+          </span>
+        ) : (
+          ""
+        )
+      }
+      validateStatus={error ? "error" : ""}
+      help={error}
+      extra={description && displayDescription ? description : ""}
+    >
+      <div className={FormItemContentStyle}>{children}</div>
+    </Form.Item>
   );
 };
 
@@ -129,7 +141,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     field,
     spec,
     widget,
-    widgetOptions,
+    widgetOptions = {},
     level,
     path,
     step,
@@ -138,11 +150,10 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     layout,
     slot,
     onChange,
-    renderer,
   } = props;
   const { title } = spec;
   const label = title ?? "";
-  const displayLabel = shouldDisplayLabel(spec, label);
+  const displayLabel = field?.isDisplayLabel ?? shouldDisplayLabel(spec, label);
   const displayDescription = shouldDisplayDescdisplayDescription(spec);
 
   if (isEmpty(spec) || field?.condition === false) {
@@ -177,14 +188,13 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
 
   const FieldComponent = (
     <Component
-      {...widgetOptions}
+      widgetOptions={widgetOptions}
       field={field}
       spec={spec}
       value={value}
       path={path}
       level={level}
       onChange={onChange}
-      renderer={renderer}
       step={step}
       stepElsRef={stepElsRef}
       layout={layout}
@@ -193,12 +203,17 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   );
   const FieldComponentWithRenderer = (
     <>
+      {field?.sectionTitle && (
+        <div className={FieldSection}>{field?.sectionTitle}</div>
+      )}
       <DefaultTemplate
         label={label}
+        layout={field?.layout}
         description={spec.description}
         displayLabel={displayLabel}
         displayDescription={displayDescription}
         spec={spec}
+        error={field?.error}
       >
         {slot?.(field, FieldComponent) || FieldComponent}
       </DefaultTemplate>
