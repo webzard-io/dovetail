@@ -10,6 +10,7 @@ type KubeApiQueryParams = {
   continue?: string; // might be used with ?limit from second request
   labelSelector?: string | string[]; // restrict list of objects by their labels, e.g. labelSelector: ["label=value"]
   fieldSelector?: string | string[]; // restrict list of objects by their fields, e.g. fieldSelector: "field=name"
+  namespace?: string;
 };
 
 type ResourceDescriptor = {
@@ -71,10 +72,6 @@ function createKubeApiURL({
   namespace,
 }: KubeApiLinkRef): string {
   const parts = [apiPrefix, apiVersion];
-
-  if (namespace) {
-    parts.push("namespaces", namespace);
-  }
 
   parts.push(resource);
 
@@ -262,7 +259,7 @@ export class KubeApi<T> {
     ky.get(url, {
       searchParams: {
         watch: 1,
-        resourceVersion: ((res as unknown) as UnstructuredList).metadata
+        resourceVersion: (res as unknown as UnstructuredList).metadata
           .resourceVersion,
       } as SearchParamsOption,
       timeout: false,
@@ -272,7 +269,7 @@ export class KubeApi<T> {
         const stream = streamRes.body?.getReader();
         const utf8Decoder = new TextDecoder("utf-8");
         let buffer = "";
-        let items = ((res as unknown) as UnstructuredList).items;
+        let items = (res as unknown as UnstructuredList).items;
 
         // wait for an update and prepare to read it
         stream
