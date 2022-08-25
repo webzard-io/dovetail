@@ -1,16 +1,16 @@
 import React from "react";
 import { Type, Static } from "@sinclair/typebox";
 import { Switch as AntdSwitch } from "antd";
+import { WidgetProps } from "./AutoForm/widget";
 
 export const OptionsSpec = Type.Object({});
 
-type Props = {
-  value: boolean;
-  onChange(value: boolean): void;
-} & Static<typeof OptionsSpec>;
+type Props = WidgetProps<boolean, Static<typeof OptionsSpec>>;
 
 const Switch = (props: Props) => {
-  return <AntdSwitch {...props} checked={props.value}></AntdSwitch>;
+  return (
+    <AntdSwitch checked={props.value} onChange={(value)=> props.onChange(value, props.field?.key)}></AntdSwitch>
+  );
 };
 
 export default Switch;

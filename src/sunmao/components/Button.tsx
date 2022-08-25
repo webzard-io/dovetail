@@ -22,8 +22,6 @@ export const Button = implementRuntimeComponent({
   metadata: {
     name: "button",
     displayName: "Button",
-    isDraggable: true,
-    isResizable: true,
     exampleProperties: {
       type: "primary",
       text: {
@@ -31,7 +29,6 @@ export const Button = implementRuntimeComponent({
         format: "plain",
       },
     },
-    exampleSize: [2, 1],
     annotations: {
       category: "Input",
     },

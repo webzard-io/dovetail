@@ -176,7 +176,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       setResponse((prev) => ({ ...prev, loading: true }));
       const stopP = api
         .listWatch({
-          query: fieldSelector ? { fieldSelector } : {},
+          query: fieldSelector ? { fieldSelector, namespace } : { namespace },
           cb: (res) => {
             setResponse(() => ({ loading: false, error: null, data: res }));
           },

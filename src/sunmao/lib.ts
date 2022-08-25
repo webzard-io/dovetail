@@ -7,7 +7,6 @@ import { Button } from "./components/Button";
 import { KubectlGetTable } from "./components/KubectlGetTable";
 import { ObjectAge } from "./components/ObjectAge";
 import { UnstructuredSidebar } from "./components/UnstructuredSidebar";
-import { UnstructuredForm } from "./components/UnstructuredForm";
 import { UnstructuredPage } from "./components/UnstructuredPage";
 import { Modal } from "./components/Modal";
 import { Select } from "./components/Select";
@@ -40,7 +39,6 @@ export const libs: SunmaoLib[] = [
       KubectlGetTable,
       ObjectAge,
       UnstructuredSidebar,
-      UnstructuredForm,
       UnstructuredPage,
       Modal,
       Select,

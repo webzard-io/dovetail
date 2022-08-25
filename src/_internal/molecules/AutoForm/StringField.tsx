@@ -10,12 +10,13 @@ const EnumField: React.FC<WidgetProps> = (props) => {
 
   return (
     <Select
-      value={value}
-      onChange={(value) => onChange(value)}
-      options={options.map((value) => ({
-        value,
-        label: value,
-      }))}
+      {...props}
+      widgetOptions={{
+        options: options.map((value) => ({
+          value,
+          label: value,
+        })),
+      }}
     />
   );
 };
@@ -29,17 +30,10 @@ export const StringField: React.FC<WidgetProps> = (props) => {
   }
 
   if (widget === "textarea") {
-    return <Textarea value={value} onChange={(value) => onChange(value)} />;
+    return <Textarea {...props} />;
   }
 
-  return (
-    <Input
-      value={value}
-      onChange={(value) => {
-        onChange(value);
-      }}
-    />
-  );
+  return <Input {...props} />;
 };
 
 export default StringField;

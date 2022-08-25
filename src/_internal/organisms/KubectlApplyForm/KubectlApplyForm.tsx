@@ -10,18 +10,12 @@ import {
   WizardBodyStyle,
   WizardFooterStyle,
   WizardStyle,
-} from "../UnstructuredForm";
+} from "./KubectlApplyForm.style";
 import { cx, css as dCss } from "@emotion/css";
-import { Steps, Row, Col } from "antd";
+import { Steps, Popover } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
-import SpecField, {
-  FormItem,
-  HasMargin,
-  FormLabel as FormLabelStyle,
-  FieldSection,
-  FormErrorMessage,
-  FormHelperText,
-} from "../../molecules/AutoForm/SpecField";
+import SpecField from "../../molecules/AutoForm/SpecField";
+import Icon from "../../atoms/themes/CloudTower/components/Icon/Icon";
 // FIXME: use kit
 import {
   Switch,
@@ -39,7 +33,10 @@ import { ButtonType } from "antd/lib/button";
 export type Field = {
   fields?: Field[];
   path: string;
+  key?: string;
   label: string;
+  layout: "horizontal" | "vertical";
+  isDisplayLabel: boolean;
   helperText: string;
   sectionTitle: string;
   error: string;
@@ -88,35 +85,12 @@ export type KubectlApplyFormProps = {
     cancelText: string;
   };
   values: any[];
+  error?: string;
+  errorDetail?: string;
   getSlot?: (f: Field, fallback: React.ReactNode) => React.ReactNode;
-  onChange: (values: any[]) => void;
+  onChange: (values: any[], key?: string) => void;
   onSubmit?: (values: any[]) => void;
   onCancel?: () => void;
-};
-
-const FieldWrapper: React.FC<
-  Field & {
-    children?: React.ReactNode;
-  }
-> = (props) => {
-  const { label, children, sectionTitle, helperText, error } = props;
-  const displayLabel = Boolean(label);
-
-  return (
-    <Row className={cx(FormItem, displayLabel && HasMargin)}>
-      {sectionTitle && <div className={FieldSection}>{sectionTitle}</div>}
-      {displayLabel && (
-        <Col span="6" className={FormLabelStyle}>
-          {label}
-        </Col>
-      )}
-      <Col span={displayLabel ? 18 : 24}>
-        {children}
-        {error && <div className={FormErrorMessage}>{error}</div>}
-        {helperText && <div className={FormHelperText}>{helperText}</div>}
-      </Col>
-    </Row>
-  );
 };
 
 function getDataPath(p: string) {
@@ -217,6 +191,8 @@ const KubectlApplyForm = React.forwardRef<
       schemas = [],
       uiConfig,
       values,
+      error,
+      errorDetail,
       onChange,
       getSlot,
       onCancel,
@@ -235,27 +211,27 @@ const KubectlApplyForm = React.forwardRef<
     function getComponent(f: TransformedField) {
       const [indexStr, path] = f.path.split(/\.(.*)/s);
       const index = parseInt(indexStr, 10);
-      const { spec } = fieldsArray[index][path];
+      const { spec } = fieldsArray?.[index]?.[path] || {};
 
-      const component = (
+      const component = spec ? (
         <SpecField
           key={f.dataPath}
           field={f}
           widget={f.widget}
           widgetOptions={f.widgetOptions}
-          spec={{...spec, title: f.label}}
+          spec={{ ...spec, title: f.label }}
           level={0}
           path=""
           stepElsRef={{}}
           value={f.value}
           slot={getSlot}
-          onChange={(newValue) => {
+          onChange={(newValue: any, key?: string) => {
             const valuesSlice = [...values];
             set(valuesSlice, f.dataPath, newValue);
-            onChange(valuesSlice);
+            onChange(valuesSlice, key);
           }}
         />
-      );
+      ) : null;
 
       return {
         component,
@@ -300,7 +276,7 @@ const KubectlApplyForm = React.forwardRef<
         }
         case "wizard": {
           const currentStep = layout.steps[step];
-          
+
           return (
             <div className={cx(WizardStyle)}>
               <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
@@ -338,7 +314,7 @@ const KubectlApplyForm = React.forwardRef<
                   {transformFields(layout.steps[step].fields, values).map(
                     (f) => {
                       const { component } = getComponent(f);
-                      
+
                       return component;
                     }
                   )}
@@ -358,6 +334,19 @@ const KubectlApplyForm = React.forwardRef<
                         {currentStep?.prevText || "previous"}
                       </span>
                     )}
+                    {error ? (
+                      <Popover
+                        content={errorDetail || error}
+                      >
+                        <div className="wizard-error">
+                          <Icon
+                            className="wizard-error-icon"
+                            type="1-exclamation-error-circle-fill-16-red"
+                          ></Icon>
+                          <span className="wizard-error-text">{error}</span>
+                        </div>
+                      </Popover>
+                    ) : null}
                   </div>
                   <div className="wizard-footer-btn-group">
                     <kit.Button

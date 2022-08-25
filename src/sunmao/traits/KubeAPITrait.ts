@@ -44,6 +44,9 @@ export const KubeAPITraitPropertiesSpec = Type.Object({
   fieldSelector: Type.String({
     title: "Field selector",
   }),
+  isAutoWatch: Type.Boolean({
+    title: "Is auto watch",
+  }),
 });
 export const KubeAPITraitStateSpec = Type.Object({
   loading: Type.Boolean(),
@@ -61,6 +64,10 @@ export default implementRuntimeTrait({
     properties: KubeAPITraitPropertiesSpec,
     state: KubeAPITraitStateSpec,
     methods: [
+      {
+        name: "trigger",
+        parameters: Type.Object({}),
+      },
       {
         name: "watch",
         parameters: Type.Object({}),
@@ -84,6 +91,7 @@ export default implementRuntimeTrait({
     name,
     namespace,
     fieldSelector,
+    isAutoWatch,
     mergeState,
     subscribeMethods,
   }) => {
@@ -116,15 +124,14 @@ export default implementRuntimeTrait({
       const stopFn = await api
         .listWatch({
           query: {
+            namespace,
             fieldSelector: compact([
               name && `metadata.name=${name}`,
-              namespace && `metadata.namespace=${namespace}`,
               fieldSelector,
             ]).join(","),
           },
           cb: (response) => {
             responseMap.set(componentId, response);
-            mergeState({});
             mergeState({ loading: false, error: null, response });
           },
         })
@@ -141,12 +148,37 @@ export default implementRuntimeTrait({
       }
     }
 
+    async function trigger() {
+      mergeState({
+        loading: true,
+      });
+
+      try {
+        const response = await api.list({
+          query: {
+            namespace,
+            fieldSelector: compact([
+              name && `metadata.name=${name}`,
+              fieldSelector,
+            ]).join(","),
+          },
+        });
+
+        mergeState({ loading: false, error: null, response });
+      } catch (error) {
+        mergeState({ loading: false, error, response: emptyData });
+      }
+    }
+
     subscribeMethods({
+      trigger,
       watch,
       stop,
     });
 
-    watch();
+    if (isAutoWatch) {
+      watch();
+    }
 
     return {
       props: {

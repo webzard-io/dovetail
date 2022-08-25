@@ -1,5 +1,6 @@
 import { Select as AntdSelect } from "antd";
 import { Type, Static } from "@sinclair/typebox";
+import { WidgetProps } from "./AutoForm/widget";
 
 export const OptionsSpec = Type.Object({
   options: Type.Array(
@@ -10,18 +11,16 @@ export const OptionsSpec = Type.Object({
   ),
 });
 
-type Props = {
-  value: string;
-  onChange(value: string): void;
-} & Static<typeof OptionsSpec>;
+type Props = WidgetProps<string, Static<typeof OptionsSpec>>;
 
 const Select = (props: Props) => {
-  const { value, onChange, options = [] } = props;
+  const { value, onChange, widgetOptions } = props;
+  const { options = [] } = widgetOptions || { options: [] };
 
   return (
     <AntdSelect
-      value={String(value || '')}
-      onChange={(value) => onChange(value)}
+      value={String(value || "")}
+      onChange={(value) => onChange(value, props.field?.key)}
       showSearch
       optionFilterProp="children"
     >

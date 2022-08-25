@@ -156,9 +156,9 @@ const KubectlGetDetail = React.forwardRef<
     const stopP = api
       .listWatch({
         query: {
+          namespace,
           fieldSelector: compact([
             `metadata.name=${name}`,
-            namespace && `metadata.namespace=${namespace}`,
           ]),
         },
         cb: (res) => {

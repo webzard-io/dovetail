@@ -88,6 +88,7 @@ export default defineConfig({
           "@link-color": "#0080FF",
           "@text-color": "#06101F",
           "@success-color": "#25C764",
+          "@error-color": "#f0483e",
           "@border-radius-base": "3px",
           "@screen-xs": "1279px",
           "@screen-sm": "1536px",

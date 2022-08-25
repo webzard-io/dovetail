@@ -17,7 +17,15 @@ const UiConfigFieldSpecProperties = {
     title: "Path",
     widget: "kui/v1/PathWidget",
   }),
+  key: Type.String({
+    title: 'Key',
+    description: 'Use for the `latestChangedKey` state'
+  }),
   label: Type.String({ title: "Label" }),
+  isDisplayLabel: Type.Boolean({
+    title: 'Is display label'
+  }),
+  layout: StringUnion(['horizontal', 'vertical'], { title: 'Layout' }),
   helperText: Type.String({ title: "Helper text" }),
   sectionTitle: Type.String({ title: "Section title" }),
   error: Type.String({ title: "Error" }),
@@ -172,10 +180,19 @@ const KubectlApplyFormProps = Type.Object({
       widget: "kui/v1/KubectlApplyFormDesignWidget",
     }
   ),
+  error: Type.String({
+    title: 'Error',
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+  }),
+  errorDetail: Type.String({
+    title: 'Error detail',
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+  })
 });
 
 const KubectlApplyFormState = Type.Object({
   value: Type.Any(),
+  latestChangedKey: Type.String()
 });
 
 export const KubectlApplyForm = implementRuntimeComponent({
@@ -183,9 +200,6 @@ export const KubectlApplyForm = implementRuntimeComponent({
   metadata: {
     name: "kubectl_apply_form",
     displayName: "Kubectl Apply Form",
-    isDraggable: true,
-    isResizable: true,
-    exampleSize: [4, 4],
     exampleProperties: {
       applyConfig: {
         create: true,
@@ -196,7 +210,6 @@ export const KubectlApplyForm = implementRuntimeComponent({
         schemas: [],
         defaultValues: [],
         uiConfig: {
-          allowTogggleYaml: false,
           layout: {
             type: "simple",
             fields: [],
@@ -230,6 +243,8 @@ export const KubectlApplyForm = implementRuntimeComponent({
     basePath,
     applyConfig,
     formConfig,
+    error,
+    errorDetail,
     mergeState,
     slotsElements,
     subscribeMethods,
@@ -269,10 +284,13 @@ export const KubectlApplyForm = implementRuntimeComponent({
         schemas={formConfig.schemas}
         uiConfig={formConfig.uiConfig}
         values={values}
-        onChange={(newValues) => {
+        error={error}
+        errorDetail={errorDetail}
+        onChange={(newValues: any, key?: string) => {
           setValues(newValues);
           mergeState({
             value: newValues,
+            latestChangedKey: key
           });
           callbackMap?.onChange?.();
         }}

@@ -196,8 +196,6 @@ export const KubectlGetTable = implementRuntimeComponent({
   metadata: {
     name: "kubectl_get_table",
     displayName: "Kubectl Get Table",
-    isDraggable: true,
-    isResizable: true,
     exampleProperties: {
       basePath: "proxy-k8s",
       apiBase: "apis/kubesmart.smtx.io/v1alpha1",
@@ -231,7 +229,6 @@ export const KubectlGetTable = implementRuntimeComponent({
       defaultSize: 10,
       empty: "No Data.",
     },
-    exampleSize: [8, 4],
     annotations: {
       category: "Display",
     },
@@ -409,7 +406,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           columns={columns.map((col) => ({
             ...col,
             fixed: col.fixed === "none" ? undefined : col.fixed,
-            dataIndex: col.dataIndex.split("."),
+            dataIndex: typeof col.dataIndex === 'string' ? col.dataIndex.split(".") : col.dataIndex,
             render: (value: any, record: any, index: number) => {
               return renderWidget(
                 { ...col, path: col.dataIndex },

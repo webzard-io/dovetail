@@ -1,5 +1,5 @@
 import { JSONSchema7 } from "json-schema";
-import type { Field } from '../../organisms/KubectlApplyForm/KubectlApplyForm';
+import type { Field } from "../../organisms/KubectlApplyForm/KubectlApplyForm";
 
 type WidgetOptions = Partial<{
   displayLabel: boolean;
@@ -7,11 +7,11 @@ type WidgetOptions = Partial<{
   step?: number;
 }>;
 
-export type WidgetProps = {
+export type WidgetProps<Value = any, WidgetOptions = Record<string, any>> = {
   field?: Field;
   spec: JSONSchema7;
   widget?: string;
-  widgetOptions?: Record<string, any>;
+  widgetOptions?: WidgetOptions;
   level: number;
   path: string;
   step?: number;
@@ -19,12 +19,7 @@ export type WidgetProps = {
     steps?: { paths: string[] }[];
   };
   stepElsRef: Record<number, HTMLElement | null>;
-  value: any;
-  onChange: (newV: any) => void;
-  renderer?: (
-    path: string,
-    level: number,
-    position: "before" | "after" | "widget"
-  ) => React.ReactNode;
+  value: Value;
+  onChange: (newValue: Value, key?: string) => void;
   slot?: Function;
 };

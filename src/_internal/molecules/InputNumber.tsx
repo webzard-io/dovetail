@@ -1,19 +1,32 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { InputNumber as AntdInputNumber } from "antd";
 import { Type, Static } from "@sinclair/typebox";
+import { WidgetProps } from "./AutoForm/widget";
 
 export const OptionsSpec = Type.Object({
-  max: Type.Optional(Type.Number({ title: "Number" })),
-  min: Type.Optional(Type.Number({ title: "Number" })),
+  max: Type.Optional(Type.Number({ title: "Max" })),
+  min: Type.Optional(Type.Number({ title: "Min" })),
 });
 
-type Props = {
-  value?: number;
-  onChange(value: string | number | undefined): void;
-} & Static<typeof OptionsSpec>;
+type Props = WidgetProps<number, Static<typeof OptionsSpec>>;
 
 const InputNumber = (props: Props) => {
-  return <AntdInputNumber {...props}></AntdInputNumber>;
+  const onChange = useCallback(
+    (newValue) => {
+      if (newValue !== undefined) {
+        props.onChange(Number(newValue), props.field?.key);
+      }
+    },
+    [props.onChange]
+  );
+
+  return (
+    <AntdInputNumber
+      {...props.widgetOptions}
+      value={props.value}
+      onChange={onChange}
+    ></AntdInputNumber>
+  );
 };
 
 export default InputNumber;

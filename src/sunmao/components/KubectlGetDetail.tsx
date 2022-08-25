@@ -166,9 +166,6 @@ export const KubectlGetDetail = implementRuntimeComponent({
   metadata: {
     name: "kubectl_get_detail",
     displayName: "Kubectl Get Detail",
-    isDraggable: true,
-    isResizable: true,
-    exampleSize: [4, 4],
     exampleProperties: {
       basePath: "proxy-k8s",
       apiBase: "/apis/apps/v1",

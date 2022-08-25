@@ -1,12 +1,10 @@
 import { Input } from "antd";
 import { Type, Static } from "@sinclair/typebox";
+import { WidgetProps } from "./AutoForm/widget";
 
 export const OptionsSpec = Type.Object({});
 
-type Props = {
-  value: string;
-  onChange(value: string): void;
-} & Static<typeof OptionsSpec>;
+type Props = WidgetProps<string, Static<typeof OptionsSpec>>;
 
 const Textarea = (props: Props) => {
   const { value, onChange } = props;
@@ -14,7 +12,7 @@ const Textarea = (props: Props) => {
   return (
     <Input.TextArea
       value={value}
-      onChange={(event) => onChange(event.currentTarget.value)}
+      onChange={(event) => onChange(event.currentTarget.value, props.field?.key)}
     />
   );
 };

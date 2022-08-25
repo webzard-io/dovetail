@@ -12,6 +12,7 @@ import ArrowChevronLeftSmall16BoldBlue from '../../images/1-arrow-chevron-left-s
 import SettingGear16GradientBlue from '../../images/1-settings-gear-16-gradient-blue.svg';
 import SettingGear16GradientGray from '../../images/1-settings-gear-16-gradient-gray.svg';
 import StatusUnknownQuestionmark16Red from '../../images/1-status-unknown-questionmark-16-red.svg';
+import ExclamationErrorCircleFill16Red from '../../images/1-exclamation-error-circle-fill-16-red.svg';
 
 
 const ICON_MAP = {
@@ -24,7 +25,8 @@ const ICON_MAP = {
   '1-arrow-chevron-left-small-16-bold-blue': ArrowChevronLeftSmall16BoldBlue,
   '1-settings-gear-16-gradient-blue': SettingGear16GradientBlue,
   '1-settings-gear-16-gradient-gray': SettingGear16GradientGray,
-  '1-status-unknown-questionmark-16-red': StatusUnknownQuestionmark16Red
+  '1-status-unknown-questionmark-16-red': StatusUnknownQuestionmark16Red,
+  '1-exclamation-error-circle-fill-16-red': ExclamationErrorCircleFill16Red
 };
 
 export type IconTypes = keyof typeof ICON_MAP;
