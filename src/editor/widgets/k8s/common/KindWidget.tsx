@@ -12,8 +12,9 @@ export default implementWidget({
   },
 })((props) => {
   const [kinds, setKinds] = useState<string[]>([]);
-  const { component, path } = props;
+  const { component, path, services } = props;
   const basePath = useProperty({
+    services,
     component,
     path,
     key: "basePath",

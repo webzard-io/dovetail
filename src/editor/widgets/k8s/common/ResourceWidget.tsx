@@ -15,14 +15,16 @@ export default implementWidget({
   },
 })(
   observer(function ResourceWidget(props) {
-    const { component, path } = props;
+    const { component, path, services } = props;
     const [resources, setResources] = useState<Resource[]>([]);
     const apiBase = useProperty({
+      services,
       component,
       path,
       key: "apiBase",
     });
     const basePath = useProperty({
+      services,
       component,
       path,
       key: "basePath",
