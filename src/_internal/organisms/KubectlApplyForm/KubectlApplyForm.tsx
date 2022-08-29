@@ -29,6 +29,8 @@ import {
 } from "@chakra-ui/react";
 import { KitContext } from "src/_internal/atoms/kit-context";
 import { ButtonType } from "antd/lib/button";
+import SummaryList from "../../atoms/themes/CloudTower/components/SummaryList";
+import useSummary from "./useSummary";
 
 export type Field = {
   fields?: Field[];
@@ -48,7 +50,7 @@ export type Field = {
 
 type TransformedField = Field & { dataPath: string; value: any };
 
-type Layout =
+export type Layout =
   | {
       type: "simple";
       fields: Field[];
@@ -81,6 +83,7 @@ export type KubectlApplyFormProps = {
   schemas: JSONSchema7[];
   uiConfig: {
     allowToggleYaml: boolean;
+    title?: string;
     layout: Layout;
     cancelText: string;
   };
@@ -207,6 +210,8 @@ const KubectlApplyForm = React.forwardRef<
     const kit = useContext(KitContext);
     // wizard
     const [step, setStep] = useState(0);
+    const { layout, cancelText } = uiConfig;
+    const summaryInfo = useSummary(layout, values);
 
     function getComponent(f: TransformedField) {
       const [indexStr, path] = f.path.split(/\.(.*)/s);
@@ -243,12 +248,24 @@ const KubectlApplyForm = React.forwardRef<
       switch (layout.type) {
         case "simple": {
           return (
-            <>
-              {transformFields(layout.fields, values).map((f) => {
-                const { component } = getComponent(f);
-                return component;
-              })}
-            </>
+            <div className={cx(WizardStyle)}>
+              <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
+                <div className="left"></div>
+                <div className="middle">
+                  {transformFields(layout.fields, values).map((f) => {
+                    const { component } = getComponent(f);
+                    return component;
+                  })}
+                </div>
+                <div className="right">
+                  <SummaryList
+                    title={uiConfig.title || ""}
+                    groups={summaryInfo?.groups || []}
+                    items={summaryInfo.items || []}
+                  ></SummaryList>
+                </div>
+              </div>
+            </div>
           );
         }
         case "tabs": {
@@ -319,7 +336,12 @@ const KubectlApplyForm = React.forwardRef<
                     }
                   )}
                 </div>
-                <div className="right"></div>
+                <div className="right">
+                  <SummaryList
+                    title={uiConfig.title || ""}
+                    groups={summaryInfo?.groups}
+                  ></SummaryList>
+                </div>
               </div>
               <div className={WizardFooterStyle}>
                 <div className="footer-content">
