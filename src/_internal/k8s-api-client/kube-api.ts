@@ -241,6 +241,7 @@ export class KubeApi<T> {
       .get(url, {
         searchParams: query as URLSearchParams,
         retry: 0,
+        timeout: false
       })
       .json<T>();
 
