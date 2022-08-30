@@ -74,6 +74,9 @@ const UiConfigFieldSpec = Type.Object(
 
 export const UiConfigSpec = Type.Object({
   allowToggleYaml: Type.Boolean({ title: "Allow toggle YAML" }),
+  title: Type.String({
+    title: 'Title',
+  }),
   layout: Type.Object(
     {
       type: Type.KeyOf(
