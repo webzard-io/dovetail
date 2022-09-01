@@ -33,7 +33,7 @@ export default defineConfig({
         "@sunmao-ui/editor-sdk",
         "chakra-react-select",
         "i18next",
-        "react-i18next"
+        "react-i18next",
       ],
     },
   },
@@ -43,6 +43,7 @@ export default defineConfig({
       "/proxy-k8s": getProxyConfig(),
       "/api": {
         target: "http://192.168.31.181",
+        ws: true,
       },
     },
   },

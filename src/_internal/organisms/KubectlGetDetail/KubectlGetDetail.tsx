@@ -76,6 +76,7 @@ export type Layout = {
 
 type KubectlGetDetailProps = {
   basePath: string;
+  watchWsBasePath?: string;
   apiBase: string;
   namespace?: string;
   resource: string;
@@ -113,6 +114,7 @@ const KubectlGetDetail = React.forwardRef<
 >((props, ref) => {
   const {
     basePath,
+    watchWsBasePath,
     apiBase,
     namespace,
     resource,
@@ -145,6 +147,7 @@ const KubectlGetDetail = React.forwardRef<
   useEffect(() => {
     const api = new KubeApi<UnstructuredList>({
       basePath: basePath,
+      watchWsBasePath,
       objectConstructor: {
         apiBase: `${apiBase}/${resource}`,
         kind: "",
@@ -157,9 +160,7 @@ const KubectlGetDetail = React.forwardRef<
       .listWatch({
         query: {
           namespace,
-          fieldSelector: compact([
-            `metadata.name=${name}`,
-          ]),
+          fieldSelector: compact([`metadata.name=${name}`]),
         },
         cb: (res) => {
           setResponse(() => ({
