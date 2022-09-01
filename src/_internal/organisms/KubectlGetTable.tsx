@@ -27,13 +27,14 @@ const TableContent = styled.div`
   position: relative;
 `;
 
-type Columns = (TableProps['columns'][0] & {
+type Columns = (TableProps["columns"][0] & {
   isActionColumn?: boolean;
   canCustomizable?: boolean;
   isDefaultDisplay?: boolean;
 })[];
 type KubectlGetTableProps = {
   basePath: string;
+  watchWsBasePath?: string;
   resource: string;
   namespace: string;
   apiBase: string;
@@ -56,6 +57,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
   (
     {
       basePath,
+      watchWsBasePath,
       apiBase,
       namespace,
       resource,
@@ -167,6 +169,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
     useEffect(() => {
       const api = new KubeApi<UnstructuredList>({
         basePath,
+        watchWsBasePath,
         objectConstructor: {
           kind: "",
           apiBase: `${apiBase}/${resource}`,

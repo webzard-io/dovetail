@@ -52,6 +52,7 @@ type KubeObjectConstructor = {
 
 type KubeApiOptions = {
   basePath: string;
+  watchWsBasePath?: string;
   /**
    * The constructor for the kube objects returned from the API
    */
@@ -202,10 +203,11 @@ export class KubeApi<T> {
   private apiPrefix: string;
   private apiGroup: string;
   private apiResource: string;
+  private watchWsBasePath?: string;
   public objectConstructor: KubeObjectConstructor;
 
   constructor(protected options: KubeApiOptions) {
-    const { objectConstructor, basePath } = options;
+    const { objectConstructor, basePath, watchWsBasePath } = options;
     const { apiPrefix, apiGroup, apiVersion, resource } = parseKubeApi(
       objectConstructor.apiBase
     );
@@ -216,6 +218,7 @@ export class KubeApi<T> {
     this.apiGroup = apiGroup;
     this.apiVersion = apiVersion;
     this.apiResource = resource;
+    this.watchWsBasePath = watchWsBasePath;
     this.objectConstructor = objectConstructor;
   }
 
@@ -241,13 +244,17 @@ export class KubeApi<T> {
       .get(url, {
         searchParams: query as URLSearchParams,
         retry: 0,
-        timeout: false
+        timeout: false,
       })
       .json<T>();
 
     cb?.(res);
 
-    return this.watch(url, res, cb);
+    const watchUrl = this.watchWsBasePath
+      ? this.getUrl({ namespace }, undefined, true)
+      : url;
+
+    return this.watch(watchUrl, res, cb);
   }
 
   private async watch(
@@ -255,13 +262,56 @@ export class KubeApi<T> {
     res: T,
     cb: KubeApiListWatchOptions<T>["cb"]
   ): Promise<StopWatchHandler> {
+    const { resourceVersion } = (res as unknown as UnstructuredList).metadata;
+    let { items } = res as unknown as UnstructuredList;
+
+    const handleEvent = (event: any) => {
+      console.log("[INFORMER]", event);
+      const name = event.object.metadata.name;
+      switch (event.type) {
+        case "ADDED":
+          items = items.concat(event.object);
+          break;
+        case "MODIFIED":
+          items = items.map((item) => {
+            if (item.metadata.name === name) {
+              return event.object;
+            }
+            return item;
+          });
+          break;
+        case "DELETED":
+          items = items.filter((item) => item.metadata.name !== name);
+          break;
+        default:
+      }
+      cb?.({
+        ...res,
+        items,
+      });
+    };
+
+    if (this.watchWsBasePath) {
+      const socket = new WebSocket(
+        `ws://${location.host}/${url}?resourceVersion=${resourceVersion}&watch=1`
+      );
+      socket.addEventListener("open", () => {});
+      socket.addEventListener("message", function (msg) {
+        const event = JSON.parse(msg.data);
+        handleEvent(event);
+      });
+
+      return () => {
+        socket.close();
+      };
+    }
+
     const controller = new AbortController();
     const { signal } = controller;
     ky.get(url, {
       searchParams: {
         watch: 1,
-        resourceVersion: (res as unknown as UnstructuredList).metadata
-          .resourceVersion,
+        resourceVersion,
       } as SearchParamsOption,
       timeout: false,
       signal,
@@ -270,7 +320,6 @@ export class KubeApi<T> {
         const stream = streamRes.body?.getReader();
         const utf8Decoder = new TextDecoder("utf-8");
         let buffer = "";
-        let items = (res as unknown as UnstructuredList).items;
 
         // wait for an update and prepare to read it
         stream
@@ -286,29 +335,7 @@ export class KubeApi<T> {
             const remainingBuffer = findLine(buffer, (line) => {
               try {
                 const event = JSON.parse(line);
-                console.log(event);
-                const name = event.object.metadata.name;
-                switch (event.type) {
-                  case "ADDED":
-                    items = items.concat(event.object);
-                    break;
-                  case "MODIFIED":
-                    items = items.map((item) => {
-                      if (item.metadata.name === name) {
-                        return event.object;
-                      }
-                      return item;
-                    });
-                    break;
-                  case "DELETED":
-                    items = items.filter((item) => item.metadata.name !== name);
-                    break;
-                  default:
-                }
-                cb?.({
-                  ...res,
-                  items,
-                });
+                handleEvent(event);
               } catch (error) {
                 console.log("Error while parsing", line, "\n", error);
               }
@@ -338,7 +365,8 @@ export class KubeApi<T> {
 
   private getUrl(
     { name, namespace }: Partial<ResourceDescriptor> = {},
-    query?: Partial<KubeApiQueryParams>
+    query?: Partial<KubeApiQueryParams>,
+    watch?: boolean
   ) {
     const resourcePath = createKubeApiURL({
       apiPrefix: this.apiPrefix,
@@ -352,10 +380,10 @@ export class KubeApi<T> {
       this.normalizeQuery(query) as URLSearchParams
     );
 
+    const basePath = watch ? this.watchWsBasePath : this.basePath;
+
     return (
-      this.basePath +
-      resourcePath +
-      (query ? `?${searchParams.toString()}` : "")
+      basePath + resourcePath + (query ? `?${searchParams.toString()}` : "")
     );
   }
 

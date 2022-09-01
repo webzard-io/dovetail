@@ -100,6 +100,10 @@ const KubectlGetTableProps = Type.Object({
     description: "K8s Api base path",
     category: PRESET_PROPERTY_CATEGORY.Data,
   }),
+  watchWsBasePath: Type.String({
+    title: "Watch websocket base path",
+    category: PRESET_PROPERTY_CATEGORY.Data,
+  }),
   apiBase: Type.String({
     title: "Api base",
     widget: "kui/v1/ApiBaseWidget",
@@ -264,6 +268,7 @@ export const KubectlGetTable = implementRuntimeComponent({
 })(
   ({
     basePath,
+    watchWsBasePath,
     apiBase,
     namespace,
     resource,
@@ -398,6 +403,7 @@ export const KubectlGetTable = implementRuntimeComponent({
       <div ref={elementRef} className={css(customStyle?.content)}>
         <BaseKubectlGetTable
           basePath={basePath}
+          watchWsBasePath={watchWsBasePath}
           resource={resource}
           namespace={namespace}
           apiBase={apiBase}
@@ -406,7 +412,10 @@ export const KubectlGetTable = implementRuntimeComponent({
           columns={columns.map((col) => ({
             ...col,
             fixed: col.fixed === "none" ? undefined : col.fixed,
-            dataIndex: typeof col.dataIndex === 'string' ? col.dataIndex.split(".") : col.dataIndex,
+            dataIndex:
+              typeof col.dataIndex === "string"
+                ? col.dataIndex.split(".")
+                : col.dataIndex,
             render: (value: any, record: any, index: number) => {
               return renderWidget(
                 { ...col, path: col.dataIndex },
