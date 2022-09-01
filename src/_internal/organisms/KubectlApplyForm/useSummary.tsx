@@ -1,4 +1,9 @@
-import type { Group, Item, Object, SubHeading } from "../../atoms/themes/CloudTower/components/SummaryList";
+import type {
+  Group,
+  Item,
+  Object,
+  SubHeading,
+} from "../../atoms/themes/CloudTower/components/SummaryList";
 import { Layout, Field } from "./KubectlApplyForm";
 import { get } from "lodash";
 
@@ -16,7 +21,10 @@ function getValueByPath(formData: Record<string, any>, path: string) {
   }
 }
 
-function getListItems(fields: Field[], formData: Record<string, any>): (Item | Object | SubHeading)[] {
+function getListItems(
+  fields: Field[],
+  formData: Record<string, any>
+): (Item | Object | SubHeading)[] {
   return fields
     .map((field) => {
       const items: (Item | Object | SubHeading)[] = [];
@@ -30,7 +38,7 @@ function getListItems(fields: Field[], formData: Record<string, any>): (Item | O
 
       const value = getValueByPath(formData, field.path);
 
-      if (value instanceof Array) {
+      if (value instanceof Array && field.label) {
         if (typeof value[0] !== "object") {
           items.push({
             type: "Item" as const,
@@ -46,7 +54,7 @@ function getListItems(fields: Field[], formData: Record<string, any>): (Item | O
               icon: field.widgetOptions?.icon,
               label: field.label,
               items: field.fields?.length
-                ? getListItems(field.fields, item) as Item[]
+                ? (getListItems(field.fields, item) as Item[])
                 : Object.keys(item).map((key) => ({
                     type: "Item" as const,
                     label: key,
@@ -61,20 +69,20 @@ function getListItems(fields: Field[], formData: Record<string, any>): (Item | O
             });
           }
         });
-      } else if (value && typeof value === "object") {
+      } else if (value && typeof value === "object" && field.label) {
         items.push({
           type: "Object" as const,
           label: field.label,
           icon: field.widgetOptions?.icon,
           items: field.fields?.length
-            ? getListItems(field.fields, value) as Item[]
+            ? (getListItems(field.fields, value) as Item[])
             : Object.keys(value).map((key) => ({
                 type: "Item" as const,
                 label: key,
                 value: JSON.stringify(value[key]),
               })),
         });
-      } else {
+      } else if (field.label) {
         items.push({
           type: "Item" as const,
           label: field.label,

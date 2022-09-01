@@ -85,6 +85,7 @@ export type KubectlApplyFormProps = {
     allowToggleYaml: boolean;
     title?: string;
     layout: Layout;
+    confirmText: string;
     cancelText: string;
   };
   values: any[];
@@ -218,7 +219,7 @@ const KubectlApplyForm = React.forwardRef<
       const index = parseInt(indexStr, 10);
       const { spec } = fieldsArray?.[index]?.[path] || {};
 
-      const component = spec ? (
+      const component = (
         <SpecField
           key={f.dataPath}
           field={f}
@@ -236,7 +237,7 @@ const KubectlApplyForm = React.forwardRef<
             onChange(valuesSlice, key);
           }}
         />
-      ) : null;
+      );
 
       return {
         component,
@@ -244,7 +245,7 @@ const KubectlApplyForm = React.forwardRef<
     }
 
     function renderFields() {
-      const { layout, cancelText } = uiConfig;
+      const { layout, cancelText, confirmText } = uiConfig;
       switch (layout.type) {
         case "simple": {
           return (
@@ -263,6 +264,41 @@ const KubectlApplyForm = React.forwardRef<
                     groups={summaryInfo?.groups || []}
                     items={summaryInfo.items || []}
                   ></SummaryList>
+                </div>
+              </div>
+              <div className={WizardFooterStyle}>
+                <div className="footer-content">
+                  <div className="wizard-footer-left">
+                    {error ? (
+                      <Popover content={errorDetail || error}>
+                        <div className="wizard-error">
+                          <Icon
+                            className="wizard-error-icon"
+                            type="1-exclamation-error-circle-fill-16-red"
+                          ></Icon>
+                          <span className="wizard-error-text">{error}</span>
+                        </div>
+                      </Popover>
+                    ) : null}
+                  </div>
+                  <div className="wizard-footer-btn-group">
+                    <kit.Button
+                      type={`quiet` as unknown as ButtonType}
+                      onClick={() => {
+                        onCancel?.();
+                      }}
+                    >
+                      {cancelText}
+                    </kit.Button>
+                    <kit.Button
+                      type="primary"
+                      onClick={() => {
+                        onSubmit?.(values);
+                      }}
+                    >
+                      {confirmText || "next"}
+                    </kit.Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -357,9 +393,7 @@ const KubectlApplyForm = React.forwardRef<
                       </span>
                     )}
                     {error ? (
-                      <Popover
-                        content={errorDetail || error}
-                      >
+                      <Popover content={errorDetail || error}>
                         <div className="wizard-error">
                           <Icon
                             className="wizard-error-icon"

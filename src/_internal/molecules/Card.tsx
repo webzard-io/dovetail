@@ -21,6 +21,8 @@ const CardHeader = styled.div`
 `;
 const CardTitle = styled.h5`
   color: rgba(44, 56, 82, 0.6);
+  font-weight: bold;
+  margin-bottom: 10px;
 `;
 
 export const OptionsSpec = Type.Object({
