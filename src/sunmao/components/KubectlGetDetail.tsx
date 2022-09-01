@@ -9,44 +9,47 @@ import {
 } from "../../_internal/molecules/display";
 import { renderWidget } from "../utils/widget";
 
-const InfoSpec = Type.Object({
-  label: Type.String({ title: "Label" }),
-  path: Type.String({
-    title: "Path",
-    widget: "kui/v1/PathWidget",
-  }),
-  widget: StringUnion(
-    ["default", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
-    {
-      title: "Widget",
-    }
-  ),
-  widgetOptions: Type.Record(Type.String(), Type.Any(), {
-    title: "Widget options",
-    widget: "kui/v1/OptionsWidget",
-    widgetOptions: {
-      optionsMap: DISPLAY_WIDGET_OPTIONS_MAP,
-    },
-  }),
-  componentId: Type.String({
-    title: "Component ID",
-    isComponentId: true,
-    widget: "kui/v1/CustomComponentWidget",
-    widgetOptions: {
-      isDisplayLabel: false,
-      keyOfPath: "path",
-      slot: "value",
-    },
-    conditions: [
+const InfoSpec = Type.Object(
+  {
+    label: Type.String({ title: "Label" }),
+    path: Type.String({
+      title: "Path",
+      widget: "kui/v1/PathWidget",
+    }),
+    widget: StringUnion(
+      ["default", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
       {
-        key: "widget",
-        value: "component",
+        title: "Widget",
+      }
+    ),
+    widgetOptions: Type.Record(Type.String(), Type.Any(), {
+      title: "Widget options",
+      widget: "kui/v1/OptionsWidget",
+      widgetOptions: {
+        optionsMap: DISPLAY_WIDGET_OPTIONS_MAP,
       },
-    ],
-  }),
-}, {
-  widget: "kui/v1/KubectlGetDetailFieldWidget"
-});
+    }),
+    componentId: Type.String({
+      title: "Component ID",
+      isComponentId: true,
+      widget: "kui/v1/CustomComponentWidget",
+      widgetOptions: {
+        isDisplayLabel: false,
+        keyOfPath: "path",
+        slot: "value",
+      },
+      conditions: [
+        {
+          key: "widget",
+          value: "component",
+        },
+      ],
+    }),
+  },
+  {
+    widget: "kui/v1/KubectlGetDetailFieldWidget",
+  }
+);
 
 const SectionSpec = Type.Object({
   title: Type.String({
@@ -69,6 +72,10 @@ const KubectlGetDetailProps = Type.Object({
   basePath: Type.String({
     title: "Base path",
     description: "K8s Api base path",
+    category: PRESET_PROPERTY_CATEGORY.Data,
+  }),
+  watchWsBasePath: Type.String({
+    title: "Watch websocket base path",
     category: PRESET_PROPERTY_CATEGORY.Data,
   }),
   apiBase: Type.String({
@@ -277,6 +284,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
   ({
     elementRef,
     basePath,
+    watchWsBasePath,
     apiBase,
     namespace,
     resource,
@@ -309,6 +317,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
       <BaseKubectlGetDetail
         ref={elementRef}
         basePath={basePath}
+        watchWsBasePath={watchWsBasePath}
         apiBase={apiBase}
         namespace={namespace}
         resource={resource}

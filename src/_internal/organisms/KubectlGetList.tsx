@@ -28,6 +28,7 @@ export type Response = {
 type KubectlGetListProps = {
   className?: string;
   basePath: string;
+  watchWsBasePath?: string;
   resource: string;
   namespace?: string;
   apiBase: string;
@@ -39,6 +40,7 @@ type KubectlGetListProps = {
 const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
   ({
     basePath,
+    watchWsBasePath,
     apiBase,
     namespace,
     resource,
@@ -57,6 +59,7 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
     useEffect(() => {
       const api = new KubeApi<UnstructuredList>({
         basePath,
+        watchWsBasePath,
         objectConstructor: {
           kind: "",
           apiBase: `${apiBase}/${resource}`,

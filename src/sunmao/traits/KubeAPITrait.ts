@@ -15,6 +15,9 @@ const emptyData = {
 
 export const KubeAPITraitPropertiesSpec = Type.Object({
   basePath: Type.String({ title: "Base path" }),
+  watchWsBasePath: Type.String({
+    title: "Watch websocket base path",
+  }),
   apiBase: Type.String({
     title: "API base",
     widget: "kui/v1/ApiBaseWidget",
@@ -86,6 +89,7 @@ export default implementRuntimeTrait({
   return ({
     componentId,
     basePath,
+    watchWsBasePath,
     apiBase,
     resource,
     name,
@@ -97,6 +101,7 @@ export default implementRuntimeTrait({
   }) => {
     const api = new KubeApi<UnstructuredList>({
       basePath,
+      watchWsBasePath,
       objectConstructor: {
         kind: "",
         apiBase: `${apiBase}/${resource}`,

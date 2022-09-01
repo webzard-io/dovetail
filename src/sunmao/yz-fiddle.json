@@ -13,7 +13,7 @@
           "properties": {
             "basePath": "api/sks/api/v1/clusters/yanzhen-demo/proxy",
             "apiBase": "/api/v1",
-            "resource": "services",
+            "resource": "nodes",
             "columns": [
               {
                 "key": "name",
@@ -54,7 +54,7 @@
             },
             "tableLayout": "auto",
             "bordered": false,
-            "watchWsBasePath": "api/v1/clusters/yanzhen-demo/proxy"
+            "watchWsBasePath": "api/sks-ws/api/v1/clusters/yanzhen-demo/proxy"
           },
           "traits": []
         }

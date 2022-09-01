@@ -32,6 +32,10 @@ export const KubectlGetList = implementRuntimeComponent({
         description: "K8s Api base path",
         category: PRESET_PROPERTY_CATEGORY.Data,
       }),
+      watchWsBasePath: Type.String({
+        title: "Watch websocket base path",
+        category: PRESET_PROPERTY_CATEGORY.Data,
+      }),
       apiBase: Type.String({
         title: "Api base",
         widget: "kui/v1/ApiBaseWidget",
@@ -75,6 +79,7 @@ export const KubectlGetList = implementRuntimeComponent({
 })(
   ({
     basePath,
+    watchWsBasePath,
     apiBase,
     namespace,
     resource,
@@ -113,6 +118,7 @@ export const KubectlGetList = implementRuntimeComponent({
       <div className={css(customStyle?.content)} ref={elementRef}>
         <BaseKubectlGetList
           basePath={basePath}
+          watchWsBasePath={watchWsBasePath}
           apiBase={apiBase}
           namespace={namespace}
           resource={resource}
