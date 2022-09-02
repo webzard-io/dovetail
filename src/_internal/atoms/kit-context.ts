@@ -1,6 +1,7 @@
 import React from "react";
 import { kit as CloudTowerKit } from "./themes/CloudTower";
 import { DropDownProps } from 'antd/lib/dropdown';
+import { ModalProps as AntdModalProps } from "antd/lib/modal";
 export { CloudTowerKit };
 
 type RefAndChildren = {
@@ -27,7 +28,8 @@ export type ButtonProps = {
   type?: typeof buttonTypes[number];
   size?: typeof buttonSizes[number];
   loading?: boolean;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLElement>) => void;
+  onMouseDown?: (e: React.MouseEvent<HTMLElement>) => void;
   className?: string;
   disabled?: boolean;
   prefixIcon?: string;
@@ -188,6 +190,27 @@ export type PaginationProps = {
   className?: string;
 }
 
+export type Modal2Props = AntdModalProps & {
+  /** Set is fullscreen to display modal */
+  fullscreen?: boolean;
+  /** Set loading type for ok button */
+  okLoading?: boolean;
+  /** Set disabled type for ok button */
+  okDisabled?: boolean;
+  /** Set error in footer */
+  footerError?: string | React.ReactNode | Error;
+  children?: React.ReactNode;
+  /** Display cancel button */
+  showCancel?: boolean;
+  /** Display ok button */
+  showOk?: boolean;
+  /** Set is a normal modal, width is 460px. If width is set it will fail */
+  normal?: boolean;
+  // FIXME: add props size
+  size?: "normal" | "medium" | "fullscreen";
+  showFooter?: boolean;
+};
+
 export interface Kit {
   name: string;
   Button: React.FC<ButtonProps>;
@@ -196,6 +219,7 @@ export interface Kit {
   Sidebar: React.FC<SidebarProps>;
   Tag: React.FC<TagProps>;
   Modal: React.FC<ModalProps>;
+  FullscreenModal: React.FC<Modal2Props>;
   CodeEditor: React.FC<CodeEditorProps>;
   Card: React.FC<CardProps>;
   InfoRow: React.FC<InfoRowProps>;

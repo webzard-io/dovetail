@@ -9,6 +9,7 @@ import { ObjectAge } from "./components/ObjectAge";
 import { UnstructuredSidebar } from "./components/UnstructuredSidebar";
 import { UnstructuredPage } from "./components/UnstructuredPage";
 import { Modal } from "./components/Modal";
+import { Modal as FullscreenModal } from "./components/FullscreenModal";
 import { Select } from "./components/Select";
 import { Icon } from "./components/Icon";
 import { CodeEditor } from "./components/CodeEditor";
@@ -46,7 +47,8 @@ export const libs: SunmaoLib[] = [
       CodeEditor,
       KubectlApplyForm,
       KubectlGetDetail,
-      KubectlGetList
+      KubectlGetList,
+      FullscreenModal
     ],
     utilMethods: [
       () => [

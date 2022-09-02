@@ -47,6 +47,10 @@ export const FieldSection = css`
 const FormItemStyle = css`
   margin-bottom: 18px;
 
+  &:last-child {
+    margin-bottom: 0;
+  }
+
   .dovetail-ant-form-item-explain {
     display: none;
   }
@@ -55,11 +59,14 @@ const FormItemStyle = css`
     & .dovetail-ant-form-item-explain {
       display: block;
     }
-
   }
-  
+
   .dovetail-ant-form-item-label {
     padding: 0;
+  }
+
+  .dovetail-ant-form-item-extra {
+    margin-top: 5px;
   }
 `;
 
@@ -70,8 +77,7 @@ const FormItemLabelStyle = css`
   color: rgba(44, 56, 82, 0.6);
 `;
 
-const FormItemContentStyle = css`
-`;
+const FormItemContentStyle = css``;
 
 const DefaultTemplate: React.FC<TemplateProps> = (props) => {
   const {
@@ -96,6 +102,7 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
   return (
     <Form.Item
       className={FormItemStyle}
+      labelAlign="left"
       labelCol={{ span: isHorizontal ? 6 : 24 }}
       label={
         displayLabel ? (
@@ -209,7 +216,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       <DefaultTemplate
         label={label}
         layout={field?.layout}
-        description={spec.description}
+        description={field?.helperText}
         displayLabel={displayLabel}
         displayDescription={displayDescription}
         spec={spec}

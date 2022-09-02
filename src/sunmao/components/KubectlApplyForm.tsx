@@ -150,6 +150,7 @@ export const UiConfigSpec = Type.Object({
       title: "Layout",
     }
   ),
+  confirmText: Type.String({ title: "Confirm text" }),
   cancelText: Type.String({ title: "Cancel text" }),
 });
 

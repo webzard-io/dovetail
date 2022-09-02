@@ -1,5 +1,14 @@
 import { css } from "@linaria/core";
 
+export const KubectlApplyFormStyle = css`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const FormWrapperStyle = css`
+  flex: 1;
+`
+
 export const WizardStyle = css`
   height: 100%;
   display: flex;
