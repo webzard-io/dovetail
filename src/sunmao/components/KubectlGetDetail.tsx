@@ -324,19 +324,19 @@ export const KubectlGetDetail = implementRuntimeComponent({
         name={name}
         layout={layout}
         renderTab={(params, data, fallback) => {
-          return slotsElements.tab?.({ ...params, ...data }, fallback);
+          return slotsElements.tab?.({ ...params, ...data }, fallback, `tab_${params.tab}_${params.tabIndex}`);
         }}
         renderSection={(params, data, fallback) => {
-          return slotsElements.section?.({ ...params, ...data }, fallback);
+          return slotsElements.section?.({ ...params, ...data }, fallback, `section_${params.section}`);
         }}
         renderKey={(params, data) => {
-          return slotsElements.key?.({ ...params, ...data });
+          return slotsElements.key?.({ ...params, ...data }, null, `key_${params.path}_${params.label}`);
         }}
         renderValue={(params, data) => {
-          return renderWidget(params, data, slotsElements.value);
+          return renderWidget(params, data, slotsElements.value, `value_${params.path}_${params.label}`);
         }}
         renderAction={(params, data) => {
-          return slotsElements.action?.({ ...params, ...data });
+          return slotsElements.action?.({ ...params, ...data }, null, `action_${params.path}_${params.label}`);
         }}
         onResponse={onResponse}
         onTabChange={onTabChange}

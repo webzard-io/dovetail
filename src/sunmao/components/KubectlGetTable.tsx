@@ -409,7 +409,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           apiBase={apiBase}
           fieldSelector={fieldSelector}
           onResponse={setResponse}
-          columns={columns.map((col) => ({
+          columns={columns.map((col, colIndex) => ({
             ...col,
             fixed: col.fixed === "none" ? undefined : col.fixed,
             dataIndex:
@@ -424,7 +424,8 @@ export const KubectlGetTable = implementRuntimeComponent({
                   record,
                   index,
                 },
-                slotsElements.cell
+                slotsElements.cell,
+                `column_${colIndex}_${index}`
               );
             },
             sortOrder: columnSortOrder[col.key],

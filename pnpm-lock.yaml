@@ -15,9 +15,9 @@ specifiers:
   '@rollup/pluginutils': ^4.2.1
   '@sinclair/typebox': ^0.21.2
   '@sunmao-ui/core': 0.7.4-alpha.1
-  '@sunmao-ui/editor': 0.7.5-alpha.3
-  '@sunmao-ui/editor-sdk': 0.3.5-alpha.3
-  '@sunmao-ui/runtime': 0.7.4-alpha.2
+  '@sunmao-ui/editor': 0.7.5-alpha.4
+  '@sunmao-ui/editor-sdk': 0.3.5-alpha.4
+  '@sunmao-ui/runtime': 0.7.4-alpha.3
   '@sunmao-ui/shared': 0.2.4-alpha.2
   '@types/js-yaml': ^4.0.5
   '@types/json-schema': ^7.0.11
@@ -81,9 +81,9 @@ devDependencies:
   '@linaria/shaker': 3.0.0-beta.15
   '@rollup/pluginutils': 4.2.1
   '@sunmao-ui/core': 0.7.4-alpha.1
-  '@sunmao-ui/editor': 0.7.5-alpha.3_gwz3gc6mi4gtnfuzkwlld6dyae
-  '@sunmao-ui/editor-sdk': 0.3.5-alpha.3_7ejroodgzekwhroxiz74lbm2t4
-  '@sunmao-ui/runtime': 0.7.4-alpha.2_sfoxds7t5ydpegc3knd667wn6m
+  '@sunmao-ui/editor': 0.7.5-alpha.4_gwz3gc6mi4gtnfuzkwlld6dyae
+  '@sunmao-ui/editor-sdk': 0.3.5-alpha.4_7ejroodgzekwhroxiz74lbm2t4
+  '@sunmao-ui/runtime': 0.7.4-alpha.3_sfoxds7t5ydpegc3knd667wn6m
   '@sunmao-ui/shared': 0.2.4-alpha.2
   '@types/js-yaml': 4.0.5
   '@types/json-schema': 7.0.11
@@ -3422,8 +3422,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /@sunmao-ui/arco-lib/0.3.5-alpha.3_kjikoond4kqezes5r5v6diftxe:
-    resolution: {integrity: sha512-Sa3LErh0+lUaTMtxV04xXft3KNQ/dJkRM0Jp00SEeKvwuTfodh2RF8YjO42grDRVAfXWfY6nUCvkLO2mxrlKcA==}
+  /@sunmao-ui/arco-lib/0.3.5-alpha.4_asikiiey6nq36fqapwqukzh4sy:
+    resolution: {integrity: sha512-8ir78YkVY6Z9xPBvGnPHWJcRt8ptDhqaBft8vRnPl3oBD/YM46c8D1hhpezwPQ2oMSJ2QMatPs0bmod6RuY7YQ==}
     peerDependencies:
       '@emotion/css': ^11.7.1
       '@sinclair/typebox': ^0.21.2
@@ -3437,8 +3437,8 @@ packages:
       '@emotion/css': 11.9.0
       '@sinclair/typebox': 0.21.2
       '@sunmao-ui/core': 0.7.4-alpha.1
-      '@sunmao-ui/editor-sdk': 0.3.5-alpha.3_7ejroodgzekwhroxiz74lbm2t4
-      '@sunmao-ui/runtime': 0.7.4-alpha.2_sfoxds7t5ydpegc3knd667wn6m
+      '@sunmao-ui/editor-sdk': 0.3.5-alpha.4_7ejroodgzekwhroxiz74lbm2t4
+      '@sunmao-ui/runtime': 0.7.4-alpha.3_sfoxds7t5ydpegc3knd667wn6m
       '@sunmao-ui/shared': 0.2.4-alpha.2
       lodash: 4.17.21
       react: 17.0.2
@@ -3452,8 +3452,8 @@ packages:
       - react-native
     dev: true
 
-  /@sunmao-ui/chakra-ui-lib/0.5.5-alpha.3_qt2p5wmcl6ub23hdv6g4bb2mfa:
-    resolution: {integrity: sha512-sX+V0zPT5cYi1lW2ErrQ9e2x+yPRI0k4fFIGiOxU0s/4JBL4LAdWKoCSyR8naDVhbZhH7AjbgO8Xr+H8y87j+w==}
+  /@sunmao-ui/chakra-ui-lib/0.5.5-alpha.4_ero74ywwvegnd7d6jppr76cvxa:
+    resolution: {integrity: sha512-iPVWW4LeDpTFcgck3bJ1/EdNQxBm8PoDQkXce4Rnd5EfAfeNzmE2KdEQfojWL8sKASNmXDo2KnHtwyveMiBZUQ==}
     peerDependencies:
       '@emotion/css': ^11.7.1
       '@sinclair/typebox': ^0.21.2
@@ -3470,8 +3470,8 @@ packages:
       '@emotion/styled': 11.8.1_72u4w2rqttjfdctw6mzb6rj4pq
       '@sinclair/typebox': 0.21.2
       '@sunmao-ui/core': 0.7.4-alpha.1
-      '@sunmao-ui/editor-sdk': 0.3.5-alpha.3_7ejroodgzekwhroxiz74lbm2t4
-      '@sunmao-ui/runtime': 0.7.4-alpha.2_sfoxds7t5ydpegc3knd667wn6m
+      '@sunmao-ui/editor-sdk': 0.3.5-alpha.4_7ejroodgzekwhroxiz74lbm2t4
+      '@sunmao-ui/runtime': 0.7.4-alpha.3_sfoxds7t5ydpegc3knd667wn6m
       '@sunmao-ui/shared': 0.2.4-alpha.2
       chakra-react-select: 1.4.0_uqklsthwrjimfqifjre7tt6cz4
       framer-motion: 4.1.17_sfoxds7t5ydpegc3knd667wn6m
@@ -3490,8 +3490,8 @@ packages:
     resolution: {integrity: sha512-BWk1e4dR3hwKRKvqgm8OYz1DPF5HFqkzsvjjvmts/olQH3ZXILZuy6izp8U6EoZZow0+KD111QBqSYVhP6GpBQ==}
     dev: true
 
-  /@sunmao-ui/editor-sdk/0.3.5-alpha.3_7ejroodgzekwhroxiz74lbm2t4:
-    resolution: {integrity: sha512-5h0GvYlMWnkHmblXYGZmCrhm9u0cX6lMzKWVcupCBwVrZpBKl9b2L2J+w6UKSCU5FIwAfiHnrDKhHPub/sgn+w==}
+  /@sunmao-ui/editor-sdk/0.3.5-alpha.4_7ejroodgzekwhroxiz74lbm2t4:
+    resolution: {integrity: sha512-d1HUH90pWHNYXXVxMQ0CWqninLCo+9Ui8EMAHDT4aDu/oIu4ilVnQvOqShIjditniOHOs7hHIVhIxl+RFwyHMA==}
     peerDependencies:
       react: ^17.0.2
       react-dom: ^17.0.2
@@ -3502,7 +3502,7 @@ packages:
       '@emotion/react': 11.9.0_sudpmbbyhqtxq6t4xf6jlicdem
       '@sinclair/typebox': 0.21.2
       '@sunmao-ui/core': 0.7.4-alpha.1
-      '@sunmao-ui/runtime': 0.7.4-alpha.2_sfoxds7t5ydpegc3knd667wn6m
+      '@sunmao-ui/runtime': 0.7.4-alpha.3_sfoxds7t5ydpegc3knd667wn6m
       '@sunmao-ui/shared': 0.2.4-alpha.2
       codemirror: 5.65.6
       formik: 2.2.9_react@17.0.2
@@ -3524,8 +3524,8 @@ packages:
       - react-native
     dev: true
 
-  /@sunmao-ui/editor/0.7.5-alpha.3_gwz3gc6mi4gtnfuzkwlld6dyae:
-    resolution: {integrity: sha512-R79CC2d//FxaN+93equmqBr8ZYH/iTksPvmUBLug312vsbHGbSvGfuiF/ZkuzQ5ZrXTsgZ6tYFHcgrigyn1tDw==}
+  /@sunmao-ui/editor/0.7.5-alpha.4_gwz3gc6mi4gtnfuzkwlld6dyae:
+    resolution: {integrity: sha512-T695c+LpKsSvFjoZdeymeQCXNGie4hmKdioletb/Ll/zHyxj3o2oIcRzPJ8Jl7n9mjvQLUmeklL3aen2aNzvjQ==}
     peerDependencies:
       '@emotion/react': ^11.1.1
     dependencies:
@@ -3536,11 +3536,11 @@ packages:
       '@emotion/react': 11.9.0_sudpmbbyhqtxq6t4xf6jlicdem
       '@optum/json-schema-editor': 2.1.0_nn45z5sr7igu7sfun6tiae5hx4
       '@sinclair/typebox': 0.21.2
-      '@sunmao-ui/arco-lib': 0.3.5-alpha.3_kjikoond4kqezes5r5v6diftxe
-      '@sunmao-ui/chakra-ui-lib': 0.5.5-alpha.3_qt2p5wmcl6ub23hdv6g4bb2mfa
+      '@sunmao-ui/arco-lib': 0.3.5-alpha.4_asikiiey6nq36fqapwqukzh4sy
+      '@sunmao-ui/chakra-ui-lib': 0.5.5-alpha.4_ero74ywwvegnd7d6jppr76cvxa
       '@sunmao-ui/core': 0.7.4-alpha.1
-      '@sunmao-ui/editor-sdk': 0.3.5-alpha.3_7ejroodgzekwhroxiz74lbm2t4
-      '@sunmao-ui/runtime': 0.7.4-alpha.2_sfoxds7t5ydpegc3knd667wn6m
+      '@sunmao-ui/editor-sdk': 0.3.5-alpha.4_7ejroodgzekwhroxiz74lbm2t4
+      '@sunmao-ui/runtime': 0.7.4-alpha.3_sfoxds7t5ydpegc3knd667wn6m
       '@sunmao-ui/shared': 0.2.4-alpha.2
       acorn: 8.7.1
       acorn-loose: 8.3.0
@@ -3568,8 +3568,8 @@ packages:
       - react-native
     dev: true
 
-  /@sunmao-ui/runtime/0.7.4-alpha.2_sfoxds7t5ydpegc3knd667wn6m:
-    resolution: {integrity: sha512-6mj3k8HBwmRsQNjhu3Ny0gAp6qr9vhlE4RNKbbjG7g0DiD5zjQKHnymZnSP9FVQU9YqVYQYMs/0igl9iw8YXBA==}
+  /@sunmao-ui/runtime/0.7.4-alpha.3_sfoxds7t5ydpegc3knd667wn6m:
+    resolution: {integrity: sha512-VUk0Z/ztzrsaiSuVxO/a5os4Ur+z/pUNwXboyEWhf5K2BQh27+nPOmUKo6tlxjG8R7YIAzwpU9lcYldAFr/60Q==}
     peerDependencies:
       react: ^17.0.2
       react-dom: ^17.0.2
