@@ -16,7 +16,8 @@ export type Field = {
 export function renderWidget(
   field: Field,
   data: { value: any; [props: string]: any },
-  slot?: Function
+  slot?: Function,
+  slotKey?: string
 ) {
   const { value, record } = data;
   const { widget, widgetOptions = {}, transform, ...restField } = field;
@@ -51,5 +52,5 @@ export function renderWidget(
     }
   }
 
-  return slot?.({ ...data, ...restField }, node) || node;
+  return slot?.({ ...data, ...restField }, node, slotKey) || node;
 }

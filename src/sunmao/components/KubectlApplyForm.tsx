@@ -304,7 +304,8 @@ export const KubectlApplyForm = implementRuntimeComponent({
           return (
             slotsElements.field?.(
               f as Static<typeof UiConfigFieldSpec>,
-              fallback
+              fallback,
+              `filed_${f?.path}_${f?.key}`
             ) || fallback
           );
         }}

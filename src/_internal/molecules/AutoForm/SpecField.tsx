@@ -63,6 +63,10 @@ const FormItemStyle = css`
 
   .dovetail-ant-form-item-label {
     padding: 0;
+
+    label:after {
+      content: "";
+    }
   }
 
   .dovetail-ant-form-item-extra {
