@@ -7,6 +7,8 @@ import { getFields } from "../../molecules/AutoForm/get-fields";
 import CodeEditor from "../../atoms/CodeEditor";
 import yaml, { dump } from "js-yaml";
 import {
+  KubectlApplyFormStyle,
+  FormWrapperStyle,
   WizardBodyStyle,
   WizardFooterStyle,
   WizardStyle,
@@ -437,7 +439,7 @@ const KubectlApplyForm = React.forwardRef<
     }
 
     return (
-      <div ref={ref} className={className}>
+      <div ref={ref} className={cx(className, KubectlApplyFormStyle)}>
         {uiConfig.allowToggleYaml && (
           <FormControl
             display="flex"
@@ -467,7 +469,7 @@ const KubectlApplyForm = React.forwardRef<
           />
         )}
         {
-          <div className={cx(yamlMode && dCss`display: none;`)}>
+          <div className={cx(yamlMode && dCss`display: none;`, FormWrapperStyle)}>
             {renderFields()}
           </div>
         }
