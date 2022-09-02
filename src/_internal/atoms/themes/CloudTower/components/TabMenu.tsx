@@ -527,7 +527,7 @@ const TabMenu: React.FC<TabMenuProps> = (props) => {
           );
         })}
       </div>
-      {renderTabContent()}
+      <div key={selectedKey}>{renderTabContent()}</div>
     </div>
   );
 };
