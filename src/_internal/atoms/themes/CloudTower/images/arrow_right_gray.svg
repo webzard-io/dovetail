@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.3 (67297) - http://www.bohemiancoding.com/sketch -->
+    <title>Slice</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="43.8440819%" y1="100%" x2="56.1559181%" y2="0%" id="linearGradient-1">
+            <stop stop-color="#BAC4CE" offset="0%"></stop>
+            <stop stop-color="#909FB2" offset="100%"></stop>
+        </linearGradient>
+        <path d="M6.04400488,6.414 C5.78800488,6.414 5.53200488,6.316 5.33700488,6.121 L0.630004883,1.414 L2.04400488,-8.8817842e-16 L6.04400488,4 L10.0440049,-8.8817842e-16 L11.4580049,1.414 L6.75100488,6.121 C6.55600488,6.316 6.30000488,6.414 6.04400488,6.414 Z" id="path-2"></path>
+        <linearGradient x1="0%" y1="100%" x2="100%" y2="0%" id="linearGradient-4">
+            <stop stop-color="#BAC4CE" offset="0%"></stop>
+            <stop stop-color="#909FB2" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="arrow_right_gray" transform="translate(4.000000, 2.000000)">
+            <g id="arrow-down_gray" transform="translate(4.000000, 6.500000) rotate(-90.000000) translate(-4.000000, -6.500000) translate(-2.000000, 3.000000)">
+                <g id="Shape" fill="url(#linearGradient-1)">
+                    <path d="M6.04400488,6.414 C5.78800488,6.414 5.53200488,6.316 5.33700488,6.121 L0.630004883,1.414 L2.04400488,-8.8817842e-16 L6.04400488,4 L10.0440049,-8.8817842e-16 L11.4580049,1.414 L6.75100488,6.121 C6.55600488,6.316 6.30000488,6.414 6.04400488,6.414 Z" id="path-2"></path>
+                </g>
+                <g id="icon/16x16/bg-normal-Clipped">
+                    <g>
+                        <mask id="mask-3" fill="white">
+                            <use xlink:href="#path-2"></use>
+                        </mask>
+                        <g id="path-3"></g>
+                        <g id="icon/16x16/bg-normal" mask="url(#mask-3)">
+                            <g transform="translate(-2.000000, -5.000000)" id="Rectangle-6">
+                                <g>
+                                    <g id="Group">
+                                        <g id="path-4-link">
+                                            <g>
+                                                <g id="Group" fill="url(#linearGradient-4)">
+                                                    <rect id="path-4" x="0" y="0" width="16" height="16"></rect>
+                                                </g>
+                                                <g id="Group" fill="#8E9AA9">
+                                                    <rect id="path-4" x="0" y="0" width="16" height="16"></rect>
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

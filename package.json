@@ -1,6 +1,6 @@
 {
   "name": "kui-shadow",
-  "version": "0.1.22",
+  "version": "0.1.29",
   "files": [
     "dist",
     "lib"

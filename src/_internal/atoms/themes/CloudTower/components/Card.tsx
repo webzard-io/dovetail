@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { styled } from "@linaria/react";
 import cs from "classnames";
+import arrowRight from "../images/arrow_right_gray.svg";
 
 const CardWrapper = styled.div`
   border-radius: 4px;
@@ -98,11 +99,7 @@ const Card: React.FunctionComponent<CardProps> = (props) => {
             }}
           >
             {collapsible && (
-              <img
-                className="collapse-arrow"
-                src={require(`../images/arrow_right_gray.svg`)}
-                alt="arrow"
-              />
+              <img className="collapse-arrow" src={arrowRight} alt="arrow" />
             )}
             {title}
           </div>

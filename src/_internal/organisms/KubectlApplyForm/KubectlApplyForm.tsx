@@ -223,7 +223,7 @@ const KubectlApplyForm = React.forwardRef<
 
       const component = (
         <SpecField
-          key={f.dataPath}
+          key={f.dataPath || f.key}
           field={f}
           widget={f.widget}
           widgetOptions={f.widgetOptions}
@@ -469,7 +469,9 @@ const KubectlApplyForm = React.forwardRef<
           />
         )}
         {
-          <div className={cx(yamlMode && dCss`display: none;`, FormWrapperStyle)}>
+          <div
+            className={cx(yamlMode && dCss`display: none;`, FormWrapperStyle)}
+          >
             {renderFields()}
           </div>
         }

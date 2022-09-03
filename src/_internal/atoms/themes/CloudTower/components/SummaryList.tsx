@@ -150,8 +150,10 @@ function SummaryItem(props: Item) {
   return (
     <ItemDiv>
       <ItemContent title={`${props.label} : ${props.value}`}>
-        <Label className={Typo.Label.l4_regular}>{props.label}&nbsp;:&nbsp;</Label>
-        <Value className={Typo.Label.l4_regular}>{props.value || ''}</Value>
+        <Label className={Typo.Label.l4_regular}>
+          {props.label}&nbsp;:&nbsp;
+        </Label>
+        <Value className={Typo.Label.l4_regular}>{props.value || ""}</Value>
       </ItemContent>
       {props.removable ? (
         <CloseIcon>
@@ -164,12 +166,10 @@ function SummaryItem(props: Item) {
 
 function Field(props: Item | Object | SubHeading) {
   if (props.type === "Item") {
-    return <SummaryItem key={props.label} {...props}></SummaryItem>;
+    return <SummaryItem {...props}></SummaryItem>;
   } else if (props.type === "SubHeading") {
     return (
-      <Subheading key={props.title} className={Typo.Label.l4_bold}>
-        {props.title}
-      </Subheading>
+      <Subheading className={Typo.Label.l4_bold}>{props.title}</Subheading>
     );
   } else if (props.type === "Object") {
     return (
@@ -211,37 +211,34 @@ function SummaryList(props: Props) {
         {title}
       </SummaryListTitle>
       <SummaryListBody>
-        <Collapse
-          className={SummaryCollapseStyle}
-          expandIconPosition="right"
-          ghost
-        >
-          {groups && groups.length ? (
-            groups.map((group) => (
+        {groups && groups.length ? (
+          <Collapse
+            className={SummaryCollapseStyle}
+            expandIconPosition="right"
+            ghost
+          >
+            {groups.map((group) => (
               <Panel key={group.title} header={group.title}>
                 {group.children.map((child) => {
                   return (
                     <Field
-                      key={
+                      key={`group-${group.title}-${
                         child.type === "SubHeading" ? child.title : child.label
-                      }
+                      }`}
                       {...child}
                     ></Field>
                   );
                 })}
               </Panel>
-            ))
-          ) : (
-            <SummaryItemsWrapper>
-              {(items || []).map((item) => (
-                <Field
-                  key={item.type === "SubHeading" ? item.title : item.label}
-                  {...item}
-                ></Field>
-              ))}
-            </SummaryItemsWrapper>
-          )}
-        </Collapse>
+            ))}
+          </Collapse>
+        ) : (
+          <SummaryItemsWrapper>
+            {(items || []).map((item, idx) => (
+              <Field key={idx} {...item}></Field>
+            ))}
+          </SummaryItemsWrapper>
+        )}
       </SummaryListBody>
     </SummaryListWrapper>
   );

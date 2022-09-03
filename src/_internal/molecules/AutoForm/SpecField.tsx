@@ -193,7 +193,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   } else if ("anyOf" in spec || "oneOf" in spec) {
     Component = MultiSpecField;
     isNest = true;
-  } else {
+  } else if (path) {
     console.info("Found unsupported spec", spec);
   }
 
