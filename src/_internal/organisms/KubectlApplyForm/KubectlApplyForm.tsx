@@ -33,6 +33,7 @@ import { KitContext } from "src/_internal/atoms/kit-context";
 import { ButtonType } from "antd/lib/button";
 import SummaryList from "../../atoms/themes/CloudTower/components/SummaryList";
 import useSummary from "./useSummary";
+import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
 
 export type Field = {
   fields?: Field[];
@@ -213,7 +214,7 @@ const KubectlApplyForm = React.forwardRef<
     const kit = useContext(KitContext);
     // wizard
     const [step, setStep] = useState(0);
-    const { layout, cancelText } = uiConfig;
+    const { layout, title } = uiConfig;
     const summaryInfo = useSummary(layout, values);
 
     function getComponent(f: TransformedField) {
@@ -440,6 +441,20 @@ const KubectlApplyForm = React.forwardRef<
 
     return (
       <div ref={ref} className={cx(className, KubectlApplyFormStyle)}>
+        {title && (
+          <div
+            className={cx(
+              WizardBodyStyle,
+              dCss`width: 100%; flex: initial !important;`
+            )}
+          >
+            <div className="left"></div>
+            <div className="middle">
+              <div className={Typo.Display.d1_bold_title}>{title}</div>
+            </div>
+            <div className="right"></div>
+          </div>
+        )}
         {uiConfig.allowToggleYaml && (
           <FormControl
             display="flex"

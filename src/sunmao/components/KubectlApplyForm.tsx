@@ -18,14 +18,14 @@ const UiConfigFieldSpecProperties = {
     widget: "kui/v1/PathWidget",
   }),
   key: Type.String({
-    title: 'Key',
-    description: 'Use for the `latestChangedKey` state'
+    title: "Key",
+    description: "Use for the `latestChangedKey` state",
   }),
   label: Type.String({ title: "Label" }),
   isDisplayLabel: Type.Boolean({
-    title: 'Is display label'
+    title: "Is display label",
   }),
-  layout: StringUnion(['horizontal', 'vertical'], { title: 'Layout' }),
+  layout: StringUnion(["horizontal", "vertical"], { title: "Layout" }),
   helperText: Type.String({ title: "Helper text" }),
   sectionTitle: Type.String({ title: "Section title" }),
   error: Type.String({ title: "Error" }),
@@ -75,7 +75,7 @@ const UiConfigFieldSpec = Type.Object(
 export const UiConfigSpec = Type.Object({
   allowToggleYaml: Type.Boolean({ title: "Allow toggle YAML" }),
   title: Type.String({
-    title: 'Title',
+    title: "Title",
   }),
   layout: Type.Object(
     {
@@ -185,18 +185,18 @@ const KubectlApplyFormProps = Type.Object({
     }
   ),
   error: Type.String({
-    title: 'Error',
+    title: "Error",
     category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
   errorDetail: Type.String({
-    title: 'Error detail',
+    title: "Error detail",
     category: PRESET_PROPERTY_CATEGORY.Basic,
-  })
+  }),
 });
 
 const KubectlApplyFormState = Type.Object({
   value: Type.Any(),
-  latestChangedKey: Type.String()
+  latestChangedKey: Type.String(),
 });
 
 export const KubectlApplyForm = implementRuntimeComponent({
@@ -294,7 +294,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
           setValues(newValues);
           mergeState({
             value: newValues,
-            latestChangedKey: key
+            latestChangedKey: key,
           });
           callbackMap?.onChange?.();
         }}
