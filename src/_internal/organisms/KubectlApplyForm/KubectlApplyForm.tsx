@@ -94,7 +94,7 @@ export type KubectlApplyFormProps = {
   values: any[];
   error?: string;
   errorDetail?: string;
-  getSlot?: (f: Field, fallback: React.ReactNode) => React.ReactNode;
+  getSlot?: (f: Field, fallback: React.ReactNode, slotKey: string) => React.ReactNode;
   onChange: (values: any[], key?: string) => void;
   onSubmit?: (values: any[]) => void;
   onCancel?: () => void;
@@ -230,7 +230,7 @@ const KubectlApplyForm = React.forwardRef<
           widgetOptions={f.widgetOptions}
           spec={{ ...spec, title: f.label }}
           level={0}
-          path=""
+          path={f.dataPath}
           stepElsRef={{}}
           value={f.value}
           slot={getSlot}

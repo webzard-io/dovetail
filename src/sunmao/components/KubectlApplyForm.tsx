@@ -300,12 +300,12 @@ export const KubectlApplyForm = implementRuntimeComponent({
         }}
         onSubmit={callbackMap?.onSubmit}
         onCancel={callbackMap?.onCancel}
-        getSlot={(f, fallback) => {
+        getSlot={(f, fallback, slotKey) => {
           return (
             slotsElements.field?.(
               f as Static<typeof UiConfigFieldSpec>,
               fallback,
-              `filed_${f?.path}_${f?.key}`
+              slotKey
             ) || fallback
           );
         }}
