@@ -52,7 +52,7 @@ export const Modal = implementRuntimeComponent({
       },
     },
     styleSlots: ["modal"],
-    events: ["onClose"],
+    events: ["onClose", "onConfirm"],
   },
 })(
   ({
@@ -106,6 +106,7 @@ export const Modal = implementRuntimeComponent({
         size={size}
         showFooter={showFooter}
         onCancel={onClose}
+        onOk={callbackMap?.onConfirm}
       >
         <>
           {slotsElements.content

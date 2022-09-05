@@ -84,7 +84,10 @@ export const Select = implementRuntimeComponent({
         value={value}
         onChange={(newV) => {
           setValue(newV);
-          callbackMap?.onChange();
+          mergeState({
+            value: newV,
+          });
+          callbackMap?.onChange?.();
         }}
         showSearch
         optionFilterProp="children"
