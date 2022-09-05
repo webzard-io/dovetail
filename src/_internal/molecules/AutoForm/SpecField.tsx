@@ -109,7 +109,7 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
       labelAlign="left"
       labelCol={{ span: isHorizontal ? 6 : 24 }}
       label={
-        displayLabel ? (
+        displayLabel && label ? (
           <span className={cx(Typo.Label.l3_regular_title, FormItemLabelStyle)}>
             {label}
           </span>
@@ -226,7 +226,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
         spec={spec}
         error={field?.error}
       >
-        {slot?.(field, FieldComponent) || FieldComponent}
+        {slot?.(field, FieldComponent, `filed_${path}`) || FieldComponent}
       </DefaultTemplate>
     </>
   );

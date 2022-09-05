@@ -18,7 +18,6 @@ const Wrapper = styled.div`
   margin-bottom: 16px;
 `;
 const CloseButtonStyle = css`
-  margin-bottom: 16px;
 `;
 const AddedButtonStyle = css`
   margin-bottom: 16px;
