@@ -122,9 +122,43 @@ const FieldCustomComponentWidget =
                 type: "createTrait" as const,
                 props: {
                   componentId: newComponentId,
+                  traitType: "core/v1/event",
+                  properties: {
+                    handlers: [
+                      {
+                        type: "onChange",
+                        componentId: component.id,
+                        method: {
+                          name: "setField",
+                          parameters: {
+                            fieldPath: parentPath
+                              ? `${parentPath}.${fieldPath}`
+                              : fieldPath,
+                            value: `{{${newComponentId}.value}}`,
+                          },
+                        },
+                        wait: {
+                          type: "debounce",
+                          time: 0,
+                        },
+                        disabled: false,
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                type: "createTrait" as const,
+                props: {
+                  componentId: newComponentId,
                   traitType: "kui/v1/sync_kubectl_apply_form",
                   properties: {
-                    value: `{{ ${newComponentId}.value }}`,
+                    formValue: `{{ ${component.id}.value${
+                      parentPath ? `['${parentPath}']` : ""
+                    }${(fieldPath as string)
+                      .split(".")
+                      .map((key) => `['${key}']`)
+                      .join("")} }}`,
                     setValueMethod: "setValue",
                     formId: component.id,
                     fieldPath: parentPath
