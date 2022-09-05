@@ -31,16 +31,13 @@ export default implementRuntimeTrait({
     state: TransformerTraitStateSpec,
   },
 })(() => {
-  const hasInitializedMap = new Map<string, boolean>();
   const formItemValueCache = new Map<string, any>();
-  const updateMap = new Map<string, boolean>();
 
   return ({
     formValue,
     setValueMethod,
     services,
     componentId,
-    subscribeMethods,
   }) => {
     function syncToComponent() {
       const cachedFormItemValue = formItemValueCache.get(componentId);
@@ -54,17 +51,6 @@ export default implementRuntimeTrait({
       }
 
       formItemValueCache.set(componentId, formValue);
-    }
-
-    if (hasInitializedMap.has(componentId) === false) {
-      services.apiService.on(
-        "uiMethod",
-        ({ componentId: target, name: event, parameters }) => {
-          if (target === componentId && event === "onChange") {
-            updateMap.set(componentId, true);
-          }
-        }
-      );
     }
 
     return {
