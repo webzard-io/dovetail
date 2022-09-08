@@ -1,31 +1,43 @@
-import React, { useCallback } from "react";
-import { InputNumber as AntdInputNumber } from "antd";
+import React, { useCallback, useState } from "react";
+import { Input as AntdInput } from "antd";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
 
 export const OptionsSpec = Type.Object({
   max: Type.Optional(Type.Number({ title: "Max" })),
   min: Type.Optional(Type.Number({ title: "Min" })),
+  prefix: Type.Optional(Type.String()),
+  suffix: Type.Optional(Type.String()),
 });
 
 type Props = WidgetProps<number, Static<typeof OptionsSpec>>;
 
 const InputNumber = (props: Props) => {
-  const onChange = useCallback(
-    (newValue) => {
-      if (newValue !== undefined) {
-        props.onChange(Number(newValue), props.field?.key);
-      }
-    },
-    [props.onChange]
-  );
+  const [stringValue, setStringValue] = useState(props.value);
+  const onChange = useCallback((event) => {
+    const newValue = event.target.value;
+
+    setStringValue(newValue);
+  }, [setStringValue]);
+  const onBlur = useCallback(() => {
+    const numValue = Number(stringValue);
+
+    if (numValue !== undefined) {
+      props.onChange(
+        numValue,
+        `${props.subKey ? `${props.subKey}${props.field?.key ? '-' : ''}` : ""}${props.field?.key || ""}`
+      );
+    }
+  }, [props.onChange]);
 
   return (
-    <AntdInputNumber
+    <AntdInput
       {...props.widgetOptions}
-      value={props.value}
+      type="number"
+      value={stringValue}
       onChange={onChange}
-    ></AntdInputNumber>
+      onBlur={onBlur}
+    ></AntdInput>
   );
 };
 

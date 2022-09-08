@@ -30,6 +30,12 @@ const UiConfigFieldSpecProperties = {
   sectionTitle: Type.String({ title: "Section title" }),
   error: Type.String({ title: "Error" }),
   condition: Type.Boolean({ title: "Condition" }),
+  col: Type.Number({
+    title: 'Col'
+  }),
+  splitLine: Type.Boolean({
+    title: 'Split line'
+  }),
   widget: StringUnion(
     ["default", "component"].concat(Object.keys(FORM_WIDGETS_MAP)),
     {
@@ -197,6 +203,7 @@ const KubectlApplyFormProps = Type.Object({
 const KubectlApplyFormState = Type.Object({
   value: Type.Any(),
   latestChangedKey: Type.String(),
+  step: Type.Number(),
 });
 
 export const KubectlApplyForm = implementRuntimeComponent({
@@ -233,6 +240,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
         fieldPath: Type.String(),
         value: Type.Any(),
       }),
+      nextStep: Type.Object({})
     },
     slots: {
       field: {
@@ -240,7 +248,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
       },
     },
     styleSlots: ["content"],
-    events: ["onChange", "onSubmit", "onCancel"],
+    events: ["onChange", "onNextStep", "onSubmit", "onCancel"],
   },
 })(
   ({
@@ -256,6 +264,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
     callbackMap,
     elementRef,
   }) => {
+    const [step, setStep] = useState(0);
     const [values, setValues] = useState<any[]>(() => {
       const initValues = (formConfig.schemas || []).map((s, idx) => {
         return merge(generateFromSchema(s), formConfig.defaultValues?.[idx]);
@@ -276,8 +285,14 @@ export const KubectlApplyForm = implementRuntimeComponent({
             return newValues;
           });
         },
+        nextStep() {
+          mergeState({
+            step: step + 1
+          });
+          setStep(step + 1);
+        }
       });
-    }, []);
+    }, [step]);
 
     return (
       <_KubectlApplyForm
@@ -290,6 +305,13 @@ export const KubectlApplyForm = implementRuntimeComponent({
         values={values}
         error={error}
         errorDetail={errorDetail}
+        step={step}
+        setStep={(step)=> {
+          mergeState({
+            step
+          });
+          setStep(step);
+        }}
         onChange={(newValues: any, key?: string) => {
           setValues(newValues);
           mergeState({
@@ -298,12 +320,13 @@ export const KubectlApplyForm = implementRuntimeComponent({
           });
           callbackMap?.onChange?.();
         }}
+        onNextStep={callbackMap?.onNextStep}
         onSubmit={callbackMap?.onSubmit}
         onCancel={callbackMap?.onCancel}
         getSlot={(f, fallback, slotKey) => {
           return (
             slotsElements.field?.(
-              f as Static<typeof UiConfigFieldSpec>,
+              f as Static<typeof UiConfigFieldSpec> || {},
               fallback,
               slotKey
             ) || fallback

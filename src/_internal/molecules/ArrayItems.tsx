@@ -17,8 +17,7 @@ const Wrapper = styled.div`
   align-items: center;
   margin-bottom: 16px;
 `;
-const CloseButtonStyle = css`
-`;
+const CloseButtonStyle = css``;
 const AddedButtonStyle = css`
   margin-bottom: 16px;
 `;
@@ -28,6 +27,16 @@ export const OptionsSpec = Type.Object({
   addable: Type.Optional(Type.Boolean({ title: "Addable" })),
   addedButtonText: Type.Optional(Type.String({ title: "Added button text" })),
   addedButtonIcon: Type.Optional(Type.String({ title: "Added button icon" })),
+  maxLength: Type.Optional(
+    Type.Number({
+      title: "Max length",
+    })
+  ),
+  minLength: Type.Optional(
+    Type.Number({
+      title: "Min Length",
+    })
+  ),
 });
 
 type Props = WidgetProps<any, Static<typeof OptionsSpec>>;
@@ -43,6 +52,8 @@ const ArrayItems = (props: Props) => {
       addable: true,
       addedButtonText: "添加",
       addedButtonIcon: "",
+      maxLength: undefined,
+      minLength: 0,
     },
     onChange,
   } = props;
@@ -58,8 +69,16 @@ const ArrayItems = (props: Props) => {
           <div style={{ flex: 1 }}>
             <SpecField
               {...props}
+              field={undefined}
+              error={
+                props.field?.error instanceof Array
+                  ? props.field.error[itemIndex]
+                  : ""
+              }
               widget="default"
               value={itemValue}
+              subKey={`${props.field?.key}-${itemIndex}`}
+              index={itemIndex}
               spec={{
                 ...itemSpec,
                 title: itemSpec.title,
@@ -67,26 +86,29 @@ const ArrayItems = (props: Props) => {
               path={path.concat(`[${itemIndex}]`)}
               level={level + 1}
               widgetOptions={{}}
-              onChange={(newItemValue: any) => {
+              onChange={(newItemValue: any, key) => {
                 const newValue = [...value];
                 newValue[itemIndex] = newItemValue;
-                onChange(newValue);
+                onChange(newValue, key);
               }}
             />
           </div>
-          <kit.Button
-            className={CloseButtonStyle}
-            size="small"
-            type="text"
-            onClick={() => {
-              onChange(value.filter((_: any, i: number) => i !== itemIndex));
-            }}
-          >
-            <CloseOutlined />
-          </kit.Button>
+          {value.length > (widgetOptions?.minLength || 0) ? (
+            <kit.Button
+              className={CloseButtonStyle}
+              size="small"
+              type="text"
+              onClick={() => {
+                onChange(value.filter((_: any, i: number) => i !== itemIndex));
+              }}
+            >
+              <CloseOutlined />
+            </kit.Button>
+          ) : null}
         </Wrapper>
       ))}
-      {widgetOptions.addable !== false ? (
+      {widgetOptions.addable !== false &&
+      value.length < (widgetOptions.maxLength || Number.MAX_SAFE_INTEGER) ? (
         <div>
           {widgetOptions.addedButtonIcon ? (
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>

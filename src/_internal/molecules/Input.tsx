@@ -15,9 +15,12 @@ type Props = WidgetProps<string, Static<typeof OptionsSpec>>;
 const Input = (props: Props) => {
   const onChange = useCallback(
     (e) => {
-      props.onChange(e.target.value, props.field?.key);
+      props.onChange(
+        e.target.value,
+        `${props.subKey ? `${props.subKey}${props.field?.key ? '-' : ''}` : ""}${props.field?.key || ""}`
+      );
     },
-    [props.onChange]
+    [props.onChange, props.subKey, props.field]
   );
 
   return (

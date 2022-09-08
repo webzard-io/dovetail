@@ -2,7 +2,9 @@ import React, { useContext } from "react";
 import { WidgetProps } from "./AutoForm/widget";
 import { Type, Static } from "@sinclair/typebox";
 import styled from "@emotion/styled";
+import { css } from "@emotion/css";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
+import { Row } from "antd";
 import { KitContext } from "../atoms/kit-context";
 import { CloseOutlined } from "@ant-design/icons";
 import { resolveSubFields } from "./AutoForm/ObjectField";
@@ -11,18 +13,24 @@ const CardWrapper = styled.div`
   background: rgba(237, 241, 250, 0.6);
   border: 1px solid rgba(211, 218, 235, 0.6);
   border-radius: 8px;
-  padding: 10px 12px;
   margin-bottom: 16px;
 `;
 const CardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px 12px;
+  box-shadow: inset 0px -1px 0px rgba(211, 218, 235, 0.6);
 `;
 const CardTitle = styled.h5`
+  display: flex;
+  align-items: center;
   color: rgba(44, 56, 82, 0.6);
   font-weight: bold;
-  margin-bottom: 10px;
+`;
+const CardContentStyle = css`
+  padding-bottom: 0;
+  margin: 0;
 `;
 
 export const OptionsSpec = Type.Object({
@@ -55,7 +63,9 @@ const Card = (props: Props) => {
           ) : null}
         </CardHeader>
       ) : null}
-      <div>{resolveSubFields(props)}</div>
+      <Row className={CardContentStyle} gutter={[24, 16]} style={{ margin: 0 }}>
+        {resolveSubFields(props)}
+      </Row>
     </CardWrapper>
   );
 };

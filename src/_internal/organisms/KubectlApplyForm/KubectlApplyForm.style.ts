@@ -42,6 +42,7 @@ export const WizardBodyStyle = css`
   }
 
   .middle {
+    align-content: flex-start;
     margin-bottom: 40px;
     flex-grow: 0;
     flex-shrink: 0;
