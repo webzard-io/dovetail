@@ -6,8 +6,9 @@ export const KubectlApplyFormStyle = css`
 `;
 
 export const FormWrapperStyle = css`
+  overflow: hidden;
   flex: 1;
-`
+`;
 
 export const WizardStyle = css`
   height: 100%;
@@ -47,6 +48,7 @@ export const WizardBodyStyle = css`
     flex-grow: 0;
     flex-shrink: 0;
     flex-basis: 58%;
+    overflow: auto;
     .form-base-field {
       width: 100%;
       .form-base-field {
