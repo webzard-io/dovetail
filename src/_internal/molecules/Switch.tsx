@@ -9,7 +9,15 @@ type Props = WidgetProps<boolean, Static<typeof OptionsSpec>>;
 
 const Switch = (props: Props) => {
   return (
-    <AntdSwitch checked={props.value} onChange={(value)=> props.onChange(value, props.field?.key)}></AntdSwitch>
+    <AntdSwitch
+      checked={props.value}
+      onChange={(value) =>
+        props.onChange(
+          value,
+          `${props.subKey ? `${props.subKey}${props.field?.key ? '-' : ''}` : ""}${props.field?.key || ""}`
+        )
+      }
+    ></AntdSwitch>
   );
 };
 

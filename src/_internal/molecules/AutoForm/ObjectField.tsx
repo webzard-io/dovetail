@@ -65,7 +65,7 @@ export function resolveSubFields(props: WidgetProps) {
           widgetOptions={{}}
           onChange={(newValue, key) => {
             onChange({
-              ...value,
+              ...(value || {}),
               [name]: newValue,
             }, key);
           }}

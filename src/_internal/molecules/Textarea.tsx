@@ -12,7 +12,12 @@ const Textarea = (props: Props) => {
   return (
     <Input.TextArea
       value={value}
-      onChange={(event) => onChange(event.currentTarget.value, props.field?.key)}
+      onChange={(event) =>
+        onChange(
+          event.currentTarget.value,
+          `${props.subKey ? `${props.subKey}${props.field?.key ? '-' : ''}` : ""}${props.field?.key || ""}`
+        )
+      }
     />
   );
 };

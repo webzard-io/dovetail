@@ -14,7 +14,7 @@ import {
   WizardStyle,
 } from "./KubectlApplyForm.style";
 import { cx, css as dCss } from "@emotion/css";
-import { Steps, Popover } from "antd";
+import { Steps, Popover, Row } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import SpecField from "../../molecules/AutoForm/SpecField";
 import Icon from "../../atoms/themes/CloudTower/components/Icon/Icon";
@@ -44,11 +44,13 @@ export type Field = {
   isDisplayLabel: boolean;
   helperText: string;
   sectionTitle: string;
-  error: string;
+  error: string | string[];
   condition?: boolean;
   widget?: string;
   widgetOptions?: Record<string, any>;
   componentId?: string;
+  col?: number;
+  splitLine?: boolean;
 };
 
 type TransformedField = Field & { dataPath: string; value: any };
@@ -94,8 +96,15 @@ export type KubectlApplyFormProps = {
   values: any[];
   error?: string;
   errorDetail?: string;
-  getSlot?: (f: Field, fallback: React.ReactNode, slotKey: string) => React.ReactNode;
+  step: number;
+  setStep: (step: number)=> void;
+  getSlot?: (
+    f: Field,
+    fallback: React.ReactNode,
+    slotKey: string
+  ) => React.ReactNode;
   onChange: (values: any[], key?: string) => void;
+  onNextStep?: (values: any[]) => void;
   onSubmit?: (values: any[]) => void;
   onCancel?: () => void;
 };
@@ -202,6 +211,9 @@ const KubectlApplyForm = React.forwardRef<
       errorDetail,
       onChange,
       getSlot,
+      step,
+      setStep,
+      onNextStep,
       onCancel,
       onSubmit,
     },
@@ -213,7 +225,6 @@ const KubectlApplyForm = React.forwardRef<
     }, [schemas]);
     const kit = useContext(KitContext);
     // wizard
-    const [step, setStep] = useState(0);
     const { layout, title } = uiConfig;
     const summaryInfo = useSummary(layout, values);
 
@@ -255,12 +266,12 @@ const KubectlApplyForm = React.forwardRef<
             <div className={cx(WizardStyle)}>
               <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
                 <div className="left"></div>
-                <div className="middle">
+                <Row gutter={[24, 16]} className="middle">
                   {transformFields(layout.fields, values).map((f) => {
                     const { component } = getComponent(f);
                     return component;
                   })}
-                </div>
+                </Row>
                 <div className="right">
                   <SummaryList
                     title={uiConfig.title || ""}
@@ -366,7 +377,7 @@ const KubectlApplyForm = React.forwardRef<
                     ))}
                   </Steps>
                 </div>
-                <div className="middle">
+                <Row gutter={[24, 16]} className="middle">
                   {transformFields(layout.steps[step].fields, values).map(
                     (f) => {
                       const { component } = getComponent(f);
@@ -374,7 +385,7 @@ const KubectlApplyForm = React.forwardRef<
                       return component;
                     }
                   )}
-                </div>
+                </Row>
                 <div className="right">
                   <SummaryList
                     title={uiConfig.title || ""}
@@ -422,7 +433,7 @@ const KubectlApplyForm = React.forwardRef<
                         if (step === layout.steps.length - 1) {
                           onSubmit?.(values);
                         } else {
-                          setStep(step + 1);
+                          onNextStep?.(values);
                         }
                       }}
                     >

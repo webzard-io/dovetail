@@ -1,7 +1,7 @@
 import React from "react";
 import isEmpty from "lodash/isEmpty";
 // TODO: use kit context when I have time:)
-import { Form } from "antd";
+import { Form, Col } from "antd";
 import { css, cx } from "@linaria/core";
 import { JSONSchema7 } from "json-schema";
 import { WidgetProps } from "./widget";
@@ -69,6 +69,10 @@ const FormItemStyle = css`
     }
   }
 
+  .dovetail-ant-form-item-control {
+    flex: 1;
+  }
+
   .dovetail-ant-form-item-extra {
     margin-top: 5px;
   }
@@ -79,6 +83,7 @@ const FormItemLabelStyle = css`
   font-size: 13px;
   line-height: 20px;
   color: rgba(44, 56, 82, 0.6);
+  width: 108px;
 `;
 
 const FormItemContentStyle = css``;
@@ -107,9 +112,8 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
     <Form.Item
       className={FormItemStyle}
       labelAlign="left"
-      labelCol={{ span: isHorizontal ? 6 : 24 }}
       label={
-        displayLabel && label ? (
+        displayLabel ? (
           <span className={cx(Typo.Label.l3_regular_title, FormItemLabelStyle)}>
             {label}
           </span>
@@ -159,6 +163,9 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     value,
     stepElsRef,
     layout,
+    subKey,
+    error,
+    index,
     slot,
     onChange,
   } = props;
@@ -204,6 +211,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       spec={spec}
       value={value}
       path={path}
+      subKey={subKey}
       level={level}
       onChange={onChange}
       step={step}
@@ -213,7 +221,14 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     />
   );
   const FieldComponentWithRenderer = (
-    <>
+    <Col
+      span={field?.col || 24}
+      style={{
+        boxShadow: field?.splitLine
+          ? "inset 0px -1px 0px rgba(211, 218, 235, 0.6)"
+          : "",
+      }}
+    >
       {field?.sectionTitle && (
         <div className={FieldSection}>{field?.sectionTitle}</div>
       )}
@@ -224,11 +239,17 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
         displayLabel={displayLabel}
         displayDescription={displayDescription}
         spec={spec}
-        error={field?.error}
+        error={
+          field?.error instanceof Array
+            ? index !== undefined
+              ? field.error[index]
+              : ""
+            : field?.error || error
+        }
       >
         {slot?.(field, FieldComponent, `filed_${path}`) || FieldComponent}
       </DefaultTemplate>
-    </>
+    </Col>
   );
 
   if (typeof step === "number" && stepElsRef[step] && layout?.steps?.[step]) {

@@ -22,6 +22,16 @@ export const OptionsSpec = Type.Object({
   addable: Type.Boolean({ title: "Addable" }),
   addedButtonText: Type.String({ title: "Added button text" }),
   addedButtonIcon: Type.String({ title: "Added button icon" }),
+  maxLength: Type.Optional(
+    Type.Number({
+      title: "Max length",
+    })
+  ),
+  minLength: Type.Optional(
+    Type.Number({
+      title: "Min Length",
+    })
+  ),
 });
 
 type Props = WidgetProps<any[], Static<typeof OptionsSpec>>;
@@ -53,6 +63,13 @@ const ArrayCards = (props: Props) => {
             key={itemIndex}
             value={itemValue}
             spec={itemSpec as JSONSchema7}
+            subKey={`${props.field?.key}-${itemIndex}`}
+            index={itemIndex}
+            error={
+              props.field?.error instanceof Array
+                ? props.field.error[itemIndex]
+                : ""
+            }
             widgetOptions={{
               ...widgetOptions,
               title: widgetOptions?.title
@@ -61,19 +78,24 @@ const ArrayCards = (props: Props) => {
             }}
             path={path.concat(`[${itemIndex}]`)}
             level={level + 1}
-            onRemove={() => {
-              onChange(value.filter((v, i) => i !== itemIndex));
-            }}
-            onChange={(newItemValue: any) => {
+            onRemove={
+              value.length > (widgetOptions?.minLength || 0)
+                ? () => {
+                    onChange(value.filter((v, i) => i !== itemIndex));
+                  }
+                : undefined
+            }
+            onChange={(newItemValue: any, key) => {
               const newValue = [...value];
 
               newValue[itemIndex] = newItemValue;
-              onChange(newValue);
+              onChange(newValue, key);
             }}
           ></Card>
         );
       })}
-      {widgetOptions.addable !== false ? (
+      {widgetOptions.addable !== false &&
+      value.length < (widgetOptions?.maxLength || Number.MAX_SAFE_INTEGER) ? (
         <div>
           {widgetOptions.addedButtonIcon ? (
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>

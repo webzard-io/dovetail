@@ -7,26 +7,38 @@ export const OptionsSpec = Type.Object({
     Type.Object({
       label: Type.String(),
       value: Type.String(),
+      disabled: Type.Optional(Type.Boolean()),
     })
   ),
+  disabled: Type.Optional(Type.Boolean()),
 });
 
 type Props = WidgetProps<string, Static<typeof OptionsSpec>>;
 
 const Select = (props: Props) => {
   const { value, onChange, widgetOptions } = props;
-  const { options = [] } = widgetOptions || { options: [] };
+  const { options = [], disabled } = widgetOptions || { options: [] };
 
   return (
     <AntdSelect
+      disabled={disabled}
       value={String(value || "")}
-      onChange={(value) => onChange(value, props.field?.key)}
+      onChange={(value) =>
+        onChange(
+          value,
+          `${props.subKey ? `${props.subKey}${props.field?.key ? '-' : ''}` : ""}${props.field?.key || ""}`
+        )
+      }
       showSearch
       optionFilterProp="children"
     >
       {options.map((option, idx) => {
         return (
-          <AntdSelect.Option key={idx} value={option.value}>
+          <AntdSelect.Option
+            key={idx}
+            value={option.value}
+            disabled={option.disabled}
+          >
             {option.label}
           </AntdSelect.Option>
         );

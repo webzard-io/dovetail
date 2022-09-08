@@ -19,6 +19,9 @@ export type WidgetProps<Value = any, WidgetOptions = Record<string, any>> = {
     steps?: { paths: string[] }[];
   };
   stepElsRef: Record<number, HTMLElement | null>;
+  subKey?: string;
+  index?: number;
+  error?: string;
   value: Value;
   onChange: (newValue: Value, key?: string) => void;
   slot?: Function;
