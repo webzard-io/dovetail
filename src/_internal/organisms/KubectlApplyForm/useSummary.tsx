@@ -3,6 +3,7 @@ import type {
   Item,
   Object,
   SubHeading,
+  Label,
 } from "../../atoms/themes/CloudTower/components/SummaryList";
 import { Layout, Field } from "./KubectlApplyForm";
 import { get } from "lodash";
@@ -24,10 +25,10 @@ function getValueByPath(formData: Record<string, any>, path: string) {
 function getListItems(
   fields: Field[],
   formData: Record<string, any>
-): (Item | Object | SubHeading)[] {
+): (Item | Object | SubHeading | Label)[] {
   return fields
     .map((field) => {
-      const items: (Item | Object | SubHeading)[] = [];
+      const items: (Item | Object | SubHeading | Label)[] = [];
 
       if (field.sectionTitle) {
         items.push({
@@ -36,9 +37,16 @@ function getListItems(
         });
       }
 
-      const value = getValueByPath(formData, field.path);
+      const path = field.path.replace(/(.\$add)|(.\$i)/g, (substring)=> {
+        if (substring === '.$add') {
+          return ''; 
+        } else {
+          return '.0';
+        }
+      });
+      const value = getValueByPath(formData, path);
 
-      if (value instanceof Array && field.label) {
+      if (value instanceof Array) {
         if (typeof value[0] !== "object") {
           items.push({
             type: "Item" as const,
@@ -47,8 +55,12 @@ function getListItems(
           });
         }
 
-        value.forEach((item) => {
+        value.forEach((item, index) => {
           if (item && typeof item === "object") {
+            items.push({
+              type: "Label" as const,
+              label: field.widgetOptions?.title + ' ' + (index + 1),
+            });
             items.push({
               type: "Object" as const,
               icon: field.widgetOptions?.icon,
@@ -69,10 +81,10 @@ function getListItems(
             });
           }
         });
-      } else if (value && typeof value === "object" && field.label) {
+      } else if (value && typeof value === "object") {
         items.push({
           type: "Object" as const,
-          label: field.label,
+          label: field.label || field.widgetOptions?.title,
           icon: field.widgetOptions?.icon,
           items: field.fields?.length
             ? (getListItems(field.fields, value) as Item[])
