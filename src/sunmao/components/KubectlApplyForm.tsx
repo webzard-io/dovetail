@@ -275,15 +275,13 @@ export const KubectlApplyForm = implementRuntimeComponent({
     });
     useEffect(() => {
       subscribeMethods({
-        setField({ fieldPath, value }) {
-          setValues((prevValues) => {
-            set(prevValues, fieldPath, value);
-            const newValues = [...prevValues];
-            mergeState({
-              value: newValues,
-            });
-            return newValues;
+        setField({ fieldPath, value: fieldValue }) {
+          const newValues = set(values, fieldPath, fieldValue);
+
+          mergeState({
+            value: newValues,
           });
+          setValues(newValues);
         },
         nextStep() {
           mergeState({
@@ -292,7 +290,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
           setStep(step + 1);
         }
       });
-    }, [step]);
+    }, [step, subscribeMethods, mergeState]);
 
     return (
       <_KubectlApplyForm

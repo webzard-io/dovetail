@@ -76,6 +76,11 @@ const FormItemStyle = css`
   .dovetail-ant-form-item-extra {
     margin-top: 5px;
   }
+
+  &.dovetail-ant-form-item-has-error .ant-select-selector,
+  &.dovetail-ant-form-item-has-error .ant-input {
+    border-color: #f0483e !important;
+  }
 `;
 
 const FormItemLabelStyle = css`

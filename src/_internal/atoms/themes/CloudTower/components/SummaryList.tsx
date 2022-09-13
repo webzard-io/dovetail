@@ -141,20 +141,28 @@ export type Item = {
   removable?: boolean;
 };
 
+export type Label = {
+  type: "Label";
+  label: string;
+  icon?: IconTypes;
+};
+
 export type Group = {
   title: string;
-  children: (Item | SubHeading | Object)[];
+  children: (Item | SubHeading | Object | Label)[];
 };
 
 function SummaryItem(props: Item) {
   return (
     <ItemDiv>
-      <ItemContent title={`${props.label} : ${props.value}`}>
-        <Label className={Typo.Label.l4_regular}>
-          {props.label}&nbsp;:&nbsp;
-        </Label>
-        <Value className={Typo.Label.l4_regular}>{props.value || ""}</Value>
-      </ItemContent>
+      {props.label ? (
+        <ItemContent title={`${props.label} : ${props.value}`}>
+          <Label className={Typo.Label.l4_regular}>
+            {props.label}&nbsp;:&nbsp;
+          </Label>
+          <Value className={Typo.Label.l4_regular}>{props.value || ""}</Value>
+        </ItemContent>
+      ) : null}
       {props.removable ? (
         <CloseIcon>
           <Icon type="1-xmark-remove-16-secondary" />
@@ -164,7 +172,22 @@ function SummaryItem(props: Item) {
   );
 }
 
-function Field(props: Item | Object | SubHeading) {
+function SummaryLabel(props: Omit<Label, "type">) {
+  return (
+    <ItemDiv>
+      <ItemContent title={props.label}>
+        {props.icon ? (
+          <ObjectIcon>
+            <Icon type={props.icon}></Icon>
+          </ObjectIcon>
+        ) : null}
+        <Label className={Typo.Label.l4_regular}>{props.label}</Label>
+      </ItemContent>
+    </ItemDiv>
+  );
+}
+
+function Field(props: Item | Object | SubHeading | Label) {
   if (props.type === "Item") {
     return <SummaryItem {...props}></SummaryItem>;
   } else if (props.type === "SubHeading") {
@@ -174,21 +197,14 @@ function Field(props: Item | Object | SubHeading) {
   } else if (props.type === "Object") {
     return (
       <>
-        <ItemDiv>
-          <ItemContent title={props.label}>
-            {props.icon ? (
-              <ObjectIcon>
-                <Icon type={props.icon}></Icon>
-              </ObjectIcon>
-            ) : null}
-            <Label className={Typo.Label.l4_regular}>{props.label}</Label>
-          </ItemContent>
-        </ItemDiv>
+        {props.label ? <SummaryLabel {...props}></SummaryLabel> : null}
         {props.items.map((item) => (
           <SummaryItem key={item.label} {...item}></SummaryItem>
         ))}
       </>
     );
+  } else if (props.type === "Label") {
+    return <SummaryLabel {...props}></SummaryLabel>;
   }
 
   return null;
@@ -198,7 +214,7 @@ type Props = {
   title: string;
   defaultWidth?: string;
   groups?: Group[];
-  items?: (Item | Object | SubHeading)[];
+  items?: (Item | Object | SubHeading | Label)[];
 };
 
 function SummaryList(props: Props) {
