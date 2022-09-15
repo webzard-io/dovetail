@@ -1,6 +1,6 @@
 {
   "name": "kui-shadow",
-  "version": "0.1.32",
+  "version": "0.2.0",
   "files": [
     "dist",
     "lib"
@@ -11,6 +11,7 @@
     "dev": "vite",
     "prepublish": "npm run typings && npm run build",
     "build": "vite build",
+    "postbuild": "sed -i -e 's/\"useInsertionEffect\"/\"useInsertion\"+\"Effect\"/g' ./dist/index.es.js",
     "typings": "tsc --emitDeclarationOnly",
     "preview": "vite preview"
   },
