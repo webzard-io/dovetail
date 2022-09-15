@@ -15,10 +15,10 @@ import { Icon } from "./components/Icon";
 import { CodeEditor } from "./components/CodeEditor";
 import { KubectlApplyForm } from "./components/KubectlApplyForm";
 import { KubectlGetDetail } from "./components/KubectlGetDetail";
-import { KubectlGetList } from "./components/KubectlGetList";
+import { KubectlGetList } from './components/KubectlGetList';
 
 import SyncKubectlApplyForm from "./traits/SyncKubectlApplyForm";
-import KubeAPITrait from "./traits/KubeAPITrait";
+import KubeAPITrait from './traits/KubeAPITrait';
 
 const MessageParams = Type.Object({
   type: StringUnion(["success", "warn", "error", "info"]),
@@ -48,10 +48,10 @@ export const libs: SunmaoLib[] = [
       KubectlApplyForm,
       KubectlGetDetail,
       KubectlGetList,
-      FullscreenModal,
+      FullscreenModal
     ],
     utilMethods: [
-      () =>
+      () => [
         implementUtilMethod({
           version: "kui/v1",
           metadata: {
@@ -63,7 +63,6 @@ export const libs: SunmaoLib[] = [
         })((params) => {
           message[params.type](params.message, params.duration);
         }),
-      () =>
         implementUtilMethod({
           version: "kui/v1",
           metadata: {
@@ -75,6 +74,7 @@ export const libs: SunmaoLib[] = [
         })((params) => {
           window.open(params.url, params.newWindow ? "_blank" : undefined);
         }),
+      ],
     ],
   },
 ];
@@ -85,9 +85,9 @@ const yaml = import.meta.glob("./dependencies/yaml/*.yaml", {
 
 export const dependencies = {
   yaml: Object.keys(yaml).reduce<Record<string, string>>((prev, cur) => {
-    prev[cur.replace("./dependencies/yaml/", "").replace(".yaml", "")] = yaml[
+    prev[cur.replace("./dependencies/yaml/", "").replace(".yaml", "")] = (yaml[
       cur
-    ] as unknown as string;
+    ] as unknown) as string;
     return prev;
   }, {}),
 };
