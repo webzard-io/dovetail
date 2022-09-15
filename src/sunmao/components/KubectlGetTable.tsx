@@ -402,6 +402,7 @@ export const KubectlGetTable = implementRuntimeComponent({
     return (
       <div ref={elementRef} className={css(customStyle?.content)}>
         <BaseKubectlGetTable
+          response={response}
           basePath={basePath}
           watchWsBasePath={watchWsBasePath}
           resource={resource}

@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from "react";
-import { Input as AntdInput } from "antd";
+import React, { useCallback, useState, useContext } from "react";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
+import { KitContext } from "../atoms/kit-context";
 
 export const OptionsSpec = Type.Object({
   max: Type.Optional(Type.Number({ title: "Max" })),
@@ -13,31 +13,35 @@ export const OptionsSpec = Type.Object({
 type Props = WidgetProps<number, Static<typeof OptionsSpec>>;
 
 const InputNumber = (props: Props) => {
+  const kit = useContext(KitContext);
   const [stringValue, setStringValue] = useState(props.value);
-  const onChange = useCallback((event) => {
-    const newValue = event.target.value;
-
-    setStringValue(newValue);
-  }, [setStringValue]);
+  const onChange = useCallback(
+    (event, newValue) => {
+      setStringValue(newValue);
+    },
+    [setStringValue]
+  );
   const onBlur = useCallback(() => {
-    const numValue = Number(stringValue);
+    const numValue = stringValue;
 
     if (numValue !== undefined) {
       props.onChange(
         numValue,
-        `${props.subKey ? `${props.subKey}${props.field?.key ? '-' : ''}` : ""}${props.field?.key || ""}`
+        `${
+          props.subKey ? `${props.subKey}${props.field?.key ? "-" : ""}` : ""
+        }${props.field?.key || ""}`
       );
     }
   }, [props.onChange, stringValue]);
 
   return (
-    <AntdInput
+    <kit.Input
       {...props.widgetOptions}
-      type="number"
+      type="int"
       value={stringValue}
       onChange={onChange}
       onBlur={onBlur}
-    ></AntdInput>
+    ></kit.Input>
   );
 };
 

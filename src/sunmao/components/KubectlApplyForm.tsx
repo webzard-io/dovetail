@@ -31,10 +31,10 @@ const UiConfigFieldSpecProperties = {
   error: Type.String({ title: "Error" }),
   condition: Type.Boolean({ title: "Condition" }),
   col: Type.Number({
-    title: 'Col'
+    title: "Col",
   }),
   splitLine: Type.Boolean({
-    title: 'Split line'
+    title: "Split line",
   }),
   widget: StringUnion(
     ["default", "component"].concat(Object.keys(FORM_WIDGETS_MAP)),
@@ -80,6 +80,10 @@ const UiConfigFieldSpec = Type.Object(
 
 export const UiConfigSpec = Type.Object({
   allowToggleYaml: Type.Boolean({ title: "Allow toggle YAML" }),
+  isDisplaySummary: Type.Boolean({ title: "Is display summary" }),
+  isDisplayFooter: Type.Boolean({
+    title: "Is display footer",
+  }),
   title: Type.String({
     title: "Title",
   }),
@@ -240,7 +244,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
         fieldPath: Type.String(),
         value: Type.Any(),
       }),
-      nextStep: Type.Object({})
+      nextStep: Type.Object({}),
     },
     slots: {
       field: {
@@ -285,10 +289,10 @@ export const KubectlApplyForm = implementRuntimeComponent({
         },
         nextStep() {
           mergeState({
-            step: step + 1
+            step: step + 1,
           });
           setStep(step + 1);
-        }
+        },
       });
     }, [step, subscribeMethods, mergeState]);
 
@@ -304,9 +308,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
         error={error}
         errorDetail={errorDetail}
         step={step}
-        setStep={(step)=> {
+        setStep={(step) => {
           mergeState({
-            step
+            step,
           });
           setStep(step);
         }}
@@ -324,7 +328,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
         getSlot={(f, fallback, slotKey) => {
           return (
             slotsElements.field?.(
-              f as Static<typeof UiConfigFieldSpec> || {},
+              (f as Static<typeof UiConfigFieldSpec>) || {},
               fallback,
               slotKey
             ) || fallback

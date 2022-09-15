@@ -38,8 +38,8 @@ import get from "lodash/get";
 import omit from "lodash/omit";
 import type {
   KubectlApplyFormProps,
-  Field,
 } from "src/_internal/organisms/KubectlApplyForm/KubectlApplyForm";
+import { Field } from 'src/_internal/organisms/KubectlApplyForm/type';
 import { getJsonSchemaByPath } from "src/_internal/utils/schema";
 import { UiConfigSpec } from "src/sunmao/components/KubectlApplyForm";
 import { mergeWidgetOptionsByPath } from "../../../utils/schema";
