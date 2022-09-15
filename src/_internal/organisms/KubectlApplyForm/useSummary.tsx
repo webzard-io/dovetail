@@ -5,7 +5,7 @@ import type {
   SubHeading,
   Label,
 } from "../../atoms/themes/CloudTower/components/SummaryList";
-import { Layout, Field } from "./KubectlApplyForm";
+import { Layout, Field } from "./type";
 import { get } from "lodash";
 
 function getValueByPath(formData: Record<string, any>, path: string) {

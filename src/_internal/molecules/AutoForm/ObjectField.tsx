@@ -5,7 +5,7 @@ import SpecField from "./SpecField";
 import { getJsonSchemaByPath } from "src/_internal/utils/schema";
 import { immutableSet } from "../../../editor/utils/object";
 import { get } from "lodash";
-import type { Field } from "../../organisms/KubectlApplyForm/KubectlApplyForm";
+import type { Field } from "../../organisms/KubectlApplyForm/type";
 
 export function resolveSubFields(props: WidgetProps) {
   const { field, spec, value, path, level, onChange } = props;

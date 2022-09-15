@@ -1,6 +1,8 @@
 import { Select as AntdSelect } from "antd";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
+import { KitContext } from '../atoms/kit-context';
+import { useContext } from 'react';
 
 export const OptionsSpec = Type.Object({
   options: Type.Array(
@@ -13,14 +15,15 @@ export const OptionsSpec = Type.Object({
   disabled: Type.Optional(Type.Boolean()),
 });
 
-type Props = WidgetProps<string, Static<typeof OptionsSpec>>;
+type Props = WidgetProps<string | string[], Static<typeof OptionsSpec>>;
 
 const Select = (props: Props) => {
+  const kit = useContext(KitContext)
   const { value, onChange, widgetOptions } = props;
   const { options = [], disabled } = widgetOptions || { options: [] };
 
   return (
-    <AntdSelect
+    <kit.Select
       disabled={disabled}
       value={String(value || "")}
       onChange={(value) =>
@@ -43,7 +46,7 @@ const Select = (props: Props) => {
           </AntdSelect.Option>
         );
       })}
-    </AntdSelect>
+    </kit.Select>
   );
 };
 

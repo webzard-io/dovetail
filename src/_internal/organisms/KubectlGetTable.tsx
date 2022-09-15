@@ -14,6 +14,7 @@ import {
 } from "../atoms/themes/CloudTower/components/Table/customize-column";
 import { KubeApi, UnstructuredList } from "../k8s-api-client/kube-api";
 import { styled } from "@linaria/react";
+import { TableLoading } from "../atoms/themes/CloudTower/components/Table/TableWidgets";
 
 const TableWrapper = styled.div`
   overflow: auto;
@@ -41,6 +42,11 @@ type KubectlGetTableProps = {
   fieldSelector: string;
   defaultSize?: number;
   columns: Columns;
+  response: {
+    data: UnstructuredList;
+    loading: boolean;
+    error: null | Error;
+  };
   onResponse?: (res: any) => void;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
@@ -63,6 +69,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       resource,
       fieldSelector,
       defaultSize,
+      response,
       onResponse,
       onPageChange,
       onPageSizeChange,
@@ -71,15 +78,6 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
     ref
   ) => {
     const kit = useContext(KitContext);
-    const [response, setResponse] = useState<{
-      data: UnstructuredList;
-      loading: boolean;
-      error: null | Error;
-    }>({
-      data: emptyData,
-      loading: false,
-      error: null,
-    });
     const [currentPage, setCurrentPage] = useState(1);
     const [currentSize, setCurrentSize] = useState(defaultSize ?? 10);
     const { data, loading, error } = response;
@@ -176,27 +174,26 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
           namespace,
         },
       });
-      setResponse((prev) => ({ ...prev, loading: true }));
+      onResponse?.({ ...response, loading: true });
       const stopP = api
         .listWatch({
           query: fieldSelector ? { fieldSelector, namespace } : { namespace },
           cb: (res) => {
-            setResponse(() => ({ loading: false, error: null, data: res }));
+            onResponse?.({ loading: false, error: null, data: res });
           },
         })
         .catch((err) => {
-          setResponse(() => ({ loading: false, error: err, data: emptyData }));
+          onResponse?.({ loading: false, error: err, data: emptyData });
         });
 
       return () => {
         stopP.then((stop) => stop?.());
       };
     }, [apiBase, resource, namespace, basePath, fieldSelector]);
-    useEffect(() => {
-      onResponse?.(response);
-    }, [response]);
 
-    return (
+    return response.loading && response.data.items.length === 0 ? (
+      <TableLoading></TableLoading>
+    ) : (
       <TableWrapper>
         <TableContent>
           <kit.Table

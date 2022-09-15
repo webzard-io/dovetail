@@ -7,12 +7,16 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import Tag from "./components/Tag/Tag";
 import Modal from "./components/Modal/Modal";
 import FullscreenModal from "./components/FullscreenModal/Modal";
-import Card from './components/Card';
-import InfoRow from './components/InfoRow';
-import TabMenu from './components/TabMenu';
-import Checkbox from './components/Checkbox/Checkbox';
-import { Dropdown } from 'antd';
-import Pagination from './components/Pagination/Pagination';
+import Card from "./components/Card";
+import InfoRow from "./components/InfoRow";
+import TabMenu from "./components/TabMenu";
+import Checkbox from "./components/Checkbox/Checkbox";
+import Input from "./components/Input/Input";
+import InputNumber from "./components/InputNumber/InputNumber";
+import { Dropdown } from "antd";
+import Pagination from "./components/Pagination/Pagination";
+import Select from "./components/Select/Select";
+import Switch from "./components/Switch/Switch";
 
 import "./styles/override.scss";
 
@@ -30,8 +34,12 @@ export const kit: Kit = {
   InfoRow,
   TabMenu,
   Checkbox,
-  Dropdown: props => {
+  Dropdown: (props) => {
     return <Dropdown {...props} />;
   },
-  Pagination
+  Pagination,
+  Input,
+  InputNumber,
+  Select,
+  Switch,
 };

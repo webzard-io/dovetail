@@ -1,5 +1,5 @@
 import { JSONSchema7 } from "json-schema";
-import type { Field } from "../../organisms/KubectlApplyForm/KubectlApplyForm";
+import type { Field } from "../../organisms/KubectlApplyForm/type";
 
 type WidgetOptions = Partial<{
   displayLabel: boolean;

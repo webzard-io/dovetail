@@ -34,49 +34,8 @@ import { ButtonType } from "antd/lib/button";
 import SummaryList from "../../atoms/themes/CloudTower/components/SummaryList";
 import useSummary from "./useSummary";
 import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
-
-export type Field = {
-  fields?: Field[];
-  path: string;
-  key?: string;
-  label: string;
-  layout: "horizontal" | "vertical";
-  isDisplayLabel: boolean;
-  helperText: string;
-  sectionTitle: string;
-  error: string | string[];
-  condition?: boolean;
-  widget?: string;
-  widgetOptions?: Record<string, any>;
-  componentId?: string;
-  col?: number;
-  splitLine?: boolean;
-};
-
-type TransformedField = Field & { dataPath: string; value: any };
-
-export type Layout =
-  | {
-      type: "simple";
-      fields: Field[];
-    }
-  | {
-      type: "tabs";
-      tabs: {
-        title: string;
-        fields: Field[];
-      }[];
-    }
-  | {
-      type: "wizard";
-      steps: {
-        title: string;
-        fields: Field[];
-        disabled?: boolean;
-        prevText?: string;
-        nextText?: string;
-      }[];
-    };
+import { Field, TransformedField, Layout } from "./type";
+import { transformFields } from "./utils";
 
 export type KubectlApplyFormProps = {
   className?: string;
@@ -88,6 +47,8 @@ export type KubectlApplyFormProps = {
   schemas: JSONSchema7[];
   uiConfig: {
     allowToggleYaml: boolean;
+    isDisplaySummary?: boolean;
+    isDisplayFooter?: boolean;
     title?: string;
     layout: Layout;
     confirmText: string;
@@ -97,7 +58,7 @@ export type KubectlApplyFormProps = {
   error?: string;
   errorDetail?: string;
   step: number;
-  setStep: (step: number)=> void;
+  setStep: (step: number) => void;
   getSlot?: (
     f: Field,
     fallback: React.ReactNode,
@@ -108,94 +69,6 @@ export type KubectlApplyFormProps = {
   onSubmit?: (values: any[]) => void;
   onCancel?: () => void;
 };
-
-function getDataPath(p: string) {
-  const [indexStr] = p.split(/\.(.*)/s);
-  const index = parseInt(indexStr, 10);
-  let dataPath = String(p.endsWith(".*") ? index : p);
-  dataPath = dataPath.replace(/.\$add$/, "");
-  return dataPath;
-}
-
-function iterateArrPath(
-  p: string,
-  values: any[],
-  cb: (f: { itemDataPath: string; itemValue: any }) => void
-) {
-  const arrPathMatch = p.split(/\.\$i(.*)/s);
-  if (arrPathMatch.length === 1) {
-    const itemPath = arrPathMatch[0];
-    const itemDataPath = getDataPath(itemPath);
-    const itemValue = get(values, itemDataPath);
-    cb({
-      itemDataPath,
-      itemValue,
-    });
-    return;
-  }
-  const [arrPath] = arrPathMatch;
-  const value = get(values, getDataPath(arrPath));
-  if (!Array.isArray(value)) {
-    return;
-  }
-  value.forEach((__, idx) => {
-    const nextP = p.replace("$i", String(idx));
-    iterateArrPath(nextP, values, cb);
-  });
-}
-
-function transformFields(fields: Field[], values: any[]): TransformedField[] {
-  const newFields = [];
-  for (const f of fields) {
-    if (f.path.includes(".$i")) {
-      iterateArrPath(f.path, values, ({ itemDataPath, itemValue }) => {
-        newFields.push({
-          ...f,
-          dataPath: itemDataPath,
-          value: itemValue,
-        });
-      });
-    } else {
-      const dataPath = getDataPath(f.path);
-      newFields.push({
-        ...f,
-        dataPath,
-        value: get(values, dataPath),
-      });
-    }
-  }
-
-  return heuristicGroupArray(newFields);
-}
-
-// magic heuristic infer array struct, we should be able to find better way
-function heuristicGroupArray(fields: TransformedField[]): TransformedField[] {
-  const newFields = [];
-
-  const groupedByPrefix = groupBy(fields, (f) => {
-    const arrPathMatch = f.path.split(/\.\$i(.*)/s);
-    if (arrPathMatch.length === 1) {
-      return arrPathMatch[0];
-    }
-    return arrPathMatch[0].concat(".$i");
-  });
-
-  for (const subFields of Object.values(groupedByPrefix)) {
-    if (subFields.length === 1) {
-      newFields.push(subFields[0]);
-      continue;
-    }
-    const groupedByPath = groupBy(subFields, "path");
-    const subSubFieldsArr = Object.values(groupedByPath);
-    for (let idx = 0; idx < subSubFieldsArr[0].length; idx++) {
-      for (const subSubFields of subSubFieldsArr) {
-        newFields.push(subSubFields[idx]);
-      }
-    }
-  }
-
-  return newFields;
-}
 
 const KubectlApplyForm = React.forwardRef<
   HTMLDivElement,
@@ -273,48 +146,52 @@ const KubectlApplyForm = React.forwardRef<
                   })}
                 </Row>
                 <div className="right">
-                  <SummaryList
-                    title={uiConfig.title || ""}
-                    groups={summaryInfo?.groups || []}
-                    items={summaryInfo.items || []}
-                  ></SummaryList>
+                  {uiConfig.isDisplaySummary ? (
+                    <SummaryList
+                      title={uiConfig.title || ""}
+                      groups={summaryInfo?.groups || []}
+                      items={summaryInfo.items || []}
+                    ></SummaryList>
+                  ) : null}
                 </div>
               </div>
-              <div className={WizardFooterStyle}>
-                <div className="footer-content">
-                  <div className="wizard-footer-left">
-                    {error ? (
-                      <Popover content={errorDetail || error}>
-                        <div className="wizard-error">
-                          <Icon
-                            className="wizard-error-icon"
-                            type="1-exclamation-error-circle-fill-16-red"
-                          ></Icon>
-                          <span className="wizard-error-text">{error}</span>
-                        </div>
-                      </Popover>
-                    ) : null}
-                  </div>
-                  <div className="wizard-footer-btn-group">
-                    <kit.Button
-                      type={`quiet` as unknown as ButtonType}
-                      onClick={() => {
-                        onCancel?.();
-                      }}
-                    >
-                      {cancelText}
-                    </kit.Button>
-                    <kit.Button
-                      type="primary"
-                      onClick={() => {
-                        onSubmit?.(values);
-                      }}
-                    >
-                      {confirmText || "next"}
-                    </kit.Button>
+              {uiConfig.isDisplayFooter ? (
+                <div className={WizardFooterStyle}>
+                  <div className="footer-content">
+                    <div className="wizard-footer-left">
+                      {error ? (
+                        <Popover content={errorDetail || error}>
+                          <div className="wizard-error">
+                            <Icon
+                              className="wizard-error-icon"
+                              type="1-exclamation-error-circle-fill-16-red"
+                            ></Icon>
+                            <span className="wizard-error-text">{error}</span>
+                          </div>
+                        </Popover>
+                      ) : null}
+                    </div>
+                    <div className="wizard-footer-btn-group">
+                      <kit.Button
+                        type={`quiet` as unknown as ButtonType}
+                        onClick={() => {
+                          onCancel?.();
+                        }}
+                      >
+                        {cancelText}
+                      </kit.Button>
+                      <kit.Button
+                        type="primary"
+                        onClick={() => {
+                          onSubmit?.(values);
+                        }}
+                      >
+                        {confirmText || "next"}
+                      </kit.Button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : null}
             </div>
           );
         }
@@ -387,61 +264,65 @@ const KubectlApplyForm = React.forwardRef<
                   )}
                 </Row>
                 <div className="right">
-                  <SummaryList
-                    title={uiConfig.title || ""}
-                    groups={summaryInfo?.groups}
-                  ></SummaryList>
+                  {uiConfig.isDisplaySummary ? (
+                    <SummaryList
+                      title={uiConfig.title || ""}
+                      groups={summaryInfo?.groups}
+                    ></SummaryList>
+                  ) : null}
                 </div>
               </div>
-              <div className={WizardFooterStyle}>
-                <div className="footer-content">
-                  <div className="wizard-footer-left">
-                    {step !== 0 && (
-                      <span
-                        className="prev-step"
+              {uiConfig.isDisplayFooter ? (
+                <div className={WizardFooterStyle}>
+                  <div className="footer-content">
+                    <div className="wizard-footer-left">
+                      {step !== 0 && (
+                        <span
+                          className="prev-step"
+                          onClick={() => {
+                            setStep(step - 1);
+                          }}
+                        >
+                          {currentStep?.prevText || "previous"}
+                        </span>
+                      )}
+                      {error ? (
+                        <Popover content={errorDetail || error}>
+                          <div className="wizard-error">
+                            <Icon
+                              className="wizard-error-icon"
+                              type="1-exclamation-error-circle-fill-16-red"
+                            ></Icon>
+                            <span className="wizard-error-text">{error}</span>
+                          </div>
+                        </Popover>
+                      ) : null}
+                    </div>
+                    <div className="wizard-footer-btn-group">
+                      <kit.Button
+                        type={`quiet` as unknown as ButtonType}
                         onClick={() => {
-                          setStep(step - 1);
+                          onCancel?.();
                         }}
                       >
-                        {currentStep?.prevText || "previous"}
-                      </span>
-                    )}
-                    {error ? (
-                      <Popover content={errorDetail || error}>
-                        <div className="wizard-error">
-                          <Icon
-                            className="wizard-error-icon"
-                            type="1-exclamation-error-circle-fill-16-red"
-                          ></Icon>
-                          <span className="wizard-error-text">{error}</span>
-                        </div>
-                      </Popover>
-                    ) : null}
-                  </div>
-                  <div className="wizard-footer-btn-group">
-                    <kit.Button
-                      type={`quiet` as unknown as ButtonType}
-                      onClick={() => {
-                        onCancel?.();
-                      }}
-                    >
-                      {cancelText}
-                    </kit.Button>
-                    <kit.Button
-                      type="primary"
-                      onClick={() => {
-                        if (step === layout.steps.length - 1) {
-                          onSubmit?.(values);
-                        } else {
-                          onNextStep?.(values);
-                        }
-                      }}
-                    >
-                      {currentStep?.nextText || "next"}
-                    </kit.Button>
+                        {cancelText}
+                      </kit.Button>
+                      <kit.Button
+                        type="primary"
+                        onClick={() => {
+                          if (step === layout.steps.length - 1) {
+                            onSubmit?.(values);
+                          } else {
+                            onNextStep?.(values);
+                          }
+                        }}
+                      >
+                        {currentStep?.nextText || "next"}
+                      </kit.Button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : null}
             </div>
           );
         }

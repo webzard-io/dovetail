@@ -1,7 +1,11 @@
 import React from "react";
 import { kit as CloudTowerKit } from "./themes/CloudTower";
-import { DropDownProps } from 'antd/lib/dropdown';
+import { DropDownProps } from "antd/lib/dropdown";
 import { ModalProps as AntdModalProps } from "antd/lib/modal";
+import { InputProps as AntdInputProps } from "antd/lib/input/Input";
+import { InputNumberProps as AntdInputNumberProps } from "antd/lib/input-number/index";
+import { SelectProps as AntdSelectProps } from "antd/lib/select/index";
+import { SwitchProps as AntdSwitchProps } from 'antd/lib/switch/index';
 export { CloudTowerKit };
 
 type RefAndChildren = {
@@ -19,7 +23,7 @@ export const buttonTypes = [
   "dashed",
   "link",
   "text",
-  "quiet"
+  "quiet",
 ] as const;
 
 export const buttonSizes = ["small", "middle", "large"];
@@ -176,7 +180,7 @@ export type CheckboxProps = {
   autoFocus?: boolean;
   type?: string;
   indeterminate?: boolean;
-}
+};
 
 export type PaginationProps = {
   current: number;
@@ -188,7 +192,7 @@ export type PaginationProps = {
   showTotal?: (total: number, range: [number, number]) => string;
   selectorVisible?: boolean;
   className?: string;
-}
+};
 
 export type Modal2Props = AntdModalProps & {
   /** Set is fullscreen to display modal */
@@ -211,6 +215,35 @@ export type Modal2Props = AntdModalProps & {
   showFooter?: boolean;
 };
 
+export type InputProps = Omit<AntdInputProps, "onChange"> & {
+  error?: boolean;
+  supportNegativeValue?: boolean;
+  maximum?: number;
+  minimum?: number;
+  type: AntdInputProps["type"] | "int" | "float";
+  onChange?: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    value: string | number | undefined
+  ) => void;
+};
+
+export type InputNumberProps = AntdInputNumberProps & { error?: boolean };
+
+export type SelectProps = {
+  defaultValue?: string;
+  error?: unknown | React.ReactNode;
+  danger?: boolean;
+  multiple?: boolean;
+  scrollBottomBuffer?: number;
+  onScrollBottom?: () => void;
+  selectLimit?: number;
+  onChange: (value: string | string[], option: any) => void;
+} & Omit<AntdSelectProps<string>, "onChange">;
+
+export type SwitchProps = Omit<AntdSwitchProps, "size"> & {
+  size?: "small" | "default" | "large";
+};
+
 export interface Kit {
   name: string;
   Button: React.FC<ButtonProps>;
@@ -227,6 +260,10 @@ export interface Kit {
   Checkbox: React.FC<CheckboxProps>;
   Dropdown: React.FC<DropDownProps>;
   Pagination: React.FC<PaginationProps>;
+  Input: React.FC<InputProps>;
+  InputNumber: React.FC<InputNumberProps>;
+  Select: React.FC<SelectProps>;
+  Switch: React.FC<SwitchProps>;
 }
 
 export const createKitContext = (kit: Kit) => {
