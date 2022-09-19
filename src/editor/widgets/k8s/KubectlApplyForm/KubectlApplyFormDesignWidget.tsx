@@ -33,13 +33,11 @@ import { Step, Steps, useSteps, StepsStyleConfig } from "chakra-ui-steps";
 import { css, injectGlobal } from "@emotion/css";
 import JsonSchemaEditor from "@optum/json-schema-editor";
 import { loadAll } from "js-yaml";
-import CodeEditor from "src/_internal/atoms/CodeEditor";
+import MonacoEditor from "./MonacoEditor";
 import get from "lodash/get";
 import omit from "lodash/omit";
-import type {
-  KubectlApplyFormProps,
-} from "src/_internal/organisms/KubectlApplyForm/KubectlApplyForm";
-import { Field } from 'src/_internal/organisms/KubectlApplyForm/type';
+import type { KubectlApplyFormProps } from "src/_internal/organisms/KubectlApplyForm/KubectlApplyForm";
+import { Field } from "src/_internal/organisms/KubectlApplyForm/type";
 import { getJsonSchemaByPath } from "src/_internal/utils/schema";
 import { UiConfigSpec } from "src/sunmao/components/KubectlApplyForm";
 import { mergeWidgetOptionsByPath } from "../../../utils/schema";
@@ -236,7 +234,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                 <Flex height="100%" direction="column">
                   <Box flex="1">
                     {activeStep === 0 && (
-                      <CodeEditor
+                      <MonacoEditor
                         defaultValue={yamlValue || "# copy k8s manifests"}
                         onChange={(newValue) => {
                           setYamlValue(newValue);
@@ -305,7 +303,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                                       }}
                                     />
                                   ) : (
-                                    <CodeEditor
+                                    <MonacoEditor
                                       defaultValue={JSON.stringify(s, null, 2)}
                                       onChange={(newValue) => {
                                         if (newValue === JSON.stringify(s)) {
@@ -409,7 +407,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                                   widget: "",
                                   error: "",
                                   layout: "horizontal",
-                                  isDisplayLabel: true
+                                  isDisplayLabel: true,
                                 };
                               }
                             ),
