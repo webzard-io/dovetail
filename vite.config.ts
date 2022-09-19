@@ -8,6 +8,7 @@ import sunmaoFsVitePlugin from "./tools/sunmao-fs-vite-plugin";
 import linariaVitePlugin from "./tools/linaria-vite-plugin";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { getProxyConfig, applyK8sYamlPlugin } from "./tools/proxy-k8s";
+import monacoEditorPlugin from "vite-plugin-monaco-editor";
 
 const globalSassPath = path.resolve(
   __dirname,
@@ -34,7 +35,7 @@ export default defineConfig({
         "@sunmao-ui/editor-sdk",
         "chakra-react-select",
         "i18next",
-        "react-i18next"
+        "react-i18next",
       ],
     },
   },
@@ -77,6 +78,9 @@ export default defineConfig({
     linariaVitePlugin({ preprocessor: "none", extension: ".scss" }),
     react(),
     applyK8sYamlPlugin(),
+    monacoEditorPlugin({
+      languageWorkers: ["json", "editorWorkerService"],
+    }),
   ],
   css: {
     preprocessorOptions: {
