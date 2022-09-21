@@ -8,12 +8,181 @@
     "spec": {
       "components": [
         {
-          "id": "kubectl_get_table0",
+          "id": "root3",
+          "type": "kui/v1/root",
+          "properties": {},
+          "traits": []
+        },
+        {
+          "id": "kubectl_apply_form2",
+          "type": "kui/v1/kubectl_apply_form",
+          "properties": {
+            "applyConfig": {
+              "create": true,
+              "patch": true
+            },
+            "formConfig": {
+              "yaml": "---\napiVersion: v1\nkind: Secret\nmetadata:\n  name: elasticsearch-data-values\nstringData:\n  values.yaml: |\n    # sts replicas\n    replicas: 1\n    # Set status yellow when using 1 replica\n    clusterHealthCheckParams: \"wait_for_status=yellow&timeout=1s\"\n    # Permit co-located instances\n    antiAffinity: \"soft\"\n    # Shrink default JVM heap.\n    esJavaOpts: \"-Xmx256m -Xms256m\"\n    # Allocate smaller chunks of memory per pod.\n    resources:\n      requests:\n        cpu: \"200m\"\n        memory: \"512M\"\n      limits:\n        cpu: \"2000m\"\n        memory: \"2Gi\"\n    # Request smaller persistent volumes.\n    volumeClaimTemplate:\n      accessModes: [\"ReadWriteOnce\"]\n      # storageClassName: \"\"\n      resources:\n        requests:\n          storage: 5Gi",
+              "schemas": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "apiVersion": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string",
+                        "format": "byte"
+                      }
+                    },
+                    "immutable": {
+                      "type": "boolean"
+                    },
+                    "kind": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "namespace": {
+                          "type": "string"
+                        },
+                        "annotations": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        },
+                        "labels": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "stringData": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  },
+                  "x-kubernetes-group-version-kind": [
+                    {
+                      "group": "",
+                      "kind": "Secret",
+                      "version": "v1"
+                    }
+                  ]
+                }
+              ],
+              "defaultValues": [
+                {
+                  "apiVersion": "v1",
+                  "kind": "Secret",
+                  "metadata": {
+                    "name": "elasticsearch-data-values"
+                  },
+                  "stringData": {
+                    "values.yaml": "# sts replicas\nreplicas: 1\n# Set status yellow when using 1 replica\nclusterHealthCheckParams: \"wait_for_status=yellow&timeout=1s\"\n# Permit co-located instances\nantiAffinity: \"soft\"\n# Shrink default JVM heap.\nesJavaOpts: \"-Xmx256m -Xms256m\"\n# Allocate smaller chunks of memory per pod.\nresources:\n  requests:\n    cpu: \"200m\"\n    memory: \"512M\"\n  limits:\n    cpu: \"2000m\"\n    memory: \"2Gi\"\n# Request smaller persistent volumes.\nvolumeClaimTemplate:\n  accessModes: [\"ReadWriteOnce\"]\n  # storageClassName: \"\"\n  resources:\n    requests:\n      storage: 5Gi\n"
+                  }
+                }
+              ],
+              "uiConfig": {
+                "layout": {
+                  "type": "simple",
+                  "fields": [
+                    {
+                      "path": "0.*",
+                      "label": "",
+                      "helperText": "",
+                      "sectionTitle": "",
+                      "widget": "",
+                      "error": "",
+                      "layout": "horizontal",
+                      "isDisplayLabel": true
+                    }
+                  ]
+                }
+              }
+            },
+            "basePath": "proxy-k8s",
+            "error": "",
+            "errorDetail": ""
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "root3",
+                  "slot": "root"
+                },
+                "ifCondition": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "button3",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "primary",
+            "text": {
+              "raw": "submit",
+              "format": "plain"
+            },
+            "disabled": false
+          },
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "root3",
+                  "slot": "root"
+                },
+                "ifCondition": true
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "kubectl_apply_form2",
+                    "method": {
+                      "name": "apply",
+                      "parameters": {}
+                    },
+                    "wait": {
+                      "type": "delay",
+                      "time": 0
+                    },
+                    "disabled": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "kubectl_get_table1",
           "type": "kui/v1/kubectl_get_table",
           "properties": {
-            "basePath": "api/sks/api/v1/clusters/yanzhen-demo/proxy",
+            "basePath": "proxy-k8s",
             "apiBase": "/api/v1",
-            "resource": "nodes",
+            "resource": "secrets",
             "columns": [
               {
                 "key": "name",
@@ -42,7 +211,8 @@
             ],
             "defaultSize": 10,
             "empty": "No Data.",
-            "namespace": "",
+            "watchWsBasePath": "",
+            "namespace": "default",
             "fieldSelector": "",
             "customizable": false,
             "customizableKey": "",
@@ -53,10 +223,20 @@
               "y": ""
             },
             "tableLayout": "auto",
-            "bordered": false,
-            "watchWsBasePath": "api/sks-ws/api/v1/clusters/yanzhen-demo/proxy"
+            "bordered": false
           },
-          "traits": []
+          "traits": [
+            {
+              "type": "core/v1/slot",
+              "properties": {
+                "container": {
+                  "id": "root3",
+                  "slot": "root"
+                },
+                "ifCondition": true
+              }
+            }
+          ]
         }
       ]
     }
