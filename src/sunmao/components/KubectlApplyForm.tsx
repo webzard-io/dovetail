@@ -196,12 +196,16 @@ const KubectlApplyFormProps = Type.Object({
   ),
   error: Type.String({
     title: "Error",
-    category: PRESET_PROPERTY_CATEGORY.Basic,
+    category: PRESET_PROPERTY_CATEGORY.Behavior,
   }),
   errorDetail: Type.String({
     title: "Error detail",
-    category: PRESET_PROPERTY_CATEGORY.Basic,
+    category: PRESET_PROPERTY_CATEGORY.Behavior,
   }),
+  submitting: Type.Boolean({
+    title: 'Submitting',
+    category: PRESET_PROPERTY_CATEGORY.Behavior
+  })
 });
 
 const KubectlApplyFormState = Type.Object({
@@ -261,6 +265,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
     formConfig,
     error,
     errorDetail,
+    submitting,
     mergeState,
     slotsElements,
     subscribeMethods,
@@ -307,6 +312,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
         values={values}
         error={error}
         errorDetail={errorDetail}
+        submitting={submitting}
         step={step}
         setStep={(step) => {
           mergeState({

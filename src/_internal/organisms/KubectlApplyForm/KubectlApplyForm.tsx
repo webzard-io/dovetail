@@ -57,6 +57,7 @@ export type KubectlApplyFormProps = {
   values: any[];
   error?: string;
   errorDetail?: string;
+  submitting?: boolean;
   step: number;
   setStep: (step: number) => void;
   getSlot?: (
@@ -82,6 +83,7 @@ const KubectlApplyForm = React.forwardRef<
       values,
       error,
       errorDetail,
+      submitting,
       onChange,
       getSlot,
       step,
@@ -185,6 +187,7 @@ const KubectlApplyForm = React.forwardRef<
                         onClick={() => {
                           onSubmit?.(values);
                         }}
+                        loading={submitting}
                       >
                         {confirmText || "next"}
                       </kit.Button>
@@ -316,6 +319,7 @@ const KubectlApplyForm = React.forwardRef<
                             onNextStep?.(values);
                           }
                         }}
+                        loading={submitting}
                       >
                         {currentStep?.nextText || "next"}
                       </kit.Button>

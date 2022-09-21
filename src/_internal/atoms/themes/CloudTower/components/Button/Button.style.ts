@@ -42,6 +42,8 @@ export const ButtonStyle = css`
 
     .anticon {
       color: var(--color, inherit);
+      padding-right: 0;
+      margin-right: 8px;
     }
 
     &:hover,
