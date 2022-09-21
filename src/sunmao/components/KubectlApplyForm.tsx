@@ -11,6 +11,7 @@ import {
   FORM_WIDGETS_MAP,
   FORM_WIDGET_OPTIONS_MAP,
 } from "../../_internal/molecules/form";
+import { KubeApi, KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 
 const UiConfigFieldSpecProperties = {
   path: Type.String({
@@ -245,6 +246,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
         value: Type.Any(),
       }),
       nextStep: Type.Object({}),
+      apply: Type.Object({}),
     },
     slots: {
       field: {
@@ -293,8 +295,14 @@ export const KubectlApplyForm = implementRuntimeComponent({
           });
           setStep(step + 1);
         },
+        apply() {
+          const sdk = new KubeSdk({
+            basePath,
+          });
+          sdk.applyYaml(values);
+        },
       });
-    }, [step, subscribeMethods, mergeState]);
+    }, [step, subscribeMethods, mergeState, values]);
 
     return (
       <_KubectlApplyForm

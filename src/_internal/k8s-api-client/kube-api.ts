@@ -1,6 +1,12 @@
 // highly inspired by https://github.com/lensapp/lens/blob/1a29759bff/src/common/k8s-api/kube-api.ts
 import ky, { SearchParamsOption } from "ky";
-import type { ListMeta, ObjectMeta } from "kubernetes-types/meta/v1";
+import type {
+  APIResource,
+  APIResourceList,
+  ListMeta,
+  ObjectMeta,
+  Status,
+} from "kubernetes-types/meta/v1";
 
 type KubeApiQueryParams = {
   watch?: boolean | number;
@@ -196,6 +202,8 @@ function findLine(buffer: string, fn: (line: string) => void): string {
 }
 
 type StopWatchHandler = () => void;
+
+type K8sObject = { apiVersion?: string; kind?: string; metadata?: ObjectMeta };
 
 export class KubeApi<T> {
   private basePath: string;
@@ -397,6 +405,194 @@ export class KubeApi<T> {
     }
 
     return query;
+  }
+}
+
+type KubeSdkOptions = {
+  basePath: string;
+};
+
+type KubernetesApiAction =
+  | "create"
+  | "delete"
+  | "patch"
+  | "read"
+  | "list"
+  | "replace";
+
+const apiVersionResourceCache: Record<string, APIResourceList> = {};
+
+export class KubeSdk {
+  private basePath: string;
+  private defaultNamespace = "default";
+
+  constructor(protected options: KubeSdkOptions) {
+    const { basePath } = options;
+
+    this.options = options;
+    this.basePath = basePath;
+  }
+
+  public async applyYaml(specs: K8sObject[]) {
+    const validSpecs = specs.filter((s) => s && s.kind && s.metadata);
+    const created: K8sObject[] = [];
+
+    for (const spec of validSpecs) {
+      spec.metadata = spec.metadata || {};
+      spec.metadata.annotations = spec.metadata.annotations || {};
+      delete spec.metadata.annotations[
+        "kubectl.kubernetes.io/last-applied-configuration"
+      ];
+      spec.metadata.annotations[
+        "kubectl.kubernetes.io/last-applied-configuration"
+      ] = JSON.stringify(spec);
+      try {
+        await this.read(spec);
+        const response = await this.patch(spec, "application/merge-patch+json");
+        created.push(response as K8sObject);
+      } catch (e) {
+        const response = await this.create(spec);
+        created.push(response as K8sObject);
+      }
+    }
+
+    return created;
+  }
+
+  public async deleteYaml(specs: K8sObject[]) {
+    const validSpecs = specs.filter((s) => s && s.kind && s.metadata);
+    const deleted: Status[] = [];
+
+    for (const spec of validSpecs) {
+      spec.metadata = spec.metadata || {};
+      spec.metadata.annotations = spec.metadata.annotations || {};
+      const response = await this.delete(spec);
+      deleted.push(response as Status);
+    }
+
+    return deleted;
+  }
+
+  private async read(spec: K8sObject) {
+    const url = await this.specUriPath(spec, "read");
+    const res = await ky
+      .get(url, {
+        retry: 0,
+      })
+      .json();
+
+    return res;
+  }
+
+  private async create(spec: K8sObject) {
+    const url = await this.specUriPath(spec, "create");
+    const res = await ky
+      .post(url, {
+        retry: 0,
+        json: spec,
+      })
+      .json();
+
+    return res;
+  }
+
+  private async patch(spec: K8sObject, strategy: string) {
+    const url = await this.specUriPath(spec, "patch");
+    const res = await ky
+      .patch(url, {
+        headers: {
+          "Content-Type": strategy,
+        },
+        retry: 0,
+        json: spec,
+      })
+      .json();
+
+    return res;
+  }
+
+  private async delete(spec: K8sObject) {
+    const url = await this.specUriPath(spec, "delete");
+    const res = await ky
+      .delete(url, {
+        retry: 0,
+      })
+      .json();
+
+    return res;
+  }
+
+  private apiVersionPath(apiVersion: string): string {
+    const api = apiVersion.includes("/") ? "apis" : "api";
+    return [this.basePath, api, apiVersion].join("/");
+  }
+
+  private async specUriPath(
+    spec: K8sObject,
+    action: KubernetesApiAction
+  ): Promise<string> {
+    if (!spec.kind) {
+      throw new Error("Required spec property kind is not set");
+    }
+    if (!spec.apiVersion) {
+      spec.apiVersion = "v1";
+    }
+    if (!spec.metadata) {
+      spec.metadata = {};
+    }
+    const resource = await this.resource(spec.apiVersion, spec.kind);
+    if (!resource) {
+      throw new Error(
+        `Unrecognized API version and kind: ${spec.apiVersion} ${spec.kind}`
+      );
+    }
+    if (resource.namespaced && !spec.metadata.namespace && action !== "list") {
+      spec.metadata.namespace = this.defaultNamespace;
+    }
+    const parts = [this.apiVersionPath(spec.apiVersion)];
+    if (resource.namespaced && spec.metadata.namespace) {
+      parts.push(
+        "namespaces",
+        encodeURIComponent(String(spec.metadata.namespace))
+      );
+    }
+    parts.push(resource.name);
+    if (action !== "create" && action !== "list") {
+      if (!spec.metadata.name) {
+        throw new Error("Required spec property name is not set");
+      }
+      parts.push(encodeURIComponent(String(spec.metadata.name)));
+    }
+    return parts.join("/").toLowerCase();
+  }
+
+  private async resource(
+    apiVersion: string,
+    kind: string
+  ): Promise<APIResource> {
+    const cacheKey = this.getApiVersionCacheKey(apiVersion);
+
+    if (apiVersionResourceCache[cacheKey]) {
+      const resource = apiVersionResourceCache[cacheKey].resources.find(
+        (r) => r.kind === kind
+      );
+      if (resource) {
+        return resource;
+      }
+    }
+
+    const localVarPath = this.apiVersionPath(apiVersion);
+
+    const resources = await ky.get(localVarPath).json<APIResourceList>();
+    apiVersionResourceCache[cacheKey] = resources;
+
+    return apiVersionResourceCache[cacheKey].resources.find(
+      (r) => r.kind === kind
+    )!;
+  }
+
+  private getApiVersionCacheKey(apiVersion: string) {
+    return `${apiVersion}@${this.basePath}`;
   }
 }
 
