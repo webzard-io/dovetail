@@ -4,7 +4,7 @@ import { StringUnion } from "@sunmao-ui/shared";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
 import { KitContext } from "../atoms/kit-context";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 
 export const OptionsSpec = Type.Object({
   addonBefore: Type.Optional(Type.String()),
@@ -15,9 +15,11 @@ export const OptionsSpec = Type.Object({
 type Props = WidgetProps<string, Static<typeof OptionsSpec>>;
 
 const Input = (props: Props) => {
+  const [input, setInput] = useState("");
   const kit = useContext(KitContext);
   const onChange = useCallback(
     (e) => {
+      setInput(e.target.value);
       props.onChange(
         e.target.value,
         `${
@@ -28,12 +30,16 @@ const Input = (props: Props) => {
     [props.onChange, props.subKey, props.field]
   );
 
+  useEffect(() => {
+    setInput(props.value);
+  }, [props.value]);
+
   return (
     <kit.Input
       {...props.widgetOptions}
-      type={props.widgetOptions?.type || 'input'}
-      value={props.value}
+      type={props.widgetOptions?.type || "input"}
       onChange={onChange}
+      value={input}
     ></kit.Input>
   );
 };
