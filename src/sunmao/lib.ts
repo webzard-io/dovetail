@@ -21,7 +21,7 @@ import SyncKubectlApplyForm from "./traits/SyncKubectlApplyForm";
 import KubeAPITrait from "./traits/KubeAPITrait";
 
 const MessageParams = Type.Object({
-  type: StringUnion(["success", "warn", "error", "info"]),
+  type: StringUnion(["success", "warn", "error", "info", "loading"]),
   message: Type.String(),
   duration: Type.Number(),
 });
@@ -51,6 +51,18 @@ export const libs: SunmaoLib[] = [
       FullscreenModal,
     ],
     utilMethods: [
+      () =>
+        implementUtilMethod({
+          version: "kui/v1",
+          metadata: {
+            name: "closeMessage",
+          },
+          spec: {
+            parameters: Type.Object({}),
+          },
+        })((params) => {
+          message.destroy();
+        }),
       () =>
         implementUtilMethod({
           version: "kui/v1",
@@ -85,9 +97,9 @@ const yaml = import.meta.glob("./dependencies/yaml/*.yaml", {
 
 export const dependencies = {
   yaml: Object.keys(yaml).reduce<Record<string, string>>((prev, cur) => {
-    prev[cur.replace("./dependencies/yaml/", "").replace(".yaml", "")] = (yaml[
+    prev[cur.replace("./dependencies/yaml/", "").replace(".yaml", "")] = yaml[
       cur
-    ] as unknown) as string;
+    ] as unknown as string;
     return prev;
   }, {}),
 };
