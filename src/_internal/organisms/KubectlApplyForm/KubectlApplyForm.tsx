@@ -379,13 +379,9 @@ const KubectlApplyForm = React.forwardRef<
             language="yaml"
           />
         )}
-        {
-          <div
-            className={cx(yamlMode && dCss`display: none;`, FormWrapperStyle)}
-          >
-            {renderFields()}
-          </div>
-        }
+        <div className={cx(yamlMode && dCss`display: none;`, FormWrapperStyle)}>
+          {renderFields()}
+        </div>
       </div>
     );
   }

@@ -290,7 +290,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
           mergeState({
             value: newValues,
           });
-          setValues(newValues);
+          setValues([...newValues]);
         },
         nextStep() {
           mergeState({
