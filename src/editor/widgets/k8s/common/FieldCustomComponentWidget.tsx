@@ -6,11 +6,17 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import { Select } from "chakra-react-select";
-import { implementWidget, ExpressionWidget } from "@sunmao-ui/editor-sdk";
+import {
+  implementWidget,
+  ExpressionWidget,
+  SpecWidget,
+} from "@sunmao-ui/editor-sdk";
+import { mergeWidgetOptionsByPath } from "../../../utils/schema";
 import { Type } from "@sinclair/typebox";
 import { last, get } from "lodash";
 import { observer } from "mobx-react-lite";
 import { css } from "@emotion/css";
+import { SyncSpec } from "../../../../sunmao/traits/v2/SyncKubectlApplyForm";
 
 const FormItemStyle = css`
   &.chakra-form-control {
@@ -62,7 +68,7 @@ const FieldCustomComponentWidget =
         () =>
           inputComponent
             ? inputComponent.traits.findIndex(
-                ({ type }) => type === "kui/v1/sync_kubectl_apply_form"
+                ({ type }) => type === "kui/v2/sync_kubectl_apply_form"
               )
             : -1,
         [inputComponent]
@@ -151,19 +157,19 @@ const FieldCustomComponentWidget =
                 type: "createTrait" as const,
                 props: {
                   componentId: newComponentId,
-                  traitType: "kui/v1/sync_kubectl_apply_form",
+                  traitType: "kui/v2/sync_kubectl_apply_form",
                   properties: {
-                    formValue: `{{ ${component.id}.value${
-                      parentPath ? `['${parentPath}']` : ""
-                    }${(fieldPath as string)
-                      .split(".")
-                      .map((key) => `['${key}']`)
-                      .join("")} }}`,
-                    setValueMethod: "setValue",
-                    formId: component.id,
-                    fieldPath: parentPath
-                      ? `${parentPath}.${fieldPath}`
-                      : fieldPath,
+                    syncs: [
+                      {
+                        formValue: `{{ ${component.id}.value${
+                          parentPath ? `['${parentPath}']` : ""
+                        }${(fieldPath as string)
+                          .split(".")
+                          .map((key) => `['${key}']`)
+                          .join("")} }}`,
+                        setValueMethod: "setValue",
+                      },
+                    ],
                   },
                 },
               },
@@ -245,37 +251,28 @@ const FieldCustomComponentWidget =
               <Input value={value} disabled></Input>
             </FormControl>
           ) : null}
-          {syncTrait ? (
+          {syncTrait && syncTrait.type === "kui/v2/sync_kubectl_apply_form" ? (
             <>
-              <FormControl className={FormItemStyle}>
-                <FormLabel className={LabelStyle}>From item value</FormLabel>
-                <ExpressionWidget
-                  value={syncTrait.properties.value}
-                  component={component}
-                  spec={Type.String()}
-                  level={level + 1}
-                  path={[]}
-                  services={services}
-                  onChange={onTraitValueChange}
-                ></ExpressionWidget>
-              </FormControl>
-              <FormControl className={FormItemStyle}>
-                <FormLabel className={LabelStyle}>
-                  Form item setValue method
-                </FormLabel>
-                <ChakraSelect
-                  value={syncTrait.properties.setValueMethod as string}
-                  onChange={onTraitSetValueChange}
-                >
-                  {[""]
-                    .concat(Object.keys(inputComponentMethods))
-                    .map((key) => (
-                      <option value={key} key={key}>
-                        {key}
-                      </option>
-                    ))}
-                </ChakraSelect>
-              </FormControl>
+              <SpecWidget
+                spec={Type.Array({
+                  ...SyncSpec,
+                  properties: {
+                    ...SyncSpec.properties,
+                    setValueMethod: {
+                      ...SyncSpec.properties.setValueMethod,
+                      enum: [""]
+                        .concat(Object.keys(inputComponentMethods))
+                        .map((key) => key),
+                    },
+                  },
+                })}
+                value={syncTrait.properties.syncs}
+                component={component}
+                level={level + 1}
+                path={[]}
+                services={services}
+                onChange={onTraitValueChange}
+              ></SpecWidget>
             </>
           ) : null}
         </div>

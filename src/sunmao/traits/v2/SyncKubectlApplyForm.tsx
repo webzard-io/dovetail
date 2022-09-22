@@ -1,7 +1,7 @@
 import { Type } from "@sinclair/typebox";
 import { implementRuntimeTrait } from "@sunmao-ui/runtime";
 
-const TransformerTraitPropertiesSpec = Type.Object({
+export const SyncSpec = Type.Object({
   setValueMethod: Type.String({
     title: "Set Value Method",
   }),
@@ -9,10 +9,13 @@ const TransformerTraitPropertiesSpec = Type.Object({
     title: "Form value",
   }),
 });
+const TransformerTraitPropertiesSpec = Type.Object({
+  syncs: Type.Array(SyncSpec),
+});
 const TransformerTraitStateSpec = Type.Object({});
 
 export default implementRuntimeTrait({
-  version: "kui/v1",
+  version: "kui/v2",
   metadata: {
     name: "sync_kubectl_apply_form",
     description: "sync the value to kubectl apply form fields",
@@ -30,38 +33,43 @@ export default implementRuntimeTrait({
     state: TransformerTraitStateSpec,
   },
 })(() => {
-  const formItemValueCache = new Map<string, any>();
+  const formItemValueCache = new Map<string, Map<string, any>>();
 
-  return ({
-    formValue,
-    setValueMethod,
-    services,
-    componentId,
-  }) => {
-    function syncToComponent() {
-      const cachedFormItemValue = formItemValueCache.get(componentId);
+  return ({ syncs, services, componentId }) => {
+    function syncToComponents() {
+      let cachedValueMap = formItemValueCache.get(componentId);
 
-      if (formValue !== cachedFormItemValue) {
-        services.apiService.send("uiMethod", {
-          componentId,
-          name: setValueMethod,
-          parameters: formValue,
-        });
+      if (cachedValueMap === undefined) {
+        cachedValueMap = new Map();
+
+        formItemValueCache.set(componentId, cachedValueMap);
       }
 
-      formItemValueCache.set(componentId, formValue);
+      syncs.map(({ formValue, setValueMethod }) => {
+        const cachedFormItemValue = cachedValueMap?.get(setValueMethod);
+
+        if (formValue !== cachedFormItemValue) {
+          services.apiService.send("uiMethod", {
+            componentId,
+            name: setValueMethod,
+            parameters: formValue,
+          });
+        }
+
+        cachedValueMap?.set(setValueMethod, formValue);
+      });
     }
 
     return {
       props: {
         componentDidMount: [
           () => {
-            syncToComponent();
+            syncToComponents();
           },
         ],
         componentDidUpdate: [
           () => {
-            syncToComponent();
+            syncToComponents();
           },
         ],
         componentDidUnmount: [
