@@ -66,6 +66,14 @@ export const KubectlGetList = implementRuntimeComponent({
         title: "Field selector",
         category: PRESET_PROPERTY_CATEGORY.Data,
       }),
+      emptyText: Type.String({
+        title: "Empty text",
+        category: PRESET_PROPERTY_CATEGORY.Behavior,
+      }),
+      errorText: Type.String({
+        title: "Error text",
+        category: PRESET_PROPERTY_CATEGORY.Behavior,
+      }),
     }),
     state: Type.Object({
       items: Type.Array(Type.Any()),
@@ -84,6 +92,8 @@ export const KubectlGetList = implementRuntimeComponent({
     namespace,
     resource,
     fieldSelector,
+    emptyText,
+    errorText,
     customStyle,
     elementRef,
     callbackMap,
@@ -123,6 +133,8 @@ export const KubectlGetList = implementRuntimeComponent({
           namespace={namespace}
           resource={resource}
           fieldSelector={fieldSelector}
+          emptyText={emptyText}
+          errorText={errorText}
           onResponse={onResponse}
           onClickItem={onClickItem}
         ></BaseKubectlGetList>
