@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import compact from "lodash/compact";
 import {
   KubeApi,
@@ -10,6 +16,7 @@ import { get } from "lodash";
 import { css } from "@emotion/css";
 import styled from "@emotion/styled";
 import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
+import ErrorContent from "../../ErrorContent";
 
 const RowStyle = css`
   .col-content {
@@ -17,9 +24,6 @@ const RowStyle = css`
   }
 `;
 const InfoListBlock = styled.div`
-  padding: 16px 24px;
-  padding-bottom: 10px;
-
   &:not(:last-child) {
     box-shadow: inset 0px -1px 0px rgba(225, 230, 241, 0.6);
   }
@@ -30,6 +34,17 @@ const ValueWrapper = styled.div`
 `;
 const TabContentWrapper = styled.div`
   padding: 24px 0;
+`;
+const LoadingWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+`;
+const CardStyle = css`
+  .card-body {
+    padding: 24px 32px;
+  }
 `;
 
 type DetailResponse = {
@@ -82,6 +97,7 @@ type KubectlGetDetailProps = {
   resource: string;
   name: string;
   layout: Layout;
+  errorText?: string;
   renderTab?: (
     params: { tab: string; tabIndex: number },
     data: { detail: Unstructured | null },
@@ -120,6 +136,7 @@ const KubectlGetDetail = React.forwardRef<
     resource,
     name,
     layout,
+    errorText,
     renderTab,
     renderSection,
     renderKey,
@@ -140,11 +157,7 @@ const KubectlGetDetail = React.forwardRef<
     setActiveTab(key);
     props.onTabChange?.(key);
   };
-
-  useEffect(() => {
-    onResponse?.(response);
-  }, [response]);
-  useEffect(() => {
+  const fetch = useCallback(() => {
     const api = new KubeApi<UnstructuredList>({
       basePath: basePath,
       watchWsBasePath,
@@ -156,7 +169,8 @@ const KubectlGetDetail = React.forwardRef<
     });
 
     setResponse((prev) => ({ ...prev, loading: true }));
-    const stopP = api
+
+    return api
       .listWatch({
         query: {
           namespace,
@@ -173,11 +187,18 @@ const KubectlGetDetail = React.forwardRef<
       .catch((err) => {
         setResponse(() => ({ loading: false, error: err, data: null }));
       });
+  }, [basePath, apiBase, namespace, resource, name]);
+
+  useEffect(() => {
+    onResponse?.(response);
+  }, [response]);
+  useEffect(() => {
+    const stopP = fetch();
 
     return () => {
       stopP.then((stop) => stop?.());
     };
-  }, [basePath, apiBase, namespace, resource, name]);
+  }, [fetch]);
 
   const renderSections = (
     sections: Section[],
@@ -194,43 +215,71 @@ const KubectlGetDetail = React.forwardRef<
               {section.title}
             </h2>
           ) : null}
-          <kit.Card>
-            {Object.keys(section.info).map((category) => {
-              const items = section.info[category];
+          <kit.Card className={CardStyle}>
+            {(function () {
+              if (loading) {
+                return (
+                  <LoadingWrapper>
+                    <kit.Loading />
+                  </LoadingWrapper>
+                );
+              }
 
-              return (
-                <InfoListBlock key={category}>
-                  {items.map((item, index) => {
-                    const value = get(data, item.path);
-                    const params = {
-                      ...item,
-                      ...(context || {}),
-                      section: section.title,
-                      category,
-                    };
-                    return (
-                      <kit.InfoRow
-                        key={item.path || item.label}
-                        className={RowStyle}
-                        label={
-                          renderKey?.(params, { value, detail: data }) ||
-                          item.label
-                        }
-                        content={
-                          <ValueWrapper>
-                            <span>
-                              {renderValue?.(params, { value, detail: data }) ||
-                                value}
+              if (error) {
+                return (
+                  <ErrorContent
+                    errorText={errorText}
+                    refetch={fetch}
+                  ></ErrorContent>
+                );
+              }
+
+              return Object.keys(section.info).map((category) => {
+                const items = section.info[category];
+
+                return (
+                  <InfoListBlock key={category}>
+                    {items.map((item, index) => {
+                      const value = get(data, item.path);
+                      const params = {
+                        ...item,
+                        ...(context || {}),
+                        section: section.title,
+                        category,
+                      };
+                      return (
+                        <kit.InfoRow
+                          key={item.path || item.label}
+                          className={RowStyle}
+                          label={
+                            <span className={Typo.Label.l4_regular_title}>
+                              {renderKey?.(params, { value, detail: data }) ||
+                                item.label}
                             </span>
-                            {renderAction?.(params, { value, detail: data })}
-                          </ValueWrapper>
-                        }
-                      />
-                    );
-                  })}
-                </InfoListBlock>
-              );
-            })}
+                          }
+                          content={
+                            <ValueWrapper>
+                              <span className={Typo.Label.l4_regular_title}>
+                                {renderValue?.(params, {
+                                  value,
+                                  detail: data,
+                                }) || value}
+                              </span>
+                              <span className={Typo.Label.l4_regular_title}>
+                                {renderAction?.(params, {
+                                  value,
+                                  detail: data,
+                                })}
+                              </span>
+                            </ValueWrapper>
+                          }
+                        />
+                      );
+                    })}
+                  </InfoListBlock>
+                );
+              });
+            })()}
           </kit.Card>
         </div>
       );

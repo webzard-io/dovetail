@@ -159,6 +159,10 @@ const KubectlGetDetailProps = Type.Object({
       widget: "kui/v1/KubectlGetDetailLayoutWidget",
     }
   ),
+  errorText: Type.String({
+    title: "Error text",
+    category: PRESET_PROPERTY_CATEGORY.Behavior,
+  }),
 });
 
 const KubectlGetDetailState = Type.Object({
@@ -290,6 +294,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
     resource,
     name,
     layout,
+    errorText,
     mergeState,
     customStyle,
     slotsElements,
@@ -324,20 +329,42 @@ export const KubectlGetDetail = implementRuntimeComponent({
         name={name}
         layout={layout}
         renderTab={(params, data, fallback) => {
-          return slotsElements.tab?.({ ...params, ...data }, fallback, `tab_${params.tab}_${params.tabIndex}`);
+          return slotsElements.tab?.(
+            { ...params, ...data },
+            fallback,
+            `tab_${params.tab}_${params.tabIndex}`
+          );
         }}
         renderSection={(params, data, fallback) => {
-          return slotsElements.section?.({ ...params, ...data }, fallback, `section_${params.section}`);
+          return slotsElements.section?.(
+            { ...params, ...data },
+            fallback,
+            `section_${params.section}`
+          );
         }}
         renderKey={(params, data) => {
-          return slotsElements.key?.({ ...params, ...data }, null, `key_${params.path}_${params.label}`);
+          return slotsElements.key?.(
+            { ...params, ...data },
+            null,
+            `key_${params.path}_${params.label}`
+          );
         }}
         renderValue={(params, data) => {
-          return renderWidget(params, data, slotsElements.value, `value_${params.path}_${params.label}`);
+          return renderWidget(
+            params,
+            data,
+            slotsElements.value,
+            `value_${params.path}_${params.label}`
+          );
         }}
         renderAction={(params, data) => {
-          return slotsElements.action?.({ ...params, ...data }, null, `action_${params.path}_${params.label}`);
+          return slotsElements.action?.(
+            { ...params, ...data },
+            null,
+            `action_${params.path}_${params.label}`
+          );
         }}
+        errorText={errorText}
         onResponse={onResponse}
         onTabChange={onTabChange}
       />

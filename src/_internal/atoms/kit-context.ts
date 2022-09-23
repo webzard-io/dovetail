@@ -17,6 +17,7 @@ type RefOnly = {
 };
 
 export const buttonTypes = [
+  "ordinary",
   "default",
   "primary",
   "ghost",
@@ -107,6 +108,7 @@ export type CardProps = {
   defaultOpen?: boolean;
   title?: React.ReactNode | string;
   subInfo?: React.ReactNode;
+  className?: string;
 } & RefAndChildren;
 
 export type InfoRowProps = {

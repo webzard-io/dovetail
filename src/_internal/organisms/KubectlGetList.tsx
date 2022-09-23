@@ -2,14 +2,34 @@ import React, { useContext, useState, useEffect, useCallback } from "react";
 import { KitContext } from "../atoms/kit-context";
 import { KubeApi, UnstructuredList } from "../k8s-api-client/kube-api";
 import styled from "@emotion/styled";
+import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
+import ErrorContent from "../ErrorContent";
+import { useTranslation } from "react-i18next";
+import { css } from "@emotion/css";
 
 const LoadingWrapper = styled.div`
-  position: absolute;
+  padding: 24px;
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const EmptyText = styled.div`
+  color: rgba(10, 37, 85, 0.6);
+  padding: 24px;
+  text-align: center;
+`;
+
+const CardStyle = css`
+  .card-body {
+    padding: 24px 32px;
+  }
+
+  .dovetail-ant-btn {
+    height: 18px;
+  }
 `;
 
 const emptyData = {
@@ -33,6 +53,8 @@ type KubectlGetListProps = {
   namespace?: string;
   apiBase: string;
   fieldSelector?: string;
+  emptyText?: string;
+  errorText?: string;
   onResponse?: (res: Response) => void;
   onClickItem?: (item: UnstructuredList["items"][0]) => void;
 };
@@ -45,9 +67,12 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
     namespace,
     resource,
     fieldSelector,
+    emptyText,
+    errorText,
     onResponse,
     onClickItem,
   }) => {
+    const { t } = useTranslation();
     const kit = useContext(KitContext);
     const [response, setResponse] = useState<Response>({
       data: emptyData,
@@ -56,7 +81,7 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
     });
     const { data, loading, error } = response;
 
-    useEffect(() => {
+    const fetch = useCallback(() => {
       const api = new KubeApi<UnstructuredList>({
         basePath,
         watchWsBasePath,
@@ -67,7 +92,7 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
         },
       });
       setResponse((prev) => ({ ...prev, loading: true }));
-      const stopP = api
+      return api
         .listWatch({
           query: fieldSelector ? { fieldSelector } : {},
           cb: (res) => {
@@ -77,40 +102,68 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
         .catch((err) => {
           setResponse(() => ({ loading: false, error: err, data: emptyData }));
         });
+    }, [apiBase, resource, namespace, basePath, fieldSelector]);
+
+    useEffect(() => {
+      const stopP = fetch();
 
       return () => {
         stopP.then((stop) => stop?.());
       };
-    }, [apiBase, resource, namespace, basePath, fieldSelector]);
+    }, [fetch]);
     useEffect(() => {
       onResponse?.(response);
     }, [response]);
 
     return (
-      <kit.Card>
-        {loading ? (
-          <LoadingWrapper>
-            <kit.Loading></kit.Loading>
-          </LoadingWrapper>
-        ) : null}
-        {data.items.map((item) => {
-          return (
-            <kit.InfoRow
-              key={item.metadata.name}
-              label={
-                <kit.Button
-                  type="link"
-                  onClick={() => {
-                    onClickItem?.(item);
-                  }}
-                >
-                  {item.metadata.name}
-                </kit.Button>
-              }
-              content=""
-            />
-          );
-        })}
+      <kit.Card className={CardStyle}>
+        {(function () {
+          if (loading) {
+            return (
+              <LoadingWrapper>
+                <kit.Loading></kit.Loading>
+              </LoadingWrapper>
+            );
+          }
+
+          if (error) {
+            return (
+              <ErrorContent
+                errorText={errorText}
+                refetch={fetch}
+              ></ErrorContent>
+            );
+          }
+
+          if (data.items.length) {
+            return data.items.map((item) => {
+              return (
+                <kit.InfoRow
+                  key={item.metadata.name}
+                  label={
+                    <kit.Button
+                      className={Typo.Label.l4_regular_title}
+                      size="sm"
+                      type="link"
+                      onClick={() => {
+                        onClickItem?.(item);
+                      }}
+                    >
+                      {item.metadata.name}
+                    </kit.Button>
+                  }
+                  content=""
+                />
+              );
+            });
+          } else {
+            return (
+              <EmptyText className={Typo.Display.d3_bold_title}>
+                {emptyText || t("dovetail.empty")}
+              </EmptyText>
+            );
+          }
+        })()}
       </kit.Card>
     );
   }
