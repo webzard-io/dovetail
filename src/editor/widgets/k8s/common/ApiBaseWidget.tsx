@@ -11,9 +11,10 @@ export default implementWidget<"kui/v1/ApiBaseWidget">({
     name: "ApiBaseWidget",
   },
 })((props) => {
-  const { component, path } = props;
+  const { component, path, services, } = props;
   const [apiBases, setApiBases] = useState<string[]>([]);
   const basePath = useProperty({
+    services,
     component,
     path,
     key: "basePath",
