@@ -19,10 +19,12 @@ function iterateArrPath(
     const itemPath = arrPathMatch[0];
     const itemDataPath = getDataPath(itemPath);
     const itemValue = get(values, itemDataPath);
+
     cb({
       itemDataPath,
       itemValue,
     });
+    
     return;
   }
   const [arrPath] = arrPathMatch;
@@ -67,7 +69,8 @@ function heuristicGroupArray(fields: TransformedField[]): TransformedField[] {
 
 export function transformFields(
   fields: Field[],
-  values: any[]
+  values: any[],
+  defaultValues: any[]
 ): TransformedField[] {
   const newFields = [];
   for (const f of fields) {
@@ -85,6 +88,7 @@ export function transformFields(
         ...f,
         dataPath,
         value: get(values, dataPath),
+        defaultValue: get(defaultValues, dataPath),
       });
     }
   }

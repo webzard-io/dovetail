@@ -328,6 +328,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
           });
           setStep(step);
         }}
+        defaultValues={formConfig.defaultValues}
         onChange={(newValues: any, key?: string) => {
           setValues(newValues);
           mergeState({
