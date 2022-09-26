@@ -204,9 +204,9 @@ const KubectlApplyFormProps = Type.Object({
     category: PRESET_PROPERTY_CATEGORY.Behavior,
   }),
   submitting: Type.Boolean({
-    title: 'Submitting',
-    category: PRESET_PROPERTY_CATEGORY.Behavior
-  })
+    title: "Submitting",
+    category: PRESET_PROPERTY_CATEGORY.Behavior,
+  }),
 });
 
 const KubectlApplyFormState = Type.Object({
@@ -258,7 +258,14 @@ export const KubectlApplyForm = implementRuntimeComponent({
       },
     },
     styleSlots: ["content"],
-    events: ["onChange", "onNextStep", "onSubmit", "onCancel"],
+    events: [
+      "onChange",
+      "onNextStep",
+      "onSubmit",
+      "onCancel",
+      "onApplySuccess",
+      "onApplyFail",
+    ],
   },
 })(
   ({
@@ -300,14 +307,19 @@ export const KubectlApplyForm = implementRuntimeComponent({
           });
           setStep(step + 1);
         },
-        apply() {
-          const sdk = new KubeSdk({
-            basePath,
-          });
-          sdk.applyYaml(values);
+        async apply() {
+          try {
+            const sdk = new KubeSdk({
+              basePath,
+            });
+            await sdk.applyYaml(values);
+            callbackMap?.onApplySuccess?.();
+          } catch {
+            callbackMap?.onApplyFail?.();
+          }
         },
       });
-    }, [step, subscribeMethods, mergeState, values]);
+    }, [step, subscribeMethods, mergeState, values, callbackMap]);
 
     return (
       <_KubectlApplyForm
