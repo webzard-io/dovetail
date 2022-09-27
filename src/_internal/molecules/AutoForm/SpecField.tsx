@@ -2,7 +2,7 @@ import React from "react";
 import isEmpty from "lodash/isEmpty";
 // TODO: use kit context when I have time:)
 import { Form, Col } from "antd";
-import { css, cx } from "@emotion/css";
+import { css, cx } from "@linaria/core";
 import { JSONSchema7 } from "json-schema";
 import { WidgetProps } from "./widget";
 import UnsupportedField from "./UnsupportedField";
