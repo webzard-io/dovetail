@@ -62,7 +62,7 @@ export type KubectlApplyFormProps = {
   step: number;
   setStep: (step: number) => void;
   getSlot?: (
-    f: Field,
+    f: Field & { index?: number; },
     fallback: React.ReactNode,
     slotKey: string
   ) => React.ReactNode;

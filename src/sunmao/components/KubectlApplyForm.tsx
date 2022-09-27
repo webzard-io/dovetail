@@ -12,6 +12,7 @@ import {
   FORM_WIDGET_OPTIONS_MAP,
 } from "../../_internal/molecules/form";
 import { KubeApi, KubeSdk } from "../../_internal/k8s-api-client/kube-api";
+import { generateSlotChildren } from "../utils/slot";
 
 const UiConfigFieldSpecProperties = {
   path: Type.String({
@@ -275,6 +276,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
     error,
     errorDetail,
     submitting,
+    app,
+    component,
+    services,
     mergeState,
     slotsElements,
     subscribeMethods,
@@ -353,13 +357,19 @@ export const KubectlApplyForm = implementRuntimeComponent({
         onSubmit={callbackMap?.onSubmit}
         onCancel={callbackMap?.onCancel}
         getSlot={(f, fallback, slotKey) => {
-          return (
-            slotsElements.field?.(
-              (f as Static<typeof UiConfigFieldSpec>) || {},
-              fallback,
-              slotKey
-            ) || fallback
-          );
+          return generateSlotChildren(
+            { app, component, services, slotsElements, slot: "field", slotKey, fallback },
+            {
+              generateId(child) {
+                return f.index !== undefined
+                  ? `${child.id}_${f.index}`
+                  : child.id;
+              },
+              generateProps() {
+                return (f as Static<typeof UiConfigFieldSpec>) || {};
+              },
+            }
+          ) || fallback;
         }}
       />
     );
