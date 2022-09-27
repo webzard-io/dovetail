@@ -163,6 +163,7 @@ const KubectlApplyFormDesignWidget: React.FC<
   const [jsonEditorMode, setJsonEditorMode] = useState(false);
   const [uiConfig, setUiConfig] = useState(formConfig.current.uiConfig);
   const basePath = useProperty({
+    services,
     component,
     path,
     key: "basePath",

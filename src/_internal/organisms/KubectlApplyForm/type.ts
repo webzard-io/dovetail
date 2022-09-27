@@ -14,6 +14,7 @@ export type Field = {
   componentId?: string;
   col?: number;
   splitLine?: boolean;
+  defaultValue?: any;
 };
 
 export type TransformedField = Field & { dataPath: string; value: any };

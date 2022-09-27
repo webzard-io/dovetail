@@ -51,7 +51,7 @@ const FormItemStyle = css`
     margin-bottom: 0;
   }
 
-  .dovetail-ant-form-item-explain {
+  &.dovetail-ant-form-item:not(.dovetail-ant-form-item-has-error) .dovetail-ant-form-item-explain {
     display: none;
   }
 
@@ -252,7 +252,8 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
             : field?.error || error
         }
       >
-        {slot?.(field, FieldComponent, `filed_${path}`) || FieldComponent}
+        {slot?.({ ...field, index }, FieldComponent, `filed_${path}`) ||
+          FieldComponent}
       </DefaultTemplate>
     </Col>
   );

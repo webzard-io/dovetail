@@ -3,12 +3,13 @@ import { ComponentSchema } from "@sunmao-ui/core";
 import { get } from "lodash";
 
 type Props = {
+  services: any;
   component: ComponentSchema;
   path: string[];
   key: string;
 };
 
-function useProperty({ component, path, key }: Props) {
+function useProperty({ services, component, path, key }: Props) {
   const property = useMemo(() => {
     const properties = [
       component.properties,
@@ -19,7 +20,7 @@ function useProperty({ component, path, key }: Props) {
       "") as string;
   }, [component, path]);
 
-  return property;
+  return services.stateManager.deepEval(property);
 }
 
 export default useProperty;

@@ -55,13 +55,14 @@ export type KubectlApplyFormProps = {
     cancelText: string;
   };
   values: any[];
+  defaultValues: any[];
   error?: string;
   errorDetail?: string;
   submitting?: boolean;
   step: number;
   setStep: (step: number) => void;
   getSlot?: (
-    f: Field,
+    f: Field & { index?: number; },
     fallback: React.ReactNode,
     slotKey: string
   ) => React.ReactNode;
@@ -81,6 +82,7 @@ const KubectlApplyForm = React.forwardRef<
       schemas = [],
       uiConfig,
       values,
+      defaultValues,
       error,
       errorDetail,
       submitting,
@@ -142,7 +144,7 @@ const KubectlApplyForm = React.forwardRef<
               <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
                 <div className="left"></div>
                 <Row gutter={[24, 16]} className="middle">
-                  {transformFields(layout.fields, values).map((f) => {
+                  {transformFields(layout.fields, values, defaultValues).map((f) => {
                     const { component } = getComponent(f);
                     return component;
                   })}
@@ -210,7 +212,7 @@ const KubectlApplyForm = React.forwardRef<
                 {layout.tabs.map((t, idx) => {
                   return (
                     <TabPanel key={t.title + idx}>
-                      {transformFields(t.fields, values).map((f) => {
+                      {transformFields(t.fields, values, defaultValues).map((f) => {
                         const { component } = getComponent(f);
                         return component;
                       })}
@@ -258,7 +260,7 @@ const KubectlApplyForm = React.forwardRef<
                   </Steps>
                 </div>
                 <Row gutter={[24, 16]} className="middle">
-                  {transformFields(layout.steps[step].fields, values).map(
+                  {transformFields(layout.steps[step].fields, values, defaultValues).map(
                     (f) => {
                       const { component } = getComponent(f);
 

@@ -117,7 +117,10 @@ const ArrayItems = (props: Props) => {
             className={AddedButtonStyle}
             size="medium"
             onClick={() => {
-              onChange(value.concat(generateFromSchema(itemSpec)));
+              onChange(
+                props.field?.defaultValue?.[0] ??
+                  value.concat(generateFromSchema(itemSpec))
+              );
             }}
           >
             {widgetOptions.addedButtonText || "添加"}

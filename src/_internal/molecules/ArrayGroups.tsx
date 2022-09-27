@@ -107,7 +107,7 @@ const ArrayGroups = (props: Props) => {
             size="medium"
             onClick={() => {
               onChange(
-                value.concat(generateFromSchema(itemSpec as JSONSchema7))
+                value.concat(props.field?.defaultValue?.[0] ?? generateFromSchema(itemSpec as JSONSchema7))
               );
             }}
           >

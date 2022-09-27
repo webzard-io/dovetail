@@ -12,6 +12,7 @@ import {
   FORM_WIDGET_OPTIONS_MAP,
 } from "../../_internal/molecules/form";
 import { KubeApi, KubeSdk } from "../../_internal/k8s-api-client/kube-api";
+import { generateSlotChildren } from "../utils/slot";
 
 const UiConfigFieldSpecProperties = {
   path: Type.String({
@@ -204,9 +205,9 @@ const KubectlApplyFormProps = Type.Object({
     category: PRESET_PROPERTY_CATEGORY.Behavior,
   }),
   submitting: Type.Boolean({
-    title: 'Submitting',
-    category: PRESET_PROPERTY_CATEGORY.Behavior
-  })
+    title: "Submitting",
+    category: PRESET_PROPERTY_CATEGORY.Behavior,
+  }),
 });
 
 const KubectlApplyFormState = Type.Object({
@@ -258,7 +259,14 @@ export const KubectlApplyForm = implementRuntimeComponent({
       },
     },
     styleSlots: ["content"],
-    events: ["onChange", "onNextStep", "onSubmit", "onCancel"],
+    events: [
+      "onChange",
+      "onNextStep",
+      "onSubmit",
+      "onCancel",
+      "onApplySuccess",
+      "onApplyFail",
+    ],
   },
 })(
   ({
@@ -268,6 +276,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
     error,
     errorDetail,
     submitting,
+    app,
+    component,
+    services,
     mergeState,
     slotsElements,
     subscribeMethods,
@@ -300,14 +311,19 @@ export const KubectlApplyForm = implementRuntimeComponent({
           });
           setStep(step + 1);
         },
-        apply() {
-          const sdk = new KubeSdk({
-            basePath,
-          });
-          sdk.applyYaml(values);
+        async apply() {
+          try {
+            const sdk = new KubeSdk({
+              basePath,
+            });
+            await sdk.applyYaml(values);
+            callbackMap?.onApplySuccess?.();
+          } catch {
+            callbackMap?.onApplyFail?.();
+          }
         },
       });
-    }, [step, subscribeMethods, mergeState, values]);
+    }, [step, subscribeMethods, mergeState, values, callbackMap]);
 
     return (
       <_KubectlApplyForm
@@ -328,6 +344,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
           });
           setStep(step);
         }}
+        defaultValues={formConfig.defaultValues}
         onChange={(newValues: any, key?: string) => {
           setValues(newValues);
           mergeState({
@@ -340,13 +357,19 @@ export const KubectlApplyForm = implementRuntimeComponent({
         onSubmit={callbackMap?.onSubmit}
         onCancel={callbackMap?.onCancel}
         getSlot={(f, fallback, slotKey) => {
-          return (
-            slotsElements.field?.(
-              (f as Static<typeof UiConfigFieldSpec>) || {},
-              fallback,
-              slotKey
-            ) || fallback
-          );
+          return generateSlotChildren(
+            { app, component, services, slotsElements, slot: "field", slotKey, fallback },
+            {
+              generateId(child) {
+                return f.index !== undefined
+                  ? `${child.id}_${f.index}`
+                  : child.id;
+              },
+              generateProps() {
+                return (f as Static<typeof UiConfigFieldSpec>) || {};
+              },
+            }
+          ) || fallback;
         }}
       />
     );
