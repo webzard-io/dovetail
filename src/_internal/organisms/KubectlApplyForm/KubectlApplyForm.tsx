@@ -114,6 +114,7 @@ const KubectlApplyForm = React.forwardRef<
         <SpecField
           key={f.dataPath || f.key}
           field={f}
+          error={f.error}
           widget={f.widget}
           widgetOptions={f.widgetOptions}
           spec={{ ...spec, title: f.label }}

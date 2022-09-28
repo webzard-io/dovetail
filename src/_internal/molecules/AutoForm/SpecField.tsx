@@ -51,12 +51,14 @@ const FormItemStyle = css`
     margin-bottom: 0;
   }
 
-  &.dovetail-ant-form-item:not(.dovetail-ant-form-item-has-error) .dovetail-ant-form-item-explain {
+  &.dovetail-ant-form-item
+    > .dovetail-ant-form-item-control
+    > .dovetail-ant-form-item-explain {
     display: none;
   }
 
   &.dovetail-ant-form-item-has-error {
-    & .dovetail-ant-form-item-explain {
+    & > .dovetail-ant-form-item-control > .dovetail-ant-form-item-explain {
       display: block;
     }
   }
@@ -212,6 +214,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   const FieldComponent = (
     <Component
       widgetOptions={widgetOptions}
+      error={typeof error !== 'string' ? error : undefined}
       field={field}
       spec={spec}
       value={value}
@@ -244,13 +247,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
         displayLabel={displayLabel}
         displayDescription={displayDescription}
         spec={spec}
-        error={
-          field?.error instanceof Array
-            ? index !== undefined
-              ? field.error[index]
-              : ""
-            : field?.error || error
-        }
+        error={typeof error === "string" ? error : ""}
       >
         {slot?.({ ...field, index }, FieldComponent, `filed_${path}`) ||
           FieldComponent}
