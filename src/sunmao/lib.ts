@@ -16,9 +16,10 @@ import { CodeEditor } from "./components/CodeEditor";
 import { KubectlApplyForm } from "./components/KubectlApplyForm";
 import { KubectlGetDetail } from "./components/KubectlGetDetail";
 import { KubectlGetList } from "./components/KubectlGetList";
+import { ConfirmModal } from "./components/ConfirmModal";
 
 import SyncKubectlApplyForm from "./traits/SyncKubectlApplyForm";
-import SyncKubectlApplyFormV2 from './traits/v2/SyncKubectlApplyForm';
+import SyncKubectlApplyFormV2 from "./traits/v2/SyncKubectlApplyForm";
 import KubeAPITrait from "./traits/KubeAPITrait";
 
 const MessageParams = Type.Object({
@@ -50,6 +51,7 @@ export const libs: SunmaoLib[] = [
       KubectlGetDetail,
       KubectlGetList,
       FullscreenModal,
+      ConfirmModal
     ],
     utilMethods: [
       () =>

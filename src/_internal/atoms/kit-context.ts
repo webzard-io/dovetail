@@ -17,6 +17,7 @@ type RefOnly = {
 };
 
 export const buttonTypes = [
+  "danger",
   "ordinary",
   "default",
   "primary",

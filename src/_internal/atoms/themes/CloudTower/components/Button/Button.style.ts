@@ -84,6 +84,14 @@ export const ButtonStyle = css`
     }
   }
 
+  &.dovetail-ant-btn.dovetail-ant-btn-danger {
+    .anticon {
+      color: var(--color, inherit);
+      padding-right: 0;
+      margin-right: 8px;
+    }
+  }
+
   &.dovetail-ant-btn-link {
     &[disabled] {
       color: $text-light-general;
