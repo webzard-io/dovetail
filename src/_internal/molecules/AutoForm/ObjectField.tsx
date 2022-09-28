@@ -6,9 +6,10 @@ import { getJsonSchemaByPath } from "src/_internal/utils/schema";
 import { immutableSet } from "../../../editor/utils/object";
 import { get } from "lodash";
 import type { Field } from "../../organisms/KubectlApplyForm/type";
+import { isObject } from "lodash";
 
 export function resolveSubFields(props: WidgetProps) {
-  const { field, spec, value, path, level, onChange } = props;
+  const { field, spec, value, path, level, error, onChange } = props;
   const fields: Field[] = field?.fields || [];
   const properties = Object.keys(spec.properties || {});
 
@@ -18,10 +19,18 @@ export function resolveSubFields(props: WidgetProps) {
       if (!subField.path) return null;
 
       const subSpec = getJsonSchemaByPath(spec, subField.path) || {};
+      const errorInfo = subField?.error || error;
 
       return (
         <SpecField
           {...props}
+          error={
+            errorInfo &&
+            isObject(errorInfo) &&
+            subField?.key
+              ? (errorInfo[subField.key as keyof typeof errorInfo]) as string
+              : errorInfo
+          }
           field={subField}
           widget={subField.widget}
           widgetOptions={subField.widgetOptions}
@@ -64,10 +73,13 @@ export function resolveSubFields(props: WidgetProps) {
           value={value?.[name]}
           widgetOptions={{}}
           onChange={(newValue, key) => {
-            onChange({
-              ...(value || {}),
-              [name]: newValue,
-            }, key);
+            onChange(
+              {
+                ...(value || {}),
+                [name]: newValue,
+              },
+              key
+            );
           }}
         />
       );

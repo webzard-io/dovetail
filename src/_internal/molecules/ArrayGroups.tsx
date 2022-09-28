@@ -55,6 +55,7 @@ const ArrayGroups = (props: Props) => {
     onChange,
   } = props;
   const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
+  const errorInfo = props.field?.error || props.error;
 
   return (
     <>
@@ -67,11 +68,7 @@ const ArrayGroups = (props: Props) => {
             spec={itemSpec as JSONSchema7}
             subKey={`${props.field?.key}-${itemIndex}`}
             index={itemIndex}
-            error={
-              props.field?.error instanceof Array
-                ? props.field.error[itemIndex]
-                : ""
-            }
+            error={errorInfo instanceof Array ? errorInfo[itemIndex] : ""}
             widgetOptions={{
               ...widgetOptions,
               title: widgetOptions?.title
@@ -107,7 +104,10 @@ const ArrayGroups = (props: Props) => {
             size="medium"
             onClick={() => {
               onChange(
-                value.concat(props.field?.defaultValue?.[0] ?? generateFromSchema(itemSpec as JSONSchema7))
+                value.concat(
+                  props.field?.defaultValue?.[0] ??
+                    generateFromSchema(itemSpec as JSONSchema7)
+                )
               );
             }}
           >

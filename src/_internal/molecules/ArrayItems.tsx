@@ -61,6 +61,7 @@ const ArrayItems = (props: Props) => {
     Array.isArray(spec.items) ? spec.items[0] : spec.items
   ) as JSONSchema7;
   const kit = useContext(KitContext);
+  const errorInfo = props.field?.error || props.error;
 
   return (
     <>
@@ -70,11 +71,7 @@ const ArrayItems = (props: Props) => {
             <SpecField
               {...props}
               field={undefined}
-              error={
-                props.field?.error instanceof Array
-                  ? props.field.error[itemIndex]
-                  : ""
-              }
+              error={errorInfo instanceof Array ? errorInfo[itemIndex] : ""}
               widget="default"
               value={itemValue}
               subKey={`${props.field?.key}-${itemIndex}`}

@@ -7,7 +7,7 @@ export type Field = {
   isDisplayLabel: boolean;
   helperText: string;
   sectionTitle: string;
-  error: string | string[];
+  error: string | string[] | Record<string, string>;
   condition?: boolean;
   widget?: string;
   widgetOptions?: Record<string, any>;

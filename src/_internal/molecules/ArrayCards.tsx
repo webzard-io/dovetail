@@ -53,6 +53,7 @@ const ArrayCards = (props: Props) => {
     onChange,
   } = props;
   const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
+  const errorInfo = props.field?.error || props.error;
 
   return (
     <>
@@ -65,11 +66,7 @@ const ArrayCards = (props: Props) => {
             spec={itemSpec as JSONSchema7}
             subKey={`${props.field?.key}-${itemIndex}`}
             index={itemIndex}
-            error={
-              props.field?.error instanceof Array
-                ? props.field.error[itemIndex]
-                : ""
-            }
+            error={errorInfo instanceof Array ? errorInfo[itemIndex] : ""}
             widgetOptions={{
               ...widgetOptions,
               title: widgetOptions?.title
