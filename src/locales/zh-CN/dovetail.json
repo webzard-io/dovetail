@@ -70,5 +70,7 @@
   "remove_favorite_function": "移出常用功能",
   "obtain_data_error": "获取数据时遇到问题",
   "retry": "重试",
-  "empty": "暂无数据"
+  "empty": "暂无数据",
+  "cancel": "取消",
+  "delete": "删除"
 }
