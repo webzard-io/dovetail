@@ -37,7 +37,7 @@ export function resolveSubFields(props: WidgetProps) {
           key={subField.path}
           spec={{
             ...subSpec,
-            title: subField.label || subSpec.title || subField.path,
+            title: subField.label,
           }}
           path={path.concat(`.${subField.path}`)}
           level={level + 1}

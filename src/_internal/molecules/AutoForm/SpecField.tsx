@@ -25,6 +25,7 @@ type TemplateProps = {
   hidden?: boolean;
   required?: boolean;
   displayLabel?: boolean;
+  labelWidth?: number;
   displayDescription?: boolean;
   spec: WidgetProps["spec"];
   children?: React.ReactNode;
@@ -106,6 +107,7 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
     hidden,
     required,
     displayLabel,
+    labelWidth,
     displayDescription,
     spec,
   } = props;
@@ -121,7 +123,7 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
       labelAlign="left"
       label={
         displayLabel ? (
-          <span className={cx(Typo.Label.l3_regular_title, FormItemLabelStyle)}>
+          <span style={{ width: labelWidth || 108 + 'px' }} className={cx(Typo.Label.l3_regular_title, FormItemLabelStyle)}>
             {label}
           </span>
         ) : (
@@ -244,6 +246,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
         label={label}
         layout={field?.layout}
         description={field?.helperText}
+        labelWidth={field?.labelWidth}
         displayLabel={displayLabel}
         displayDescription={displayDescription}
         spec={spec}
