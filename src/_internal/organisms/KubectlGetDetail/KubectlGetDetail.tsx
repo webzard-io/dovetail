@@ -24,6 +24,8 @@ const RowStyle = css`
   }
 `;
 const InfoListBlock = styled.div`
+  padding: 24px 32px;
+
   &:not(:last-child) {
     box-shadow: inset 0px -1px 0px rgba(225, 230, 241, 0.6);
   }
@@ -43,7 +45,7 @@ const LoadingWrapper = styled.div`
 `;
 const CardStyle = css`
   .card-body {
-    padding: 24px 32px;
+    padding: 0;
   }
 `;
 
