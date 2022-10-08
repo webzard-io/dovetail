@@ -24,6 +24,9 @@ const UiConfigFieldSpecProperties = {
     description: "Use for the `latestChangedKey` state",
   }),
   label: Type.String({ title: "Label" }),
+  labelWidth: Type.Number({
+    title: 'Label Width',
+  }),
   isDisplayLabel: Type.Boolean({
     title: "Is display label",
   }),

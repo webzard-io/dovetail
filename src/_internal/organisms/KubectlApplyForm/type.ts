@@ -5,6 +5,7 @@ export type Field = {
   label: string;
   layout: "horizontal" | "vertical";
   isDisplayLabel: boolean;
+  labelWidth?: number;
   helperText: string;
   sectionTitle: string;
   error: string | string[] | Record<string, string>;
