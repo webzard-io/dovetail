@@ -98,8 +98,10 @@ const ArrayCards = (props: Props) => {
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>
           ) : null}
           <kit.Button
+            prefixIcon="1-plus-add-create-new-16-gray"
+            hoverPrefixIcon="1-plus-add-create-new-16-blue"
             className={AddedButtonStyle}
-            size="medium"
+            size="small"
             onClick={() => {
               onChange(
                 value.concat(

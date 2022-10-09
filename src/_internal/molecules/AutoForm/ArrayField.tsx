@@ -4,7 +4,7 @@ import { WidgetProps } from "./widget";
 import { KitContext } from "../../atoms/kit-context";
 import { generateFromSchema } from "../../utils/schema";
 import ArrayGroups from "../ArrayGroups";
-import ArrayItems from '../ArrayItems';
+import ArrayItems from "../ArrayItems";
 
 const ArrayField: React.FC<WidgetProps> = (props) => {
   const { spec, value = [], path, level, widgetOptions, onChange } = props;
@@ -42,9 +42,15 @@ export const AddToArrayField: React.FC<WidgetProps> = (props) => {
   return (
     <div>
       <kit.Button
-        size="medium"
+        prefixIcon="1-plus-add-create-new-16-gray"
+        hoverPrefixIcon="1-plus-add-create-new-16-blue"
+        size="small"
         onClick={() => {
-          onChange(value.concat(field?.defaultValue?.[0] || generateFromSchema(itemSpec)));
+          onChange(
+            value.concat(
+              field?.defaultValue?.[0] || generateFromSchema(itemSpec)
+            )
+          );
         }}
       >
         添加

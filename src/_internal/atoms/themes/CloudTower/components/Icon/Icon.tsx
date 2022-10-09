@@ -15,6 +15,8 @@ import StatusUnknownQuestionmark16Red from '../../images/1-status-unknown-questi
 import ExclamationErrorCircleFill16Red from '../../images/1-exclamation-error-circle-fill-16-red.svg';
 import XmarkRemove16Secondary from '../../images/1-xmark-remove-16-secondary.svg';
 import CaretTriangleDown16 from '../../images/1-caret-triangle-down-16.svg';
+import PlusAddCreateNew16Gray from '../../images/1-plus-add-create-new-16-gray.svg';
+import PlusAddCreateNew16Blue from '../../images/1-plus-add-create-new-16-blue.svg';
 
 const ICON_MAP = {
   '1-arrow-chevron-down-16-blue': ArrowChevronDown16Blue,
@@ -29,7 +31,9 @@ const ICON_MAP = {
   '1-status-unknown-questionmark-16-red': StatusUnknownQuestionmark16Red,
   '1-xmark-remove-16-secondary': XmarkRemove16Secondary,
   '1-exclamation-error-circle-fill-16-red': ExclamationErrorCircleFill16Red,
-  '1-caret-triangle-down-16': CaretTriangleDown16
+  '1-caret-triangle-down-16': CaretTriangleDown16,
+  '1-plus-add-create-new-16-gray': PlusAddCreateNew16Gray,
+  '1-plus-add-create-new-16-blue': PlusAddCreateNew16Blue
 };
 
 export type IconTypes = keyof typeof ICON_MAP;
