@@ -38,6 +38,7 @@ export type ButtonProps = {
   onMouseDown?: (e: React.MouseEvent<HTMLElement>) => void;
   className?: string;
   disabled?: boolean;
+  hoverPrefixIcon?: string;
   prefixIcon?: string;
   suffixIcon?: string;
 } & RefAndChildren;
