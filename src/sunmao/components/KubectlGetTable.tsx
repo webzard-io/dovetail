@@ -188,6 +188,8 @@ const KubectlGetTableProps = Type.Object({
 
 const KubectlGetTableState = Type.Object({
   items: Type.Array(Type.Any()),
+  loading: Type.Boolean(),
+  error: Type.Any(),
   activeItem: Type.Any(),
   selectedItems: Type.Array(Type.Any()),
   columnSortOrder: Type.Record(Type.String(), Type.String()),
@@ -373,6 +375,8 @@ export const KubectlGetTable = implementRuntimeComponent({
     useEffect(() => {
       mergeState({
         items: response.data.items,
+        loading: response.loading,
+        error: response.error
       });
     }, [response]);
     useEffect(() => {
