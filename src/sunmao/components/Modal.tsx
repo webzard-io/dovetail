@@ -50,7 +50,7 @@ export const Modal = implementRuntimeComponent({
       },
     },
     styleSlots: ["modal"],
-    events: ["onClose"],
+    events: ["onOpen", "onClose"],
   },
 })(
   ({
@@ -86,6 +86,11 @@ export const Modal = implementRuntimeComponent({
       setVisible(false);
       callbackMap?.onClose();
     }, [callbackMap?.onClose]);
+    useEffect(()=> {
+      if (visible) {
+        callbackMap?.onOpen?.();
+      }
+    }, [visible, callbackMap]);
 
     return (
       <kit.Modal

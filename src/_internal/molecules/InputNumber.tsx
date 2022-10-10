@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useContext } from "react";
+import React, { useCallback, useState, useContext, useEffect } from "react";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
 import { KitContext } from "../atoms/kit-context";
@@ -15,6 +15,7 @@ type Props = WidgetProps<number, Static<typeof OptionsSpec>>;
 const InputNumber = (props: Props) => {
   const kit = useContext(KitContext);
   const [stringValue, setStringValue] = useState(props.value);
+
   const onChange = useCallback(
     (event, newValue) => {
       setStringValue(newValue);
@@ -33,6 +34,10 @@ const InputNumber = (props: Props) => {
       );
     }
   }, [props.onChange, stringValue]);
+
+  useEffect(() => {
+    setStringValue(props.value);
+  }, [props.value]);
 
   return (
     <kit.Input

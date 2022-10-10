@@ -217,6 +217,8 @@ const KubectlApplyFormState = Type.Object({
   value: Type.Any(),
   latestChangedKey: Type.String(),
   step: Type.Number(),
+  loading: Type.Boolean(),
+  error: Type.Any(),
 });
 
 export const KubectlApplyForm = implementRuntimeComponent({
@@ -319,9 +321,19 @@ export const KubectlApplyForm = implementRuntimeComponent({
             const sdk = new KubeSdk({
               basePath,
             });
+            mergeState({
+              loading: true
+            });
             await sdk.applyYaml(values);
+            mergeState({
+              loading: false
+            });
             callbackMap?.onApplySuccess?.();
-          } catch {
+          } catch(error) {
+            mergeState({
+              loading: false,
+              error
+            });
             callbackMap?.onApplyFail?.();
           }
         },
