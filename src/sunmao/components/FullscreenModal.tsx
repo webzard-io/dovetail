@@ -3,7 +3,7 @@ import {
   DIALOG_CONTAINER_ID,
   implementRuntimeComponent,
   StringUnion,
-  PRESET_PROPERTY_CATEGORY
+  PRESET_PROPERTY_CATEGORY,
 } from "@sunmao-ui/runtime";
 import { css } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
@@ -11,36 +11,36 @@ import { KitContext } from "../../_internal/atoms/kit-context";
 
 const ModalProps = Type.Object({
   width: Type.Number({
-    title: 'Width',
-    category: PRESET_PROPERTY_CATEGORY.Basic
+    title: "Width",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
   fullscreen: Type.Boolean({
-    title: 'Fullscreen',
-    category: PRESET_PROPERTY_CATEGORY.Basic
+    title: "Fullscreen",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
   size: StringUnion(["normal", "medium", "fullscreen"], {
-    title: 'Size',
-    category: PRESET_PROPERTY_CATEGORY.Basic
+    title: "Size",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
   confirmText: Type.String({
-    title: 'Confirm text',
-    category: PRESET_PROPERTY_CATEGORY.Basic
+    title: "Confirm text",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
   confirmLoading: Type.Boolean({
-    title: 'Confirm loading',
-    category: PRESET_PROPERTY_CATEGORY.Basic
+    title: "Confirm loading",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
   defaultVisible: Type.Boolean({
-    title: 'Default visible',
-    category: PRESET_PROPERTY_CATEGORY.Basic
+    title: "Default visible",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
   maskClosable: Type.Boolean({
-    title: 'Mask closable',
-    category: PRESET_PROPERTY_CATEGORY.Behavior
+    title: "Mask closable",
+    category: PRESET_PROPERTY_CATEGORY.Behavior,
   }),
   showFooter: Type.Boolean({
-    title: 'Show footer',
-    category: PRESET_PROPERTY_CATEGORY.Behavior
+    title: "Show footer",
+    category: PRESET_PROPERTY_CATEGORY.Behavior,
   }),
 });
 
@@ -79,7 +79,7 @@ export const Modal = implementRuntimeComponent({
       },
     },
     styleSlots: ["modal"],
-    events: ["onClose", "onConfirm"],
+    events: ["onOpen", "onClose", "onConfirm"],
   },
 })(
   ({
@@ -114,6 +114,11 @@ export const Modal = implementRuntimeComponent({
         },
       });
     }, []);
+    useEffect(() => {
+      if (visible) {
+        callbackMap?.onOpen?.();
+      }
+    }, [visible, callbackMap]);
     const onClose = useCallback(() => {
       setVisible(false);
       callbackMap?.onClose();
@@ -130,7 +135,9 @@ export const Modal = implementRuntimeComponent({
         getContainer={() =>
           document.getElementById(DIALOG_CONTAINER_ID) || document.body
         }
-        footer={showFooter ? slotsElements.footer?.({}, undefined) || undefined : null}
+        footer={
+          showFooter ? slotsElements.footer?.({}, undefined) || undefined : null
+        }
         confirmLoading={confirmLoading}
         okText={confirmText}
         fullscreen={fullscreen}
