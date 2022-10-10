@@ -11,7 +11,6 @@ import { generateFromSchema } from "../utils/schema";
 import { JSONSchema7 } from "json-schema";
 
 const AddedButtonStyle = css`
-  margin-bottom: 16px;
 `;
 
 export const OptionsSpec = Type.Object({

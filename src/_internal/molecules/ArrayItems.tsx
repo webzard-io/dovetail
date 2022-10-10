@@ -19,7 +19,6 @@ const Wrapper = styled.div`
 `;
 const CloseButtonStyle = css``;
 const AddedButtonStyle = css`
-  margin-bottom: 16px;
 `;
 
 export const OptionsSpec = Type.Object({
