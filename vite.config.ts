@@ -40,7 +40,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
+    port: 8080,
     proxy: {
       "/proxy-k8s": getProxyConfig(),
       "/api": {
