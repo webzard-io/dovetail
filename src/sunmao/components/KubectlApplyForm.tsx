@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { generateFromSchema } from "../../_internal/utils/schema";
 import merge from "lodash/merge";
 import set from "lodash/set";
+import cloneDeep from 'lodash/cloneDeep';
 import _KubectlApplyForm from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 import { css } from "@emotion/css";
 import {
@@ -303,7 +304,8 @@ export const KubectlApplyForm = implementRuntimeComponent({
     useEffect(() => {
       subscribeMethods({
         setField({ fieldPath, value: fieldValue }) {
-          const newValues = set(values, fieldPath, fieldValue);
+          const finalFieldValue = fieldValue && typeof fieldValue === 'object' ? cloneDeep(fieldValue) : fieldValue;
+          const newValues = set(values, fieldPath, finalFieldValue);
 
           mergeState({
             value: newValues,
