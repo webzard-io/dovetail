@@ -54,6 +54,20 @@ export type TableProps = {
     ellipsis?: boolean;
     render?: (val: any, record: any, index: number) => React.ReactNode;
   }[];
+  components?: {
+    table?: (props: any) => any;
+    header?: {
+      wrapper?: (props: any) => any;
+      row?: (props: any) => any;
+      cell?: (props: any) => any;
+    };
+    body?: {
+      wrapper?: (props: any) => any;
+      row?: (props: any) => any;
+      cell?: (props: any) => any;
+    };
+  };
+  wrapper: React.MutableRefObject<any>;
   loading?: boolean;
   rowKey: string | ((record: any, index?: number) => string);
   customizable?: boolean;

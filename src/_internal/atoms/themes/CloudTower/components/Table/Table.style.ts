@@ -281,6 +281,12 @@ export const TableStyle = css`
           }
         }
 
+        &.no-after {
+          &:after {
+            display: none;
+          }
+        }
+
         &.dovetail-ant-table-cell-ellipsis.dovetail-ant-table-column-has-sorters
           .dovetail-ant-table-column-sorters {
           width: 100%;
