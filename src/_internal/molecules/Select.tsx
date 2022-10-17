@@ -25,7 +25,7 @@ const Select = (props: Props) => {
   return (
     <kit.Select
       disabled={disabled}
-      value={String(value || "")}
+      value={(value || "") as any}
       onChange={(value) =>
         onChange(
           value,
