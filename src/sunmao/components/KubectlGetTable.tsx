@@ -11,8 +11,56 @@ import BaseKubectlGetTable, {
   emptyData,
 } from "../../_internal/organisms/KubectlGetTable";
 import { renderWidget } from "../utils/widget";
-import { css } from "@emotion/css";
+import { css, cx } from "@emotion/css";
 import { get } from "lodash";
+
+const WrapperStyle = css`
+  &.table-wrapper.sunmao-cloudtower-table {
+    border-top: 0;
+  }
+
+  .dovetail-ant-table .dovetail-ant-table-tbody .dovetail-ant-table-row.active-row td:first-child {
+    border: 2px solid rgb(206, 230, 255);
+    border-right: 0px;
+  }
+
+  .dovetail-ant-table .dovetail-ant-table-tbody .dovetail-ant-table-row.active-row td:last-child {
+    border: 2px solid rgb(206, 230, 255);
+    border-left: 0px;
+  }
+
+  .dovetail-ant-table .dovetail-ant-table-tbody .dovetail-ant-table-row.active-row td,
+  .dovetail-ant-table .dovetail-ant-table-tbody .dovetail-ant-table-row:hover + tr.active-row td {
+    border: 2px solid rgb(206, 230, 255);
+    border-right: 0px;
+    border-left: 0px;
+  }
+
+  .dovetail-ant-table-cell-fix-right,
+  .dovetail-ant-table-cell-fix-right.cell__action_ {
+    right: -2px !important;
+  }
+
+  .dovetail-ant-table .dovetail-ant-table-tbody .dovetail-ant-table-row.active-row td,
+  .dovetail-ant-table
+    .dovetail-ant-table-tbody
+    .dovetail-ant-table-row.active-row
+    td.dovetail-ant-table-cell-fix-right,
+  .dovetail-ant-table
+    .dovetail-ant-table-tbody
+    .dovetail-ant-table-row.active-row:hover
+    td.dovetail-ant-table-cell-fix-right {
+    background: rgb(229, 242, 255);
+
+    &:hover {
+      background: rgb(229, 242, 255);
+    }
+
+    .dovetail-ant-table-cell-content {
+      background: transparent;
+    }
+  }
+`;
 
 const ColumnSpec = Type.Object(
   {
@@ -158,6 +206,10 @@ const KubectlGetTableProps = Type.Object({
     description: "The text display when the data is empty.",
     category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
+  canActive: Type.Boolean({
+    category: PRESET_PROPERTY_CATEGORY.Behavior,
+    title: "Can active",
+  }),
   resizable: Type.Boolean({
     category: PRESET_PROPERTY_CATEGORY.Behavior,
     title: "Resizable",
@@ -232,6 +284,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           filters: [],
         },
       ],
+      canActive: true,
       defaultSize: 10,
       empty: "No Data.",
     },
@@ -245,6 +298,9 @@ export const KubectlGetTable = implementRuntimeComponent({
     methods: {
       setSelectedRows: Type.Object({
         keys: Type.Array(Type.String()),
+      }),
+      setActive: Type.Object({
+        activeKey: Type.String(),
       }),
     },
     slots: {
@@ -280,6 +336,7 @@ export const KubectlGetTable = implementRuntimeComponent({
     customizableKey,
     defaultSize,
     empty,
+    canActive,
     resizable,
     enableRowSelection,
     scroll,
@@ -334,8 +391,10 @@ export const KubectlGetTable = implementRuntimeComponent({
     );
     const onActive = useCallback(
       (key: string) => {
-        setActiveKey(key);
-        callbackMap?.onActive();
+        if (canActive) {
+          setActiveKey(key);
+          callbackMap?.onActive();
+        }
       },
       [setActiveKey, callbackMap]
     );
@@ -370,13 +429,16 @@ export const KubectlGetTable = implementRuntimeComponent({
             selectedItems: rows,
           });
         },
+        setActive({ activeKey }) {
+          setActiveKey(activeKey);
+        },
       });
     }, [subscribeMethods, mergeState, response, selectedKeys, setSelectedKeys]);
     useEffect(() => {
       mergeState({
         items: response.data.items,
         loading: response.loading,
-        error: response.error
+        error: response.error,
       });
     }, [response]);
     useEffect(() => {
@@ -404,7 +466,10 @@ export const KubectlGetTable = implementRuntimeComponent({
     }, []);
 
     return (
-      <div ref={elementRef} className={css(customStyle?.content)}>
+      <div
+        ref={elementRef}
+        className={cx(WrapperStyle, css(customStyle?.content))}
+      >
         <BaseKubectlGetTable
           response={response}
           basePath={basePath}
@@ -486,6 +551,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           bordered={bordered}
           resizable={resizable}
           selectedKeys={selectedKeys}
+          wrapper={elementRef!}
           onSelect={enableRowSelection ? onSelectChange : undefined}
           onActive={onActive}
           onSorterChange={onSorterChange}

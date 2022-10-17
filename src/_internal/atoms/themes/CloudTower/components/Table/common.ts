@@ -12,3 +12,10 @@ export function arrayMove<T>(
   cloneArr.splice(toIndex, 0, element);
   return cloneArr;
 }
+
+export const BLANK_COLUMN = {
+  title: '',
+  key: 'blankColumn',
+  dataIndex: '',
+  className: 'is-blank',
+};

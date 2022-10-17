@@ -4,6 +4,7 @@ import React, {
   useState,
   useMemo,
   useCallback,
+  useRef,
 } from "react";
 import { KitContext, TableProps } from "../atoms/kit-context";
 import { AuxiliaryLine } from "../atoms/themes/CloudTower/components/Table/TableWidgets";
@@ -15,6 +16,8 @@ import {
 import { KubeApi, UnstructuredList } from "../k8s-api-client/kube-api";
 import { styled } from "@linaria/react";
 import { TableLoading } from "../atoms/themes/CloudTower/components/Table/TableWidgets";
+import HeaderCell from "../atoms/themes/CloudTower/components/Table/HeaderCell";
+import { BLANK_COLUMN } from "../atoms/themes/CloudTower/components/Table/common";
 
 const TableWrapper = styled.div`
   overflow: auto;
@@ -32,6 +35,7 @@ type Columns = (TableProps["columns"][0] & {
   isActionColumn?: boolean;
   canCustomizable?: boolean;
   isDefaultDisplay?: boolean;
+  className?: string;
 })[];
 type KubectlGetTableProps = {
   basePath: string;
@@ -47,6 +51,7 @@ type KubectlGetTableProps = {
     loading: boolean;
     error: null | Error;
   };
+  wrapper: React.MutableRefObject<any>;
   onResponse?: (res: any) => void;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
@@ -70,6 +75,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       fieldSelector,
       defaultSize,
       response,
+      wrapper,
       onResponse,
       onPageChange,
       onPageSizeChange,
@@ -78,6 +84,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
     ref
   ) => {
     const kit = useContext(KitContext);
+    const auxiliaryLine = useRef(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [currentSize, setCurrentSize] = useState(defaultSize ?? 10);
     const { data, loading, error } = response;
@@ -123,17 +130,40 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
 
       return result;
     }, {} as Record<string, string>);
+    const totalWidth = useMemo(() => {
+      return columns.reduce<number>((prev, cur) => {
+        return prev + (cur.width || 0);
+      }, 0);
+    }, [columns]);
 
-    tableProps.columns.forEach((column) => {
-      if (column.canCustomizable) {
-        customizableColumnKeys.push(column.key);
-      } else {
+    tableProps.columns.forEach((column, index) => {
+      customizableColumnKeys.push(column.key);
+      if (!column.canCustomizable) {
         disabledColumnKeys.push(column.key);
       }
     });
 
-    columns = columns.map((column) => ({
+    if (totalWidth < wrapper.current?.offsetWidth) {
+      const last = columns[columns.length - 1];
+
+      if (last.isActionColumn) {
+        columns.splice(columns.length - 1, 0, BLANK_COLUMN);
+      } else {
+        columns.splice(columns.length - 1, 1, {
+          ...last,
+          className: "no-after",
+        });
+        columns.push(BLANK_COLUMN);
+      }
+    }
+
+    columns = columns.map((column, index) => ({
       ...column,
+      onHeaderCell: () => ({
+        index,
+        sortable: column.canCustomizable,
+        draggable: column.canCustomizable
+      }),
       title:
         tableProps.customizable && column.isActionColumn ? (
           <CustomizeColumn
@@ -198,6 +228,29 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
         <TableContent>
           <kit.Table
             {...tableProps}
+            tableLayout="fixed"
+            components={{
+              header: {
+                cell: (props: any) => (
+                  <HeaderCell
+                    {...props}
+                    resizable={true}
+                    components={undefined}
+                    auxiliaryLine={auxiliaryLine}
+                    wrapper={wrapper}
+                    defaultCustomizeColumn={defaultCustomizeColumn}
+                  />
+                ),
+              },
+              body: {
+                cell: (props: any) => (
+                  <td
+                    {...props}
+                    className={`${props.className} cell_${props.unique}`}
+                  />
+                ),
+              },
+            }}
             columns={columns}
             ref={ref}
             data={data.items.slice(
@@ -209,8 +262,9 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
             rowKey={(row: UnstructuredList["items"][0]) =>
               `${row.metadata.namespace}/${row.metadata.name}`
             }
+            wrapper={wrapper}
           />
-          <AuxiliaryLine></AuxiliaryLine>
+          <AuxiliaryLine ref={auxiliaryLine}></AuxiliaryLine>
         </TableContent>
         <kit.Pagination
           current={currentPage}
