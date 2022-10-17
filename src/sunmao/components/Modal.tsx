@@ -50,7 +50,7 @@ export const Modal = implementRuntimeComponent({
       },
     },
     styleSlots: ["modal"],
-    events: ["onOpen", "onClose"],
+    events: ["onOpen", "onClose", "afterClose"],
   },
 })(
   ({
@@ -96,6 +96,7 @@ export const Modal = implementRuntimeComponent({
       <kit.Modal
         ref={elementRef}
         onClose={onClose}
+        afterClose={callbackMap?.afterClose}
         className={css`
           ${customStyle?.modal}
         `}

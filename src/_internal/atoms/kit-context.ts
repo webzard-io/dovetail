@@ -105,6 +105,7 @@ export type ModalProps = {
   visible?: boolean;
   maskClosable?: boolean;
   onClose?: () => void;
+  afterClose?: ()=> void;
   title?: React.ReactNode;
   footer?: React.ReactNode;
   getContainer: string | (() => HTMLElement);
