@@ -9,6 +9,7 @@ type ModalProps = {
   visible?: boolean;
   maskClosable?: boolean;
   onClose?: () => void;
+  afterClose?: ()=> void;
   title?: React.ReactNode;
   footer?: React.ReactNode;
   children?: React.ReactNode;
@@ -22,6 +23,7 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>((props, ref) => {
     visible,
     maskClosable,
     onClose,
+    afterClose,
     getContainer,
     children,
     title,
@@ -41,7 +43,7 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>((props, ref) => {
         onClose?.();
       }}
       visible={visible}
-      afterClose={() => {}}
+      afterClose={afterClose}
       footer={footer}
       getContainer={getContainer}
     >
