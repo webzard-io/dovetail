@@ -13,8 +13,12 @@ import NumberField from "./NumberField";
 import NullField from "./NullField";
 import ObjectField from "./ObjectField";
 import MultiSpecField from "./MultiSpecField";
-import { FORM_WIDGETS_MAP } from "../../molecules/form";
+import {
+  FORM_WIDGETS_MAP,
+  FORM_WIDGET_OPTIONS_MAP,
+} from "../../molecules/form";
 import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
+import { Static } from "@sinclair/typebox";
 
 type TemplateProps = {
   id?: string;
@@ -123,7 +127,10 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
       labelAlign="left"
       label={
         displayLabel ? (
-          <span style={{ width: labelWidth || 108 + 'px' }} className={cx(Typo.Label.l3_regular_title, FormItemLabelStyle)}>
+          <span
+            style={{ width: labelWidth || 108 + "px" }}
+            className={cx(Typo.Label.l3_regular_title, FormItemLabelStyle)}
+          >
             {label}
           </span>
         ) : (
@@ -162,10 +169,10 @@ type SpecFieldProps = WidgetProps & {
 
 const SpecField: React.FC<SpecFieldProps> = (props) => {
   const {
+    basePath,
     field,
     spec,
     widget,
-    widgetOptions = {},
     level,
     path,
     step,
@@ -178,6 +185,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     slot,
     onChange,
   } = props;
+  let { widgetOptions = {} } = props;
   const { title } = spec;
   const label = title ?? "";
   const displayLabel = field?.isDisplayLabel ?? shouldDisplayLabel(spec, label);
@@ -193,6 +201,15 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   // type fields
   if (widget && widget in FORM_WIDGETS_MAP) {
     Component = FORM_WIDGETS_MAP[widget as keyof typeof FORM_WIDGETS_MAP];
+  } else if (field?.path.includes("metadata.namespace")) {
+    Component = FORM_WIDGETS_MAP.k8sSelect;
+    widgetOptions = {
+      apiBase: "/api/v1",
+      basePath,
+      resource: "namespaces",
+      valuePath: 'metadata.name',
+      ...widgetOptions,
+    } as Static<typeof FORM_WIDGET_OPTIONS_MAP.k8sSelect>;
   } else if (spec.type === "object") {
     Component = ObjectField;
     isNest = true;
@@ -216,7 +233,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   const FieldComponent = (
     <Component
       widgetOptions={widgetOptions}
-      error={typeof error !== 'string' ? error : undefined}
+      error={typeof error !== "string" ? error : undefined}
       field={field}
       spec={spec}
       value={value}
