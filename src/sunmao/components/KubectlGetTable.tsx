@@ -119,6 +119,10 @@ const ColumnSpec = Type.Object(
     ellipsis: Type.Boolean({ title: "Ellipsis" }),
     align: StringUnion(["left", "center", "right"], { title: "Align" }),
     sortType: StringUnion(["none", "auto", "server"], { title: "Sort type" }),
+    sortBy: Type.String({
+      title: 'Sort by',
+      description: 'The field path for sorting. It it is empty, that would use `dataIndex` to sort.'
+    }),
     defaultSortOrder: StringUnion(["ascend", "descend"], {
       title: "Default sort order",
     }),
@@ -510,8 +514,8 @@ export const KubectlGetTable = implementRuntimeComponent({
                     a: UnstructuredList["items"][0],
                     b: UnstructuredList["items"][0]
                   ) => {
-                    const valueA = get(a, col.dataIndex);
-                    const valueB = get(b, col.dataIndex);
+                    const valueA = get(a, col.sortBy || col.dataIndex);
+                    const valueB = get(b, col.sortBy || col.dataIndex);
 
                     if (
                       typeof valueA === "number" &&
