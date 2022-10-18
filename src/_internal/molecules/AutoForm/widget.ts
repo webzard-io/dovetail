@@ -8,6 +8,7 @@ type WidgetOptions = Partial<{
 }>;
 
 export type WidgetProps<Value = any, WidgetOptions = Record<string, any>> = {
+  basePath: string;
   field?: Field;
   spec: JSONSchema7;
   widget?: string;

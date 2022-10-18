@@ -78,6 +78,7 @@ const KubectlApplyForm = React.forwardRef<
 >(
   (
     {
+      basePath,
       className,
       schemas = [],
       uiConfig,
@@ -113,6 +114,7 @@ const KubectlApplyForm = React.forwardRef<
       const component = (
         <SpecField
           key={f.dataPath || f.key}
+          basePath={basePath}
           field={f}
           error={f.error}
           widget={f.widget}
