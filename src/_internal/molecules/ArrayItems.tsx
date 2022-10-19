@@ -115,7 +115,7 @@ const ArrayItems = (props: Props) => {
       ) : null}
       {widgetOptions.addable !== false &&
       value.length < (widgetOptions.maxLength || Number.MAX_SAFE_INTEGER) ? (
-        <div style={{ marginTop: widgetOptions.helper ? 0 : '16px' }}>
+        <div style={{ marginTop: widgetOptions.helper ? 0 : "16px" }}>
           {widgetOptions.addedButtonIcon ? (
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>
           ) : null}
@@ -126,8 +126,9 @@ const ArrayItems = (props: Props) => {
             size="small"
             onClick={() => {
               onChange(
-                props.field?.defaultValue?.[0] ??
-                  value.concat(generateFromSchema(itemSpec))
+                value.concat(
+                  props.field?.defaultValue?.[0] ?? generateFromSchema(itemSpec)
+                )
               );
             }}
           >
