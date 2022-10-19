@@ -6,6 +6,7 @@ import { InputProps as AntdInputProps } from "antd/lib/input/Input";
 import { InputNumberProps as AntdInputNumberProps } from "antd/lib/input-number/index";
 import { SelectProps as AntdSelectProps } from "antd/lib/select/index";
 import { SwitchProps as AntdSwitchProps } from 'antd/lib/switch/index';
+import { TooltipProps as AntdTooltipProps } from 'antd/lib/tooltip';
 export { CloudTowerKit };
 
 type RefAndChildren = {
@@ -263,6 +264,10 @@ export type SwitchProps = Omit<AntdSwitchProps, "size"> & {
   size?: "small" | "default" | "large";
 };
 
+export type TooltipProps = AntdTooltipProps & {
+  followMouse?: boolean;
+};
+
 export interface Kit {
   name: string;
   Button: React.FC<ButtonProps>;
@@ -283,6 +288,7 @@ export interface Kit {
   InputNumber: React.FC<InputNumberProps>;
   Select: React.FC<SelectProps>;
   Switch: React.FC<SwitchProps>;
+  Tooltip: React.FC<TooltipProps>;
 }
 
 export const createKitContext = (kit: Kit) => {
