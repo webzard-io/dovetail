@@ -67,5 +67,12 @@
   "every_months_with_count_and_time": "Every {count} months at {time}",
   "every_months_with_count_and_day_and_time": "Every {count} months on the day of {day} at {time}",
   "add_favorite_function": "Add to favorites",
-  "remove_favorite_function": "Remove from favorites"
+  "remove_favorite_function": "Remove from favorites",
+  "obtain_data_error": "There was a problem getting the data",
+  "retry": "Retry",
+  "empty": "No data",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "action": "Action",
+  "add": "Add"
 }

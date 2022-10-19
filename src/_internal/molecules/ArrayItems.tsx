@@ -11,6 +11,7 @@ import Icon, {
 } from "../atoms/themes/CloudTower/components/Icon/Icon";
 import { generateFromSchema } from "../utils/schema";
 import { JSONSchema7 } from "json-schema";
+import { useTranslation } from "react-i18next";
 
 const Wrapper = styled.div`
   display: flex;
@@ -47,6 +48,7 @@ export const OptionsSpec = Type.Object({
 type Props = WidgetProps<any, Static<typeof OptionsSpec>>;
 
 const ArrayItems = (props: Props) => {
+  const { t } = useTranslation();
   const {
     spec,
     value = [],
@@ -56,7 +58,7 @@ const ArrayItems = (props: Props) => {
       helper: "",
       removable: true,
       addable: true,
-      addedButtonText: "添加",
+      addedButtonText: t("dovetail.add"),
       addedButtonIcon: "",
       maxLength: undefined,
       minLength: 0,
