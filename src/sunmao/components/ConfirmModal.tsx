@@ -1,6 +1,7 @@
 import {
   implementRuntimeComponent,
   DIALOG_CONTAINER_ID,
+  StringUnion,
 } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import { PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
@@ -80,10 +81,27 @@ export const ConfirmModal = implementRuntimeComponent({
         title: "Confirm button text",
         category: PRESET_PROPERTY_CATEGORY.Basic,
       }),
+      confirmButtonType: StringUnion(
+        [
+          "danger",
+          "default",
+          "text",
+          "link",
+          "ordinary",
+          "primary",
+          "ghost",
+          "dashed",
+          "quiet",
+        ],
+        {
+          title: "Confirm button type",
+          category: PRESET_PROPERTY_CATEGORY.Basic,
+        }
+      ),
       confirmButtonLoading: Type.Boolean({
-        title: 'Confirm button loading',
-        category: PRESET_PROPERTY_CATEGORY.Basic
-      })
+        title: "Confirm button loading",
+        category: PRESET_PROPERTY_CATEGORY.Basic,
+      }),
     }),
     state: Type.Object({}),
     methods: {
@@ -109,6 +127,7 @@ export const ConfirmModal = implementRuntimeComponent({
     text,
     tip,
     confirmButtonText,
+    confirmButtonType,
     confirmButtonLoading,
     customStyle,
     elementRef,
@@ -130,7 +149,11 @@ export const ConfirmModal = implementRuntimeComponent({
         <kit.Button type="text" onClick={onCancel}>
           {t("dovetail.cancel")}
         </kit.Button>
-        <kit.Button type="danger" loading={confirmButtonLoading} onClick={callbackMap?.onConfirm}>
+        <kit.Button
+          type={confirmButtonType || "danger"}
+          loading={confirmButtonLoading}
+          onClick={callbackMap?.onConfirm}
+        >
           {confirmButtonText || t("dovetail.delete")}
         </kit.Button>
       </>
