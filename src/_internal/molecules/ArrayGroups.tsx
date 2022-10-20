@@ -9,9 +9,9 @@ import Icon, {
 } from "../atoms/themes/CloudTower/components/Icon/Icon";
 import { generateFromSchema } from "../utils/schema";
 import { JSONSchema7 } from "json-schema";
+import { useTranslation } from "react-i18next";
 
-const AddedButtonStyle = css`
-`;
+const AddedButtonStyle = css``;
 
 export const OptionsSpec = Type.Object({
   title: Type.Optional(
@@ -38,6 +38,7 @@ export const OptionsSpec = Type.Object({
 type Props = WidgetProps<any[], Static<typeof OptionsSpec>>;
 
 const ArrayGroups = (props: Props) => {
+  const { t } = useTranslation();
   const kit = useContext(KitContext);
   const {
     value,
@@ -48,7 +49,7 @@ const ArrayGroups = (props: Props) => {
       title: "",
       removable: true,
       addable: true,
-      addedButtonText: "添加",
+      addedButtonText: t("dovetail.add"),
       addedButtonIcon: "",
     },
     onChange,

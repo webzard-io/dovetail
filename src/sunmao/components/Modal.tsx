@@ -6,6 +6,7 @@ import {
 import { css } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
 import { KitContext } from "../../_internal/atoms/kit-context";
+import { useTranslation } from "react-i18next";
 
 const ModalProps = Type.Object({
   title: Type.String(),
@@ -66,6 +67,7 @@ export const Modal = implementRuntimeComponent({
     showFooter,
   }) => {
     const kit = useContext(KitContext);
+    const { t } = useTranslation();
     const [visible, setVisible] = useState(defaultVisible || false);
     const buttonRef = useRef<HTMLElement | null>(null);
     useEffect(() => {
@@ -86,7 +88,7 @@ export const Modal = implementRuntimeComponent({
       setVisible(false);
       callbackMap?.onClose();
     }, [callbackMap?.onClose]);
-    useEffect(()=> {
+    useEffect(() => {
       if (visible) {
         callbackMap?.onOpen?.();
       }
@@ -114,7 +116,7 @@ export const Modal = implementRuntimeComponent({
                 slotsElements.footer({})
               ) : (
                 <kit.Button type="text" onClick={onClose}>
-                  取消
+                  {t("dovetail.cancel")}
                 </kit.Button>
               )
             ) : null}

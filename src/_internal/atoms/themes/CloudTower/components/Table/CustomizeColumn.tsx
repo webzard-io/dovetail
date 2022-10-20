@@ -6,6 +6,7 @@ import { KitContext } from "../../../../kit-context";
 import { useCustomizeColumn, CustomizeColumnType } from "./customize-column";
 import { arrayMove } from "./common";
 import Icon from "../Icon/Icon";
+import { useTranslation } from "react-i18next";
 
 const DropdownWrapper = css`
   &.dovetail-ant-dropdown {
@@ -151,6 +152,7 @@ type CustomizeColumnProps = {
 let dragColumnIndex = 0;
 
 const DropdownOverlay: React.FC<CustomizeColumnProps> = (props) => {
+  const { t } = useTranslation();
   const kit = useContext(KitContext);
   const {
     defaultCustomizeColumn,
@@ -167,7 +169,7 @@ const DropdownOverlay: React.FC<CustomizeColumnProps> = (props) => {
     let title: React.ReactNode = "";
     const mappedTitle = columnTitleMap[column.key];
     if (column.key === "_action_") {
-      title = '操作';
+      title = t("dovetail.action");
     } else if (typeof mappedTitle === "function") {
       title = mappedTitle();
     } else if (mappedTitle) {
@@ -229,7 +231,7 @@ const DropdownOverlay: React.FC<CustomizeColumnProps> = (props) => {
 
   return (
     <>
-      <Title>Customize Columns</Title>
+      <Title>{t('dovetail.custom_column')}</Title>
       <Checkbox.Group
         className={CheckboxStyle}
         defaultValue={customizeColumn
@@ -286,7 +288,7 @@ const DropdownOverlay: React.FC<CustomizeColumnProps> = (props) => {
 
 const CustomizeColumn: React.FC<CustomizeColumnProps> = (props) => {
   const kit = useContext(KitContext);
-  
+
   return (
     <kit.Dropdown
       data-test-id={props["data-test-id"]}
