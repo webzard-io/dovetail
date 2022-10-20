@@ -376,6 +376,39 @@ $footer-height: 64px;
   }
 }
 
+.dovetail-ant-modal.normal-modal.size-small {
+  //top: 40px;
+  min-height: 356px;
+
+  .dovetail-ant-modal-content {
+    border-radius: 16px;
+  }
+
+  .dovetail-ant-modal-header {
+    border-radius: 16px 16px 0 0;
+    padding: 40px 40px 8px;
+    border-bottom: none;
+  }
+
+  .dovetail-ant-modal-title {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 600;
+  }
+
+  .dovetail-ant-modal-body {
+    overflow-y: auto;
+    padding: 24px 40px 32px;
+    max-height: calc(100vh - 80px - 80px - 96px);
+  }
+
+  .dovetail-ant-modal-footer {
+    padding: 32px 40px;
+    border-top: none;
+    box-shadow: inset 0px 1px 0px rgba(235, 239, 245, 0.6);
+  }
+}
+
 .dovetail-ant-modal.normal-modal.size-medium {
   //top: 40px;
   min-height: 356px;

@@ -110,6 +110,7 @@ export type ModalProps = {
   title?: React.ReactNode;
   footer?: React.ReactNode;
   getContainer: string | (() => HTMLElement);
+  size?: 'small' | 'medium';
 } & RefAndChildren;
 
 export type CodeEditorProps = {

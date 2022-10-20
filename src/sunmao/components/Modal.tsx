@@ -2,6 +2,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   DIALOG_CONTAINER_ID,
   implementRuntimeComponent,
+  StringUnion
 } from "@sunmao-ui/runtime";
 import { css } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
@@ -14,6 +15,7 @@ const ModalProps = Type.Object({
   defaultVisible: Type.Boolean(),
   maskClosable: Type.Boolean(),
   showFooter: Type.Boolean(),
+  size: StringUnion(['small', 'medium'])
 });
 
 const ModalState = Type.Object({
@@ -65,6 +67,7 @@ export const Modal = implementRuntimeComponent({
     width,
     title,
     showFooter,
+    size,
   }) => {
     const kit = useContext(KitContext);
     const { t } = useTranslation();
@@ -109,6 +112,7 @@ export const Modal = implementRuntimeComponent({
           document.getElementById(DIALOG_CONTAINER_ID) || document.body
         }
         title={title}
+        size={size}
         footer={
           <>
             {showFooter ? (

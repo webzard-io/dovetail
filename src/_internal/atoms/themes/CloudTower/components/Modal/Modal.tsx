@@ -14,6 +14,7 @@ type ModalProps = {
   footer?: React.ReactNode;
   children?: React.ReactNode;
   getContainer: string | (() => HTMLElement);
+  size?: 'small' | 'medium';
 };
 
 const Modal = React.forwardRef<HTMLDivElement, ModalProps>((props, ref) => {
@@ -27,13 +28,14 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>((props, ref) => {
     getContainer,
     children,
     title,
+    size = 'medium',
     footer = null,
   } = props;
   return (
     <AntdModal
       destroyOnClose
       title={title}
-      className={cx(className, "normal-modal", "size-medium")}
+      className={cx(className, "normal-modal", `size-${size}`)}
       width={width}
       maskClosable={maskClosable}
       transitionName="modal-zoom"
