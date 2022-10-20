@@ -19,18 +19,31 @@ const WrapperStyle = css`
     border-top: 0;
   }
 
-  .dovetail-ant-table .dovetail-ant-table-tbody .dovetail-ant-table-row.active-row td:first-child {
+  .dovetail-ant-table
+    .dovetail-ant-table-tbody
+    .dovetail-ant-table-row.active-row
+    td:first-child {
     border: 2px solid rgb(206, 230, 255);
     border-right: 0px;
   }
 
-  .dovetail-ant-table .dovetail-ant-table-tbody .dovetail-ant-table-row.active-row td:last-child {
+  .dovetail-ant-table
+    .dovetail-ant-table-tbody
+    .dovetail-ant-table-row.active-row
+    td:last-child {
     border: 2px solid rgb(206, 230, 255);
     border-left: 0px;
   }
 
-  .dovetail-ant-table .dovetail-ant-table-tbody .dovetail-ant-table-row.active-row td,
-  .dovetail-ant-table .dovetail-ant-table-tbody .dovetail-ant-table-row:hover + tr.active-row td {
+  .dovetail-ant-table
+    .dovetail-ant-table-tbody
+    .dovetail-ant-table-row.active-row
+    td,
+  .dovetail-ant-table
+    .dovetail-ant-table-tbody
+    .dovetail-ant-table-row:hover
+    + tr.active-row
+    td {
     border: 2px solid rgb(206, 230, 255);
     border-right: 0px;
     border-left: 0px;
@@ -41,7 +54,10 @@ const WrapperStyle = css`
     right: -2px !important;
   }
 
-  .dovetail-ant-table .dovetail-ant-table-tbody .dovetail-ant-table-row.active-row td,
+  .dovetail-ant-table
+    .dovetail-ant-table-tbody
+    .dovetail-ant-table-row.active-row
+    td,
   .dovetail-ant-table
     .dovetail-ant-table-tbody
     .dovetail-ant-table-row.active-row
@@ -73,6 +89,7 @@ const ColumnSpec = Type.Object(
       title: "Key",
     }),
     title: Type.String({ title: "Title" }),
+    titleTooltip: Type.String({ title: "Title tooltip" }),
     isActionColumn: Type.Boolean({
       title: "Is action column",
     }),
@@ -120,8 +137,9 @@ const ColumnSpec = Type.Object(
     align: StringUnion(["left", "center", "right"], { title: "Align" }),
     sortType: StringUnion(["none", "auto", "server"], { title: "Sort type" }),
     sortBy: Type.String({
-      title: 'Sort by',
-      description: 'The field path for sorting. It it is empty, that would use `dataIndex` to sort.'
+      title: "Sort by",
+      description:
+        "The field path for sorting. It it is empty, that would use `dataIndex` to sort.",
     }),
     defaultSortOrder: StringUnion(["ascend", "descend"], {
       title: "Default sort order",

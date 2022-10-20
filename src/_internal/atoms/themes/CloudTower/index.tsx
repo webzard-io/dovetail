@@ -17,6 +17,7 @@ import { Dropdown } from "antd";
 import Pagination from "./components/Pagination/Pagination";
 import Select from "./components/Select/Select";
 import Switch from "./components/Switch/Switch";
+import Tooltip from './components/Tooltip/Tooltip';
 
 import "./styles/override.scss";
 
@@ -42,4 +43,5 @@ export const kit: Kit = {
   InputNumber,
   Select,
   Switch,
+  Tooltip
 };

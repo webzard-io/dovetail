@@ -11,21 +11,28 @@ import Icon, {
 } from "../atoms/themes/CloudTower/components/Icon/Icon";
 import { generateFromSchema } from "../utils/schema";
 import { JSONSchema7 } from "json-schema";
+import { useTranslation } from "react-i18next";
 
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
+  &:not(:first-child) {
+    margin-top: 16px;
+  }
+`;
+const HelperText = styled.div`
+  margin: 8px 0;
+  color: rgba(44, 56, 82, 0.6);
 `;
 const CloseButtonStyle = css``;
-const AddedButtonStyle = css`
-`;
+const AddedButtonStyle = css``;
 
 export const OptionsSpec = Type.Object({
   removable: Type.Optional(Type.Boolean({ title: "Removable" })),
   addable: Type.Optional(Type.Boolean({ title: "Addable" })),
   addedButtonText: Type.Optional(Type.String({ title: "Added button text" })),
   addedButtonIcon: Type.Optional(Type.String({ title: "Added button icon" })),
+  helper: Type.Optional(Type.String({ title: "Helper" })),
   maxLength: Type.Optional(
     Type.Number({
       title: "Max length",
@@ -41,15 +48,17 @@ export const OptionsSpec = Type.Object({
 type Props = WidgetProps<any, Static<typeof OptionsSpec>>;
 
 const ArrayItems = (props: Props) => {
+  const { t } = useTranslation();
   const {
     spec,
     value = [],
     path,
     level,
     widgetOptions = {
+      helper: "",
       removable: true,
       addable: true,
-      addedButtonText: "添加",
+      addedButtonText: t("dovetail.add"),
       addedButtonIcon: "",
       maxLength: undefined,
       minLength: 0,
@@ -103,9 +112,12 @@ const ArrayItems = (props: Props) => {
           ) : null}
         </Wrapper>
       ))}
+      {widgetOptions.helper && value.length ? (
+        <HelperText>{widgetOptions.helper}</HelperText>
+      ) : null}
       {widgetOptions.addable !== false &&
       value.length < (widgetOptions.maxLength || Number.MAX_SAFE_INTEGER) ? (
-        <div>
+        <div style={{ marginTop: widgetOptions.helper ? 0 : "16px" }}>
           {widgetOptions.addedButtonIcon ? (
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>
           ) : null}
@@ -116,8 +128,9 @@ const ArrayItems = (props: Props) => {
             size="small"
             onClick={() => {
               onChange(
-                props.field?.defaultValue?.[0] ??
-                  value.concat(generateFromSchema(itemSpec))
+                value.concat(
+                  props.field?.defaultValue?.[0] ?? generateFromSchema(itemSpec)
+                )
               );
             }}
           >

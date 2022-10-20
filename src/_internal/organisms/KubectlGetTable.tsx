@@ -15,9 +15,12 @@ import {
 } from "../atoms/themes/CloudTower/components/Table/customize-column";
 import { KubeApi, UnstructuredList } from "../k8s-api-client/kube-api";
 import { styled } from "@linaria/react";
+import { css, cx } from "@linaria/core";
 import { TableLoading } from "../atoms/themes/CloudTower/components/Table/TableWidgets";
 import HeaderCell from "../atoms/themes/CloudTower/components/Table/HeaderCell";
 import { BLANK_COLUMN } from "../atoms/themes/CloudTower/components/Table/common";
+import { get } from "lodash";
+import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
 
 const TableWrapper = styled.div`
   overflow: auto;
@@ -30,8 +33,25 @@ const TableContent = styled.div`
   overflow: hidden;
   position: relative;
 `;
+const TooltipStyle = css`
+  .dovetail-ant-tooltip-inner {
+    background: rgba(23, 38, 64, 0.8);
+    box-shadow: 0px 1px 4px rgba(29, 50, 108, 0.6);
+    border-radius: 4px;
+    padding: 4px 10px;
+    min-height: 18px;
+  }
+
+  .dovetail-ant-tooltip-arrow {
+    display: none;
+  }
+`;
+const ColumnTitleStyle = css`
+  border-bottom: 1px dashed #00122e;
+`;
 
 type Columns = (TableProps["columns"][0] & {
+  titleTooltip?: string;
   isActionColumn?: boolean;
   canCustomizable?: boolean;
   isDefaultDisplay?: boolean;
@@ -162,8 +182,16 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       onHeaderCell: () => ({
         index,
         sortable: column.canCustomizable,
-        draggable: column.canCustomizable
+        draggable: column.canCustomizable,
+        tooltip: column.titleTooltip,
       }),
+      onCell(record: any) {
+        const value = column.dataIndex ? get(record, column.dataIndex) : "";
+
+        return {
+          title: typeof value !== "object" ? value : "",
+        };
+      },
       title:
         tableProps.customizable && column.isActionColumn ? (
           <CustomizeColumn
@@ -175,7 +203,16 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
             customizableColumnKeys={customizableColumnKeys}
           />
         ) : (
-          column.title
+          <kit.Tooltip
+            align={{ offset: [0, 6] }}
+            overlayClassName={cx(TooltipStyle, Typo.Label.l4_regular)}
+            title={column.titleTooltip}
+            arrowContent={<span />}
+          >
+            <span className={column.titleTooltip ? ColumnTitleStyle : ""}>
+              {column.title}
+            </span>
+          </kit.Tooltip>
         ),
     }));
 
