@@ -1,10 +1,61 @@
 import { Type } from "@sinclair/typebox";
-import { implementRuntimeTrait } from "@sunmao-ui/runtime";
+import {
+  implementRuntimeTrait,
+  EventCallBackHandlerSpec,
+  UIServices,
+} from "@sunmao-ui/runtime";
 import {
   KubeApi,
   UnstructuredList,
 } from "../../_internal/k8s-api-client/kube-api";
-import { compact } from "lodash";
+import { compact, debounce, delay, throttle } from "lodash";
+import { Static } from "@sinclair/typebox";
+
+export const runEventHandler = (
+  handler: Omit<Static<typeof EventCallBackHandlerSpec>, "type">,
+  rawHandlers: any,
+  index: number,
+  services: UIServices,
+  slotKey: string,
+  evalListItem?: boolean
+) => {
+  const { stateManager } = services;
+  const send = () => {
+    // Eval before sending event to assure the handler object is evaled from the latest state.
+    const evalOptions = {
+      slotKey,
+      evalListItem,
+    };
+    const evaledHandlers = stateManager.deepEval(
+      rawHandlers,
+      evalOptions
+    ) as Static<typeof EventCallBackHandlerSpec>[];
+    const evaledHandler = evaledHandlers[index];
+
+    if (evaledHandler.disabled && typeof evaledHandler.disabled === "boolean") {
+      return;
+    }
+
+    services.apiService.send("uiMethod", {
+      componentId: evaledHandler.componentId,
+      name: evaledHandler.method.name,
+      parameters: evaledHandler.method.parameters,
+    });
+  };
+  const { wait } = handler;
+
+  if (!wait || !wait.time) {
+    return send;
+  }
+
+  return wait.type === "debounce"
+    ? debounce(send, wait.time)
+    : wait.type === "throttle"
+    ? throttle(send, wait.time)
+    : wait.type === "delay"
+    ? () => delay(send, wait!.time)
+    : send;
+};
 
 const emptyData = {
   apiVersion: "",
@@ -50,6 +101,9 @@ export const KubeAPITraitPropertiesSpec = Type.Object({
   isAutoWatch: Type.Boolean({
     title: "Is auto watch",
   }),
+  onResponse: Type.Array(EventCallBackHandlerSpec),
+  onError: Type.Array(EventCallBackHandlerSpec),
+  onDataUpdate: Type.Array(EventCallBackHandlerSpec),
 });
 export const KubeAPITraitStateSpec = Type.Object({
   loading: Type.Boolean(),
@@ -96,6 +150,10 @@ export default implementRuntimeTrait({
     namespace,
     fieldSelector,
     isAutoWatch,
+    onDataUpdate,
+    onResponse,
+    onError,
+    services,
     mergeState,
     subscribeMethods,
   }) => {
@@ -136,12 +194,23 @@ export default implementRuntimeTrait({
             ]).join(","),
           },
           cb: (response) => {
-            responseMap.set(componentId, response);
             mergeState({ loading: false, error: null, response });
+            if (!responseMap.has(componentId)) {
+              onResponse?.forEach((handler, index) => {
+                runEventHandler(handler, onResponse, index, services, "")();
+              });
+            }
+            onDataUpdate?.forEach((handler, index) => {
+              runEventHandler(handler, onDataUpdate, index, services, "")();
+            });
+            responseMap.set(componentId, response);
           },
         })
         .catch((err) => {
           mergeState({ loading: false, error: err, response: emptyData });
+          onError?.forEach((handler, index) => {
+            runEventHandler(handler, onError, index, services, "")();
+          });
         });
 
       // if the last one didn't return and do the next watch
@@ -170,7 +239,16 @@ export default implementRuntimeTrait({
         });
 
         mergeState({ loading: false, error: null, response });
+        onResponse?.forEach((handler, index) => {
+          runEventHandler(handler, onResponse, index, services, "")();
+        });
+        onDataUpdate?.forEach((handler, index) => {
+          runEventHandler(handler, onDataUpdate, index, services, "")();
+        });
       } catch (error) {
+        onError?.forEach((handler, index) => {
+          runEventHandler(handler, onError, index, services, "")();
+        });
         mergeState({ loading: false, error, response: emptyData });
       }
     }
@@ -189,6 +267,7 @@ export default implementRuntimeTrait({
       props: {
         componentDidUnmount: [
           () => {
+            responseMap.delete(componentId);
             stop();
           },
         ],
