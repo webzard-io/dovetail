@@ -5,6 +5,7 @@ import { KitContext } from "../../atoms/kit-context";
 import { generateFromSchema } from "../../utils/schema";
 import ArrayGroups from "../ArrayGroups";
 import ArrayItems from "../ArrayItems";
+import { useTranslation } from "react-i18next";
 
 const ArrayField: React.FC<WidgetProps> = (props) => {
   const { spec, value = [], path, level, widgetOptions, onChange } = props;
@@ -31,6 +32,7 @@ const ArrayField: React.FC<WidgetProps> = (props) => {
 };
 
 export const AddToArrayField: React.FC<WidgetProps> = (props) => {
+  const { t } = useTranslation();
   const kit = useContext(KitContext);
   const { field, spec, value = [], onChange } = props;
   const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
@@ -53,7 +55,7 @@ export const AddToArrayField: React.FC<WidgetProps> = (props) => {
           );
         }}
       >
-        添加
+        {t("dovetail.add")}
       </kit.Button>
     </div>
   );

@@ -269,7 +269,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
         spec={spec}
         error={typeof error === "string" ? error : ""}
       >
-        {slot?.({ ...field, index }, FieldComponent, `filed_${path}`) ||
+        {slot?.({ path, ...(field || {}), index }, FieldComponent, `filed_${path}`) ||
           FieldComponent}
       </DefaultTemplate>
     </Col>
