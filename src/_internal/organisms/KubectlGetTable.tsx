@@ -246,7 +246,18 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
         .listWatch({
           query: fieldSelector ? { fieldSelector, namespace } : { namespace },
           cb: (res) => {
-            onResponse?.({ loading: false, error: null, data: res });
+            onResponse?.({
+              loading: false,
+              error: null,
+              data: {
+                ...res,
+                items: res.items.sort(
+                  (a, b) =>
+                    new Date(b.metadata.creationTimestamp as string).getTime() -
+                    new Date(a.metadata.creationTimestamp as string).getTime()
+                ),
+              },
+            });
           },
         })
         .catch((err) => {
