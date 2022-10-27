@@ -6,6 +6,7 @@ import { generateFromSchema } from "../../utils/schema";
 import ArrayGroups from "../ArrayGroups";
 import ArrayItems from "../ArrayItems";
 import { useTranslation } from "react-i18next";
+import { cloneDeep } from "lodash";
 
 const ArrayField: React.FC<WidgetProps> = (props) => {
   const { spec, value = [], path, level, widgetOptions, onChange } = props;
@@ -48,9 +49,14 @@ export const AddToArrayField: React.FC<WidgetProps> = (props) => {
         hoverPrefixIcon="1-plus-add-create-new-16-blue"
         size="small"
         onClick={() => {
+          const defaultValue =
+            props.field?.defaultValue?.[0] ?? generateFromSchema(itemSpec);
+
           onChange(
             value.concat(
-              field?.defaultValue?.[0] || generateFromSchema(itemSpec)
+              defaultValue && typeof defaultValue === "object"
+                ? cloneDeep(defaultValue)
+                : defaultValue
             )
           );
         }}
