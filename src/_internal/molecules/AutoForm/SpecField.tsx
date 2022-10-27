@@ -70,6 +70,10 @@ const FormItemStyle = css`
 
   .dovetail-ant-form-item-label {
     padding: 0;
+    font-family: "Inter";
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 20px;
 
     label:after {
       content: "";
@@ -82,6 +86,15 @@ const FormItemStyle = css`
 
   .dovetail-ant-form-item-extra {
     margin-top: 5px;
+    color: rgba(44, 56, 82, 0.6);
+    font-family: "Inter";
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 18px;
+
+    &:empty {
+      display: none;
+    }
   }
 
   &.dovetail-ant-form-item-has-error .ant-select-selector,
@@ -183,6 +196,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     error,
     index,
     slot,
+    helperSlot,
     onChange,
   } = props;
   let { widgetOptions = {} } = props;
@@ -207,7 +221,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       apiBase: "/api/v1",
       basePath,
       resource: "namespaces",
-      valuePath: 'metadata.name',
+      valuePath: "metadata.name",
       ...widgetOptions,
     } as Static<typeof FORM_WIDGET_OPTIONS_MAP.k8sSelect>;
   } else if (spec.type === "object") {
@@ -245,6 +259,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       stepElsRef={stepElsRef}
       layout={layout}
       slot={slot}
+      helperSlot={helperSlot}
     />
   );
   const FieldComponentWithRenderer = (
@@ -262,15 +277,24 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       <DefaultTemplate
         label={label}
         layout={field?.layout}
-        description={field?.helperText}
+        description={
+          helperSlot?.(
+            { path, ...(field || {}), index },
+            field?.helperText || '',
+            `helper_${path}`
+          ) || field?.helperText
+        }
         labelWidth={field?.labelWidth}
         displayLabel={displayLabel}
         displayDescription={displayDescription}
         spec={spec}
         error={typeof error === "string" ? error : ""}
       >
-        {slot?.({ path, ...(field || {}), index }, FieldComponent, `filed_${path}`) ||
-          FieldComponent}
+        {slot?.(
+          { path, ...(field || {}), index },
+          FieldComponent,
+          `filed_${path}`
+        ) || FieldComponent}
       </DefaultTemplate>
     </Col>
   );

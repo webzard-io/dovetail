@@ -66,6 +66,11 @@ export type KubectlApplyFormProps = {
     fallback: React.ReactNode,
     slotKey: string
   ) => React.ReactNode;
+  getHelperSlot?: (
+    f: Field & { index?: number; },
+    fallback: React.ReactNode,
+    slotKey: string
+  ) => React.ReactNode;
   onChange: (values: any[], key?: string) => void;
   onNextStep?: (values: any[]) => void;
   onSubmit?: (values: any[]) => void;
@@ -89,6 +94,7 @@ const KubectlApplyForm = React.forwardRef<
       submitting,
       onChange,
       getSlot,
+      getHelperSlot,
       step,
       setStep,
       onNextStep,
@@ -125,6 +131,7 @@ const KubectlApplyForm = React.forwardRef<
           stepElsRef={{}}
           value={f.value}
           slot={getSlot}
+          helperSlot={getHelperSlot}
           onChange={(newValue: any, key?: string) => {
             const valuesSlice = [...values];
             set(valuesSlice, f.dataPath, newValue);

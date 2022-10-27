@@ -300,8 +300,9 @@ export class KubeApi<T> {
     };
 
     if (this.watchWsBasePath) {
+      const protocol = location.protocol.includes('https') ? 'wss' : 'ws';
       const socket = new WebSocket(
-        `ws://${location.host}/${url}?resourceVersion=${resourceVersion}&watch=1`
+        `${protocol}://${location.host}/${url}?resourceVersion=${resourceVersion}&watch=1`
       );
       socket.addEventListener("open", () => {});
       socket.addEventListener("message", function (msg) {

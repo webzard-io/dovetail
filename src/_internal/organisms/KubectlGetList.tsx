@@ -96,7 +96,18 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
         .listWatch({
           query: fieldSelector ? { fieldSelector } : {},
           cb: (res) => {
-            setResponse(() => ({ loading: false, error: null, data: res }));
+            setResponse(() => ({
+              loading: false,
+              error: null,
+              data: {
+                ...res,
+                items: res.items.sort(
+                  (a, b) =>
+                    new Date(b.metadata.creationTimestamp as string).getTime() -
+                    new Date(a.metadata.creationTimestamp as string).getTime()
+                ),
+              },
+            }));
           },
         })
         .catch((err) => {
