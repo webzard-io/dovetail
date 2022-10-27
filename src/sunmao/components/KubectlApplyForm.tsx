@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { generateFromSchema } from "../../_internal/utils/schema";
 import merge from "lodash/merge";
 import set from "lodash/set";
-import cloneDeep from 'lodash/cloneDeep';
+import cloneDeep from "lodash/cloneDeep";
 import _KubectlApplyForm from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 import { css } from "@emotion/css";
 import {
@@ -26,7 +26,7 @@ const UiConfigFieldSpecProperties = {
   }),
   label: Type.String({ title: "Label" }),
   labelWidth: Type.Number({
-    title: 'Label Width',
+    title: "Label Width",
   }),
   isDisplayLabel: Type.Boolean({
     title: "Is display label",
@@ -263,6 +263,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
       field: {
         slotProps: UiConfigFieldSpec,
       },
+      helper: {
+        slotProps: UiConfigFieldSpec,
+      },
     },
     styleSlots: ["content"],
     events: [
@@ -304,7 +307,10 @@ export const KubectlApplyForm = implementRuntimeComponent({
     useEffect(() => {
       subscribeMethods({
         setField({ fieldPath, value: fieldValue }) {
-          const finalFieldValue = fieldValue && typeof fieldValue === 'object' ? cloneDeep(fieldValue) : fieldValue;
+          const finalFieldValue =
+            fieldValue && typeof fieldValue === "object"
+              ? cloneDeep(fieldValue)
+              : fieldValue;
           const newValues = set(values, fieldPath, finalFieldValue);
 
           mergeState({
@@ -324,17 +330,17 @@ export const KubectlApplyForm = implementRuntimeComponent({
               basePath,
             });
             mergeState({
-              loading: true
+              loading: true,
             });
             await sdk.applyYaml(values);
             mergeState({
-              loading: false
+              loading: false,
             });
             callbackMap?.onApplySuccess?.();
-          } catch(error) {
+          } catch (error) {
             mergeState({
               loading: false,
-              error
+              error,
             });
             callbackMap?.onApplyFail?.();
           }
@@ -374,19 +380,54 @@ export const KubectlApplyForm = implementRuntimeComponent({
         onSubmit={callbackMap?.onSubmit}
         onCancel={callbackMap?.onCancel}
         getSlot={(f, fallback, slotKey) => {
-          return generateSlotChildren(
-            { app, component, services, slotsElements, slot: "field", slotKey, fallback },
-            {
-              generateId(child) {
-                return f.index !== undefined
-                  ? `${child.id}_${f.index}`
-                  : child.id;
+          return (
+            generateSlotChildren(
+              {
+                app,
+                component,
+                services,
+                slotsElements,
+                slot: "field",
+                slotKey,
+                fallback,
               },
-              generateProps() {
-                return (f as Static<typeof UiConfigFieldSpec>) || {};
+              {
+                generateId(child) {
+                  return f.index !== undefined
+                    ? `${child.id}_${f.index}`
+                    : child.id;
+                },
+                generateProps() {
+                  return (f as Static<typeof UiConfigFieldSpec>) || {};
+                },
+              }
+            ) || fallback
+          );
+        }}
+        getHelperSlot={(f, fallback, slotKey) => {
+          return (
+            generateSlotChildren(
+              {
+                app,
+                component,
+                services,
+                slotsElements,
+                slot: "helper",
+                slotKey,
+                fallback,
               },
-            }
-          ) || fallback;
+              {
+                generateId(child) {
+                  return f.index !== undefined
+                    ? `${child.id}_${f.index}`
+                    : child.id;
+                },
+                generateProps() {
+                  return (f as Static<typeof UiConfigFieldSpec>) || {};
+                },
+              }
+            ) || fallback
+          );
         }}
       />
     );
