@@ -1,8 +1,19 @@
 import { Select as AntdSelect } from "antd";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
-import { KitContext } from '../atoms/kit-context';
-import { useContext } from 'react';
+import { KitContext } from "../atoms/kit-context";
+import { useContext } from "react";
+import { styled } from "@linaria/react";
+
+const OptionWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .dovetail-ant-tag {
+    border: 0;
+  }
+`;
 
 export const OptionsSpec = Type.Object({
   options: Type.Array(
@@ -10,6 +21,12 @@ export const OptionsSpec = Type.Object({
       label: Type.String(),
       value: Type.String(),
       disabled: Type.Optional(Type.Boolean()),
+      tags: Type.Array(
+        Type.Object({
+          name: Type.String(),
+          color: Type.String(),
+        })
+      ),
     })
   ),
   disabled: Type.Optional(Type.Boolean()),
@@ -18,7 +35,7 @@ export const OptionsSpec = Type.Object({
 type Props = WidgetProps<string | string[], Static<typeof OptionsSpec>>;
 
 const Select = (props: Props) => {
-  const kit = useContext(KitContext)
+  const kit = useContext(KitContext);
   const { value, onChange, widgetOptions } = props;
   const { options = [], disabled } = widgetOptions || { options: [] };
 
@@ -29,10 +46,13 @@ const Select = (props: Props) => {
       onChange={(value) =>
         onChange(
           value,
-          `${props.subKey ? `${props.subKey}${props.field?.key ? '-' : ''}` : ""}${props.field?.key || ""}`
+          `${
+            props.subKey ? `${props.subKey}${props.field?.key ? "-" : ""}` : ""
+          }${props.field?.key || ""}`
         )
       }
       showSearch
+      optionLabelProp="label"
       optionFilterProp="children"
     >
       {options.map((option, idx) => {
@@ -42,7 +62,12 @@ const Select = (props: Props) => {
             value={option.value}
             disabled={option.disabled}
           >
-            {option.label}
+            <OptionWrapper>
+              <span>{option.label}</span>
+              {(option.tags || []).map((tag) => (
+                <kit.Tag color={tag.color}>{tag.name}</kit.Tag>
+              ))}
+            </OptionWrapper>
           </AntdSelect.Option>
         );
       })}
