@@ -96,6 +96,7 @@ export const Modal = implementRuntimeComponent({
     confirmText,
     fullscreen,
     size,
+    mergeState,
   }) => {
     const kit = useContext(KitContext);
     const [visible, setVisible] = useState(defaultVisible || false);
@@ -108,9 +109,15 @@ export const Modal = implementRuntimeComponent({
       subscribeMethods({
         open() {
           setVisible(true);
+          mergeState({
+            visible: true,
+          });
         },
         close() {
           setVisible(false);
+          mergeState({
+            visible: false,
+          });
         },
       });
     }, []);
@@ -119,8 +126,16 @@ export const Modal = implementRuntimeComponent({
         callbackMap?.onOpen?.();
       }
     }, [visible, callbackMap]);
+    useEffect(() => {
+      mergeState({
+        visible,
+      });
+    }, [visible, mergeState]);
     const onClose = useCallback(() => {
       setVisible(false);
+      mergeState({
+        visible: false,
+      });
       callbackMap?.onClose();
     }, [callbackMap?.onClose]);
 
