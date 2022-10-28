@@ -10,6 +10,7 @@ import Icon, {
 import { generateFromSchema } from "../utils/schema";
 import { JSONSchema7 } from "json-schema";
 import { useTranslation } from "react-i18next";
+import { cloneDeep } from "lodash";
 
 const AddedButtonStyle = css``;
 
@@ -105,10 +106,15 @@ const ArrayGroups = (props: Props) => {
             className={AddedButtonStyle}
             size="small"
             onClick={() => {
+              const defaultValue =
+                props.field?.defaultValue?.[0] ??
+                generateFromSchema(itemSpec as JSONSchema7);
+
               onChange(
                 value.concat(
-                  props.field?.defaultValue?.[0] ??
-                    generateFromSchema(itemSpec as JSONSchema7)
+                  defaultValue && typeof defaultValue === "object"
+                    ? cloneDeep(defaultValue)
+                    : defaultValue
                 )
               );
             }}

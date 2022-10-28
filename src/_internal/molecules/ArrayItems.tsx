@@ -12,6 +12,7 @@ import Icon, {
 import { generateFromSchema } from "../utils/schema";
 import { JSONSchema7 } from "json-schema";
 import { useTranslation } from "react-i18next";
+import { cloneDeep } from "lodash";
 
 const Wrapper = styled.div`
   display: flex;
@@ -127,9 +128,14 @@ const ArrayItems = (props: Props) => {
             className={AddedButtonStyle}
             size="small"
             onClick={() => {
+              const defaultValue =
+                props.field?.defaultValue?.[0] ?? generateFromSchema(itemSpec);
+
               onChange(
                 value.concat(
-                  props.field?.defaultValue?.[0] ?? generateFromSchema(itemSpec)
+                  defaultValue && typeof defaultValue
+                    ? cloneDeep(defaultValue)
+                    : defaultValue
                 )
               );
             }}

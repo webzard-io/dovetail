@@ -3,7 +3,10 @@ import { WidgetProps } from "./AutoForm/widget";
 import { useContext } from "react";
 import { KitContext } from "../atoms/kit-context";
 
-export const OptionsSpec = Type.Object({});
+export const OptionsSpec = Type.Object({
+  disabled: Type.Optional(Type.Boolean()),
+  loading: Type.Optional(Type.Boolean()),
+});
 
 type Props = WidgetProps<boolean, Static<typeof OptionsSpec>>;
 
@@ -21,6 +24,8 @@ const Switch = (props: Props) => {
           }${props.field?.key || ""}`
         )
       }
+      disabled={props.widgetOptions?.disabled}
+      loading={props.widgetOptions?.loading}
     ></kit.Switch>
   );
 };
