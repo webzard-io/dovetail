@@ -15,6 +15,7 @@ const EnumField: React.FC<WidgetProps> = (props) => {
         options: options.map((value) => ({
           value,
           label: value,
+          tags: []
         })),
       }}
     />
