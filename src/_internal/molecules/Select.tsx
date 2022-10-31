@@ -60,6 +60,7 @@ const Select = (props: Props) => {
           <AntdSelect.Option
             key={idx}
             value={option.value}
+            label={option.label}
             disabled={option.disabled}
           >
             <OptionWrapper>
