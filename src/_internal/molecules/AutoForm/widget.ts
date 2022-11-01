@@ -24,7 +24,7 @@ export type WidgetProps<Value = any, WidgetOptions = Record<string, any>> = {
   index?: number;
   error?: string | string[] | Record<string, string>;
   value: Value;
-  onChange: (newValue: Value, key?: string) => void;
+  onChange: (newValue: Value, key?: string, dataPath?: string) => void;
   slot?: Function;
   helperSlot?: Function;
 };

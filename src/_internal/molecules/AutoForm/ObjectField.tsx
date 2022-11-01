@@ -25,10 +25,8 @@ export function resolveSubFields(props: WidgetProps) {
         <SpecField
           {...props}
           error={
-            errorInfo &&
-            isObject(errorInfo) &&
-            subField?.key
-              ? (errorInfo[subField.key as keyof typeof errorInfo]) as string
+            errorInfo && isObject(errorInfo) && subField?.key
+              ? (errorInfo[subField.key as keyof typeof errorInfo] as string)
               : errorInfo
           }
           field={subField}
@@ -42,10 +40,10 @@ export function resolveSubFields(props: WidgetProps) {
           path={path.concat(`.${subField.path}`)}
           level={level + 1}
           value={get(value, subField.path)}
-          onChange={(newValue, key) => {
+          onChange={(newValue, key, dataPath) => {
             const result = immutableSet(value, subField.path, newValue);
 
-            onChange(result, key);
+            onChange(result, key, dataPath);
           }}
         />
       );
@@ -72,13 +70,14 @@ export function resolveSubFields(props: WidgetProps) {
           level={level + 1}
           value={value?.[name]}
           widgetOptions={{}}
-          onChange={(newValue, key) => {
+          onChange={(newValue, key, dataPath) => {
             onChange(
               {
                 ...(value || {}),
                 [name]: newValue,
               },
-              key
+              key,
+              dataPath
             );
           }}
         />

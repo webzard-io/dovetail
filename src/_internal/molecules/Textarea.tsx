@@ -15,7 +15,8 @@ const Textarea = (props: Props) => {
       onChange={(event) =>
         onChange(
           event.currentTarget.value,
-          `${props.subKey ? `${props.subKey}${props.field?.key ? '-' : ''}` : ""}${props.field?.key || ""}`
+          `${props.subKey ? `${props.subKey}${props.field?.key ? '-' : ''}` : ""}${props.field?.key || ""}`,
+          props.path
         )
       }
     />
