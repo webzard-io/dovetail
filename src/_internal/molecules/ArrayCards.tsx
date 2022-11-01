@@ -74,7 +74,7 @@ const ArrayCards = (props: Props) => {
                 ? `${widgetOptions?.title} ${itemIndex + 1}`
                 : "",
             }}
-            path={path.concat(`[${itemIndex}]`)}
+            path={path.concat(`.${itemIndex}`)}
             level={level + 1}
             onRemove={
               value.length > (widgetOptions?.minLength || 0)
@@ -83,11 +83,11 @@ const ArrayCards = (props: Props) => {
                   }
                 : undefined
             }
-            onChange={(newItemValue: any, key) => {
+            onChange={(newItemValue: any, key?: string, dataPath?: string) => {
               const newValue = [...value];
 
               newValue[itemIndex] = newItemValue;
-              onChange(newValue, key);
+              onChange(newValue, key, dataPath);
             }}
           ></Card>
         );

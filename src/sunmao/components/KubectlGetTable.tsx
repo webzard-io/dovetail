@@ -512,7 +512,7 @@ export const KubectlGetTable = implementRuntimeComponent({
               return renderWidget(
                 { ...col, path: col.dataIndex },
                 {
-                  value,
+                  value: value ?? '-',
                   record,
                   index,
                 },

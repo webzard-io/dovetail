@@ -71,7 +71,7 @@ export type KubectlApplyFormProps = {
     fallback: React.ReactNode,
     slotKey: string
   ) => React.ReactNode;
-  onChange: (values: any[], key?: string) => void;
+  onChange: (values: any[], key?: string, dataPath?: string) => void;
   onNextStep?: (values: any[]) => void;
   onSubmit?: (values: any[]) => void;
   onCancel?: () => void;
@@ -132,10 +132,10 @@ const KubectlApplyForm = React.forwardRef<
           value={f.value}
           slot={getSlot}
           helperSlot={getHelperSlot}
-          onChange={(newValue: any, key?: string) => {
+          onChange={(newValue: any, key?: string, dataPath?: string) => {
             const valuesSlice = [...values];
             set(valuesSlice, f.dataPath, newValue);
-            onChange(valuesSlice, key);
+            onChange(valuesSlice, key, dataPath);
           }}
         />
       );

@@ -217,6 +217,7 @@ const KubectlApplyFormProps = Type.Object({
 const KubectlApplyFormState = Type.Object({
   value: Type.Any(),
   latestChangedKey: Type.String(),
+  latestChangedPath: Type.String(),
   step: Type.Number(),
   loading: Type.Boolean(),
   error: Type.Any(),
@@ -368,11 +369,12 @@ export const KubectlApplyForm = implementRuntimeComponent({
           setStep(step);
         }}
         defaultValues={formConfig.defaultValues}
-        onChange={(newValues: any, key?: string) => {
+        onChange={(newValues: any, key?: string, dataPath?: string) => {
           setValues(newValues);
           mergeState({
             value: newValues,
             latestChangedKey: key,
+            latestChangedPath: dataPath,
           });
           callbackMap?.onChange?.();
         }}

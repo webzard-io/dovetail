@@ -89,13 +89,13 @@ const ArrayItems = (props: Props) => {
                 ...itemSpec,
                 title: itemSpec.title,
               }}
-              path={path.concat(`[${itemIndex}]`)}
+              path={path.concat(`.${itemIndex}`)}
               level={level + 1}
               widgetOptions={{}}
-              onChange={(newItemValue: any, key) => {
+              onChange={(newItemValue: any, key?: string, dataPath?: string) => {
                 const newValue = [...value];
                 newValue[itemIndex] = newItemValue;
-                onChange(newValue, key);
+                onChange(newValue, key, dataPath);
               }}
             />
           </div>

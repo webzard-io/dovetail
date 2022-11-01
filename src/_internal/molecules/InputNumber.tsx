@@ -30,7 +30,8 @@ const InputNumber = (props: Props) => {
         numValue,
         `${
           props.subKey ? `${props.subKey}${props.field?.key ? "-" : ""}` : ""
-        }${props.field?.key || ""}`
+        }${props.field?.key || ""}`,
+        props.path
       );
     }
   }, [props.onChange, stringValue]);
