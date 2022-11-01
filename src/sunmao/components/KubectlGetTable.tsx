@@ -11,6 +11,7 @@ import BaseKubectlGetTable, {
   emptyData,
 } from "../../_internal/organisms/KubectlGetTable";
 import { renderWidget } from "../utils/widget";
+import { generateSlotChildren } from "../utils/slot";
 import { css, cx } from "@emotion/css";
 import { get } from "lodash";
 
@@ -368,6 +369,9 @@ export const KubectlGetTable = implementRuntimeComponent({
     callbackMap,
     slotsElements,
     customStyle,
+    app,
+    services,
+    component,
     mergeState,
     subscribeMethods,
   }) => {
@@ -512,11 +516,30 @@ export const KubectlGetTable = implementRuntimeComponent({
               return renderWidget(
                 { ...col, path: col.dataIndex },
                 {
-                  value: value ?? '-',
+                  value: value ?? "-",
                   record,
                   index,
                 },
-                slotsElements.cell,
+                (slotProps: any, fallback: any, slotKey: string) =>
+                  generateSlotChildren(
+                    {
+                      app,
+                      services,
+                      component,
+                      slotsElements,
+                      slot: "cell",
+                      slotKey,
+                      fallback,
+                    },
+                    {
+                      generateId: (child) => {
+                        return `${child.id}_${index}`;
+                      },
+                      generateProps() {
+                        return slotProps;
+                      }
+                    }
+                  ),
                 `column_${colIndex}_${index}`
               );
             },
