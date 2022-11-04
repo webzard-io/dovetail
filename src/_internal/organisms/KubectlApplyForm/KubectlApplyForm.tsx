@@ -14,7 +14,7 @@ import {
   WizardStyle,
 } from "./KubectlApplyForm.style";
 import { cx, css as dCss } from "@emotion/css";
-import { Steps, Popover, Row } from "antd";
+import { Steps, Popover, Row, Alert } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import SpecField from "../../molecules/AutoForm/SpecField";
 import Icon from "../../atoms/themes/CloudTower/components/Icon/Icon";
@@ -57,17 +57,20 @@ export type KubectlApplyFormProps = {
   values: any[];
   defaultValues: any[];
   error?: string;
-  errorDetail?: string;
+  errorDetail?: {
+    title: string;
+    errors: string[];
+  };
   submitting?: boolean;
   step: number;
   setStep: (step: number) => void;
   getSlot?: (
-    f: Field & { index?: number; },
+    f: Field & { index?: number },
     fallback: React.ReactNode,
     slotKey: string
   ) => React.ReactNode;
   getHelperSlot?: (
-    f: Field & { index?: number; },
+    f: Field & { index?: number },
     fallback: React.ReactNode,
     slotKey: string
   ) => React.ReactNode;
@@ -145,6 +148,27 @@ const KubectlApplyForm = React.forwardRef<
       };
     }
 
+    const errorContent =
+      error && errorDetail?.errors?.length ? (
+        <Alert
+          type="error"
+          className="error-alert"
+          message={
+            <>
+              <div className={cx(Typo.Label.l4_regular, "error-alert-title")}>
+                {errorDetail.title}
+              </div>
+              {errorDetail.errors.map((errorInfo, index) => (
+                <div className={Typo.Label.l4_regular} key={errorInfo}>{`${
+                  errorDetail.errors.length > 1 ? index + 1 + "." : ""
+                } ${errorInfo}`}</div>
+              ))}
+            </>
+          }
+          showIcon
+        ></Alert>
+      ) : null;
+
     function renderFields() {
       const { layout, cancelText, confirmText } = uiConfig;
       switch (layout.type) {
@@ -154,10 +178,15 @@ const KubectlApplyForm = React.forwardRef<
               <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
                 <div className="left"></div>
                 <Row gutter={[24, 16]} className="middle">
-                  {transformFields(layout.fields, values, defaultValues).map((f) => {
-                    const { component } = getComponent(f);
-                    return component;
-                  })}
+                  <div className="middle-form-wrapper">
+                    {transformFields(layout.fields, values, defaultValues).map(
+                      (f) => {
+                        const { component } = getComponent(f);
+                        return component;
+                      }
+                    )}
+                  </div>
+                  {errorContent}
                 </Row>
                 <div className="right">
                   {uiConfig.isDisplaySummary ? (
@@ -174,15 +203,13 @@ const KubectlApplyForm = React.forwardRef<
                   <div className="footer-content">
                     <div className="wizard-footer-left">
                       {error ? (
-                        <Popover content={errorDetail || error}>
-                          <div className="wizard-error">
-                            <Icon
-                              className="wizard-error-icon"
-                              type="1-exclamation-error-circle-fill-16-red"
-                            ></Icon>
-                            <span className="wizard-error-text">{error}</span>
-                          </div>
-                        </Popover>
+                        <div className="wizard-error">
+                          <Icon
+                            className="wizard-error-icon"
+                            type="1-exclamation-error-circle-fill-16-red"
+                          ></Icon>
+                          <span className="wizard-error-text">{error}</span>
+                        </div>
                       ) : null}
                     </div>
                     <div className="wizard-footer-btn-group">
@@ -222,10 +249,12 @@ const KubectlApplyForm = React.forwardRef<
                 {layout.tabs.map((t, idx) => {
                   return (
                     <TabPanel key={t.title + idx}>
-                      {transformFields(t.fields, values, defaultValues).map((f) => {
-                        const { component } = getComponent(f);
-                        return component;
-                      })}
+                      {transformFields(t.fields, values, defaultValues).map(
+                        (f) => {
+                          const { component } = getComponent(f);
+                          return component;
+                        }
+                      )}
                     </TabPanel>
                   );
                 })}
@@ -270,13 +299,18 @@ const KubectlApplyForm = React.forwardRef<
                   </Steps>
                 </div>
                 <Row gutter={[24, 16]} className="middle">
-                  {transformFields(layout.steps[step].fields, values, defaultValues).map(
-                    (f) => {
+                  <div className="middle-form-wrapper">
+                    {transformFields(
+                      layout.steps[step].fields,
+                      values,
+                      defaultValues
+                    ).map((f) => {
                       const { component } = getComponent(f);
 
                       return component;
-                    }
-                  )}
+                    })}
+                  </div>
+                  {errorContent}
                 </Row>
                 <div className="right">
                   {uiConfig.isDisplaySummary ? (
@@ -302,15 +336,13 @@ const KubectlApplyForm = React.forwardRef<
                         </span>
                       )}
                       {error ? (
-                        <Popover content={errorDetail || error}>
-                          <div className="wizard-error">
-                            <Icon
-                              className="wizard-error-icon"
-                              type="1-exclamation-error-circle-fill-16-red"
-                            ></Icon>
-                            <span className="wizard-error-text">{error}</span>
-                          </div>
-                        </Popover>
+                        <div className="wizard-error">
+                          <Icon
+                            className="wizard-error-icon"
+                            type="1-exclamation-error-circle-fill-16-red"
+                          ></Icon>
+                          <span className="wizard-error-text">{error}</span>
+                        </div>
                       ) : null}
                     </div>
                     <div className="wizard-footer-btn-group">
@@ -357,7 +389,7 @@ const KubectlApplyForm = React.forwardRef<
             )}
           >
             <div className="left"></div>
-            <div className="middle">
+            <div className={cx("middle", dCss`margin-bottom: 40px`)}>
               <div className={Typo.Display.d1_bold_title}>{title}</div>
             </div>
             <div className="right"></div>

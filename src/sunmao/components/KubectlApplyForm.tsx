@@ -204,10 +204,16 @@ const KubectlApplyFormProps = Type.Object({
     title: "Error",
     category: PRESET_PROPERTY_CATEGORY.Behavior,
   }),
-  errorDetail: Type.String({
-    title: "Error detail",
-    category: PRESET_PROPERTY_CATEGORY.Behavior,
-  }),
+  errorDetail: Type.Object(
+    {
+      title: Type.String({ title: "Title" }),
+      errors: Type.Array(Type.String(), { title: "Errors" }),
+    },
+    {
+      title: "Error detail",
+      category: PRESET_PROPERTY_CATEGORY.Behavior,
+    }
+  ),
   submitting: Type.Boolean({
     title: "Submitting",
     category: PRESET_PROPERTY_CATEGORY.Behavior,
@@ -259,6 +265,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
       }),
       nextStep: Type.Object({}),
       apply: Type.Object({}),
+      clearError: Type.Object({}),
     },
     slots: {
       field: {
@@ -338,13 +345,32 @@ export const KubectlApplyForm = implementRuntimeComponent({
               loading: false,
             });
             callbackMap?.onApplySuccess?.();
-          } catch (error) {
+          } catch (error: any) {
+            if (error.response) {
+              error.response
+                .clone()
+                .json()
+                .then((result: any) => {
+                  mergeState({
+                    error: {
+                      ...error,
+                      responseJsonBody: result,
+                    },
+                  });
+                });
+            }
+
             mergeState({
               loading: false,
               error,
             });
             callbackMap?.onApplyFail?.();
           }
+        },
+        clearError() {
+          mergeState({
+            error: null,
+          });
         },
       });
     }, [step, subscribeMethods, mergeState, values, callbackMap]);

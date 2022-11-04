@@ -43,12 +43,36 @@ export const WizardBodyStyle = css`
   }
 
   .middle {
+    display: flex;
+    flex-direction: column;
     align-content: flex-start;
-    margin-bottom: 40px;
     flex-grow: 0;
     flex-shrink: 0;
     flex-basis: 58%;
-    overflow: auto;
+    margin-bottom: 40px;
+
+    .middle-form-wrapper {
+      flex: 1;
+      width: 100%;
+      overflow: auto;
+      margin-bottom: 40px;
+    }
+
+    .error-alert {
+      width: 100%;
+      margin: 0 12px;
+      margin-bottom: 16px;
+      
+      &-title {
+        margin-bottom: 8px;
+      }
+
+      .anticon-close-circle {
+        display: flex;
+        align-items: center;
+      }
+    }
+
     .form-base-field {
       width: 100%;
       .form-base-field {
