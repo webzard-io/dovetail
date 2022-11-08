@@ -382,6 +382,10 @@ $footer-height: 64px;
 
   .dovetail-ant-modal-content {
     border-radius: 16px;
+
+    .dovetail-ant-modal-close-x {
+      right: 40px;
+    }
   }
 
   .dovetail-ant-modal-header {
