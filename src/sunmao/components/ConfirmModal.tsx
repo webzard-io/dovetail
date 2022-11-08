@@ -39,6 +39,10 @@ const Text = styled.div`
 
 const Tip = styled.div`
   color: rgba(44, 56, 82, 0.6);
+  margin-bottom: 2px;
+`;
+const ErrorReason = styled.div`
+  color: rgba(44, 56, 82, 0.6);
 `;
 
 export const ConfirmModal = implementRuntimeComponent({
@@ -50,6 +54,8 @@ export const ConfirmModal = implementRuntimeComponent({
     exampleProperties: {
       width: 492,
       title: "Delete",
+      errors: [],
+      size: 'small'
     },
     annotations: {
       category: PRESET_PROPERTY_CATEGORY.Basic,
@@ -75,6 +81,14 @@ export const ConfirmModal = implementRuntimeComponent({
       }),
       tip: Type.String({
         title: "Tip",
+        category: PRESET_PROPERTY_CATEGORY.Basic,
+      }),
+      errors: Type.Array(Type.String(), {
+        title: "Errors",
+        category: PRESET_PROPERTY_CATEGORY.Basic,
+      }),
+      size: StringUnion(['small', 'medium'], {
+        title: "Size",
         category: PRESET_PROPERTY_CATEGORY.Basic,
       }),
       confirmButtonText: Type.String({
@@ -112,6 +126,9 @@ export const ConfirmModal = implementRuntimeComponent({
       content: {
         slotProps: Type.Object({}),
       },
+      append: {
+        slotProps: Type.Object({}),
+      },
       footer: {
         slotProps: Type.Object({}),
       },
@@ -126,6 +143,8 @@ export const ConfirmModal = implementRuntimeComponent({
     title,
     text,
     tip,
+    errors,
+    size,
     confirmButtonText,
     confirmButtonType,
     confirmButtonLoading,
@@ -160,8 +179,14 @@ export const ConfirmModal = implementRuntimeComponent({
     );
     const content = (
       <>
-        <Text className={Typo.Label.l2_regular}>{text}</Text>
-        <Tip className={Typo.Label.l4_regular}>{tip}</Tip>
+        {text ? <Text className={Typo.Label.l2_regular}>{text}</Text> : text}
+        {tip ? <Tip className={Typo.Label.l4_regular}>{tip}</Tip> : null}
+        {errors?.map((error, index) => (
+          <ErrorReason className={Typo.Label.l4_regular} key={error + index}>
+            {errors.length > 1 ? `${index + 1}. ${error}` : error}
+          </ErrorReason>
+        ))}
+        {slotsElements.append?.({})}
       </>
     );
 
@@ -187,6 +212,7 @@ export const ConfirmModal = implementRuntimeComponent({
         title={title}
         width={width}
         footer={slotsElements.footer?.({}, footer) || footer}
+        size={size}
         onClose={onCancel}
       >
         {slotsElements.content?.({}, content) || content}
