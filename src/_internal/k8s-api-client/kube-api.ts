@@ -247,6 +247,35 @@ export class KubeApi<T> {
     query,
     cb,
   }: KubeApiListWatchOptions<T> = {}): Promise<StopWatchHandler> {
+    const controller: {
+      stopHandler: Promise<StopWatchHandler> | null;
+    } = {
+      stopHandler: null,
+    };
+
+    const self = this;
+
+    function startInformer() {
+      controller.stopHandler = self.createInformer(
+        { namespace, query, cb },
+        startInformer
+      );
+    }
+
+    startInformer();
+
+    return async () => {
+      if (controller.stopHandler) {
+        const h = await controller.stopHandler;
+        h();
+      }
+    };
+  }
+
+  private async createInformer(
+    { namespace, query, cb }: KubeApiListWatchOptions<T> = {},
+    retryCb: () => void
+  ) {
     const url = this.getUrl({ namespace });
     const res = await ky
       .get(url, {
@@ -262,19 +291,23 @@ export class KubeApi<T> {
       ? this.getUrl({ namespace }, undefined, true)
       : url;
 
-    return this.watch(watchUrl, res, cb);
+    return this.watch(watchUrl, res, cb, retryCb);
   }
 
   private async watch(
     url: string,
     res: T,
-    cb: KubeApiListWatchOptions<T>["cb"]
+    cb: KubeApiListWatchOptions<T>["cb"],
+    // let listwatch know it needs retry
+    retryCb: () => void
   ): Promise<StopWatchHandler> {
     const { resourceVersion } = (res as unknown as UnstructuredList).metadata;
     let { items } = res as unknown as UnstructuredList;
 
+    const self = this;
+
     const handleEvent = (event: any) => {
-      console.log("[INFORMER]", event);
+      self.informerLog(event);
       const name = event.object.metadata.name;
       switch (event.type) {
         case "ADDED":
@@ -300,7 +333,7 @@ export class KubeApi<T> {
     };
 
     if (this.watchWsBasePath) {
-      const protocol = location.protocol.includes('https') ? 'wss' : 'ws';
+      const protocol = location.protocol.includes("https") ? "wss" : "ws";
       const socket = new WebSocket(
         `${protocol}://${location.host}/${url}?resourceVersion=${resourceVersion}&watch=1`
       );
@@ -309,9 +342,15 @@ export class KubeApi<T> {
         const event = JSON.parse(msg.data);
         handleEvent(event);
       });
+      socket.addEventListener("close", (evt) => {
+        if (evt.reason === "DOVETAIL_MANUAL_CLOSE") {
+          return;
+        }
+        retryCb();
+      });
 
       return () => {
-        socket.close();
+        socket.close(3001, "DOVETAIL_MANUAL_CLOSE");
       };
     }
 
@@ -346,7 +385,7 @@ export class KubeApi<T> {
                 const event = JSON.parse(line);
                 handleEvent(event);
               } catch (error) {
-                console.log("Error while parsing", line, "\n", error);
+                self.informerLog("Error while parsing", line, "\n", error);
               }
             });
 
@@ -360,12 +399,17 @@ export class KubeApi<T> {
         if (err.name === "AbortError") {
           return; // ignore
         }
-        console.log("watch error:", err);
+        this.informerLog("watch API error:", err);
+        retryCb();
       });
 
     return () => {
       controller.abort();
     };
+  }
+
+  private informerLog(...args: Parameters<typeof console.log>) {
+    return console.log("[DOVETAIL INFORMER]", ...args);
   }
 
   private get apiVersionWithGroup() {
