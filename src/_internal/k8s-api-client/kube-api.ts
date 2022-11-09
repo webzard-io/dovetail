@@ -307,6 +307,9 @@ export class KubeApi<T> {
     const self = this;
 
     const handleEvent = (event: any) => {
+      if (event.type === "PING") {
+        return;
+      }
       self.informerLog(event);
       const name = event.object.metadata.name;
       switch (event.type) {
