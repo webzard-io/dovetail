@@ -205,6 +205,26 @@ type StopWatchHandler = () => void;
 
 type K8sObject = { apiVersion?: string; kind?: string; metadata?: ObjectMeta };
 
+type ExtendedWebsocketClient = WebSocket & {
+  pingTimeout?: ReturnType<typeof setTimeout>;
+};
+
+function heartbeat(ws: ExtendedWebsocketClient) {
+  clearTimeout(ws.pingTimeout);
+
+  /**
+   * Currently SKS will send PING message every 30 seconds,
+   * and we add 50% buffer(15 seconds) to it.
+   * If the client does not receive message for 45 seconds,
+   * it will close the connection and retry.
+   *
+   * TODO: make the timeout value configurable
+   */
+  ws.pingTimeout = setTimeout(() => {
+    ws.close();
+  }, 30_000 * 1.5);
+}
+
 export class KubeApi<T> {
   private basePath: string;
   private apiVersion: string;
@@ -340,12 +360,17 @@ export class KubeApi<T> {
       const socket = new WebSocket(
         `${protocol}://${location.host}/${url}?resourceVersion=${resourceVersion}&watch=1`
       );
-      socket.addEventListener("open", () => {});
+      socket.addEventListener("open", () => {
+        heartbeat(socket);
+      });
       socket.addEventListener("message", function (msg) {
+        heartbeat(socket);
         const event = JSON.parse(msg.data);
         handleEvent(event);
       });
       socket.addEventListener("close", (evt) => {
+        clearTimeout((socket as ExtendedWebsocketClient).pingTimeout);
+
         if (evt.reason === "DOVETAIL_MANUAL_CLOSE") {
           return;
         }
