@@ -2,12 +2,40 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   DIALOG_CONTAINER_ID,
   implementRuntimeComponent,
-  StringUnion
+  StringUnion,
 } from "@sunmao-ui/runtime";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
 import { KitContext } from "../../_internal/atoms/kit-context";
 import { useTranslation } from "react-i18next";
+import { styled } from "@linaria/react";
+import { cx } from '@linaria/core';
+import Icon from "../../_internal/atoms/themes/CloudTower/components/Icon/Icon";
+import { Typo } from '../../_internal/atoms/themes/CloudTower/styles/typo.style';
+
+const FooterWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
+const FooterError = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+  font-size: 13px;
+  color: $red-60;
+  text-align: left;
+
+  .modal-error-icon {
+    margin-right: 6px;
+  }
+
+  .modal-error-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+`;
 
 const ModalProps = Type.Object({
   title: Type.String(),
@@ -15,7 +43,8 @@ const ModalProps = Type.Object({
   defaultVisible: Type.Boolean(),
   maskClosable: Type.Boolean(),
   showFooter: Type.Boolean(),
-  size: StringUnion(['small', 'medium'])
+  footerError: Type.String(),
+  size: StringUnion(["small", "medium"]),
 });
 
 const ModalState = Type.Object({
@@ -67,6 +96,7 @@ export const Modal = implementRuntimeComponent({
     width,
     title,
     showFooter,
+    footerError,
     size,
   }) => {
     const kit = useContext(KitContext);
@@ -102,7 +132,7 @@ export const Modal = implementRuntimeComponent({
         ref={elementRef}
         onClose={onClose}
         afterClose={callbackMap?.afterClose}
-        className={css`
+        className={ecss`
           ${customStyle?.modal}
         `}
         visible={visible}
@@ -114,17 +144,30 @@ export const Modal = implementRuntimeComponent({
         title={title}
         size={size}
         footer={
-          <>
-            {showFooter ? (
-              slotsElements.footer ? (
-                slotsElements.footer({})
+          showFooter ? (
+            <FooterWrapper>
+              {footerError ? (
+                <FooterError>
+                  <Icon
+                    className="modal-error-icon"
+                    type="1-exclamation-error-circle-fill-16-red"
+                  ></Icon>
+                  <span className={cx("modal-error-text", Typo.Label.l4_regular)}>{footerError}</span>
+                </FooterError>
               ) : (
-                <kit.Button type="text" onClick={onClose}>
-                  {t("dovetail.cancel")}
-                </kit.Button>
-              )
-            ) : null}
-          </>
+                <span />
+              )}
+              <div>
+                {slotsElements.footer ? (
+                  slotsElements.footer({})
+                ) : (
+                  <kit.Button type="text" onClick={onClose}>
+                    {t("dovetail.cancel")}
+                  </kit.Button>
+                )}
+              </div>
+            </FooterWrapper>
+          ) : null
         }
       >
         <>
