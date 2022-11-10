@@ -31,7 +31,7 @@ const Title = styled.div`
   font-size: 12px;
   line-height: 18px;
   color: rgba(129, 138, 153, 0.6);
-  margin: 8px 0 10px 12px;
+  margin: 8px 12px 10px 12px;
 `;
 
 const CheckboxStyle = css`
