@@ -175,7 +175,7 @@ const KubectlApplyForm = React.forwardRef<
         case "simple": {
           return (
             <div className={cx(WizardStyle)}>
-              <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
+              <div className={cx('wizard-content', dCss`width: 100%;`, WizardBodyStyle)}>
                 <div className="left"></div>
                 <Row gutter={[24, 16]} className="middle">
                   <div className="middle-form-wrapper">
@@ -199,7 +199,7 @@ const KubectlApplyForm = React.forwardRef<
                 </div>
               </div>
               {uiConfig.isDisplayFooter ? (
-                <div className={WizardFooterStyle}>
+                <div className={cx('wizard-footer', dCss(WizardFooterStyle))}>
                   <div className="footer-content">
                     <div className="wizard-footer-left">
                       {error ? (
