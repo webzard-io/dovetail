@@ -11,6 +11,7 @@ import { KitContext } from "../../_internal/atoms/kit-context";
 import { useTranslation } from "react-i18next";
 import { styled } from "@linaria/react";
 import { Typo } from "../../_internal/atoms/themes/CloudTower/styles/typo.style";
+import Icon from "../../_internal/atoms/themes/CloudTower/components/Icon/Icon";
 
 const ModalStyle = css`
   .ant-modal-header {
@@ -30,6 +31,29 @@ const ModalStyle = css`
   .ant-modal .ant-modal-close-x {
     right: 20px;
     top: 20px;
+  }
+`;
+const FooterWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
+const FooterError = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+  font-size: 13px;
+  color: $red-60;
+  text-align: left;
+
+  .modal-error-icon {
+    margin-right: 6px;
+  }
+
+  .modal-error-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 `;
 
@@ -55,7 +79,7 @@ export const ConfirmModal = implementRuntimeComponent({
       width: 492,
       title: "Delete",
       errors: [],
-      size: 'small'
+      size: "small",
     },
     annotations: {
       category: PRESET_PROPERTY_CATEGORY.Basic,
@@ -87,8 +111,12 @@ export const ConfirmModal = implementRuntimeComponent({
         title: "Errors",
         category: PRESET_PROPERTY_CATEGORY.Basic,
       }),
-      size: StringUnion(['small', 'medium'], {
+      size: StringUnion(["small", "medium"], {
         title: "Size",
+        category: PRESET_PROPERTY_CATEGORY.Basic,
+      }),
+      footerError: Type.String({
+        title: "Footer Error",
         category: PRESET_PROPERTY_CATEGORY.Basic,
       }),
       confirmButtonText: Type.String({
@@ -148,6 +176,7 @@ export const ConfirmModal = implementRuntimeComponent({
     confirmButtonText,
     confirmButtonType,
     confirmButtonLoading,
+    footerError,
     customStyle,
     elementRef,
     slotsElements,
@@ -163,8 +192,8 @@ export const ConfirmModal = implementRuntimeComponent({
       callbackMap?.onCancel?.();
     }, [callbackMap]);
 
-    const footer = (
-      <>
+    const footerButtons = (
+      <div>
         <kit.Button type="text" onClick={onCancel}>
           {t("dovetail.cancel")}
         </kit.Button>
@@ -175,7 +204,25 @@ export const ConfirmModal = implementRuntimeComponent({
         >
           {confirmButtonText || t("dovetail.delete")}
         </kit.Button>
-      </>
+      </div>
+    );
+    const footer = (
+      <FooterWrapper>
+        {footerError ? (
+          <FooterError>
+            <Icon
+              className="modal-error-icon"
+              type="1-exclamation-error-circle-fill-16-red"
+            ></Icon>
+            <span className={cx("modal-error-text", Typo.Label.l4_regular)}>
+              {footerError}
+            </span>
+          </FooterError>
+        ) : (
+          <span />
+        )}
+        <div>{slotsElements.footer?.({}, footerButtons) || footerButtons}</div>
+      </FooterWrapper>
     );
     const content = (
       <>
@@ -211,7 +258,7 @@ export const ConfirmModal = implementRuntimeComponent({
         className={cx(ModalStyle, css(customStyle?.content))}
         title={title}
         width={width}
-        footer={slotsElements.footer?.({}, footer) || footer}
+        footer={footer}
         size={size}
         onClose={onCancel}
       >
