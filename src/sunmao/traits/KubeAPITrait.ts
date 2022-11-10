@@ -104,6 +104,7 @@ export const KubeAPITraitPropertiesSpec = Type.Object({
   onResponse: Type.Array(EventCallBackHandlerSpec),
   onError: Type.Array(EventCallBackHandlerSpec),
   onDataUpdate: Type.Array(EventCallBackHandlerSpec),
+  onBeforeResponse:  Type.Array(EventCallBackHandlerSpec),
 });
 export const KubeAPITraitStateSpec = Type.Object({
   loading: Type.Boolean(),
@@ -152,6 +153,7 @@ export default implementRuntimeTrait({
     isAutoWatch,
     onDataUpdate,
     onResponse,
+    onBeforeResponse,
     onError,
     services,
     mergeState,
@@ -194,6 +196,11 @@ export default implementRuntimeTrait({
             ]).join(","),
           },
           cb: (response) => {
+            if (!responseMap.has(componentId)) {
+              onBeforeResponse?.forEach((handler, index) => {
+                runEventHandler(handler, onBeforeResponse, index, services, "")();
+              });
+            }
             mergeState({ loading: false, error: null, response });
             if (!responseMap.has(componentId)) {
               onResponse?.forEach((handler, index) => {
@@ -238,6 +245,9 @@ export default implementRuntimeTrait({
           },
         });
 
+        onBeforeResponse?.forEach((handler, index) => {
+          runEventHandler(handler, onBeforeResponse, index, services, "")();
+        });
         mergeState({ loading: false, error: null, response });
         onResponse?.forEach((handler, index) => {
           runEventHandler(handler, onResponse, index, services, "")();
