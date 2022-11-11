@@ -519,14 +519,18 @@ export class KubeSdk {
       spec.metadata.annotations[
         "kubectl.kubernetes.io/last-applied-configuration"
       ] = JSON.stringify(spec);
+
+      let exist = true;
       try {
         await this.read(spec);
-        const response = await this.patch(spec, "application/merge-patch+json");
-        created.push(response as K8sObject);
       } catch (e) {
-        const response = await this.create(spec);
-        created.push(response as K8sObject);
+        exist = false;
       }
+
+      const response = exist
+        ? await this.patch(spec, "application/merge-patch+json")
+        : await this.create(spec);
+      created.push(response as K8sObject);
     }
 
     return created;
