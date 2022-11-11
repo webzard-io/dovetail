@@ -57,6 +57,7 @@ type DetailResponse = {
 
 export type Item = {
   label: string;
+  key: string;
   path: string;
   widget?: string;
   widgetOptions?: Record<string, any>;
