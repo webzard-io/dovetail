@@ -21,6 +21,8 @@ import HeaderCell from "../atoms/themes/CloudTower/components/Table/HeaderCell";
 import { BLANK_COLUMN } from "../atoms/themes/CloudTower/components/Table/common";
 import { get } from "lodash";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
+import ErrorContent from "../ErrorContent";
+import { useTranslation } from "react-i18next";
 
 const TableWrapper = styled.div`
   overflow: auto;
@@ -104,11 +106,26 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
     ref
   ) => {
     const kit = useContext(KitContext);
+    const { t } = useTranslation();
     const auxiliaryLine = useRef(null);
+    const stop = useRef<Function | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [currentSize, setCurrentSize] = useState(defaultSize ?? 10);
     const { data, loading, error } = response;
 
+    const api = useMemo(
+      () =>
+        new KubeApi<UnstructuredList>({
+          basePath,
+          watchWsBasePath,
+          objectConstructor: {
+            kind: "",
+            apiBase: `${apiBase}/${resource}`,
+            namespace,
+          },
+        }),
+      [basePath, watchWsBasePath, apiBase, resource, namespace]
+    );
     const defaultCustomizeColumn: [string, () => CustomizeColumnType[]] =
       useMemo(() => {
         return [
@@ -230,18 +247,14 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       },
       [onPageSizeChange]
     );
+    const fetch = useCallback(() => {
+      if (stop.current) {
+        stop.current();
+        stop.current = null;
+      }
 
-    useEffect(() => {
-      const api = new KubeApi<UnstructuredList>({
-        basePath,
-        watchWsBasePath,
-        objectConstructor: {
-          kind: "",
-          apiBase: `${apiBase}/${resource}`,
-          namespace,
-        },
-      });
       onResponse?.({ ...response, loading: true });
+
       const stopP = api
         .listWatch({
           query: fieldSelector ? { fieldSelector, namespace } : { namespace },
@@ -264,14 +277,36 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
           onResponse?.({ loading: false, error: err, data: emptyData });
         });
 
-      return () => {
+      stop.current = () => {
         stopP.then((stop) => stop?.());
+        stop.current = null;
       };
-    }, [apiBase, resource, namespace, basePath, fieldSelector]);
 
-    return response.loading && response.data.items.length === 0 ? (
-      <TableLoading></TableLoading>
-    ) : (
+      return stop.current;
+    }, [api, namespace, fieldSelector]);
+    useEffect(() => {
+      const stop = fetch();
+
+      return () => {
+        stop();
+      };
+    }, [fetch]);
+
+    if (response.loading && response.data.items.length === 0) {
+      return <TableLoading></TableLoading>;
+    } else if (error) {
+      return (
+        <ErrorContent
+          errorText={t("dovetail.retry_when_access_data_failed")}
+          refetch={fetch}
+          style={{padding: '15px 0'}}
+        ></ErrorContent>
+      );
+    } else if (response.data.items.length === 0) {
+      return <ErrorContent errorText={t("dovetail.empty")} style={{padding: '15px 0'}}></ErrorContent>;
+    }
+
+    return (
       <TableWrapper>
         <TableContent>
           <kit.Table
