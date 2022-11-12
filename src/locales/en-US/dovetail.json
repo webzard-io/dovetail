@@ -74,5 +74,6 @@
   "cancel": "Cancel",
   "delete": "Delete",
   "action": "Action",
-  "add": "Add"
+  "add": "Add",
+  "retry_when_access_data_failed": "There was a problem when getting data, please try again"
 }

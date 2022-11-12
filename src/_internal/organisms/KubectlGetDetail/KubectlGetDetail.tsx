@@ -57,6 +57,7 @@ type DetailResponse = {
 
 export type Item = {
   label: string;
+  key: string;
   path: string;
   widget?: string;
   widgetOptions?: Record<string, any>;
@@ -251,7 +252,7 @@ const KubectlGetDetail = React.forwardRef<
                       };
                       return (
                         <kit.InfoRow
-                          key={item.path || item.label}
+                          key={(item.key || item.path || item.label) + index}
                           className={RowStyle}
                           label={
                             <span className={Typo.Label.l4_regular_title}>

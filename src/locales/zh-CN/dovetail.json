@@ -74,5 +74,6 @@
   "cancel": "取消",
   "delete": "删除",
   "action": "操作",
-  "add": "添加"
+  "add": "添加",
+  "retry_when_access_data_failed": "获取数据时遇到问题，请重试"
 }

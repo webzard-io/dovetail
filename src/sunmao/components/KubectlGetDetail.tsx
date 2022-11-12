@@ -12,6 +12,7 @@ import { renderWidget } from "../utils/widget";
 const InfoSpec = Type.Object(
   {
     label: Type.String({ title: "Label" }),
+    key: Type.String({ title: 'Key' }),
     path: Type.String({
       title: "Path",
       widget: "kui/v1/PathWidget",

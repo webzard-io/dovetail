@@ -29,6 +29,7 @@ export const ErrorContent = styled.div`
 
 export type WidgetErrorContentProps = {
   errorText?: string;
+  style?: React.CSSProperties;
   refetch?: () => void;
 };
 
@@ -40,20 +41,22 @@ const WidgetErrorContent: React.FunctionComponent<WidgetErrorContentProps> = (
   const { t } = useTranslation();
 
   return (
-    <ErrorWrapper>
+    <ErrorWrapper style={props.style}>
       <ErrorContent>
         <p className={cx(Typo.Label.l1_regular_title, "title")}>
           {props.errorText || t("dovetail.obtain_data_error")}
         </p>
-        <kit.Button
-          type="ordinary"
-          onClick={(e) => {
-            e.stopPropagation();
-            refetch?.();
-          }}
-        >
-          {t("dovetail.retry")}
-        </kit.Button>
+        {refetch ? (
+          <kit.Button
+            type="ordinary"
+            onClick={(e) => {
+              e.stopPropagation();
+              refetch?.();
+            }}
+          >
+            {t("dovetail.retry")}
+          </kit.Button>
+        ) : null}
       </ErrorContent>
     </ErrorWrapper>
   );
