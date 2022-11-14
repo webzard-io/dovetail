@@ -15,13 +15,13 @@ export type Field = {
 
 export function renderWidget(
   field: Field,
-  data: { value: any; [props: string]: any },
+  data: { value: any; renderedValue?: any; [props: string]: any },
   slot?: Function,
   slotKey?: string
 ) {
-  const { value, record } = data;
+  const { value, record, renderedValue } = data;
   const { widget, widgetOptions = {}, transform, ...restField } = field;
-  const transformedValue = transform ? transform(restField, data) : value;
+  const transformedValue = transform ? transform(restField, data) : (renderedValue ?? value);
   let node = transformedValue;
 
   if (widget && widget !== "default") {
@@ -32,19 +32,19 @@ export function renderWidget(
     node = WidgetComponent ? (
       <WidgetComponent {...widgetOptions} value={transformedValue} />
     ) : (
-      value
+      transformedValue
     );
   } else {
     // apply the widget by path
     if (field.path === "metadata.creationTimestamp") {
-      node = <ObjectAge value={value} />;
+      node = <ObjectAge value={transformedValue} />;
     } else if (
       field.path === "metadata.labels" ||
       field.path === "metadata.annotations"
     ) {
       node = (
         <ObjectLabel
-          value={Object.entries(value || {}).map(
+          value={Object.entries(transformedValue || {}).map(
             ([key, value]) => `${key}: ${value}`
           )}
         />
