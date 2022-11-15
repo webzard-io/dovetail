@@ -322,6 +322,7 @@ export class KubeApi<T> {
     retryCb: () => void
   ): Promise<StopWatchHandler> {
     const { resourceVersion } = (res as unknown as UnstructuredList).metadata;
+    let shouldCloseAfterConnected = false;
     let { items } = res as unknown as UnstructuredList;
 
     const self = this;
@@ -361,6 +362,10 @@ export class KubeApi<T> {
         `${protocol}://${location.host}/${url}?resourceVersion=${resourceVersion}&watch=1`
       );
       socket.addEventListener("open", () => {
+        if (shouldCloseAfterConnected) {
+          socket.close(3001, "DOVETAIL_MANUAL_CLOSE");
+          return;
+        }
         heartbeat(socket);
       });
       socket.addEventListener("message", function (msg) {
@@ -378,7 +383,11 @@ export class KubeApi<T> {
       });
 
       return () => {
-        socket.close(3001, "DOVETAIL_MANUAL_CLOSE");
+        if (socket.readyState === socket.OPEN) {
+          socket.close(3001, "DOVETAIL_MANUAL_CLOSE");
+        } else {
+          shouldCloseAfterConnected = true;
+        }
       };
     }
 
