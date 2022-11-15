@@ -285,7 +285,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
       },
     },
     styleSlots: ["content"],
-    events: [],
+    events: ["onItemDeleted"],
   },
 })(
   ({
@@ -302,6 +302,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
     customStyle,
     slotsElements,
     subscribeMethods,
+    callbackMap,
   }) => {
     const [activeTab, setActiveTab] = useState<string>("");
     const onResponse = useCallback(
@@ -311,6 +312,10 @@ export const KubectlGetDetail = implementRuntimeComponent({
           loading: res.loading,
           error: res.error ? String(res.error) : "",
         });
+
+        if (!res.data) {
+          callbackMap?.onItemDeleted();
+        }
       },
       [mergeState]
     );
