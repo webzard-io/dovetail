@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { Type } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { StringUnion, PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
@@ -12,7 +12,7 @@ import { renderWidget } from "../utils/widget";
 const InfoSpec = Type.Object(
   {
     label: Type.String({ title: "Label" }),
-    key: Type.String({ title: 'Key' }),
+    key: Type.String({ title: "Key" }),
     path: Type.String({
       title: "Path",
       widget: "kui/v1/PathWidget",
@@ -228,7 +228,9 @@ export const KubectlGetDetail = implementRuntimeComponent({
   spec: {
     properties: KubectlGetDetailProps,
     state: KubectlGetDetailState,
-    methods: {},
+    methods: {
+      setActiveTab: Type.Object({ activeTab: Type.String() }),
+    },
     slots: {
       tab: {
         slotProps: Type.Object({
@@ -299,7 +301,9 @@ export const KubectlGetDetail = implementRuntimeComponent({
     mergeState,
     customStyle,
     slotsElements,
+    subscribeMethods,
   }) => {
+    const [activeTab, setActiveTab] = useState<string>("");
     const onResponse = useCallback(
       (res) => {
         mergeState({
@@ -318,6 +322,14 @@ export const KubectlGetDetail = implementRuntimeComponent({
       },
       [mergeState]
     );
+
+    useEffect(() => {
+      subscribeMethods({
+        setActiveTab: ({ activeTab: newActiveTab }) => {
+          setActiveTab(newActiveTab);
+        },
+      });
+    }, [setActiveTab]);
 
     return (
       <BaseKubectlGetDetail
@@ -368,6 +380,8 @@ export const KubectlGetDetail = implementRuntimeComponent({
         errorText={errorText}
         onResponse={onResponse}
         onTabChange={onTabChange}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
       />
     );
   }
