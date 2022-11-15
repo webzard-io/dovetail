@@ -9,9 +9,9 @@ import { Type } from "@sinclair/typebox";
 import { KitContext } from "../../_internal/atoms/kit-context";
 import { useTranslation } from "react-i18next";
 import { styled } from "@linaria/react";
-import { cx } from '@linaria/core';
+import { cx } from "@linaria/core";
 import Icon from "../../_internal/atoms/themes/CloudTower/components/Icon/Icon";
-import { Typo } from '../../_internal/atoms/themes/CloudTower/styles/typo.style';
+import { Typo } from "../../_internal/atoms/themes/CloudTower/styles/typo.style";
 
 const FooterWrapper = styled.div`
   width: 100%;
@@ -98,6 +98,7 @@ export const Modal = implementRuntimeComponent({
     showFooter,
     footerError,
     size,
+    mergeState,
   }) => {
     const kit = useContext(KitContext);
     const { t } = useTranslation();
@@ -111,14 +112,23 @@ export const Modal = implementRuntimeComponent({
       subscribeMethods({
         open() {
           setVisible(true);
+          mergeState({
+            visible: true,
+          });
         },
         close() {
           setVisible(false);
+          mergeState({
+            visible: false,
+          });
         },
       });
     }, []);
     const onClose = useCallback(() => {
       setVisible(false);
+      mergeState({
+        visible: false,
+      })
       callbackMap?.onClose();
     }, [callbackMap?.onClose]);
     useEffect(() => {
@@ -152,7 +162,11 @@ export const Modal = implementRuntimeComponent({
                     className="modal-error-icon"
                     type="1-exclamation-error-circle-fill-16-red"
                   ></Icon>
-                  <span className={cx("modal-error-text", Typo.Label.l4_regular)}>{footerError}</span>
+                  <span
+                    className={cx("modal-error-text", Typo.Label.l4_regular)}
+                  >
+                    {footerError}
+                  </span>
                 </FooterError>
               ) : (
                 <span />
