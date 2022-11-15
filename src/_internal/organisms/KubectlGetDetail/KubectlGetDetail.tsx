@@ -125,6 +125,8 @@ type KubectlGetDetailProps = {
   ) => React.ReactNode;
   onResponse?: (res: DetailResponse) => void;
   onTabChange?: (key: string) => void;
+  activeTab: string;
+  setActiveTab: (key: string) => void;
 };
 
 const KubectlGetDetail = React.forwardRef<
@@ -146,6 +148,8 @@ const KubectlGetDetail = React.forwardRef<
     renderValue,
     renderAction,
     onResponse,
+    activeTab,
+    setActiveTab,
   } = props;
   const kit = useContext(KitContext);
   const [response, setResponse] = useState<DetailResponse>({
@@ -153,7 +157,6 @@ const KubectlGetDetail = React.forwardRef<
     loading: false,
     error: null,
   });
-  const [activeTab, setActiveTab] = useState<string>("");
   const { data, loading, error } = response;
 
   const onTabChange = (key: string) => {
