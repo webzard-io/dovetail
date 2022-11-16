@@ -313,8 +313,8 @@ export const KubectlGetDetail = implementRuntimeComponent({
           error: res.error ? String(res.error) : "",
         });
 
-        if (!res.data) {
-          callbackMap?.onItemDeleted();
+        if (res.data === undefined && !res.loading && !res.error) {
+          callbackMap?.onItemDeleted?.();
         }
       },
       [mergeState]
