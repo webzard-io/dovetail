@@ -22,6 +22,10 @@ const ModalProps = Type.Object({
     title: "Size",
     category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
+  zIndex: Type.Number({
+    title: "zIndex",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+  }),
   confirmText: Type.String({
     title: "Confirm text",
     category: PRESET_PROPERTY_CATEGORY.Basic,
@@ -57,6 +61,7 @@ export const Modal = implementRuntimeComponent({
     isResizable: true,
     exampleProperties: {
       title: "Header",
+      zIndex: 1000,
     },
     exampleSize: [4, 8],
     annotations: {
@@ -96,6 +101,7 @@ export const Modal = implementRuntimeComponent({
     confirmText,
     fullscreen,
     size,
+    zIndex,
     mergeState,
   }) => {
     const kit = useContext(KitContext);
@@ -161,6 +167,7 @@ export const Modal = implementRuntimeComponent({
         onCancel={onClose}
         onOk={callbackMap?.onConfirm}
         afterClose={callbackMap?.afterClose}
+        zIndex={zIndex || 1000}
       >
         <>
           {slotsElements.content

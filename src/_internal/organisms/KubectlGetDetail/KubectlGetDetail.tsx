@@ -61,6 +61,7 @@ export type Item = {
   path: string;
   widget?: string;
   widgetOptions?: Record<string, any>;
+  condition?: boolean;
   transform?: (
     params: { path: string },
     data: { value: string; detail: Unstructured }
@@ -253,7 +254,7 @@ const KubectlGetDetail = React.forwardRef<
                         section: section.title,
                         category,
                       };
-                      return (
+                      return item.condition ? (
                         <kit.InfoRow
                           key={(item.key || item.path || item.label) + index}
                           className={RowStyle}
@@ -280,7 +281,7 @@ const KubectlGetDetail = React.forwardRef<
                             </ValueWrapper>
                           }
                         />
-                      );
+                      ) : null;
                     })}
                   </InfoListBlock>
                 );
