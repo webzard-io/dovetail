@@ -46,6 +46,9 @@ const InfoSpec = Type.Object(
         },
       ],
     }),
+    condition: Type.Boolean({
+      title: "Condition",
+    }),
   },
   {
     widget: "kui/v1/KubectlGetDetailFieldWidget",
