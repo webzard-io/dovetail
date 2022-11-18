@@ -2342,61 +2342,6 @@
           ]
         },
         {
-          "id": "create_cluster",
-          "type": "core/v1/dummy",
-          "properties": {},
-          "traits": [
-            {
-              "type": "core/v1/fetch",
-              "properties": {
-                "url": "/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/default/kubesmartclusters",
-                "method": "post",
-                "lazy": true,
-                "disabled": false,
-                "headers": {
-                  "content-type": "application/json"
-                },
-                "body": "{{(() => {\n    if (\n      typeof create_form === 'undefined' ||\n      typeof cluster_select === 'undefined' ||\n      typeof control_plane_vlan_0 === 'undefined' ||\n      typeof control_plane_vlan_1 === 'undefined' ||\n      typeof worker_0_vlan_0 === 'undefined' ||\n      typeof worker_0_vlan_1 === 'undefined' ||\n      !create_form.value\n  ) {\n      return {}\n  }\n  \n  const { name, ...rest } = create_form.value;\n  console.log(rest.version, templateMap.value)\n  const body = {\n    apiVersion: \"kubesmart.smtx.io/v1alpha1\",\n    kind: \"KubeSmartCluster\",\n    metadata: {\n      namespace: \"default\",\n      name,\n    },\n    spec: {\n        ...rest,\n      \"cloudProvider\": {\n          \"cloudtower\": {\n            \"authMode\": \"LOCAL\",\n          \"elfCluster\": cluster_select.value,\n          \"password\": \"K5yt3hcjtUE4Teqe\",\n          \"server\": \"192.168.31.181\",\n          \"username\": \"system-service\",\n          \"zbsVip\": rest.cloudProvider.cloudtower.zbsVip,\n        },\n        \"name\": \"cloudtower\"\n      },\n      \"topology\": {\n          \"controlPlane\": {\n            ...create_form.value.topology.controlPlane,\n          \"name\": \"controlplane\",\n          \"nodeConfig\": {\n              ...create_form.value.topology.controlPlane.nodeConfig,\n            network: {\n                devices: create_form.value.topology.controlPlane.nodeConfig.network.devices.map((d, idx) => ({\n                  networkIndex: idx,\n                networkType: d.networkType,\n                vlan: idx === 0 ? control_plane_vlan_0.value : control_plane_vlan_1.value\n              })),\n            },\n            vmTemplate: templateMap.value[rest.version],\n          },\n        },\n        workers: create_form.value.topology.workers.map((w, idx) => {\n            return {\n              ...w,\n            name: `workergroup${idx}`,\n            \"nodeConfig\": {\n                ...w.nodeConfig,\n              \"network\": {\n                  \"devices\": w.nodeConfig.network.devices.map((d, idx) => ({\n                  networkIndex: idx,\n                networkType: d.networkType,\n                vlan: idx === 0 ? worker_0_vlan_0.value : worker_0_vlan_1.value\n              })),\n              },\n              vmTemplate: templateMap.value[rest.version],\n            },\n          }\n        }),\n      }\n    }\n  }\n  \n  console.log('create body', body)\n  return body\n})()}}",
-                "bodyType": "json",
-                "onComplete": [
-                  {
-                    "componentId": "$utils",
-                    "method": {
-                      "name": "message",
-                      "parameters": {
-                        "type": "info",
-                        "message": "创建 K8s 集群",
-                        "duration": 2
-                      }
-                    },
-                    "disabled": false,
-                    "wait": {
-                      "type": "delay",
-                      "time": 0
-                    }
-                  },
-                  {
-                    "componentId": "show_modal",
-                    "method": {
-                      "name": "setValue",
-                      "parameters": {
-                        "key": "value",
-                        "value": "false"
-                      }
-                    },
-                    "disabled": false,
-                    "wait": {
-                      "type": "delay",
-                      "time": 0
-                    }
-                  }
-                ],
-                "onError": []
-              }
-            }
-          ]
-        },
-        {
           "id": "token",
           "type": "core/v1/dummy",
           "properties": {},
