@@ -119,7 +119,7 @@ const ArrayGroups = (props: Props) => {
               );
             }}
           >
-            {widgetOptions.addedButtonText || "添加"}
+            {widgetOptions.addedButtonText || t("dovetail.add")}
           </kit.Button>
         </div>
       ) : null}
