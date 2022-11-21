@@ -141,9 +141,9 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       }, [tableProps.columns, tableProps.customizableKey]);
     const [customizeColumns] = useCustomizeColumn(...defaultCustomizeColumn);
 
-    let columns: Columns = [];
+    let columns: (Columns[0] & { index?: number })[] = [];
 
-    customizeColumns.forEach((customizableColumn) => {
+    customizeColumns.forEach((customizableColumn, index) => {
       if (!customizableColumn.display) return;
 
       const column = tableProps.columns.find(
@@ -153,6 +153,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       if (column) {
         columns.push({
           ...column,
+          index,
           width: customizableColumn.width,
           ellipsis: true,
         });
@@ -194,10 +195,10 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       }
     }
 
-    columns = columns.map((column, index) => ({
+    columns = columns.map((column) => ({
       ...column,
       onHeaderCell: () => ({
-        index,
+        index: column.index,
         sortable: column.canCustomizable,
         draggable: column.canCustomizable,
         tooltip: column.titleTooltip,
@@ -207,6 +208,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
 
         return {
           title: typeof value !== "object" ? value : "",
+          unique: column.key,
         };
       },
       title:
@@ -232,6 +234,32 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
           </kit.Tooltip>
         ),
     }));
+
+    const components = useMemo(
+      () => ({
+        header: {
+          cell: (props: any) => (
+            <HeaderCell
+              {...props}
+              resizable={true}
+              components={undefined}
+              auxiliaryLine={auxiliaryLine}
+              wrapper={wrapper}
+              defaultCustomizeColumn={defaultCustomizeColumn}
+            />
+          ),
+        },
+        body: {
+          cell: (props: any) => (
+            <td
+              {...props}
+              className={`${props.className} cell_${props.unique}`}
+            />
+          ),
+        },
+      }),
+      [auxiliaryLine, defaultCustomizeColumn, wrapper]
+    );
 
     const onTablePageChange = useCallback(
       (page) => {
@@ -299,11 +327,16 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
         <ErrorContent
           errorText={t("dovetail.retry_when_access_data_failed")}
           refetch={fetch}
-          style={{padding: '15px 0'}}
+          style={{ padding: "15px 0" }}
         ></ErrorContent>
       );
     } else if (response.data.items.length === 0) {
-      return <ErrorContent errorText={t("dovetail.empty")} style={{padding: '15px 0'}}></ErrorContent>;
+      return (
+        <ErrorContent
+          errorText={t("dovetail.empty")}
+          style={{ padding: "15px 0" }}
+        ></ErrorContent>
+      );
     }
 
     return (
@@ -312,28 +345,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
           <kit.Table
             {...tableProps}
             tableLayout="fixed"
-            components={{
-              header: {
-                cell: (props: any) => (
-                  <HeaderCell
-                    {...props}
-                    resizable={true}
-                    components={undefined}
-                    auxiliaryLine={auxiliaryLine}
-                    wrapper={wrapper}
-                    defaultCustomizeColumn={defaultCustomizeColumn}
-                  />
-                ),
-              },
-              body: {
-                cell: (props: any) => (
-                  <td
-                    {...props}
-                    className={`${props.className} cell_${props.unique}`}
-                  />
-                ),
-              },
-            }}
+            components={components}
             columns={columns}
             ref={ref}
             data={data.items.slice(

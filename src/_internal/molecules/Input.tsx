@@ -10,6 +10,7 @@ export const OptionsSpec = Type.Object({
   addonBefore: Type.Optional(Type.String()),
   addonAfter: Type.Optional(Type.String()),
   type: Type.Optional(StringUnion(["input", "password"])),
+  autoComplete: Type.Optional(StringUnion(["on", "off"])),
 });
 
 type Props = WidgetProps<string, Static<typeof OptionsSpec>>;
@@ -41,6 +42,7 @@ const Input = (props: Props) => {
       type={props.widgetOptions?.type || "input"}
       onChange={onChange}
       value={input}
+      autoComplete={props.widgetOptions?.autoComplete}
     ></kit.Input>
   );
 };
