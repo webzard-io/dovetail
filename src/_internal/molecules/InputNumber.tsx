@@ -18,23 +18,17 @@ const InputNumber = (props: Props) => {
 
   const onChange = useCallback(
     (event, newValue) => {
-      setStringValue(newValue);
-    },
-    [setStringValue]
-  );
-  const onBlur = useCallback(() => {
-    const numValue = stringValue;
-
-    if (numValue !== undefined) {
       props.onChange(
-        numValue,
+        Number(newValue),
         `${
           props.subKey ? `${props.subKey}${props.field?.key ? "-" : ""}` : ""
         }${props.field?.key || ""}`,
         props.path
       );
-    }
-  }, [props.onChange, stringValue]);
+      setStringValue(newValue);
+    },
+    [setStringValue]
+  );
 
   useEffect(() => {
     setStringValue(props.value);
@@ -42,11 +36,12 @@ const InputNumber = (props: Props) => {
 
   return (
     <kit.Input
-      {...props.widgetOptions}
+      {...(props.widgetOptions || {})}
+      maximum={props.widgetOptions?.max}
+      minimum={props.widgetOptions?.min}
       type="int"
       value={stringValue}
       onChange={onChange}
-      onBlur={onBlur}
     ></kit.Input>
   );
 };

@@ -115,6 +115,7 @@ export const Modal = implementRuntimeComponent({
           mergeState({
             visible: true,
           });
+          callbackMap?.onOpen?.();
         },
         close() {
           setVisible(false);
@@ -131,11 +132,6 @@ export const Modal = implementRuntimeComponent({
       })
       callbackMap?.onClose();
     }, [callbackMap?.onClose]);
-    useEffect(() => {
-      if (visible) {
-        callbackMap?.onOpen?.();
-      }
-    }, [visible, callbackMap]);
 
     return (
       <kit.Modal
