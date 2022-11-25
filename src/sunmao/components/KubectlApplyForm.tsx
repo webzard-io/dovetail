@@ -76,7 +76,7 @@ const UiConfigFieldSpec = Type.Object(
     fields: Type.Array(Type.Object(UiConfigFieldSpecProperties), {
       title: "Fields",
       widget: "core/v1/array",
-      widgetOptions: { displayedKeys: ["path", "label"] },
+      widgetOptions: { displayedKeys: ["path", "label"], appendToBody: true },
     }),
   },
   {
@@ -108,7 +108,7 @@ export const UiConfigSpec = Type.Object({
       fields: Type.Array(UiConfigFieldSpec, {
         title: "Fields",
         widget: "core/v1/array",
-        widgetOptions: { displayedKeys: ["path", "label"] },
+        widgetOptions: { displayedKeys: ["path", "label"], appendToBody: true },
         conditions: [
           {
             key: "type",
@@ -122,13 +122,13 @@ export const UiConfigSpec = Type.Object({
           fields: Type.Array(UiConfigFieldSpec, {
             title: "Fields",
             widget: "core/v1/array",
-            widgetOptions: { displayedKeys: ["path", "label"] },
+            widgetOptions: { displayedKeys: ["path", "label"], appendToBody: true },
           }),
         }),
         {
           title: "Tabs",
           widget: "core/v1/array",
-          widgetOptions: { displayedKeys: ["title"] },
+          widgetOptions: { displayedKeys: ["title"], appendToBody: true },
           conditions: [
             {
               key: "type",
@@ -143,7 +143,7 @@ export const UiConfigSpec = Type.Object({
           fields: Type.Array(UiConfigFieldSpec, {
             title: "Fields",
             widget: "core/v1/array",
-            widgetOptions: { displayedKeys: ["path", "label"] },
+            widgetOptions: { displayedKeys: ["path", "label"], appendToBody: true },
           }),
           disabled: Type.Boolean({ title: "Disabled" }),
           prevText: Type.String({ title: "Previous text" }),
@@ -152,7 +152,7 @@ export const UiConfigSpec = Type.Object({
         {
           title: "Steps",
           widget: "core/v1/array",
-          widgetOptions: { displayedKeys: ["title"] },
+          widgetOptions: { displayedKeys: ["title"], appendToBody: true },
           conditions: [
             {
               key: "type",
