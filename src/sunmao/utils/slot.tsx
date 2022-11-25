@@ -66,7 +66,6 @@ export const generateSlotChildren = (
             services={services}
             childrenMap={{}}
             isInModule
-            evalListItem
             slotContext={{
               renderSet,
               slotKey: formatSlotKey(component.id, slot, slotKey),

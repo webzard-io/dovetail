@@ -62,7 +62,7 @@ const SectionSpec = Type.Object({
   info: Type.Record(
     Type.String(),
     Type.Array(InfoSpec, {
-      widget: "core/v1/popover",
+      widget: "core/v1/popover" as any,
       widgetOptions: { displayedKeys: ["label"] },
     }),
     {
