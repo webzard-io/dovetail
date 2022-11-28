@@ -22,12 +22,12 @@ const InputNumber = (props: Props) => {
         Number(newValue),
         `${
           props.subKey ? `${props.subKey}${props.field?.key ? "-" : ""}` : ""
-        }${props.field?.key || ""}`,
+        }${props.field?.key ?? ""}`,
         props.path
       );
       setStringValue(newValue);
     },
-    [setStringValue]
+    [setStringValue, props]
   );
 
   useEffect(() => {
