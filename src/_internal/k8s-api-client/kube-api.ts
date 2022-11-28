@@ -272,17 +272,25 @@ export class KubeApi<T> {
     } = {
       stopHandler: null,
     };
+    const url = this.getUrl({ namespace });
+    const watchUrl = this.watchWsBasePath
+      ? this.getUrl({ namespace }, undefined, true)
+      : url;
+    const startWatch = async () => {
+      const res = await ky
+        .get(url, {
+          searchParams: query as URLSearchParams,
+          retry: 0,
+          timeout: false,
+        })
+        .json<T>();
 
-    const self = this;
+      cb?.(res);
 
-    function startInformer() {
-      controller.stopHandler = self.createInformer(
-        { namespace, query, cb },
-        startInformer
-      );
-    }
+      controller.stopHandler = this.watch(watchUrl, res, cb, startWatch);
+    };
 
-    startInformer();
+    await startWatch();
 
     return async () => {
       if (controller.stopHandler) {
@@ -290,28 +298,6 @@ export class KubeApi<T> {
         h();
       }
     };
-  }
-
-  private async createInformer(
-    { namespace, query, cb }: KubeApiListWatchOptions<T> = {},
-    retryCb: () => void
-  ) {
-    const url = this.getUrl({ namespace });
-    const res = await ky
-      .get(url, {
-        searchParams: query as URLSearchParams,
-        retry: 0,
-        timeout: false,
-      })
-      .json<T>();
-
-    cb?.(res);
-
-    const watchUrl = this.watchWsBasePath
-      ? this.getUrl({ namespace }, undefined, true)
-      : url;
-
-    return this.watch(watchUrl, res, cb, retryCb);
   }
 
   private async watch(
