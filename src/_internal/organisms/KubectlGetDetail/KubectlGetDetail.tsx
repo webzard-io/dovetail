@@ -17,6 +17,7 @@ import { css } from "@emotion/css";
 import styled from "@emotion/styled";
 import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
 import ErrorContent from "../../ErrorContent";
+import cs from "classnames";
 
 const RowStyle = css`
   .col-content {
@@ -34,9 +35,7 @@ const ValueWrapper = styled.div`
   display: flex;
   justify-content: space-between;
 `;
-const TabContentWrapper = styled.div`
-  padding: 24px 0;
-`;
+const TabContentWrapper = styled.div``;
 const LoadingWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -46,6 +45,56 @@ const LoadingWrapper = styled.div`
 const CardStyle = css`
   .card-body {
     padding: 0;
+  }
+`;
+const TabWrapper = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .dovetail-detail-tabs {
+    flex-shrink: 0;
+    margin-left: 24px;
+
+    .dovetail-tab-item {
+      padding: 5px 16px;
+      margin: 0 1px;
+      color: rgba(44, 56, 82, 0.6);
+      cursor: pointer;
+      border-radius: 4px 4px 0 0;
+
+      &.active {
+        background: #fff;
+        color: $gray-120;
+      }
+      &:hover {
+        background: #fff;
+        color: #0080ff;
+      }
+    }
+  }
+  .dovetail-tab-border-bottom {
+    height: 2px;
+    flex-shrink: 0;
+    background: linear-gradient(
+      270deg,
+      rgba(204, 213, 227, 0) 0%,
+      rgba(204, 213, 227, 0.36) 3.43%,
+      rgba(204, 213, 227, 0.36) 96.55%,
+      rgba(204, 213, 227, 0) 100%
+    );
+  }
+
+  .dovetail-tab-content {
+    padding: 24px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    min-height: 0;
+
+    > .table-wrapper .dovetail-ant-table-header {
+      position: static;
+    }
   }
 `;
 
@@ -94,6 +143,7 @@ export type Layout = {
 };
 
 type KubectlGetDetailProps = {
+  className?: string;
   basePath: string;
   watchWsBasePath?: string;
   apiBase: string;
@@ -135,6 +185,7 @@ const KubectlGetDetail = React.forwardRef<
   KubectlGetDetailProps
 >((props, ref) => {
   const {
+    className,
     basePath,
     watchWsBasePath,
     apiBase,
@@ -235,6 +286,7 @@ const KubectlGetDetail = React.forwardRef<
               if (error) {
                 return (
                   <ErrorContent
+                    style={{ padding: "15px 0" }}
                     errorText={errorText}
                     refetch={fetch}
                   ></ErrorContent>
@@ -301,6 +353,26 @@ const KubectlGetDetail = React.forwardRef<
     });
   };
   let content = null;
+  const tabs = (layout.tabs || []).map((tab, tabIndex) => {
+    const tabFallback = renderSections(tab.sections || [], {
+      tab: tab.key,
+      tabIndex,
+    });
+
+    return {
+      key: tab.key,
+      title: tab.label,
+      children: (
+        <TabContentWrapper>
+          {renderTab?.(
+            { tab: tab.key, tabIndex },
+            { detail: data },
+            tabFallback
+          ) || tabFallback}
+        </TabContentWrapper>
+      ),
+    };
+  });
 
   switch (layout.type) {
     case "simple": {
@@ -309,35 +381,35 @@ const KubectlGetDetail = React.forwardRef<
     }
     case "tabs": {
       content = (
-        <kit.TabMenu
-          selectedKey={activeTab}
-          tabs={(layout.tabs || []).map((tab, tabIndex) => {
-            const tabFallback = renderSections(tab.sections || [], {
-              tab: tab.key,
-              tabIndex,
-            });
-
-            return {
-              key: tab.key,
-              title: tab.label,
-              children: (
-                <TabContentWrapper>
-                  {renderTab?.(
-                    { tab: tab.key, tabIndex },
-                    { detail: data },
-                    tabFallback
-                  ) || tabFallback}
-                </TabContentWrapper>
-              ),
-            };
-          })}
-          onChange={onTabChange}
-        ></kit.TabMenu>
+        <TabWrapper className="dovetail-tab-wrapper">
+          <div className="dovetail-detail-tabs">
+            {tabs.map((tab) => (
+              <span
+                key={tab.key}
+                className={cs(
+                  "dovetail-tab-item",
+                  activeTab === tab.key && "active"
+                )}
+                onClick={() => onTabChange?.(tab.key)}
+              >
+                {tab.title}
+              </span>
+            ))}
+          </div>
+          <div className="dovetail-tab-border-bottom" />
+          <div className="dovetail-tab-content" key={activeTab}>
+            {tabs.find((tab) => tab.key === activeTab)?.children}
+          </div>
+        </TabWrapper>
       );
     }
   }
 
-  return <div ref={ref}>{content}</div>;
+  return (
+    <div ref={ref} className={className}>
+      {content}
+    </div>
+  );
 });
 
 export default KubectlGetDetail;

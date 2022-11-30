@@ -8,6 +8,7 @@ import {
   DISPLAY_WIDGET_OPTIONS_MAP,
 } from "../../_internal/molecules/display";
 import { renderWidget } from "../utils/widget";
+import { css } from "@emotion/css";
 
 const InfoSpec = Type.Object(
   {
@@ -307,7 +308,9 @@ export const KubectlGetDetail = implementRuntimeComponent({
     subscribeMethods,
     callbackMap,
   }) => {
-    const [activeTab, setActiveTab] = useState<string>("");
+    const [activeTab, setActiveTab] = useState<string>(
+      layout.tabs?.[0]?.key || ""
+    );
     const onResponse = useCallback(
       (res) => {
         mergeState({
@@ -342,6 +345,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
     return (
       <BaseKubectlGetDetail
         ref={elementRef}
+        className={css(customStyle?.content)}
         basePath={basePath}
         watchWsBasePath={watchWsBasePath}
         apiBase={apiBase}
