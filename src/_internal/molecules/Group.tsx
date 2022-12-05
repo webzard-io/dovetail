@@ -9,6 +9,8 @@ import { Row, Collapse } from "antd";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
 import { css } from "@emotion/css";
 import Icon from "../atoms/themes/CloudTower/components/Icon/Icon";
+import registry from "../../services/Registry";
+import { StringUnion } from "@sunmao-ui/runtime";
 
 const { Panel } = Collapse;
 
@@ -47,6 +49,7 @@ const GroupWrapperStyle = css`
   .arrow-icon {
     transition: transform 0.28s ease;
     transform: rotate(-180deg);
+    margin-right: 8px;
   }
 
   & .dovetail-ant-collapse-item-active {
@@ -69,11 +72,20 @@ const GroupHeader = styled.div`
   display: flex;
   justify-content: space-between;
 `;
-const GroupTitle = styled.h5`
+const GroupTitleWrapper = styled.h5`
   color: rgba(44, 56, 82, 0.6);
   display: flex;
   align-items: center;
   margin-bottom: 0;
+`;
+const GroupIcon = styled.span`
+  display: flex;
+  align-items: center;
+  margin-right: 6px;
+  vertical-align: top;
+`;
+const GroupTitle = styled.span`
+  vertical-align: top;
 `;
 const GroupBodyStyle = css`
   padding-bottom: 0;
@@ -91,6 +103,9 @@ export const OptionsSpec = Type.Object({
       title: "Collapsible",
     })
   ),
+  icon: Type.Optional(
+    StringUnion([...registry.icons.keys()], { title: "Icon" })
+  ),
 });
 
 type GroupProps = WidgetProps<
@@ -103,6 +118,7 @@ type GroupProps = WidgetProps<
 const Group = (props: GroupProps) => {
   const { widgetOptions, onRemove } = props;
   const kit = useContext(KitContext);
+  const icon = registry.icons.get(widgetOptions?.icon as any);
 
   return (
     <Collapse className={GroupWrapperStyle} defaultActiveKey={["panel"]}>
@@ -110,15 +126,16 @@ const Group = (props: GroupProps) => {
         key="panel"
         header={
           <GroupHeader>
-            <GroupTitle className={Typo.Label.l2_regular}>
+            <GroupTitleWrapper className={Typo.Label.l2_regular}>
               {widgetOptions?.collapsible ? (
                 <Icon
                   className="arrow-icon"
                   type="1-caret-triangle-down-16"
                 ></Icon>
               ) : null}
-              {widgetOptions?.title}
-            </GroupTitle>
+              {icon ? <GroupIcon>{icon}</GroupIcon> : null}
+              <GroupTitle>{widgetOptions?.title}</GroupTitle>
+            </GroupTitleWrapper>
             {onRemove ? (
               <span>
                 <kit.Button size="small" type="text" onClick={onRemove}>
