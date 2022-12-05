@@ -11,6 +11,8 @@ import { generateFromSchema } from "../utils/schema";
 import { JSONSchema7 } from "json-schema";
 import { useTranslation } from "react-i18next";
 import { cloneDeep } from "lodash";
+import registry from "../../services/Registry";
+import { StringUnion } from "@sunmao-ui/runtime";
 
 const AddedButtonStyle = css``;
 
@@ -34,6 +36,14 @@ export const OptionsSpec = Type.Object({
       title: "Min Length",
     })
   ),
+  collapsible: Type.Optional(
+    Type.Boolean({
+      title: "Collapsible",
+    })
+  ),
+  icon: Type.Optional(
+    StringUnion([...registry.icons.keys()], { title: "Icon" })
+  ),
 });
 
 type Props = WidgetProps<any[], Static<typeof OptionsSpec>>;
@@ -52,6 +62,10 @@ const ArrayGroups = (props: Props) => {
       addable: true,
       addedButtonText: t("dovetail.add"),
       addedButtonIcon: "",
+      maxLength: undefined,
+      minLength: undefined,
+      icon: "",
+      collapsible: false,
     },
     onChange,
   } = props;
@@ -75,6 +89,8 @@ const ArrayGroups = (props: Props) => {
               title: widgetOptions?.title
                 ? `${widgetOptions?.title} ${itemIndex + 1}`
                 : "",
+              collapsible: widgetOptions.collapsible,
+              icon: widgetOptions.icon,
             }}
             path={path.concat(`.${itemIndex}`)}
             level={level + 1}
