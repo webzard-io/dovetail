@@ -30,7 +30,8 @@
                 "container": {
                   "id": "root",
                   "slot": "root"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -63,7 +64,8 @@
                 "container": {
                   "id": "main",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -95,7 +97,8 @@
                 "container": {
                   "id": "toolbar",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -128,7 +131,8 @@
                 "container": {
                   "id": "toolbar",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             }
           ]
@@ -151,7 +155,8 @@
                 "container": {
                   "id": "stack36",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -194,7 +199,8 @@
                 "container": {
                   "id": "stack36",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -239,7 +245,8 @@
                 "container": {
                   "id": "main",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -284,7 +291,8 @@
                 "container": {
                   "id": "create_modal",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -578,7 +586,8 @@
                 "container": {
                   "id": "create_modal",
                   "slot": "footer"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -624,7 +633,8 @@
                 "container": {
                   "id": "create_modal",
                   "slot": "footer"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -719,7 +729,8 @@
                 "container": {
                   "id": "main",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -821,7 +832,8 @@
                 "container": {
                   "id": "main",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -849,7 +861,8 @@
                 "container": {
                   "id": "k8s_cluster_sidebar",
                   "slot": "toolbar"
-                }
+                },
+                "ifCondition": true
               }
             }
           ]
@@ -872,7 +885,8 @@
                 "container": {
                   "id": "cluster_toolbar",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -910,7 +924,8 @@
                 "container": {
                   "id": "kubeconfig_btn",
                   "slot": "prefix"
-                }
+                },
+                "ifCondition": true
               }
             }
           ]
@@ -933,7 +948,8 @@
                 "container": {
                   "id": "cluster_toolbar",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -980,7 +996,8 @@
                 "container": {
                   "id": "scale_btn",
                   "slot": "prefix"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1009,7 +1026,8 @@
                 "container": {
                   "id": "cluster_toolbar",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1056,7 +1074,8 @@
                 "container": {
                   "id": "upgrade_btn",
                   "slot": "prefix"
-                }
+                },
+                "ifCondition": true
               }
             }
           ]
@@ -1079,7 +1098,8 @@
                 "container": {
                   "id": "cluster_toolbar",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1126,7 +1146,8 @@
                 "container": {
                   "id": "component_button",
                   "slot": "prefix"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1154,7 +1175,8 @@
                 "container": {
                   "id": "k8s_cluster_sidebar",
                   "slot": "toolbar"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1188,7 +1210,8 @@
                 "container": {
                   "id": "addons",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1241,7 +1264,8 @@
                 "container": {
                   "id": "open_log_btn",
                   "slot": "prefix"
-                }
+                },
+                "ifCondition": true
               }
             }
           ]
@@ -1264,7 +1288,8 @@
                 "container": {
                   "id": "addons",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1317,7 +1342,8 @@
                 "container": {
                   "id": "grafana_btn",
                   "slot": "prefix"
-                }
+                },
+                "ifCondition": true
               }
             }
           ]
@@ -1340,7 +1366,8 @@
                 "container": {
                   "id": "addons",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1393,7 +1420,8 @@
                 "container": {
                   "id": "alert_btn",
                   "slot": "prefix"
-                }
+                },
+                "ifCondition": true
               }
             }
           ]
@@ -1414,7 +1442,8 @@
                 "container": {
                   "id": "main",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1460,7 +1489,8 @@
                 "container": {
                   "id": "scale_modal",
                   "slot": "footer"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1506,7 +1536,8 @@
                 "container": {
                   "id": "scale_modal",
                   "slot": "footer"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1563,7 +1594,8 @@
                 "container": {
                   "id": "main",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1609,7 +1641,8 @@
                 "container": {
                   "id": "component_modal",
                   "slot": "footer"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1655,7 +1688,8 @@
                 "container": {
                   "id": "component_modal",
                   "slot": "footer"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1712,7 +1746,8 @@
                 "container": {
                   "id": "main",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1762,7 +1797,8 @@
                 "container": {
                   "id": "kubeconfig_modal",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             }
           ]
@@ -1783,7 +1819,8 @@
                 "container": {
                   "id": "main",
                   "slot": "content"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1829,7 +1866,8 @@
                 "container": {
                   "id": "upgrade_modal",
                   "slot": "footer"
-                }
+                },
+                "ifCondition": true
               }
             },
             {
@@ -1890,21 +1928,23 @@
             {
               "type": "core/v1/fetch",
               "properties": {
-                "url": "/api/",
-                "method": "post",
-                "lazy": false,
-                "disabled": "{{ !token.value }}",
-                "headers": {
-                  "content-type": "application/json",
-                  "authorization": "{{ token.value }}"
-                },
-                "body": {
-                  "variables": "{}",
-                  "query": "{ clusters { local_id name version ip } }"
-                },
-                "bodyType": "json",
-                "onComplete": [],
-                "onError": []
+                "config": {
+                  "url": "/api/",
+                  "method": "post",
+                  "lazy": false,
+                  "disabled": "{{ !token.value }}",
+                  "headers": {
+                    "content-type": "application/json",
+                    "authorization": "{{ token.value }}"
+                  },
+                  "body": {
+                    "variables": "{}",
+                    "query": "{ clusters { local_id name version ip } }"
+                  },
+                  "bodyType": "json",
+                  "onComplete": [],
+                  "onError": []
+                }
               }
             }
           ]
@@ -1917,21 +1957,23 @@
             {
               "type": "core/v1/fetch",
               "properties": {
-                "url": "/api/",
-                "method": "post",
-                "lazy": false,
-                "disabled": "{{ !token.value || (!cluster_select.value && !k8s_cluster_sidebar.item) }}",
-                "headers": {
-                  "content-type": "application/json",
-                  "authorization": "{{ token.value }}"
-                },
-                "body": {
-                  "variables": "{}",
-                  "query": "{ vmTemplates(where: { cluster: { local_id: \"{{cluster_select.value || k8s_cluster_sidebar.item.spec.cloudProvider.cloudtower.elfCluster}}\" } }) { local_id name } }"
-                },
-                "bodyType": "json",
-                "onComplete": [],
-                "onError": []
+                "config": {
+                  "url": "/api/",
+                  "method": "post",
+                  "lazy": false,
+                  "disabled": "{{ !token.value || (!cluster_select.value && !k8s_cluster_sidebar.item) }}",
+                  "headers": {
+                    "content-type": "application/json",
+                    "authorization": "{{ token.value }}"
+                  },
+                  "body": {
+                    "variables": "{}",
+                    "query": "{ vmTemplates(where: { cluster: { local_id: \"{{cluster_select.value || k8s_cluster_sidebar.item.spec.cloudProvider.cloudtower.elfCluster}}\" } }) { local_id name } }"
+                  },
+                  "bodyType": "json",
+                  "onComplete": [],
+                  "onError": []
+                }
               }
             }
           ]
@@ -1944,21 +1986,23 @@
             {
               "type": "core/v1/fetch",
               "properties": {
-                "url": "/api/",
-                "method": "post",
-                "lazy": false,
-                "disabled": "{{ !token.value || (!cluster_select.value && !k8s_cluster_sidebar.item) }}",
-                "headers": {
-                  "content-type": "application/json",
-                  "authorization": "{{ token.value }}"
-                },
-                "body": {
-                  "variables": "{}",
-                  "query": "{ vlans(where: { vds: { cluster: { local_id: \"{{cluster_select.value || k8s_cluster_sidebar.item.spec.cloudProvider.cloudtower.elfCluster}}\" } } }) { local_id name type } }"
-                },
-                "bodyType": "json",
-                "onComplete": [],
-                "onError": []
+                "config": {
+                  "url": "/api/",
+                  "method": "post",
+                  "lazy": false,
+                  "disabled": "{{ !token.value || (!cluster_select.value && !k8s_cluster_sidebar.item) }}",
+                  "headers": {
+                    "content-type": "application/json",
+                    "authorization": "{{ token.value }}"
+                  },
+                  "body": {
+                    "variables": "{}",
+                    "query": "{ vlans(where: { vds: { cluster: { local_id: \"{{cluster_select.value || k8s_cluster_sidebar.item.spec.cloudProvider.cloudtower.elfCluster}}\" } } }) { local_id name type } }"
+                  },
+                  "bodyType": "json",
+                  "onComplete": [],
+                  "onError": []
+                }
               }
             }
           ]
@@ -1971,34 +2015,36 @@
             {
               "type": "core/v1/fetch",
               "properties": {
-                "url": "/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/default/kubesmartclusters/{{ k8s_cluster_table.selectedItems.length ? k8s_cluster_table.selectedItems[0].metadata.name : '-' }}",
-                "method": "delete",
-                "lazy": true,
-                "disabled": "{{ k8s_cluster_table.selectedItems.length !== 1 }}",
-                "headers": {
-                  "content-type": "application/json"
-                },
-                "body": {},
-                "bodyType": "json",
-                "onComplete": [
-                  {
-                    "componentId": "$utils",
-                    "method": {
-                      "name": "message",
-                      "parameters": {
-                        "type": "info",
-                        "message": "删除 K8s 集群",
-                        "duration": 1
+                "config": {
+                  "url": "/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/default/kubesmartclusters/{{ k8s_cluster_table.selectedItems.length ? k8s_cluster_table.selectedItems[0].metadata.name : '-' }}",
+                  "method": "delete",
+                  "lazy": true,
+                  "disabled": "{{ k8s_cluster_table.selectedItems.length !== 1 }}",
+                  "headers": {
+                    "content-type": "application/json"
+                  },
+                  "body": {},
+                  "bodyType": "json",
+                  "onComplete": [
+                    {
+                      "componentId": "$utils",
+                      "method": {
+                        "name": "message",
+                        "parameters": {
+                          "type": "info",
+                          "message": "删除 K8s 集群",
+                          "duration": 1
+                        }
+                      },
+                      "disabled": false,
+                      "wait": {
+                        "type": "delay",
+                        "time": 0
                       }
-                    },
-                    "disabled": false,
-                    "wait": {
-                      "type": "delay",
-                      "time": 0
                     }
-                  }
-                ],
-                "onError": []
+                  ],
+                  "onError": []
+                }
               }
             }
           ]
@@ -2053,35 +2099,37 @@
             {
               "type": "core/v1/fetch",
               "properties": {
-                "url": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return ''\n  }\n  const { name, namespace } = k8s_cluster_sidebar.item.metadata\n  \n  return `/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/${namespace}/kubesmartclusters/${name}`\n})()}}",
-                "method": "patch",
-                "lazy": true,
-                "disabled": "{{ !k8s_cluster_sidebar.item }}",
-                "headers": {
-                  "Content-Type": "application/json-patch+json",
-                  "Connection": "keep-alive"
-                },
-                "body": "{{(() => {\n  if (!k8s_cluster_sidebar.item || typeof scale_form === 'undefined' || !scale_form.value) {\n      return []\n  }\n  return [\n    {\n      op: 'replace',\n      path: '/spec/topology/controlPlane/replicas',\n      value: scale_form.value.controlPlaneReplicas\n    },\n    {\n      op: 'replace',\n      path: '/spec/topology/workers/0/replicas',\n      value: scale_form.value.workerReplicas\n    },\n  ]\n})()}}",
-                "bodyType": "json",
-                "onComplete": [
-                  {
-                    "componentId": "$utils",
-                    "method": {
-                      "name": "message",
-                      "parameters": {
-                        "type": "info",
-                        "message": "伸缩 K8s 集群",
-                        "duration": 1
+                "config": {
+                  "url": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return ''\n  }\n  const { name, namespace } = k8s_cluster_sidebar.item.metadata\n  \n  return `/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/${namespace}/kubesmartclusters/${name}`\n})()}}",
+                  "method": "patch",
+                  "lazy": true,
+                  "disabled": "{{ !k8s_cluster_sidebar.item }}",
+                  "headers": {
+                    "Content-Type": "application/json-patch+json",
+                    "Connection": "keep-alive"
+                  },
+                  "body": "{{(() => {\n  if (!k8s_cluster_sidebar.item || typeof scale_form === 'undefined' || !scale_form.value) {\n      return []\n  }\n  return [\n    {\n      op: 'replace',\n      path: '/spec/topology/controlPlane/replicas',\n      value: scale_form.value.controlPlaneReplicas\n    },\n    {\n      op: 'replace',\n      path: '/spec/topology/workers/0/replicas',\n      value: scale_form.value.workerReplicas\n    },\n  ]\n})()}}",
+                  "bodyType": "json",
+                  "onComplete": [
+                    {
+                      "componentId": "$utils",
+                      "method": {
+                        "name": "message",
+                        "parameters": {
+                          "type": "info",
+                          "message": "伸缩 K8s 集群",
+                          "duration": 1
+                        }
+                      },
+                      "disabled": false,
+                      "wait": {
+                        "type": "delay",
+                        "time": 0
                       }
-                    },
-                    "disabled": false,
-                    "wait": {
-                      "type": "delay",
-                      "time": 0
                     }
-                  }
-                ],
-                "onError": []
+                  ],
+                  "onError": []
+                }
               }
             }
           ]
@@ -2094,34 +2142,36 @@
             {
               "type": "core/v1/fetch",
               "properties": {
-                "url": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return ''\n  }\n  const { name, namespace } = k8s_cluster_sidebar.item.metadata\n  \n  return `/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/${namespace}/kubesmartclusters/${name}`\n})()}}",
-                "method": "patch",
-                "lazy": true,
-                "disabled": "{{ !k8s_cluster_sidebar.item }}",
-                "headers": {
-                  "Content-Type": "application/json-patch+json"
-                },
-                "body": "{{(() => {\n  if (!k8s_cluster_sidebar.item || typeof component_form === 'undefined' || !component_form.value) {\n      return []\n  }\n  \n  const components = {\n    logging: {},\n    monitoring: {},\n  };\n  const logging = component_form.value.cluster.components.logging;\n  const es = logging.elasticsearch.enabled;\n  const ki = logging.kibana.enabled;\n  const fb = logging.fluentbit.enabled;\n  components.logging.enabled = es || ki || fb;\n  if (components.logging.enabled) {\n    if (!es) {\n     components.logging.elasticsearch = {\n       disabled: true,\n     }\n    }\n    if (!ki) {\n     components.logging.kibana = {\n       disabled: true,\n     }\n    }\n    if (!fb) {\n     components.logging.fluentbit = {\n       disabled: true,\n     }\n    }\n  }\n  const monitoring = component_form.value.cluster.components.monitoring;\n  components.monitoring.enabled = monitoring.enabled\n  \n  console.log('components', components)\n  return [\n    {\n      op: 'replace',\n      path: '/spec/components',\n      value: components\n    },\n  ]\n})()}}",
-                "bodyType": "json",
-                "onComplete": [
-                  {
-                    "componentId": "$utils",
-                    "method": {
-                      "name": "message",
-                      "parameters": {
-                        "type": "info",
-                        "message": "配置插件",
-                        "duration": 1
+                "config": {
+                  "url": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return ''\n  }\n  const { name, namespace } = k8s_cluster_sidebar.item.metadata\n  \n  return `/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/${namespace}/kubesmartclusters/${name}`\n})()}}",
+                  "method": "patch",
+                  "lazy": true,
+                  "disabled": "{{ !k8s_cluster_sidebar.item }}",
+                  "headers": {
+                    "Content-Type": "application/json-patch+json"
+                  },
+                  "body": "{{(() => {\n  if (!k8s_cluster_sidebar.item || typeof component_form === 'undefined' || !component_form.value) {\n      return []\n  }\n  \n  const components = {\n    logging: {},\n    monitoring: {},\n  };\n  const logging = component_form.value.cluster.components.logging;\n  const es = logging.elasticsearch.enabled;\n  const ki = logging.kibana.enabled;\n  const fb = logging.fluentbit.enabled;\n  components.logging.enabled = es || ki || fb;\n  if (components.logging.enabled) {\n    if (!es) {\n     components.logging.elasticsearch = {\n       disabled: true,\n     }\n    }\n    if (!ki) {\n     components.logging.kibana = {\n       disabled: true,\n     }\n    }\n    if (!fb) {\n     components.logging.fluentbit = {\n       disabled: true,\n     }\n    }\n  }\n  const monitoring = component_form.value.cluster.components.monitoring;\n  components.monitoring.enabled = monitoring.enabled\n  \n  console.log('components', components)\n  return [\n    {\n      op: 'replace',\n      path: '/spec/components',\n      value: components\n    },\n  ]\n})()}}",
+                  "bodyType": "json",
+                  "onComplete": [
+                    {
+                      "componentId": "$utils",
+                      "method": {
+                        "name": "message",
+                        "parameters": {
+                          "type": "info",
+                          "message": "配置插件",
+                          "duration": 1
+                        }
+                      },
+                      "disabled": false,
+                      "wait": {
+                        "type": "delay",
+                        "time": 0
                       }
-                    },
-                    "disabled": false,
-                    "wait": {
-                      "type": "delay",
-                      "time": 0
                     }
-                  }
-                ],
-                "onError": []
+                  ],
+                  "onError": []
+                }
               }
             }
           ]
@@ -2134,31 +2184,33 @@
             {
               "type": "core/v1/fetch",
               "properties": {
-                "url": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return ''\n  }\n  const { name, namespace } = k8s_cluster_sidebar.item.metadata\n  \n  return `/proxy-k8s/api/v1/namespaces/${namespace}/secrets/${name}-kubeconfig`\n})()}}",
-                "method": "get",
-                "lazy": true,
-                "disabled": "{{ !k8s_cluster_sidebar.item }}",
-                "headers": {},
-                "body": {},
-                "bodyType": "json",
-                "onComplete": [
-                  {
-                    "componentId": "kubeconfig_modal",
-                    "method": {
-                      "name": "setValue",
-                      "parameters": {
-                        "key": "value",
-                        "value": "{{ atob(_.get(get_kubeconfig, 'fetch.data.data.value')) }}"
+                "config": {
+                  "url": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return ''\n  }\n  const { name, namespace } = k8s_cluster_sidebar.item.metadata\n  \n  return `/proxy-k8s/api/v1/namespaces/${namespace}/secrets/${name}-kubeconfig`\n})()}}",
+                  "method": "get",
+                  "lazy": true,
+                  "disabled": "{{ !k8s_cluster_sidebar.item }}",
+                  "headers": {},
+                  "body": {},
+                  "bodyType": "json",
+                  "onComplete": [
+                    {
+                      "componentId": "kubeconfig_modal",
+                      "method": {
+                        "name": "setValue",
+                        "parameters": {
+                          "key": "value",
+                          "value": "{{ atob(_.get(get_kubeconfig, 'fetch.data.data.value')) }}"
+                        }
+                      },
+                      "disabled": false,
+                      "wait": {
+                        "type": "delay",
+                        "time": 0
                       }
-                    },
-                    "disabled": false,
-                    "wait": {
-                      "type": "delay",
-                      "time": 0
                     }
-                  }
-                ],
-                "onError": []
+                  ],
+                  "onError": []
+                }
               }
             }
           ]
@@ -2185,49 +2237,51 @@
             {
               "type": "core/v1/fetch",
               "properties": {
-                "url": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return ''\n  }\n  const { name, namespace } = k8s_cluster_sidebar.item.metadata\n  \n  return `/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/${namespace}/kubesmartclusters/${name}`\n})()}}",
-                "method": "patch",
-                "lazy": true,
-                "disabled": "{{ !k8s_cluster_sidebar.item }}",
-                "headers": {
-                  "Content-Type": "application/json-patch+json"
-                },
-                "body": "{{(() => {\n  if (!k8s_cluster_sidebar.item || typeof upgrade_form === 'undefined' || !upgrade_form.value) {\n      return []\n  }\n  \n  const newTpl = templateMap.value[upgrade_form.value.version];\n  console.log(newTpl)\n  \n  return [\n    {\n      op: 'replace',\n      path: '/spec/version',\n      value: upgrade_form.value.version\n    },\n    {\n      op: 'replace',\n      path: '/spec/topology/workers/0/nodeConfig/vmTemplate',\n      value: newTpl\n    },\n    {\n      op: 'replace',\n      path: '/spec/topology/controlPlane/nodeConfig/vmTemplate',\n      value: newTpl\n    },\n  ]\n})()}}",
-                "bodyType": "json",
-                "onComplete": [
-                  {
-                    "componentId": "show_upgrade_modal",
-                    "method": {
-                      "name": "setValue",
-                      "parameters": {
-                        "key": "value",
-                        "value": "false"
-                      }
-                    },
-                    "disabled": false,
-                    "wait": {
-                      "type": "delay",
-                      "time": 0
-                    }
+                "config": {
+                  "url": "{{(() => {\n  if (!k8s_cluster_sidebar.item) {\n    return ''\n  }\n  const { name, namespace } = k8s_cluster_sidebar.item.metadata\n  \n  return `/proxy-k8s/apis/kubesmart.smtx.io/v1alpha1/namespaces/${namespace}/kubesmartclusters/${name}`\n})()}}",
+                  "method": "patch",
+                  "lazy": true,
+                  "disabled": "{{ !k8s_cluster_sidebar.item }}",
+                  "headers": {
+                    "Content-Type": "application/json-patch+json"
                   },
-                  {
-                    "componentId": "$utils",
-                    "method": {
-                      "name": "message",
-                      "parameters": {
-                        "type": "info",
-                        "message": "升级 K8s 集群",
-                        "duration": 1
+                  "body": "{{(() => {\n  if (!k8s_cluster_sidebar.item || typeof upgrade_form === 'undefined' || !upgrade_form.value) {\n      return []\n  }\n  \n  const newTpl = templateMap.value[upgrade_form.value.version];\n  console.log(newTpl)\n  \n  return [\n    {\n      op: 'replace',\n      path: '/spec/version',\n      value: upgrade_form.value.version\n    },\n    {\n      op: 'replace',\n      path: '/spec/topology/workers/0/nodeConfig/vmTemplate',\n      value: newTpl\n    },\n    {\n      op: 'replace',\n      path: '/spec/topology/controlPlane/nodeConfig/vmTemplate',\n      value: newTpl\n    },\n  ]\n})()}}",
+                  "bodyType": "json",
+                  "onComplete": [
+                    {
+                      "componentId": "show_upgrade_modal",
+                      "method": {
+                        "name": "setValue",
+                        "parameters": {
+                          "key": "value",
+                          "value": "false"
+                        }
+                      },
+                      "disabled": false,
+                      "wait": {
+                        "type": "delay",
+                        "time": 0
                       }
                     },
-                    "disabled": false,
-                    "wait": {
-                      "type": "delay",
-                      "time": 0
+                    {
+                      "componentId": "$utils",
+                      "method": {
+                        "name": "message",
+                        "parameters": {
+                          "type": "info",
+                          "message": "升级 K8s 集群",
+                          "duration": 1
+                        }
+                      },
+                      "disabled": false,
+                      "wait": {
+                        "type": "delay",
+                        "time": 0
+                      }
                     }
-                  }
-                ],
-                "onError": []
+                  ],
+                  "onError": []
+                }
               }
             }
           ]
