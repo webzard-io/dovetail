@@ -5,8 +5,8 @@ import { ModalProps as AntdModalProps } from "antd/lib/modal";
 import { InputProps as AntdInputProps } from "antd/lib/input/Input";
 import { InputNumberProps as AntdInputNumberProps } from "antd/lib/input-number/index";
 import { SelectProps as AntdSelectProps } from "antd/lib/select/index";
-import { SwitchProps as AntdSwitchProps } from 'antd/lib/switch/index';
-import { TooltipProps as AntdTooltipProps } from 'antd/lib/tooltip';
+import { SwitchProps as AntdSwitchProps } from "antd/lib/switch/index";
+import { TooltipProps as AntdTooltipProps } from "antd/lib/tooltip";
 export { CloudTowerKit };
 
 type RefAndChildren = {
@@ -78,7 +78,7 @@ export type TableProps = {
   onActive?: (key: string, record: any) => void;
   activeKey?: string;
   tableLayout?: "auto" | "fixed";
-  scroll?: { x?: string; y?: string };
+  scroll?: { x?: string | number; y?: string | number };
   empty?: string;
   bordered?: boolean;
   resizable?: boolean;
@@ -106,11 +106,11 @@ export type ModalProps = {
   visible?: boolean;
   maskClosable?: boolean;
   onClose?: () => void;
-  afterClose?: ()=> void;
+  afterClose?: () => void;
   title?: React.ReactNode;
   footer?: React.ReactNode;
   getContainer: string | (() => HTMLElement);
-  size?: 'small' | 'medium';
+  size?: "small" | "medium";
 } & RefAndChildren;
 
 export type CodeEditorProps = {
@@ -271,6 +271,11 @@ export type TooltipProps = AntdTooltipProps & {
 
 export interface Kit {
   name: string;
+  PAGINATION_SELECTOR: string;
+  TABLE_WRAPPER_SELECTOR: string;
+  THEAD_SELECTOR: string;
+  TBODY_SELECTOR: string;
+  MODAL_WHITELIST: string[];
   Button: React.FC<ButtonProps>;
   Table: React.FC<TableProps>;
   Loading: React.FC<RefOnly>;
