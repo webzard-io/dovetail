@@ -116,7 +116,6 @@ export default implementRuntimeTrait({
   metadata: {
     name: "kubeApi",
     description: "",
-    isDataSource: true,
   },
   spec: {
     properties: KubeAPITraitPropertiesSpec,
