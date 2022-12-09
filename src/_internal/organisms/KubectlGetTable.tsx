@@ -18,7 +18,7 @@ import { styled } from "@linaria/react";
 import { css, cx } from "@linaria/core";
 import { TableLoading } from "../atoms/themes/CloudTower/components/Table/TableWidgets";
 import HeaderCell from "../atoms/themes/CloudTower/components/Table/HeaderCell";
-import { BLANK_COLUMN } from "../atoms/themes/CloudTower/components/Table/common";
+import { useTransformScrollAndColumns } from "../atoms/themes/CloudTower/components/Table/common";
 import { get } from "lodash";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
 import ErrorContent from "../ErrorContent";
@@ -60,6 +60,7 @@ type Columns = (TableProps["columns"][0] & {
   className?: string;
 })[];
 type KubectlGetTableProps = {
+  tableKey: string;
   basePath: string;
   watchWsBasePath?: string;
   resource: string;
@@ -89,6 +90,7 @@ export const emptyData = {
 const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
   (
     {
+      tableKey,
       basePath,
       watchWsBasePath,
       apiBase,
@@ -168,11 +170,6 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
 
       return result;
     }, {} as Record<string, string>);
-    const totalWidth = useMemo(() => {
-      return columns.reduce<number>((prev, cur) => {
-        return prev + (cur.width || 0);
-      }, 0);
-    }, [columns]);
 
     tableProps.columns.forEach((column, index) => {
       customizableColumnKeys.push(column.key);
@@ -181,21 +178,19 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       }
     });
 
-    if (totalWidth < wrapper.current?.offsetWidth) {
-      const last = columns[columns.length - 1];
+    const [, finalColumns] = useTransformScrollAndColumns<any>({
+      wrapper,
+      loading,
+      rowSelection: false,
+      data,
+      tableKey,
+      uniqueKey: `KGT-${tableKey}`,
+      stickyHeader: false,
+      columns,
+      scroll: tableProps.scroll,
+    });
 
-      if (last.isActionColumn) {
-        columns.splice(columns.length - 1, 0, BLANK_COLUMN);
-      } else {
-        columns.splice(columns.length - 1, 1, {
-          ...last,
-          className: "no-after",
-        });
-        columns.push(BLANK_COLUMN);
-      }
-    }
-
-    columns = columns.map((column) => ({
+    columns = finalColumns.map((column) => ({
       ...column,
       onHeaderCell: () => ({
         index: column.index,

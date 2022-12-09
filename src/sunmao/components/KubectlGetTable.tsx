@@ -497,6 +497,7 @@ export const KubectlGetTable = implementRuntimeComponent({
         className={cx(WrapperStyle, css(customStyle?.content))}
       >
         <BaseKubectlGetTable
+          tableKey={component.id}
           response={response}
           basePath={basePath}
           watchWsBasePath={watchWsBasePath}
@@ -516,8 +517,8 @@ export const KubectlGetTable = implementRuntimeComponent({
               return renderWidget(
                 { ...col, path: col.dataIndex },
                 {
-                  value: value, 
-                  renderedValue: value ?? "-", 
+                  value: value,
+                  renderedValue: value ?? "-",
                   record,
                   index,
                 },
@@ -538,7 +539,7 @@ export const KubectlGetTable = implementRuntimeComponent({
                       },
                       generateProps() {
                         return slotProps;
-                      }
+                      },
                     }
                   ),
                 `column_${colIndex}_${index}`

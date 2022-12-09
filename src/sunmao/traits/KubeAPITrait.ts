@@ -53,7 +53,7 @@ export const runEventHandler = (
     : wait.type === "throttle"
     ? throttle(send, wait.time)
     : wait.type === "delay"
-    ? () => delay(send, wait!.time)
+    ? () => delay(send, wait.time)
     : send;
 };
 
