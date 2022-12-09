@@ -23,6 +23,18 @@ import "./styles/override.scss";
 
 export const kit: Kit = {
   ...shared,
+  PAGINATION_SELECTOR: ".pagination-wrapper",
+  TABLE_WRAPPER_SELECTOR: ".table-wrapper",
+  THEAD_SELECTOR: ".ant-table-thead",
+  TBODY_SELECTOR: ".ant-table-tbody",
+  MODAL_WHITELIST: [
+    ".ant-select-dropdown",
+    ".ant-picker-dropdown",
+    ".ant-dropdown",
+    ".ant-dropdown-menu-submenu",
+    ".ant-tooltip",
+    ".ant-dropdown-menu-item-group-list",
+  ],
   name: "CloudTower",
   Button: Button as Kit["Button"],
   Table: Table as Kit["Table"],
@@ -43,5 +55,5 @@ export const kit: Kit = {
   InputNumber,
   Select,
   Switch,
-  Tooltip
+  Tooltip,
 };
