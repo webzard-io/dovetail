@@ -2,7 +2,7 @@ import { WidgetProps } from "./AutoForm/widget";
 import Card from "./Card";
 import { Type, Static } from "@sinclair/typebox";
 import { KitContext } from "../atoms/kit-context";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { css } from "@emotion/css";
 import Icon, {
   IconTypes,
@@ -41,6 +41,7 @@ const ArrayCards = (props: Props) => {
   const kit = useContext(KitContext);
   const {
     value,
+    displayValues,
     spec,
     path,
     level,
@@ -79,15 +80,23 @@ const ArrayCards = (props: Props) => {
             onRemove={
               value.length > (widgetOptions?.minLength || 0)
                 ? () => {
-                    onChange(value.filter((v, i) => i !== itemIndex));
+                    onChange(
+                      value.filter((v, i) => i !== itemIndex),
+                      displayValues
+                    );
                   }
                 : undefined
             }
-            onChange={(newItemValue: any, key?: string, dataPath?: string) => {
+            onChange={(
+              newItemValue: any,
+              newDisplayValues: Record<string, any>,
+              key?: string,
+              dataPath?: string
+            ) => {
               const newValue = [...value];
 
               newValue[itemIndex] = newItemValue;
-              onChange(newValue, key, dataPath);
+              onChange(newValue, newDisplayValues, key, dataPath);
             }}
           ></Card>
         );
@@ -113,7 +122,8 @@ const ArrayCards = (props: Props) => {
                   defaultValue && typeof defaultValue === "object"
                     ? cloneDeep(defaultValue)
                     : defaultValue
-                )
+                ),
+                displayValues
               );
             }}
           >

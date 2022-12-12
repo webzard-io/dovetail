@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { css } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
 import { Select as BaseSelect } from "antd";
 
 const SelectProps = Type.Object({
-  defaultValue: Type.Any(),
+  defaultValue: Type.String(),
   options: Type.Array(
     Type.Object({
       text: Type.String(),
@@ -16,6 +16,7 @@ const SelectProps = Type.Object({
 
 const SelectState = Type.Object({
   value: Type.Any(),
+  selectedOption: Type.Any(),
 });
 
 export const Select = implementRuntimeComponent({
@@ -63,17 +64,17 @@ export const Select = implementRuntimeComponent({
     mergeState,
     subscribeMethods,
   }) => {
-    const [value, setValue] = useState(defaultValue);
+    const [value, setValue] = useState<string>(defaultValue);
     useEffect(() => {
       mergeState({
         value,
       });
-    }, [value]);
+    }, [value, mergeState]);
     useEffect(() => {
       subscribeMethods({
         setValue,
       });
-    }, []);
+    }, [subscribeMethods]);
 
     return (
       <BaseSelect
@@ -82,10 +83,11 @@ export const Select = implementRuntimeComponent({
           ${customStyle?.select}
         `}
         value={value}
-        onChange={(newV) => {
+        onChange={(newV: string, option) => {
           setValue(newV);
           mergeState({
             value: newV,
+            selectedOption: option,
           });
           callbackMap?.onChange?.();
         }}

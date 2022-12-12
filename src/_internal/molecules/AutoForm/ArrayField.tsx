@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { cloneDeep } from "lodash";
 
 const ArrayField: React.FC<WidgetProps> = (props) => {
-  const { spec, value = [], path, level, widgetOptions, onChange } = props;
+  const { spec, value = [] } = props;
   const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
 
   if (typeof itemSpec === "boolean" || !itemSpec) {
@@ -35,7 +35,7 @@ const ArrayField: React.FC<WidgetProps> = (props) => {
 export const AddToArrayField: React.FC<WidgetProps> = (props) => {
   const { t } = useTranslation();
   const kit = useContext(KitContext);
-  const { field, spec, value = [], onChange } = props;
+  const { displayValues, spec, value = [], onChange } = props;
   const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
 
   if (typeof itemSpec === "boolean" || !itemSpec) {
@@ -57,7 +57,8 @@ export const AddToArrayField: React.FC<WidgetProps> = (props) => {
               defaultValue && typeof defaultValue === "object"
                 ? cloneDeep(defaultValue)
                 : defaultValue
-            )
+            ),
+            displayValues
           );
         }}
       >

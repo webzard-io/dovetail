@@ -32,7 +32,9 @@ const _Field: React.FC<
         path={path}
         level={level}
         value={value}
-        onChange={(newValue) => onChange(newValue)}
+        onChange={(newValue, newDisplayValues) =>
+          onChange(newValue, newDisplayValues)
+        }
       />
     </div>
   );

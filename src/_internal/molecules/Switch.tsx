@@ -1,6 +1,6 @@
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { KitContext } from "../atoms/kit-context";
 
 export const OptionsSpec = Type.Object({
@@ -11,6 +11,7 @@ export const OptionsSpec = Type.Object({
 type Props = WidgetProps<boolean, Static<typeof OptionsSpec>>;
 
 const Switch = (props: Props) => {
+  const { displayValues } = props;
   const kit = useContext(KitContext);
 
   return (
@@ -19,6 +20,7 @@ const Switch = (props: Props) => {
       onChange={(value) =>
         props.onChange(
           value,
+          displayValues,
           `${
             props.subKey ? `${props.subKey}${props.field?.key ? "-" : ""}` : ""
           }${props.field?.key || ""}`,
