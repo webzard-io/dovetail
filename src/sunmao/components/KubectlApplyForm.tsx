@@ -1,7 +1,7 @@
 import { Type, Static } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { generateFromSchema } from "../../_internal/utils/schema";
 import merge from "lodash/merge";
 import set from "lodash/set";
@@ -122,7 +122,10 @@ export const UiConfigSpec = Type.Object({
           fields: Type.Array(UiConfigFieldSpec, {
             title: "Fields",
             widget: "core/v1/array",
-            widgetOptions: { displayedKeys: ["path", "label"], appendToBody: true },
+            widgetOptions: {
+              displayedKeys: ["path", "label"],
+              appendToBody: true,
+            },
           }),
         }),
         {
@@ -143,7 +146,10 @@ export const UiConfigSpec = Type.Object({
           fields: Type.Array(UiConfigFieldSpec, {
             title: "Fields",
             widget: "core/v1/array",
-            widgetOptions: { displayedKeys: ["path", "label"], appendToBody: true },
+            widgetOptions: {
+              displayedKeys: ["path", "label"],
+              appendToBody: true,
+            },
           }),
           disabled: Type.Boolean({ title: "Disabled" }),
           prevText: Type.String({ title: "Previous text" }),
@@ -222,6 +228,7 @@ const KubectlApplyFormProps = Type.Object({
 
 const KubectlApplyFormState = Type.Object({
   value: Type.Any(),
+  displayValue: Type.Any(),
   latestChangedKey: Type.String(),
   latestChangedPath: Type.String(),
   step: Type.Number(),
@@ -262,6 +269,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
       setField: Type.Object({
         fieldPath: Type.String(),
         value: Type.Any(),
+        displayValue: Type.Any(),
       }),
       nextStep: Type.Object({}),
       apply: Type.Object({}),
@@ -313,19 +321,26 @@ export const KubectlApplyForm = implementRuntimeComponent({
       mergeState({ value: initValues });
       return initValues;
     });
+    const [displayValues, setDisplayValues] = useState<Record<string, any>>([]);
     useEffect(() => {
       subscribeMethods({
-        setField({ fieldPath, value: fieldValue }) {
+        setField({ fieldPath, value: fieldValue, displayValue }) {
           const finalFieldValue =
             fieldValue && typeof fieldValue === "object"
               ? cloneDeep(fieldValue)
               : fieldValue;
           const newValues = set(values, fieldPath, finalFieldValue);
+          const newDisplayValues = {
+            ...displayValues,
+            [fieldPath]: displayValue,
+          };
 
           mergeState({
             value: newValues,
+            displayValue: newDisplayValues,
           });
           setValues([...newValues]);
+          setDisplayValues(newDisplayValues);
         },
         nextStep() {
           mergeState({
@@ -333,7 +348,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
           });
           setStep(step + 1);
         },
-        async apply() {
+        apply() {
           try {
             const sdk = new KubeSdk({
               basePath,
@@ -341,32 +356,33 @@ export const KubectlApplyForm = implementRuntimeComponent({
             mergeState({
               loading: true,
             });
-            await sdk.applyYaml(values);
+            sdk.applyYaml(values).catch((error: { response: Response }) => {
+              if (error.response) {
+                error.response
+                  .clone()
+                  .json()
+                  .then((result: any) => {
+                    mergeState({
+                      error: {
+                        ...error,
+                        responseJsonBody: result,
+                      },
+                    });
+                  })
+                  .catch(() => {});
+              }
+            });
+
             mergeState({
               loading: false,
             });
             callbackMap?.onApplySuccess?.();
-          } catch (error: any) {
-            if (error.response) {
-              error.response
-                .clone()
-                .json()
-                .then((result: any) => {
-                  mergeState({
-                    error: {
-                      ...error,
-                      responseJsonBody: result,
-                    },
-                  });
-                });
-            }
+          } catch (error) {}
 
-            mergeState({
-              loading: false,
-              error,
-            });
-            callbackMap?.onApplyFail?.();
-          }
+          mergeState({
+            loading: false,
+          });
+          callbackMap?.onApplyFail?.();
         },
         clearError() {
           mergeState({
@@ -374,7 +390,15 @@ export const KubectlApplyForm = implementRuntimeComponent({
           });
         },
       });
-    }, [step, subscribeMethods, mergeState, values, callbackMap]);
+    }, [
+      step,
+      subscribeMethods,
+      mergeState,
+      values,
+      callbackMap,
+      basePath,
+      displayValues,
+    ]);
 
     return (
       <_KubectlApplyForm
@@ -385,6 +409,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
         schemas={formConfig.schemas}
         uiConfig={formConfig.uiConfig}
         values={values}
+        displayValues={displayValues}
         error={error}
         errorDetail={errorDetail}
         submitting={submitting}
@@ -396,10 +421,17 @@ export const KubectlApplyForm = implementRuntimeComponent({
           setStep(step);
         }}
         defaultValues={formConfig.defaultValues}
-        onChange={(newValues: any, key?: string, dataPath?: string) => {
+        onChange={(
+          newValues: any,
+          displayValues: Record<string, any>,
+          key?: string,
+          dataPath?: string
+        ) => {
           setValues(newValues);
+          setDisplayValues(displayValues);
           mergeState({
             value: newValues,
+            displayValue: displayValues,
             latestChangedKey: key,
             latestChangedPath: dataPath,
           });

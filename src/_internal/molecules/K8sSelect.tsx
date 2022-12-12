@@ -2,7 +2,7 @@ import { Select as AntdSelect } from "antd";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
 import { KitContext } from "../atoms/kit-context";
-import { useContext, useEffect, useState, useMemo } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import {
   KubeApi,
   UnstructuredList,
@@ -41,7 +41,7 @@ type Props = WidgetProps<string | string[], Static<typeof OptionsSpec>>;
 
 const K8sSelect = (props: Props) => {
   const kit = useContext(KitContext);
-  const { value, onChange, widgetOptions } = props;
+  const { value, displayValues, path, onChange, widgetOptions } = props;
   const {
     basePath,
     watchWsBasePath,
@@ -85,16 +85,20 @@ const K8sSelect = (props: Props) => {
           value: get(item, valuePath || ""),
         }))
       );
-    })();
-  }, [api, fieldSelector]);
+    })().catch(() => {});
+  }, [api, fieldSelector, namespace, valuePath]);
 
   return (
     <kit.Select
       disabled={disabled}
       value={(value || "") as any}
-      onChange={(value) =>
+      onChange={(value, option) =>
         onChange(
           value,
+          {
+            ...displayValues,
+            [path]: option.label,
+          },
           `${
             props.subKey ? `${props.subKey}${props.field?.key ? "-" : ""}` : ""
           }${props.field?.key || ""}`,
