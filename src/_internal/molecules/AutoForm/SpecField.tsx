@@ -192,6 +192,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     path,
     step,
     value,
+    displayValues,
     stepElsRef,
     layout,
     subKey,
@@ -253,6 +254,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       field={field}
       spec={spec}
       value={value}
+      displayValues={displayValues}
       path={path}
       subKey={subKey}
       level={level}

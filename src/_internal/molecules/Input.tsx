@@ -16,6 +16,7 @@ export const OptionsSpec = Type.Object({
 type Props = WidgetProps<string, Static<typeof OptionsSpec>>;
 
 const Input = (props: Props) => {
+  const { displayValues } = props;
   const [input, setInput] = useState("");
   const kit = useContext(KitContext);
   const onChange = useCallback(
@@ -23,13 +24,14 @@ const Input = (props: Props) => {
       setInput(e.target.value);
       props.onChange(
         e.target.value,
+        displayValues,
         `${
           props.subKey ? `${props.subKey}${props.field?.key ? "-" : ""}` : ""
         }${props.field?.key || ""}`,
         props.path
       );
     },
-    [props.onChange, props.subKey, props.field]
+    [props, displayValues]
   );
 
   useEffect(() => {
