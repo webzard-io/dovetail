@@ -74,6 +74,8 @@ const FormItemStyle = css`
     font-weight: 400;
     font-size: 13px;
     line-height: 20px;
+    word-break: break-all;
+    white-space: pre-wrap;
 
     label:after {
       content: "";
@@ -280,7 +282,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
         description={
           helperSlot?.(
             { path, ...(field || {}), index },
-            field?.helperText || '',
+            field?.helperText || "",
             `helper_${path}`
           ) || field?.helperText
         }
