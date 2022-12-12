@@ -53,6 +53,7 @@ const ArrayItems = (props: Props) => {
   const {
     spec,
     value = [],
+    displayValues,
     path,
     level,
     widgetOptions = {
@@ -92,20 +93,29 @@ const ArrayItems = (props: Props) => {
               path={path.concat(`.${itemIndex}`)}
               level={level + 1}
               widgetOptions={{}}
-              onChange={(newItemValue: any, key?: string, dataPath?: string) => {
+              onChange={(
+                newItemValue: any,
+                newDisplayValues: Record<string, any>,
+                key?: string,
+                dataPath?: string
+              ) => {
                 const newValue = [...value];
                 newValue[itemIndex] = newItemValue;
-                onChange(newValue, key, dataPath);
+                onChange(newValue, newDisplayValues, key, dataPath);
               }}
             />
           </div>
+          ;
           {value.length > (widgetOptions?.minLength || 0) ? (
             <kit.Button
               className={CloseButtonStyle}
               size="small"
               type="text"
               onClick={() => {
-                onChange(value.filter((_: any, i: number) => i !== itemIndex));
+                onChange(
+                  value.filter((_: any, i: number) => i !== itemIndex),
+                  displayValues
+                );
               }}
             >
               <CloseOutlined />
@@ -136,7 +146,8 @@ const ArrayItems = (props: Props) => {
                   defaultValue && typeof defaultValue
                     ? cloneDeep(defaultValue)
                     : defaultValue
-                )
+                ),
+                displayValues
               );
             }}
           >

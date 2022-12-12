@@ -56,6 +56,7 @@ export type KubectlApplyFormProps = {
   };
   values: any[];
   defaultValues: any[];
+  displayValues: Record<string, any>;
   error?: string;
   errorDetail?: {
     title: string;
@@ -74,7 +75,12 @@ export type KubectlApplyFormProps = {
     fallback: React.ReactNode,
     slotKey: string
   ) => React.ReactNode;
-  onChange: (values: any[], key?: string, dataPath?: string) => void;
+  onChange: (
+    values: any[],
+    displayValues: Record<string, any>,
+    key?: string,
+    dataPath?: string
+  ) => void;
   onNextStep?: (values: any[]) => void;
   onSubmit?: (values: any[]) => void;
   onCancel?: () => void;
@@ -92,6 +98,7 @@ const KubectlApplyForm = React.forwardRef<
       uiConfig,
       values,
       defaultValues,
+      displayValues,
       error,
       errorDetail,
       submitting,
@@ -113,7 +120,7 @@ const KubectlApplyForm = React.forwardRef<
     const kit = useContext(KitContext);
     // wizard
     const { layout, title } = uiConfig;
-    const summaryInfo = useSummary(layout, values);
+    const summaryInfo = useSummary(layout, values, displayValues);
 
     function getComponent(f: TransformedField) {
       const [indexStr, path] = f.path.split(/\.(.*)/s);
@@ -133,12 +140,18 @@ const KubectlApplyForm = React.forwardRef<
           path={f.dataPath}
           stepElsRef={{}}
           value={f.value}
+          displayValues={displayValues}
           slot={getSlot}
           helperSlot={getHelperSlot}
-          onChange={(newValue: any, key?: string, dataPath?: string) => {
+          onChange={(
+            newValue: any,
+            displayValue: any,
+            key?: string,
+            dataPath?: string
+          ) => {
             const valuesSlice = [...values];
             set(valuesSlice, f.dataPath, newValue);
-            onChange(valuesSlice, key, dataPath);
+            onChange(valuesSlice, displayValue, key, dataPath);
           }}
         />
       );
@@ -214,7 +227,7 @@ const KubectlApplyForm = React.forwardRef<
                     </div>
                     <div className="wizard-footer-btn-group">
                       <kit.Button
-                        type={`quiet` as unknown as ButtonType}
+                        type={"quiet" as unknown as ButtonType}
                         onClick={() => {
                           onCancel?.();
                         }}
@@ -347,7 +360,7 @@ const KubectlApplyForm = React.forwardRef<
                     </div>
                     <div className="wizard-footer-btn-group">
                       <kit.Button
-                        type={`quiet` as unknown as ButtonType}
+                        type={"quiet" as unknown as ButtonType}
                         onClick={() => {
                           onCancel?.();
                         }}
@@ -418,7 +431,7 @@ const KubectlApplyForm = React.forwardRef<
               .map((v) => dump(v, { noRefs: true }))
               .join("---\n")}
             onBlur={(newValue) => {
-              onChange(yaml.loadAll(newValue));
+              onChange(yaml.loadAll(newValue), displayValues);
             }}
             language="yaml"
           />
