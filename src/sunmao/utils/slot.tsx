@@ -34,10 +34,11 @@ export const generateSlotChildren = (
   { generateId, generateProps }: Options
 ) => {
   const renderSet = new Set<string>();
+  const slotTraitTypes = ["core/v1/slot", "core/v2/slot"];
   const childrenSchema = app.spec.components.filter((c) => {
     return c.traits.find(
       (t) =>
-        t.type === "core/v1/slot" &&
+        slotTraitTypes.includes(t.type) &&
         (t.properties as SlotTraitProps).container.id === component.id &&
         (t.properties as SlotTraitProps).container.slot === slot
     );
