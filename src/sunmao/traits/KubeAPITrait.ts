@@ -142,6 +142,7 @@ export default implementRuntimeTrait({
   const timeMap = new Map();
 
   return ({
+    trait,
     componentId,
     basePath,
     watchWsBasePath,
@@ -198,11 +199,23 @@ export default implementRuntimeTrait({
             mergeState({ loading: false, error: null, response });
             if (!responseMap.has(componentId)) {
               onResponse?.forEach((handler, index) => {
-                runEventHandler(handler, onResponse, index, services, "")();
+                runEventHandler(
+                  handler,
+                  trait.properties.onResponse,
+                  index,
+                  services,
+                  ""
+                )();
               });
             }
             onDataUpdate?.forEach((handler, index) => {
-              runEventHandler(handler, onDataUpdate, index, services, "")();
+              runEventHandler(
+                handler,
+                trait.properties.onDataUpdate,
+                index,
+                services,
+                ""
+              )();
             });
             responseMap.set(componentId, response);
           },
@@ -210,7 +223,13 @@ export default implementRuntimeTrait({
         .catch((err) => {
           mergeState({ loading: false, error: err, response: emptyData });
           onError?.forEach((handler, index) => {
-            runEventHandler(handler, onError, index, services, "")();
+            runEventHandler(
+              handler,
+              trait.properties.onError,
+              index,
+              services,
+              ""
+            )();
           });
         });
 
@@ -241,14 +260,32 @@ export default implementRuntimeTrait({
 
         mergeState({ loading: false, error: null, response });
         onResponse?.forEach((handler, index) => {
-          runEventHandler(handler, onResponse, index, services, "")();
+          runEventHandler(
+            handler,
+            trait.properties.onResponse,
+            index,
+            services,
+            ""
+          )();
         });
         onDataUpdate?.forEach((handler, index) => {
-          runEventHandler(handler, onDataUpdate, index, services, "")();
+          runEventHandler(
+            handler,
+            trait.properties.onDataUpdate,
+            index,
+            services,
+            ""
+          )();
         });
       } catch (error) {
         onError?.forEach((handler, index) => {
-          runEventHandler(handler, onError, index, services, "")();
+          runEventHandler(
+            handler,
+            trait.properties.onError,
+            index,
+            services,
+            ""
+          )();
         });
         mergeState({ loading: false, error, response: emptyData });
       }
