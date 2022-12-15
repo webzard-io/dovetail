@@ -108,7 +108,6 @@ const ArrayItems = (props: Props) => {
               }}
             />
           </div>
-          ;
           {value.length > (widgetOptions?.minLength || 0) ? (
             <kit.Button
               className={CloseButtonStyle}

@@ -141,6 +141,7 @@ const FieldCustomComponentWidget =
                               ? `${parentPath}.${fieldPath}`
                               : fieldPath,
                             value: `{{${newComponentId}.value}}`,
+                            displayValue: `{{${newComponentId}.displayValue}}`,
                           },
                         },
                         wait: {

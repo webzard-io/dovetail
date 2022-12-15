@@ -1,7 +1,7 @@
 import { Type, Static } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { generateFromSchema } from "../../_internal/utils/schema";
 import merge from "lodash/merge";
 import set from "lodash/set";
@@ -271,6 +271,10 @@ export const KubectlApplyForm = implementRuntimeComponent({
         value: Type.Any(),
         displayValue: Type.Any(),
       }),
+      setDisplayValue: Type.Object({
+        fieldPath: Type.String(),
+        displayValue: Type.Any(),
+      }),
       nextStep: Type.Object({}),
       apply: Type.Object({}),
       clearError: Type.Object({}),
@@ -321,7 +325,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
       mergeState({ value: initValues });
       return initValues;
     });
-    const [displayValues, setDisplayValues] = useState<Record<string, any>>([]);
+    const [displayValues, setDisplayValues] = useState<Record<string, any>>({});
+    const updatedDisplayValuesRef = useRef<Record<string, any>>({});
+
     useEffect(() => {
       subscribeMethods({
         setField({ fieldPath, value: fieldValue, displayValue }) {
@@ -330,17 +336,29 @@ export const KubectlApplyForm = implementRuntimeComponent({
               ? cloneDeep(fieldValue)
               : fieldValue;
           const newValues = set(values, fieldPath, finalFieldValue);
-          const newDisplayValues = {
+          updatedDisplayValuesRef.current = {
+            ...updatedDisplayValuesRef.current,
             ...displayValues,
             [fieldPath]: displayValue,
           };
 
           mergeState({
             value: newValues,
-            displayValue: newDisplayValues,
+            displayValue: updatedDisplayValuesRef.current,
           });
           setValues([...newValues]);
-          setDisplayValues(newDisplayValues);
+          setDisplayValues(updatedDisplayValuesRef.current);
+        },
+        setDisplayValue({ fieldPath, displayValue }) {
+          updatedDisplayValuesRef.current = {
+            ...updatedDisplayValuesRef.current,
+            ...displayValues,
+            [fieldPath]: displayValue,
+          };
+          mergeState({
+            displayValue: updatedDisplayValuesRef.current,
+          });
+          setDisplayValues(updatedDisplayValuesRef.current);
         },
         nextStep() {
           mergeState({
@@ -399,6 +417,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
       basePath,
       displayValues,
     ]);
+    useEffect(() => {
+      updatedDisplayValuesRef.current = {};
+    }, [displayValues]);
 
     return (
       <_KubectlApplyForm
@@ -427,15 +448,29 @@ export const KubectlApplyForm = implementRuntimeComponent({
           key?: string,
           dataPath?: string
         ) => {
+          updatedDisplayValuesRef.current = {
+            ...updatedDisplayValuesRef.current,
+            ...displayValues,
+          };
           setValues(newValues);
-          setDisplayValues(displayValues);
+          setDisplayValues(updatedDisplayValuesRef.current);
           mergeState({
             value: newValues,
-            displayValue: displayValues,
+            displayValue: updatedDisplayValuesRef.current,
             latestChangedKey: key,
             latestChangedPath: dataPath,
           });
           callbackMap?.onChange?.();
+        }}
+        onDisplayValuesChange={(displayValues: Record<string, any>) => {
+          updatedDisplayValuesRef.current = {
+            ...updatedDisplayValuesRef.current,
+            ...displayValues,
+          };
+          setDisplayValues(updatedDisplayValuesRef.current);
+          mergeState({
+            displayValue: updatedDisplayValuesRef.current,
+          });
         }}
         onNextStep={callbackMap?.onNextStep}
         onSubmit={callbackMap?.onSubmit}
