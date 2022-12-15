@@ -81,6 +81,7 @@ export type KubectlApplyFormProps = {
     key?: string,
     dataPath?: string
   ) => void;
+  onDisplayValuesChange: (displayValues: Record<string, any>) => void;
   onNextStep?: (values: any[]) => void;
   onSubmit?: (values: any[]) => void;
   onCancel?: () => void;
@@ -103,6 +104,7 @@ const KubectlApplyForm = React.forwardRef<
       errorDetail,
       submitting,
       onChange,
+      onDisplayValuesChange,
       getSlot,
       getHelperSlot,
       step,
@@ -152,6 +154,9 @@ const KubectlApplyForm = React.forwardRef<
             const valuesSlice = [...values];
             set(valuesSlice, f.dataPath, newValue);
             onChange(valuesSlice, displayValue, key, dataPath);
+          }}
+          onDisplayValuesChange={(displayValues: Record<string, any>) => {
+            onDisplayValuesChange(displayValues);
           }}
         />
       );
