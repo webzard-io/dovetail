@@ -201,6 +201,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     slot,
     helperSlot,
     onChange,
+    onDisplayValuesChange,
   } = props;
   let { widgetOptions = {} } = props;
   const { title } = spec;
@@ -259,6 +260,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       subKey={subKey}
       level={level}
       onChange={onChange}
+      onDisplayValuesChange={onDisplayValuesChange}
       step={step}
       stepElsRef={stepElsRef}
       layout={layout}

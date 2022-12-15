@@ -2,7 +2,7 @@ import { Select as AntdSelect } from "antd";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
 import { KitContext } from "../atoms/kit-context";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { styled } from "@linaria/react";
 
 const OptionWrapper = styled.div`
@@ -36,8 +36,28 @@ type Props = WidgetProps<string | string[], Static<typeof OptionsSpec>>;
 
 const Select = (props: Props) => {
   const kit = useContext(KitContext);
-  const { value, onChange, widgetOptions, displayValues, path } = props;
+  const {
+    value,
+    onChange,
+    onDisplayValuesChange,
+    widgetOptions,
+    displayValues,
+    path,
+  } = props;
   const { options = [], disabled } = widgetOptions || { options: [] };
+
+  useEffect(() => {
+    if (value) {
+      const selectedOption = options.find((option) => option.value === value);
+
+      if (selectedOption) {
+        onDisplayValuesChange({
+          ...displayValues,
+          [path]: selectedOption.label,
+        });
+      }
+    }
+  }, []);
 
   return (
     <kit.Select

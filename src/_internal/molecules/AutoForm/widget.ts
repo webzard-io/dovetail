@@ -31,6 +31,7 @@ export type WidgetProps<Value = any, WidgetOptions = Record<string, any>> = {
     key?: string,
     dataPath?: string
   ) => void;
+  onDisplayValuesChange: (displayValues: Record<string, any>) => void;
   slot?: Function;
   helperSlot?: Function;
 };
