@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useCallback, useMemo } from "react";
 import { KitContext } from "../atoms/kit-context";
 import { WidgetProps } from "./AutoForm/widget";
 import { Type, Static } from "@sinclair/typebox";
@@ -12,7 +12,7 @@ import Icon, {
 import { generateFromSchema } from "../utils/schema";
 import { JSONSchema7 } from "json-schema";
 import { useTranslation } from "react-i18next";
-import { cloneDeep } from "lodash";
+import { cloneDeep, set } from "lodash";
 
 const Wrapper = styled.div`
   display: flex;
@@ -51,7 +51,9 @@ type Props = WidgetProps<any, Static<typeof OptionsSpec>>;
 const ArrayItems = (props: Props) => {
   const { t } = useTranslation();
   const {
+    services,
     spec,
+    field,
     value = [],
     displayValues,
     path,
@@ -72,6 +74,45 @@ const ArrayItems = (props: Props) => {
   ) as JSONSchema7;
   const kit = useContext(KitContext);
   const errorInfo = props.field?.error || props.error;
+  const removable = useMemo(
+    () => value.length > (widgetOptions?.minLength || 0),
+    [value.length, widgetOptions.minLength]
+  );
+
+  const remove = useCallback(
+    (index: number) => {
+      onChange(
+        value.filter((_: any, i: number) => i !== index),
+        displayValues
+      );
+    },
+    [onChange, value, displayValues]
+  );
+  const handleRemoveEvent = useCallback(
+    (eventData: { fieldKey: string; index: number }) => {
+      if (field?.key === eventData.fieldKey) {
+        remove(eventData.index);
+      }
+    },
+    [remove, field]
+  );
+
+  useEffect(() => {
+    const store = set(
+      services.store,
+      `summary.removableMap.${field?.key || ""}`,
+      removable
+    );
+
+    services.setStore({ ...store });
+  }, [field?.key, removable]);
+  useEffect(() => {
+    services.event.on("remove", handleRemoveEvent);
+
+    return () => {
+      services.event.off("remove", handleRemoveEvent);
+    };
+  }, [services.event, handleRemoveEvent]);
 
   return (
     <>
@@ -111,10 +152,7 @@ const ArrayItems = (props: Props) => {
               size="small"
               type="text"
               onClick={() => {
-                onChange(
-                  value.filter((_: any, i: number) => i !== itemIndex),
-                  displayValues
-                );
+                remove(itemIndex);
               }}
             >
               <CloseOutlined />

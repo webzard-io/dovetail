@@ -1,5 +1,5 @@
 import { JSONSchema7 } from "json-schema";
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useMemo, useState, useRef } from "react";
 import get from "lodash/get";
 import set from "lodash/set";
 import groupBy from "lodash/groupBy";
@@ -34,8 +34,16 @@ import { ButtonType } from "antd/lib/button";
 import SummaryList from "../../atoms/themes/CloudTower/components/SummaryList";
 import useSummary from "./useSummary";
 import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
-import { Field, TransformedField, Layout } from "./type";
+import {
+  Field,
+  TransformedField,
+  Layout,
+  Services,
+  Events,
+  Store,
+} from "./type";
 import { transformFields } from "./utils";
+import mitt from "mitt";
 
 export type KubectlApplyFormProps = {
   className?: string;
@@ -122,7 +130,20 @@ const KubectlApplyForm = React.forwardRef<
     const kit = useContext(KitContext);
     // wizard
     const { layout, title } = uiConfig;
-    const summaryInfo = useSummary(layout, values, displayValues);
+    const [store, setStore] = useState<Store>({
+      summary: {
+        removableMap: {},
+      },
+    });
+    const eventRef = useRef(mitt<Events>());
+    const services = useMemo<Services>(() => {
+      return {
+        event: eventRef.current,
+        store,
+        setStore,
+      };
+    }, [store, setStore]);
+    const summaryInfo = useSummary(layout, values, displayValues, services);
 
     function getComponent(f: TransformedField) {
       const [indexStr, path] = f.path.split(/\.(.*)/s);
@@ -131,6 +152,7 @@ const KubectlApplyForm = React.forwardRef<
 
       const component = (
         <SpecField
+          services={services}
           key={f.dataPath || f.key}
           basePath={basePath}
           field={f}
@@ -212,6 +234,7 @@ const KubectlApplyForm = React.forwardRef<
                       title={uiConfig.title || ""}
                       groups={summaryInfo?.groups || []}
                       items={summaryInfo.items || []}
+                      services={services}
                     ></SummaryList>
                   ) : null}
                 </div>
@@ -335,6 +358,7 @@ const KubectlApplyForm = React.forwardRef<
                     <SummaryList
                       title={uiConfig.title || ""}
                       groups={summaryInfo?.groups}
+                      services={services}
                     ></SummaryList>
                   ) : null}
                 </div>

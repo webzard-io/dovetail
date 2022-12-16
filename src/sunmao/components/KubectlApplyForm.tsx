@@ -69,6 +69,13 @@ const UiConfigFieldSpecProperties = {
       },
     ],
   }),
+  summaryConfig: Type.Object({
+    type: StringUnion(["auto", "item"]),
+    label: Type.String(),
+    value: Type.String(),
+    icon: Type.String(),
+    hidden: Type.Boolean(),
+  }),
 };
 const UiConfigFieldSpec = Type.Object(
   {
@@ -95,16 +102,9 @@ export const UiConfigSpec = Type.Object({
   }),
   layout: Type.Object(
     {
-      type: Type.KeyOf(
-        Type.Object({
-          simple: Type.Boolean(),
-          tabs: Type.Boolean(),
-          wizard: Type.Boolean(),
-        }),
-        {
-          title: "Type",
-        }
-      ),
+      type: StringUnion(["simple", "tabs", "wizard"], {
+        title: "Type",
+      }),
       fields: Type.Array(UiConfigFieldSpec, {
         title: "Fields",
         widget: "core/v1/array",
