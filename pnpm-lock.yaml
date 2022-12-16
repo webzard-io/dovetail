@@ -48,6 +48,7 @@ specifiers:
   ky: ^0.30.0
   less: ^3.10.3
   lodash: ^4.17.21
+  mitt: ^3.0.0
   mobx: ^6.6.1
   mobx-react-lite: ^3.4.0
   monaco-editor: ^0.33.0
@@ -82,6 +83,7 @@ dependencies:
   kubernetes-types: 1.21.0-beta.1
   ky: 0.30.0
   lodash: 4.17.21
+  mitt: 3.0.0
   monaco-editor: 0.33.0
   rc-util: 5.25.2_sfoxds7t5ydpegc3knd667wn6m
   react-use: 17.4.0_sfoxds7t5ydpegc3knd667wn6m
@@ -6362,7 +6364,6 @@ packages:
 
   /mitt/3.0.0:
     resolution: {integrity: sha512-7dX2/10ITVyqh4aOSVI9gdape+t9l2/8QxHrFmUXu4EEUpdlxl6RudZUPZoc+zuY2hk1j7XxVroIVIan/pD/SQ==}
-    dev: true
 
   /mkdirp/1.0.4:
     resolution: {integrity: sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==}
