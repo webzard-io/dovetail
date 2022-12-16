@@ -13,9 +13,11 @@ const { Panel } = Collapse;
 const SummaryListWrapper = styled.div`
   min-width: 190px;
   min-height: 408px;
-  overflow: auto;
+  max-height: 100%;
   border: 1px solid rgba(211, 218, 235, 0.6);
   border-radius: 6px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const SummaryListTitle = styled.h3`
@@ -58,7 +60,7 @@ const SummaryCollapseStyle = css`
 `;
 
 const SummaryListBody = styled.div`
-  max-height: calc(100vh - 220px);
+  flex: 1;
   overflow: auto;
 `;
 
