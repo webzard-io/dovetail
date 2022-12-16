@@ -6,6 +6,7 @@ import { generateFromSchema } from "../../_internal/utils/schema";
 import merge from "lodash/merge";
 import set from "lodash/set";
 import cloneDeep from "lodash/cloneDeep";
+import isEqual from "lodash/isEqual";
 import _KubectlApplyForm from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 import { css } from "@emotion/css";
 import {
@@ -418,7 +419,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
       displayValues,
     ]);
     useEffect(() => {
-      updatedDisplayValuesRef.current = {};
+      if (isEqual(updatedDisplayValuesRef.current, displayValues)) {
+        updatedDisplayValuesRef.current = {};
+      }
     }, [displayValues]);
 
     return (
