@@ -188,6 +188,7 @@ type SpecFieldProps = WidgetProps & {
 
 const SpecField: React.FC<SpecFieldProps> = (props) => {
   const {
+    services,
     basePath,
     field,
     spec,
@@ -254,6 +255,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
 
   const FieldComponent = (
     <Component
+      services={services}
       widgetOptions={widgetOptions}
       error={typeof error !== "string" ? error : undefined}
       field={field}

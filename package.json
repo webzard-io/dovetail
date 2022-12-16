@@ -35,6 +35,7 @@
     "kubernetes-types": "1.21.0-beta.1",
     "ky": "^0.30.0",
     "lodash": "^4.17.21",
+    "mitt": "^3.0.0",
     "monaco-editor": "^0.33.0",
     "rc-util": "^5.25.2",
     "react-use": "^17.3.2",

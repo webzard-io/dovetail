@@ -1,3 +1,5 @@
+import { Emitter } from "mitt";
+
 export type Field = {
   fields?: Field[];
   path: string;
@@ -16,6 +18,13 @@ export type Field = {
   col?: number;
   splitLine?: boolean;
   defaultValue?: any;
+  summaryConfig?: {
+    type?: "auto" | "item";
+    label?: string;
+    value?: string;
+    icon?: string;
+    hidden?: boolean;
+  };
 };
 
 export type TransformedField = Field & { dataPath: string; value: any };
@@ -42,3 +51,22 @@ export type Layout =
         nextText?: string;
       }[];
     };
+
+export type Events = {
+  remove: {
+    index: number;
+    fieldKey: string;
+  };
+};
+
+export type Store = {
+  summary: {
+    removableMap: Record<string, boolean>;
+  };
+};
+
+export type Services = {
+  event: Emitter<Events>;
+  store: Store;
+  setStore: (store: Store) => void;
+};
