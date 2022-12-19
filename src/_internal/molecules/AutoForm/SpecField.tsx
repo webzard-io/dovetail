@@ -74,7 +74,7 @@ const FormItemStyle = css`
     font-weight: 400;
     font-size: 13px;
     line-height: 20px;
-    word-break: break-all;
+    word-break: break-word;
     white-space: pre-wrap;
 
     label:after {
