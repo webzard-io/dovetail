@@ -35,4 +35,5 @@ export type WidgetProps<Value = any, WidgetOptions = Record<string, any>> = {
   onDisplayValuesChange: (displayValues: Record<string, any>) => void;
   slot?: Function;
   helperSlot?: Function;
+  fieldsArray: Record<string, { spec: JSONSchema7 }>[];
 };

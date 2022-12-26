@@ -7,9 +7,11 @@ import { immutableSet } from "../../../editor/utils/object";
 import { get } from "lodash";
 import type { Field } from "../../organisms/KubectlApplyForm/type";
 import { isObject } from "lodash";
+import { JSONSchema7 } from "json-schema";
 
 export function resolveSubFields(props: WidgetProps) {
-  const { field, spec, value, path, level, error, onChange } = props;
+  const { fieldsArray, field, spec, value, path, level, error, onChange } =
+    props;
   const fields: Field[] = field?.fields || [];
   const properties = Object.keys(spec.properties || {});
 
@@ -18,8 +20,16 @@ export function resolveSubFields(props: WidgetProps) {
     return fields.map((subField) => {
       if (!subField.path) return null;
 
-      const subSpec = getJsonSchemaByPath(spec, subField.path) || {};
+      let subSpec: JSONSchema7 | null = {};
       const errorInfo = subField?.error || error;
+
+      if (field?.path) {
+        subSpec = getJsonSchemaByPath(spec, subField.path);
+      } else {
+        const [index, ...subPath] = subField.path.split(".");
+
+        subSpec = fieldsArray[Number(index)]?.[subPath.join(".")].spec || {};
+      }
 
       return (
         <SpecField
