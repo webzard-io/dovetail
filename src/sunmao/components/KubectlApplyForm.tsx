@@ -13,32 +13,66 @@ import {
   FORM_WIDGETS_MAP,
   FORM_WIDGET_OPTIONS_MAP,
 } from "../../_internal/molecules/form";
-import { KubeApi, KubeSdk } from "../../_internal/k8s-api-client/kube-api";
+import { LAYOUT_WIDGETS_MAP } from "../../_internal/molecules/layout";
+import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 import { generateSlotChildren } from "../utils/slot";
 
+const FIELD_CONDITIONS = [
+  {
+    or: [
+      {
+        key: "type",
+        value: "field",
+      },
+      {
+        key: "type",
+        value: undefined as any,
+      },
+    ],
+  },
+];
+const LAYOUT_CONDITION = [
+  {
+    key: "type",
+    value: "layout",
+  },
+];
+
 const UiConfigFieldSpecProperties = {
+  type: StringUnion(["field", "layout"]),
   path: Type.String({
     title: "Path",
     widget: "kui/v1/PathWidget",
+    conditions: FIELD_CONDITIONS,
   }),
   key: Type.String({
     title: "Key",
     description: "Use for the `latestChangedKey` state",
+    conditions: FIELD_CONDITIONS,
   }),
-  label: Type.String({ title: "Label" }),
+  label: Type.String({ title: "Label", conditions: FIELD_CONDITIONS }),
   labelWidth: Type.Number({
     title: "Label Width",
+    conditions: FIELD_CONDITIONS,
   }),
   isDisplayLabel: Type.Boolean({
     title: "Is display label",
+    conditions: FIELD_CONDITIONS,
   }),
-  layout: StringUnion(["horizontal", "vertical"], { title: "Layout" }),
-  helperText: Type.String({ title: "Helper text" }),
+  layout: StringUnion(["horizontal", "vertical"], {
+    title: "Layout",
+    conditions: FIELD_CONDITIONS,
+  }),
+  helperText: Type.String({
+    title: "Helper text",
+    conditions: FIELD_CONDITIONS,
+  }),
   sectionTitle: Type.String({ title: "Section title" }),
-  error: Type.String({ title: "Error" }),
+  error: Type.String({ title: "Error", conditions: FIELD_CONDITIONS }),
   condition: Type.Boolean({ title: "Condition" }),
   col: Type.Number({
     title: "Col",
+    conditions: FIELD_CONDITIONS,
   }),
   splitLine: Type.Boolean({
     title: "Split line",
@@ -47,8 +81,17 @@ const UiConfigFieldSpecProperties = {
     ["default", "component"].concat(Object.keys(FORM_WIDGETS_MAP)),
     {
       title: "Widget",
+      conditions: FIELD_CONDITIONS,
     }
   ),
+  layoutWidget: StringUnion(Object.keys(LAYOUT_WIDGETS_MAP), {
+    title: "Layout Widget",
+    conditions: LAYOUT_CONDITION,
+  }),
+  indent: Type.Boolean({
+    title: "Indent",
+    conditions: LAYOUT_CONDITION,
+  }),
   widgetOptions: Type.Record(Type.String(), Type.Any(), {
     title: "Widget options",
     widget: "kui/v1/OptionsWidget",

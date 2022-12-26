@@ -160,6 +160,7 @@ const KubectlApplyForm = React.forwardRef<
           widget={f.widget}
           widgetOptions={f.widgetOptions}
           spec={{ ...spec, title: f.label }}
+          fieldsArray={fieldsArray}
           level={0}
           path={f.dataPath}
           stepElsRef={{}}

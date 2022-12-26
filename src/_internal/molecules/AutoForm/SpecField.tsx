@@ -17,6 +17,7 @@ import {
   FORM_WIDGETS_MAP,
   FORM_WIDGET_OPTIONS_MAP,
 } from "../../molecules/form";
+import { LAYOUT_WIDGETS_MAP } from "../../molecules/layout";
 import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
 import { Static } from "@sinclair/typebox";
 
@@ -185,6 +186,7 @@ type SpecFieldProps = WidgetProps & {
 const SpecField: React.FC<SpecFieldProps> = (props) => {
   const {
     services,
+    fieldsArray,
     basePath,
     field,
     spec,
@@ -207,7 +209,10 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   let { widgetOptions = {} } = props;
   const { title } = spec;
   const label = title ?? "";
-  const displayLabel = field?.isDisplayLabel ?? shouldDisplayLabel(spec, label);
+  const displayLabel =
+    field?.type === "layout"
+      ? field.indent
+      : field?.isDisplayLabel ?? shouldDisplayLabel(spec, label);
   const displayDescription = shouldDisplayDescdisplayDescription(spec);
 
   if (isEmpty(spec) || field?.condition === false) {
@@ -218,8 +223,15 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   let isNest = false;
 
   // type fields
-  if (widget && widget in FORM_WIDGETS_MAP) {
+  if (widget && widget in FORM_WIDGETS_MAP && field?.type !== "layout") {
     Component = FORM_WIDGETS_MAP[widget as keyof typeof FORM_WIDGETS_MAP];
+  } else if (
+    field?.type === "layout" &&
+    field.layoutWidget &&
+    field.layoutWidget in LAYOUT_WIDGETS_MAP
+  ) {
+    Component =
+      LAYOUT_WIDGETS_MAP[field.layoutWidget as keyof typeof LAYOUT_WIDGETS_MAP];
   } else if (field?.path.includes("metadata.namespace")) {
     Component = FORM_WIDGETS_MAP.k8sSelect;
     widgetOptions = {
@@ -252,6 +264,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   const FieldComponent = (
     <Component
       services={services}
+      fieldsArray={fieldsArray}
       widgetOptions={widgetOptions}
       error={typeof error !== "string" ? error : undefined}
       field={field}
