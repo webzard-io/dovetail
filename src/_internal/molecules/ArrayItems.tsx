@@ -16,7 +16,6 @@ import { cloneDeep } from "lodash";
 
 const Wrapper = styled.div`
   display: flex;
-  align-items: center;
   &:not(:first-child) {
     margin-top: 16px;
   }
@@ -25,7 +24,11 @@ const HelperText = styled.div`
   margin: 8px 0;
   color: rgba(44, 56, 82, 0.6);
 `;
-const CloseButtonStyle = css``;
+const CloseButtonStyle = css`
+  &.dovetail-ant-btn.dovetail-ant-btn-sm {
+    margin: 4px 0;
+  }
+`;
 const AddedButtonStyle = css``;
 
 export const OptionsSpec = Type.Object({

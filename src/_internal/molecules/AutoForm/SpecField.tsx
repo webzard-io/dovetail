@@ -32,6 +32,7 @@ type TemplateProps = {
   labelWidth?: number;
   displayDescription?: boolean;
   spec: WidgetProps["spec"];
+  fieldKey?: string;
   children?: React.ReactNode;
 };
 
@@ -129,6 +130,7 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
     labelWidth,
     displayDescription,
     spec,
+    fieldKey,
   } = props;
   const isHorizontal = layout === "horizontal" || layout === undefined;
 
@@ -156,7 +158,9 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
       help={error}
       extra={description && displayDescription ? description : ""}
     >
-      <div className={FormItemContentStyle}>{children}</div>
+      <div data-test-id={fieldKey} className={FormItemContentStyle}>
+        {children}
+      </div>
     </Form.Item>
   );
 };
@@ -291,6 +295,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
         displayDescription={displayDescription}
         spec={spec}
         error={typeof error === "string" ? error : ""}
+        fieldKey={`${path}-${field?.key || ""}`}
       >
         {slot?.(
           { path, ...(field || {}), index },
