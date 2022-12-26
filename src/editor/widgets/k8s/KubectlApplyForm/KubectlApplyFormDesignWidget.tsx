@@ -37,6 +37,7 @@ import MonacoEditor from "./MonacoEditor";
 import get from "lodash/get";
 import omit from "lodash/omit";
 import type { KubectlApplyFormProps } from "src/_internal/organisms/KubectlApplyForm/KubectlApplyForm";
+import { CUSTOM_SCHEMA_KIND } from "src/_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 import { Field } from "src/_internal/organisms/KubectlApplyForm/type";
 import { getJsonSchemaByPath } from "src/_internal/utils/schema";
 import { UiConfigSpec } from "src/sunmao/components/KubectlApplyForm";
@@ -260,11 +261,13 @@ const KubectlApplyFormDesignWidget: React.FC<
                         >
                           <TabList>
                             {formConfig.current.schemas.map((s, idx) => {
-                              const resource = get(
-                                s,
-                                "x-kubernetes-group-version-kind[0].kind",
-                                `Resource ${idx + 1}`
-                              );
+                              const resource =
+                                get(
+                                  s,
+                                  "x-kubernetes-group-version-kind[0].kind"
+                                ) ||
+                                get(s, `${CUSTOM_SCHEMA_KIND}[0].kind`) ||
+                                `Resource ${idx + 1}`;
                               return <Tab key={idx}>{resource}</Tab>;
                             })}
                           </TabList>
@@ -385,6 +388,7 @@ const KubectlApplyFormDesignWidget: React.FC<
 
                         formConfig.current.defaultValues = resources;
                         setLoadingSchema(true);
+
                         formConfig.current.schemas = (
                           await store.fetchResourcesSchemas(
                             basePath,
@@ -393,7 +397,19 @@ const KubectlApplyFormDesignWidget: React.FC<
                               kind: resource.kind,
                             }))
                           )
-                        ).map((schema) => omit(schema, ["properties.status"]));
+                        ).map((schema, index) =>
+                          schema
+                            ? omit(schema, ["properties.status"])
+                            : formConfig.current.schemas[index] || {
+                                type: "object",
+                                properties: {},
+                                [CUSTOM_SCHEMA_KIND]: [
+                                  {
+                                    kind: resources[index].kind,
+                                  },
+                                ],
+                              }
+                        );
 
                         if (fieldsIsEmpty(formConfig.current.uiConfig)) {
                           formConfig.current.uiConfig.layout = {

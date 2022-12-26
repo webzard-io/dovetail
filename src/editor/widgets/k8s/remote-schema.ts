@@ -190,7 +190,7 @@ class K8sOpenAPI {
     }
 
     const properties = this.cache.openApi.definitions[def].properties;
-    let spec = key ? properties[key] : properties;
+    const spec = key ? properties[key] : properties;
 
     this.resolveRef(spec, {
       prune: {
@@ -210,9 +210,13 @@ class K8sOpenAPI {
     kind: string
   ): Promise<JSONSchema7 | null> {
     if (!this.cache.openApi.swagger) {
-      this.cache.openApi = await ky
-        .get(`${this.options.basePath}/openapi/v2`)
-        .json<any>();
+      try {
+        this.cache.openApi = await ky
+          .get(`${this.options.basePath}/openapi/v2`)
+          .json<any>();
+      } catch {
+        return null;
+      }
     }
 
     let schema;
@@ -253,6 +257,7 @@ class K8sOpenAPI {
         xProperty: true,
       },
     });
+
     return schema;
   }
 }
