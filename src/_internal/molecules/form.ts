@@ -1,3 +1,4 @@
+import Group, { OptionsSpec as GroupOptionsSpec } from "./Group";
 import Input, { OptionsSpec as InputOptionsSpec } from "./Input";
 import Select, { OptionsSpec as SelectOptionsSpec } from "./Select";
 import Textarea, { OptionsSpec as TextareaOptionsSpec } from "./Textarea";
@@ -18,6 +19,7 @@ export const FORM_WIDGETS_MAP = {
   card: Card,
   arrayCards: ArrayCards,
   k8sSelect: K8sSelect,
+  group: Group,
 };
 export const FORM_WIDGET_OPTIONS_MAP = {
   input: InputOptionsSpec,
@@ -28,4 +30,5 @@ export const FORM_WIDGET_OPTIONS_MAP = {
   card: CardOptionsSpec,
   arrayCards: ArrayCardsOptionsSpec,
   k8sSelect: K8sSelectOptionsSpec,
+  group: GroupOptionsSpec,
 };

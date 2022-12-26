@@ -1,6 +1,7 @@
 import { Emitter } from "mitt";
 
 export type Field = {
+  type?: "field" | "layout";
   fields?: Field[];
   path: string;
   key?: string;
@@ -13,6 +14,8 @@ export type Field = {
   error: string | string[] | Record<string, string>;
   condition?: boolean;
   widget?: string;
+  layoutWidget?: string;
+  indent?: boolean;
   widgetOptions?: Record<string, any>;
   componentId?: string;
   col?: number;
