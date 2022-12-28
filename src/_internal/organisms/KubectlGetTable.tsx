@@ -34,6 +34,10 @@ const TableWrapper = styled.div`
 const TableContent = styled.div`
   overflow: hidden;
   position: relative;
+
+  .dovetail-ant-pagination {
+    display: none;
+  }
 `;
 const TooltipStyle = css`
   .dovetail-ant-tooltip-inner {
@@ -343,10 +347,11 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
             components={components}
             columns={columns}
             ref={ref}
-            data={data.items.slice(
-              (currentPage - 1) * currentSize,
-              currentPage * currentSize
-            )}
+            data={data.items}
+            pagination={{
+              current: currentPage,
+              pageSize: currentSize,
+            }}
             error={error}
             loading={loading}
             rowKey={(row: UnstructuredList["items"][0]) =>

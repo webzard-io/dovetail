@@ -70,6 +70,10 @@ export interface TableProps<T extends { id: string }> {
   selectedKeys?: string[];
   onActive?: (key: string, record: any) => void;
   activeKey?: string;
+  pagination?: {
+    current: number;
+    pageSize: number;
+  };
 }
 
 function canScroll(el: Element, direction = "vertical"): boolean {
@@ -141,6 +145,7 @@ const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
       initLoading,
       rowKey,
       wrapper,
+      pagination,
     } = props;
     const orderRef = useRef<"descend" | "ascend" | undefined | null>(null);
     const hasScrollBard = useTableBodyHasScrollBar(wrapper, data);
@@ -174,7 +179,7 @@ const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
             emptyText: error || <>{loading ? "" : empty}</>,
           }}
           dataSource={data || []}
-          pagination={false}
+          pagination={pagination || false}
           columns={columns.map((column) =>
             column.sorter
               ? {

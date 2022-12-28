@@ -83,6 +83,10 @@ export type TableProps = {
   bordered?: boolean;
   resizable?: boolean;
   onSorterChange?: (order: string, key: string) => void;
+  pagination?: {
+    current: number;
+    pageSize: number;
+  };
 } & RefAndChildren;
 
 export type SidebarProps = {
