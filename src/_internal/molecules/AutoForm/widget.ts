@@ -1,5 +1,5 @@
 import { JSONSchema7 } from "json-schema";
-import type { Field } from "../../organisms/KubectlApplyForm/type";
+import type { Field, Services } from "../../organisms/KubectlApplyForm/type";
 
 type WidgetOptions = Partial<{
   displayLabel: boolean;
@@ -8,6 +8,7 @@ type WidgetOptions = Partial<{
 }>;
 
 export type WidgetProps<Value = any, WidgetOptions = Record<string, any>> = {
+  services: Services;
   basePath: string;
   field?: Field;
   spec: JSONSchema7;

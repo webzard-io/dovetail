@@ -40,6 +40,7 @@ export const WizardBodyStyle = css`
 
   .right {
     padding-left: 44px;
+    height: calc(100% - 40px);
   }
 
   .middle {
@@ -62,7 +63,7 @@ export const WizardBodyStyle = css`
       width: 100%;
       margin: 0 12px;
       margin-bottom: 16px;
-      
+
       &-title {
         margin-bottom: 8px;
       }

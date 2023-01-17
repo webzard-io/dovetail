@@ -1,11 +1,12 @@
 import type {
   Group,
   Item,
-  Object,
+  ObjectItem,
   SubHeading,
   Label,
 } from "../../atoms/themes/CloudTower/components/SummaryList";
 import { Layout, Field } from "./type";
+import { Services } from "./type";
 import { get } from "lodash";
 
 function getValueByPath(
@@ -39,11 +40,18 @@ function getListItems(
   fields: Field[],
   formData: Record<string, any>,
   displayValues: Record<string, any>,
+  services: Services,
   parentPath: string
-): (Item | Object | SubHeading | Label)[] {
+): (Item | ObjectItem | SubHeading | Label)[] {
+  const removableMap = services.store.summary.removableMap;
+
   return fields
     .map((field) => {
-      const items: (Item | Object | SubHeading | Label)[] = [];
+      const items: (Item | ObjectItem | SubHeading | Label)[] = [];
+
+      if (field.summaryConfig?.hidden || field.condition === false) {
+        return items;
+      }
 
       if (field.sectionTitle) {
         items.push({
@@ -68,7 +76,13 @@ function getListItems(
         parentPath ? `${parentPath}.${path}` : path
       );
 
-      if (value instanceof Array) {
+      if (field.summaryConfig?.type === "item") {
+        items.push({
+          type: "Item" as const,
+          label: field.summaryConfig.label || field.label,
+          value: field.summaryConfig.value || JSON.stringify(value),
+        });
+      } else if (value instanceof Array) {
         if (typeof value[0] !== "object") {
           items.push({
             type: "Item" as const,
@@ -80,18 +94,27 @@ function getListItems(
         value.forEach((item, index) => {
           if (item && typeof item === "object") {
             items.push({
-              type: "Label" as const,
-              label: `${field.widgetOptions?.title || "Group"} ${index + 1}`,
-            });
-            items.push({
               type: "Object" as const,
-              icon: field.widgetOptions?.icon,
-              label: field.label,
+              icon: field.summaryConfig?.icon || field.widgetOptions?.icon,
+              label: `${
+                field.summaryConfig?.label ||
+                field.widgetOptions?.title ||
+                field.label ||
+                "Group"
+              } ${index + 1}`,
+              removable: removableMap[field.key || ""],
+              removedData: field?.key
+                ? {
+                    fieldKey: field.key,
+                    index,
+                  }
+                : undefined,
               items: field.fields?.length
                 ? (getListItems(
                     field.fields,
                     item,
                     displayValues,
+                    services,
                     parentPath
                       ? `${parentPath}.${path}.${index}`
                       : `${path}.${index}`
@@ -100,34 +123,57 @@ function getListItems(
                     type: "Item" as const,
                     label: key,
                     value: JSON.stringify(item[key]),
+                    removable: removableMap[field.key || ""],
+                    removedData: field?.key
+                      ? {
+                          fieldKey: field.key,
+                          index,
+                        }
+                      : undefined,
                   })),
             });
-          } else {
+          } else if (item !== undefined && item !== null && item !== "") {
             items.push({
               type: "Item" as const,
               label: "",
-              value: item,
+              value: item as string | number | boolean,
+              removable: removableMap[field.key || ""],
+              removedData: field?.key
+                ? {
+                    fieldKey: field.key,
+                    index,
+                  }
+                : undefined,
             });
           }
         });
       } else if (value && typeof value === "object") {
-        items.push({
-          type: "Object" as const,
-          label: field.label || field.widgetOptions?.title,
-          icon: field.widgetOptions?.icon,
-          items: field.fields?.length
-            ? (getListItems(
-                field.fields,
-                value,
-                displayValues,
-                parentPath ? `${parentPath}.${path}` : path
-              ) as Item[])
-            : Object.keys(value).map((key) => ({
+        items.push(
+          field.fields?.length
+            ? {
+                type: "Object" as const,
+                label:
+                  field.summaryConfig?.label ||
+                  field.label ||
+                  field.widgetOptions?.title,
+                icon: field.summaryConfig?.icon || field.widgetOptions?.icon,
+                items: getListItems(
+                  field.fields,
+                  value,
+                  displayValues,
+                  services,
+                  parentPath ? `${parentPath}.${path}` : path
+                ) as Item[],
+              }
+            : {
                 type: "Item" as const,
-                label: key,
-                value: JSON.stringify(value[key as keyof typeof value]),
-              })),
-        });
+                label:
+                  field.summaryConfig?.label ||
+                  field.label ||
+                  field.widgetOptions?.title,
+                value: field.summaryConfig?.value || JSON.stringify(value),
+              }
+        );
       } else if (field.label) {
         items.push({
           type: "Item" as const,
@@ -138,13 +184,15 @@ function getListItems(
 
       return items;
     })
+    .filter((items) => items.length)
     .flat();
 }
 
 function useSummary(
   formConfig: Layout,
   formData: Record<string, any>,
-  displayValues: Record<string, any>
+  displayValues: Record<string, any>,
+  services: Services
 ) {
   if (formConfig.type === "tabs" || formConfig.type === "wizard") {
     let categories: {
@@ -160,7 +208,13 @@ function useSummary(
 
     const groups: Group[] = categories.map((group) => ({
       title: group.title,
-      children: getListItems(group.fields, formData, displayValues, ""),
+      children: getListItems(
+        group.fields,
+        formData,
+        displayValues,
+        services,
+        ""
+      ),
     }));
 
     return {
@@ -168,7 +222,13 @@ function useSummary(
     };
   } else {
     return {
-      items: getListItems(formConfig.fields, formData, displayValues, ""),
+      items: getListItems(
+        formConfig.fields,
+        formData,
+        displayValues,
+        services,
+        ""
+      ),
     };
   }
 }

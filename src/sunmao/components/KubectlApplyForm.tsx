@@ -6,6 +6,7 @@ import { generateFromSchema } from "../../_internal/utils/schema";
 import merge from "lodash/merge";
 import set from "lodash/set";
 import cloneDeep from "lodash/cloneDeep";
+import isEqual from "lodash/isEqual";
 import _KubectlApplyForm from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 import { css } from "@emotion/css";
 import {
@@ -69,6 +70,13 @@ const UiConfigFieldSpecProperties = {
       },
     ],
   }),
+  summaryConfig: Type.Object({
+    type: StringUnion(["auto", "item"]),
+    label: Type.String(),
+    value: Type.String(),
+    icon: Type.String(),
+    hidden: Type.Boolean(),
+  }),
 };
 const UiConfigFieldSpec = Type.Object(
   {
@@ -95,16 +103,9 @@ export const UiConfigSpec = Type.Object({
   }),
   layout: Type.Object(
     {
-      type: Type.KeyOf(
-        Type.Object({
-          simple: Type.Boolean(),
-          tabs: Type.Boolean(),
-          wizard: Type.Boolean(),
-        }),
-        {
-          title: "Type",
-        }
-      ),
+      type: StringUnion(["simple", "tabs", "wizard"], {
+        title: "Type",
+      }),
       fields: Type.Array(UiConfigFieldSpec, {
         title: "Fields",
         widget: "core/v1/array",
@@ -417,7 +418,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
       displayValues,
     ]);
     useEffect(() => {
-      updatedDisplayValuesRef.current = {};
+      if (isEqual(updatedDisplayValuesRef.current, displayValues)) {
+        updatedDisplayValuesRef.current = {};
+      }
     }, [displayValues]);
 
     return (
