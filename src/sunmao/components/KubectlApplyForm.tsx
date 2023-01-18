@@ -10,6 +10,7 @@ import isEqual from "lodash/isEqual";
 import _KubectlApplyForm, {
   CUSTOM_SCHEMA_KIND,
 } from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
+import { FormItemData } from "../../_internal/organisms/KubectlApplyForm/type";
 import { css } from "@emotion/css";
 import {
   FORM_WIDGETS_MAP,
@@ -41,7 +42,6 @@ const LAYOUT_CONDITION = [
 ];
 
 const UiConfigFieldSpecProperties = {
-  type: StringUnion(["field", "layout"]),
   path: Type.String({
     title: "Path",
     widget: "kui/v1/PathWidget",
@@ -86,10 +86,6 @@ const UiConfigFieldSpecProperties = {
       conditions: FIELD_CONDITIONS,
     }
   ),
-  layoutWidget: StringUnion(Object.keys(LAYOUT_WIDGETS_MAP), {
-    title: "Layout Widget",
-    conditions: LAYOUT_CONDITION,
-  }),
   indent: Type.Boolean({
     title: "Indent",
     conditions: LAYOUT_CONDITION,
@@ -126,6 +122,11 @@ const UiConfigFieldSpecProperties = {
 const UiConfigFieldSpec = Type.Object(
   {
     ...UiConfigFieldSpecProperties,
+    type: StringUnion(["field", "layout"], { title: "Choose Config" }),
+    layoutWidget: StringUnion(Object.keys(LAYOUT_WIDGETS_MAP), {
+      title: "Layout Widget",
+      conditions: LAYOUT_CONDITION,
+    }),
     fields: Type.Array(Type.Object(UiConfigFieldSpecProperties), {
       title: "Fields",
       widget: "core/v1/array",
@@ -527,7 +528,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
         onNextStep={callbackMap?.onNextStep}
         onSubmit={callbackMap?.onSubmit}
         onCancel={callbackMap?.onCancel}
-        getSlot={(f, fallback, slotKey) => {
+        getSlot={(field: FormItemData, fallback, slotKey) => {
           return (
             generateSlotChildren(
               {
@@ -542,18 +543,18 @@ export const KubectlApplyForm = implementRuntimeComponent({
               },
               {
                 generateId(child) {
-                  return f.index !== undefined
-                    ? `${child.id}_${f.index}`
+                  return field.index !== undefined
+                    ? `${child.id}_${field.index}`
                     : child.id;
                 },
                 generateProps() {
-                  return (f as Static<typeof UiConfigFieldSpec>) || {};
+                  return (field as Static<typeof UiConfigFieldSpec>) || {};
                 },
               }
             ) || fallback
           );
         }}
-        getHelperSlot={(f, fallback, slotKey) => {
+        getHelperSlot={(field: FormItemData, fallback, slotKey) => {
           return (
             generateSlotChildren(
               {
@@ -568,12 +569,12 @@ export const KubectlApplyForm = implementRuntimeComponent({
               },
               {
                 generateId(child) {
-                  return f.index !== undefined
-                    ? `${child.id}_${f.index}`
+                  return field.index !== undefined
+                    ? `${child.id}_${field.index}`
                     : child.id;
                 },
                 generateProps() {
-                  return (f as Static<typeof UiConfigFieldSpec>) || {};
+                  return (field as Static<typeof UiConfigFieldSpec>) || {};
                 },
               }
             ) || fallback

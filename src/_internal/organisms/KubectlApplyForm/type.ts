@@ -30,6 +30,8 @@ export type Field = {
   };
 };
 
+export type FormItemData = (Field | Record<string, unknown>) & { index?: number; };
+
 export type TransformedField = Field & { dataPath: string; value: any };
 
 export type Layout =

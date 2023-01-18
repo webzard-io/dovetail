@@ -14,6 +14,7 @@ export function resolveSubFields(props: WidgetProps) {
     props;
   const fields: Field[] = field?.fields || [];
   const properties = Object.keys(spec.properties || {});
+  const isLayout = field?.type === "layout";
 
   if (fields.length) {
     // if configure the sub fields then use them
@@ -47,13 +48,17 @@ export function resolveSubFields(props: WidgetProps) {
             ...subSpec,
             title: subField.label,
           }}
-          path={path.concat(`.${subField.path}`)}
+          path={path.concat(isLayout ? subField.path : `.${subField.path}`)}
           level={level + 1}
           value={get(value, subField.path)}
-          onChange={(newValue, key, dataPath) => {
-            const result = immutableSet(value, subField.path, newValue);
-
-            onChange(result, key, dataPath);
+          onChange={(newValue, displayValues, key, dataPath) => {
+            if (isLayout) {
+              onChange(newValue, displayValues, key, dataPath);
+            } else {
+              const result = immutableSet(value, subField.path, newValue);
+  
+              onChange(result, displayValues, key, dataPath);
+            }
           }}
         />
       );
