@@ -26,7 +26,7 @@ type TemplateProps = {
   label?: string;
   layout?: "horizontal" | "vertical";
   error?: string;
-  description?: string;
+  description?: React.ReactNode;
   hidden?: boolean;
   required?: boolean;
   displayLabel?: boolean;
@@ -85,6 +85,7 @@ const FormItemStyle = css`
 
   .dovetail-ant-form-item-control {
     flex: 1;
+    min-width: 0;
   }
 
   .dovetail-ant-form-item-extra {
@@ -125,13 +126,10 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
     error,
     description,
     hidden,
-    required,
     displayLabel,
     labelWidth,
     displayDescription,
-    spec,
   } = props;
-  const isHorizontal = layout === "horizontal" || layout === undefined;
 
   if (hidden) {
     return <div className="hidden">{children}</div>;
@@ -144,7 +142,7 @@ const DefaultTemplate: React.FC<TemplateProps> = (props) => {
       label={
         displayLabel ? (
           <span
-            style={{ width: labelWidth || 108 + "px" }}
+            style={{ width: labelWidth || `${108}px` }}
             className={cx(Typo.Label.l3_regular_title, FormItemLabelStyle)}
           >
             {label}
@@ -172,7 +170,7 @@ function shouldDisplayLabel(spec: JSONSchema7, label: string): boolean {
   return true;
 }
 
-function shouldDisplayDescdisplayDescription(spec: JSONSchema7): boolean {
+function shouldDisplayDescription(spec: JSONSchema7): boolean {
   if (spec.type === "object") {
     return false;
   }
@@ -213,7 +211,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     field?.type === "layout"
       ? field.indent
       : field?.isDisplayLabel ?? shouldDisplayLabel(spec, label);
-  const displayDescription = shouldDisplayDescdisplayDescription(spec);
+  const displayDescription = shouldDisplayDescription(spec);
 
   if (isEmpty(spec) || field?.condition === false) {
     return null;
@@ -263,6 +261,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
 
   const FieldComponent = (
     <Component
+      basePath={basePath}
       services={services}
       fieldsArray={fieldsArray}
       widgetOptions={widgetOptions}

@@ -1,5 +1,5 @@
 import { JSONSchema7 } from "json-schema";
-import type { Field, Services } from "../../organisms/KubectlApplyForm/type";
+import type { Field, Services, FormItemData } from "../../organisms/KubectlApplyForm/type";
 
 type WidgetOptions = Partial<{
   displayLabel: boolean;
@@ -7,7 +7,16 @@ type WidgetOptions = Partial<{
   step?: number;
 }>;
 
-export type WidgetProps<Value = any, WidgetOptions = Record<string, any>> = {
+type SlotFunction = (
+  props: FormItemData,
+  fallback: React.ReactNode,
+  key: string
+) => React.ReactNode;
+
+export type WidgetProps<
+  Value = any,
+  WidgetOptions = Record<string, unknown>
+> = {
   services: Services;
   basePath: string;
   field?: Field;
@@ -25,15 +34,15 @@ export type WidgetProps<Value = any, WidgetOptions = Record<string, any>> = {
   index?: number;
   error?: string | string[] | Record<string, string>;
   value: Value;
-  displayValues: Record<string, any>;
+  displayValues: Record<string, unknown>;
   onChange: (
     newValue: Value,
-    displayValues: Record<string, any>,
+    displayValues: Record<string, unknown>,
     key?: string,
     dataPath?: string
   ) => void;
-  onDisplayValuesChange: (displayValues: Record<string, any>) => void;
-  slot?: Function;
-  helperSlot?: Function;
+  onDisplayValuesChange: (displayValues: Record<string, unknown>) => void;
+  slot?: SlotFunction;
+  helperSlot?: SlotFunction;
   fieldsArray: Record<string, { spec: JSONSchema7 }>[];
 };
