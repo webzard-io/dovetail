@@ -1,8 +1,6 @@
 import { JSONSchema7 } from "json-schema";
 import React, { useContext, useMemo, useState, useRef } from "react";
-import get from "lodash/get";
 import set from "lodash/set";
-import groupBy from "lodash/groupBy";
 import { getFields } from "../../molecules/AutoForm/get-fields";
 import CodeEditor from "../../atoms/CodeEditor";
 import yaml, { dump } from "js-yaml";
@@ -14,7 +12,7 @@ import {
   WizardStyle,
 } from "./KubectlApplyForm.style";
 import { cx, css as dCss } from "@emotion/css";
-import { Steps, Popover, Row, Alert } from "antd";
+import { Steps, Row, Alert } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import SpecField from "../../molecules/AutoForm/SpecField";
 import Icon from "../../atoms/themes/CloudTower/components/Icon/Icon";
@@ -41,6 +39,7 @@ import {
   Services,
   Events,
   Store,
+  FormItemData
 } from "./type";
 import { transformFields } from "./utils";
 import mitt from "mitt";
@@ -64,9 +63,9 @@ export type KubectlApplyFormProps = {
     confirmText: string;
     cancelText: string;
   };
-  values: any[];
-  defaultValues: any[];
-  displayValues: Record<string, any>;
+  values: unknown[];
+  defaultValues: unknown[];
+  displayValues: Record<string, unknown>;
   error?: string;
   errorDetail?: {
     title: string;
@@ -76,24 +75,24 @@ export type KubectlApplyFormProps = {
   step: number;
   setStep: (step: number) => void;
   getSlot?: (
-    f: Field & { index?: number },
+    field: FormItemData,
     fallback: React.ReactNode,
     slotKey: string
   ) => React.ReactNode;
   getHelperSlot?: (
-    f: Field & { index?: number },
+    field: FormItemData,
     fallback: React.ReactNode,
     slotKey: string
   ) => React.ReactNode;
   onChange: (
-    values: any[],
-    displayValues: Record<string, any>,
+    values: unknown[],
+    displayValues: Record<string, unknown>,
     key?: string,
     dataPath?: string
   ) => void;
-  onDisplayValuesChange: (displayValues: Record<string, any>) => void;
-  onNextStep?: (values: any[]) => void;
-  onSubmit?: (values: any[]) => void;
+  onDisplayValuesChange: (displayValues: Record<string, unknown>) => void;
+  onNextStep?: (values: unknown[]) => void;
+  onSubmit?: (values: unknown[]) => void;
   onCancel?: () => void;
 };
 
@@ -101,7 +100,7 @@ const KubectlApplyForm = React.forwardRef<
   HTMLDivElement,
   KubectlApplyFormProps
 >(
-  (
+  function KubectlApplyForm(
     {
       basePath,
       className,
@@ -124,7 +123,7 @@ const KubectlApplyForm = React.forwardRef<
       onSubmit,
     },
     ref
-  ) => {
+  ) {
     const [yamlMode, setYamlMode] = useState(false);
     const fieldsArray = useMemo(() => {
       return schemas.map((s) => getFields(s));
@@ -151,11 +150,12 @@ const KubectlApplyForm = React.forwardRef<
       const [indexStr, path] = f.path.split(/\.(.*)/s);
       const index = parseInt(indexStr, 10);
       const { spec } = fieldsArray?.[index]?.[path] || {};
+      const isLayout = f.type === "layout";
 
       const component = (
         <SpecField
-          services={services}
           key={f.dataPath || f.key}
+          services={services}
           basePath={basePath}
           field={f}
           error={f.error}
@@ -166,21 +166,22 @@ const KubectlApplyForm = React.forwardRef<
           level={0}
           path={f.dataPath}
           stepElsRef={{}}
-          value={f.value}
+          value={isLayout ? values : f.value}
           displayValues={displayValues}
           slot={getSlot}
           helperSlot={getHelperSlot}
           onChange={(
-            newValue: any,
-            displayValue: any,
+            newValue: unknown,
+            displayValue: Record<string, unknown>,
             key?: string,
             dataPath?: string
           ) => {
-            const valuesSlice = [...values];
-            set(valuesSlice, f.dataPath, newValue);
+            const valuesSlice: unknown[] = [...values];
+
+            set(valuesSlice, isLayout ? dataPath || "" : f.dataPath, newValue);
             onChange(valuesSlice, displayValue, key, dataPath);
           }}
-          onDisplayValuesChange={(displayValues: Record<string, any>) => {
+          onDisplayValuesChange={(displayValues: Record<string, unknown>) => {
             onDisplayValuesChange(displayValues);
           }}
         />
@@ -203,7 +204,7 @@ const KubectlApplyForm = React.forwardRef<
               </div>
               {errorDetail.errors.map((errorInfo, index) => (
                 <div className={Typo.Label.l4_regular} key={errorInfo}>{`${
-                  errorDetail.errors.length > 1 ? index + 1 + "." : ""
+                  errorDetail.errors.length > 1 ? `${index + 1}.` : ""
                 } ${errorInfo}`}</div>
               ))}
             </>
@@ -283,27 +284,30 @@ const KubectlApplyForm = React.forwardRef<
         }
         case "tabs": {
           return (
-            <Tabs isLazy>
-              <TabList>
-                {layout.tabs.map((t, idx) => {
-                  return <Tab key={t.title + idx}>{t.title}</Tab>;
-                })}
-              </TabList>
-              <TabPanels>
-                {layout.tabs.map((t, idx) => {
-                  return (
-                    <TabPanel key={t.title + idx}>
-                      {transformFields(t.fields, values, defaultValues).map(
-                        (f) => {
-                          const { component } = getComponent(f);
-                          return component;
-                        }
-                      )}
-                    </TabPanel>
-                  );
-                })}
-              </TabPanels>
-            </Tabs>
+            <>
+              <Tabs isLazy>
+                <TabList>
+                  {layout.tabs.map((t, idx) => {
+                    return <Tab key={`${t.title}-${idx}`}>{t.title}</Tab>;
+                  })}
+                </TabList>
+                <TabPanels>
+                  {layout.tabs.map((t, idx) => {
+                    return (
+                      <TabPanel key={`${t.title}-${idx}`}>
+                        {transformFields(t.fields, values, defaultValues).map(
+                          (f) => {
+                            const { component } = getComponent(f);
+
+                            return component;
+                          }
+                        )}
+                      </TabPanel>
+                    );
+                  })}
+                </TabPanels>
+              </Tabs>
+            </>
           );
         }
         case "wizard": {
@@ -323,7 +327,7 @@ const KubectlApplyForm = React.forwardRef<
                   >
                     {(layout.steps || []).map((s, idx) => (
                       <Steps.Step
-                        key={s.title + idx}
+                        key={`${s.title}-${idx}`}
                         title={
                           <>
                             {idx >= step ? (
