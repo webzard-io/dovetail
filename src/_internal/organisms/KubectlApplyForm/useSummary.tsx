@@ -82,104 +82,136 @@ function getListItems(
           label: field.summaryConfig.label || field.label,
           value: field.summaryConfig.value || JSON.stringify(value),
         });
-      } else if (value instanceof Array) {
-        if (typeof value[0] !== "object") {
+      } else if (field.type === "layout") {
+        if (field.layoutWidget === "default") {
+          items.push(
+            ...getListItems(
+              field.fields || [],
+              formData,
+              displayValues,
+              services,
+              parentPath
+            )
+          );
+        } else {
+          items.push({
+            type: "Object" as const,
+            label: `${
+              field.summaryConfig?.label ||
+              field.widgetOptions?.title ||
+              field.label ||
+              "Group"
+            }`,
+            icon: field.summaryConfig?.icon || field.widgetOptions?.icon,
+            items: getListItems(
+              field.fields || [],
+              formData,
+              displayValues,
+              services,
+              parentPath
+            ) as Item[],
+          });
+        }
+      } else {
+        if (value instanceof Array) {
+          if (typeof value[0] !== "object") {
+            items.push({
+              type: "Item" as const,
+              label: field.label,
+              value: "",
+            });
+          }
+
+          value.forEach((item, index) => {
+            if (item && typeof item === "object") {
+              items.push({
+                type: "Object" as const,
+                icon: field.summaryConfig?.icon || field.widgetOptions?.icon,
+                label: `${
+                  field.summaryConfig?.label ||
+                  field.widgetOptions?.title ||
+                  field.label ||
+                  "Group"
+                } ${index + 1}`,
+                removable: removableMap[field.key || ""],
+                removedData: field?.key
+                  ? {
+                      fieldKey: field.key,
+                      index,
+                    }
+                  : undefined,
+                items: field.fields?.length
+                  ? (getListItems(
+                      field.fields,
+                      item,
+                      displayValues,
+                      services,
+                      parentPath
+                        ? `${parentPath}.${path}.${index}`
+                        : `${path}.${index}`
+                    ) as Item[])
+                  : Object.keys(item).map((key) => ({
+                      type: "Item" as const,
+                      label: key,
+                      value: JSON.stringify(item[key]),
+                      removable: removableMap[field.key || ""],
+                      removedData: field?.key
+                        ? {
+                            fieldKey: field.key,
+                            index,
+                          }
+                        : undefined,
+                    })),
+              });
+            } else if (item !== undefined && item !== null && item !== "") {
+              items.push({
+                type: "Item" as const,
+                label: "",
+                value: item as string | number | boolean,
+                removable: removableMap[field.key || ""],
+                removedData: field?.key
+                  ? {
+                      fieldKey: field.key,
+                      index,
+                    }
+                  : undefined,
+              });
+            }
+          });
+        } else if (value && typeof value === "object") {
+          items.push(
+            field.fields?.length
+              ? {
+                  type: "Object" as const,
+                  label:
+                    field.summaryConfig?.label ||
+                    field.label ||
+                    field.widgetOptions?.title,
+                  icon: field.summaryConfig?.icon || field.widgetOptions?.icon,
+                  items: getListItems(
+                    field.fields,
+                    value,
+                    displayValues,
+                    services,
+                    parentPath ? `${parentPath}.${path}` : path
+                  ) as Item[],
+                }
+              : {
+                  type: "Item" as const,
+                  label:
+                    field.summaryConfig?.label ||
+                    field.label ||
+                    field.widgetOptions?.title,
+                  value: field.summaryConfig?.value || JSON.stringify(value),
+                }
+          );
+        } else if (field.label) {
           items.push({
             type: "Item" as const,
             label: field.label,
-            value: "",
+            value: value as string | boolean | number,
           });
         }
-
-        value.forEach((item, index) => {
-          if (item && typeof item === "object") {
-            items.push({
-              type: "Object" as const,
-              icon: field.summaryConfig?.icon || field.widgetOptions?.icon,
-              label: `${
-                field.summaryConfig?.label ||
-                field.widgetOptions?.title ||
-                field.label ||
-                "Group"
-              } ${index + 1}`,
-              removable: removableMap[field.key || ""],
-              removedData: field?.key
-                ? {
-                    fieldKey: field.key,
-                    index,
-                  }
-                : undefined,
-              items: field.fields?.length
-                ? (getListItems(
-                    field.fields,
-                    item,
-                    displayValues,
-                    services,
-                    parentPath
-                      ? `${parentPath}.${path}.${index}`
-                      : `${path}.${index}`
-                  ) as Item[])
-                : Object.keys(item).map((key) => ({
-                    type: "Item" as const,
-                    label: key,
-                    value: JSON.stringify(item[key]),
-                    removable: removableMap[field.key || ""],
-                    removedData: field?.key
-                      ? {
-                          fieldKey: field.key,
-                          index,
-                        }
-                      : undefined,
-                  })),
-            });
-          } else if (item !== undefined && item !== null && item !== "") {
-            items.push({
-              type: "Item" as const,
-              label: "",
-              value: item as string | number | boolean,
-              removable: removableMap[field.key || ""],
-              removedData: field?.key
-                ? {
-                    fieldKey: field.key,
-                    index,
-                  }
-                : undefined,
-            });
-          }
-        });
-      } else if (value && typeof value === "object") {
-        items.push(
-          field.fields?.length
-            ? {
-                type: "Object" as const,
-                label:
-                  field.summaryConfig?.label ||
-                  field.label ||
-                  field.widgetOptions?.title,
-                icon: field.summaryConfig?.icon || field.widgetOptions?.icon,
-                items: getListItems(
-                  field.fields,
-                  value,
-                  displayValues,
-                  services,
-                  parentPath ? `${parentPath}.${path}` : path
-                ) as Item[],
-              }
-            : {
-                type: "Item" as const,
-                label:
-                  field.summaryConfig?.label ||
-                  field.label ||
-                  field.widgetOptions?.title,
-                value: field.summaryConfig?.value || JSON.stringify(value),
-              }
-        );
-      } else if (field.label) {
-        items.push({
-          type: "Item" as const,
-          label: field.label,
-          value: value as string | boolean | number,
-        });
       }
 
       return items;
