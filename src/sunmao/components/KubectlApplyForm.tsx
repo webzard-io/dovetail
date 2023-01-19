@@ -7,7 +7,9 @@ import merge from "lodash/merge";
 import set from "lodash/set";
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
-import _KubectlApplyForm from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
+import _KubectlApplyForm, {
+  CUSTOM_SCHEMA_KIND,
+} from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 import { css } from "@emotion/css";
 import {
   FORM_WIDGETS_MAP,
@@ -371,10 +373,14 @@ export const KubectlApplyForm = implementRuntimeComponent({
             const sdk = new KubeSdk({
               basePath,
             });
+            const appliedValues = values.filter(
+              (value, index) => !formConfig.schemas[index][CUSTOM_SCHEMA_KIND]
+            );
+
             mergeState({
               loading: true,
             });
-            sdk.applyYaml(values).catch((error: { response: Response }) => {
+            sdk.applyYaml(appliedValues).catch((error: { response: Response }) => {
               if (error.response) {
                 error.response
                   .clone()

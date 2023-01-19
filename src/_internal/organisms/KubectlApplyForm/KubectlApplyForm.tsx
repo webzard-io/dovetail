@@ -45,6 +45,8 @@ import {
 import { transformFields } from "./utils";
 import mitt from "mitt";
 
+export const CUSTOM_SCHEMA_KIND = "x-dovetail-custom-kind";
+
 export type KubectlApplyFormProps = {
   className?: string;
   basePath: string;
