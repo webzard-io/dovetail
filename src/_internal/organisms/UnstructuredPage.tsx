@@ -52,7 +52,10 @@ const Divider = css`
 const UnstructuredPage = React.forwardRef<
   HTMLDivElement,
   UnstructuredPageProps
->(({ basePath, kind, apiBase, namespace, fieldSelector, onResponse }, ref) => {
+>(function UnstructuredPage(
+  { basePath, kind, apiBase, namespace, fieldSelector, onResponse },
+  ref
+) {
   const kit = useContext(KitContext);
   const [response, setResponse] = useState<{
     data: Unstructured | null;
@@ -68,8 +71,8 @@ const UnstructuredPage = React.forwardRef<
     const api = new KubeApi<UnstructuredList>({
       basePath,
       objectConstructor: {
-        kind,
-        apiBase,
+        resourceBasePath: apiBase,
+        resource: "",
         namespace,
       },
     });
@@ -77,7 +80,7 @@ const UnstructuredPage = React.forwardRef<
     const stopP = api
       .listWatch({
         query: fieldSelector ? { fieldSelector } : {},
-        cb: (res) => {
+        onResponse: (res) => {
           setResponse(() => ({
             loading: false,
             error: null,
@@ -91,7 +94,7 @@ const UnstructuredPage = React.forwardRef<
     return () => {
       stopP.then((stop) => stop?.());
     };
-  }, [apiBase, kind, namespace]);
+  }, [basePath, apiBase, kind, namespace, fieldSelector]);
   useEffect(() => {
     onResponse?.(response);
   }, [response]);

@@ -163,8 +163,8 @@ export default implementRuntimeTrait({
       basePath,
       watchWsBasePath,
       objectConstructor: {
-        kind: "",
-        apiBase: `${apiBase}/${resource}`,
+        resourceBasePath: apiBase,
+        resource: resource,
         namespace,
       },
     });
@@ -195,7 +195,7 @@ export default implementRuntimeTrait({
               fieldSelector,
             ]).join(","),
           },
-          cb: (response) => {
+          onResponse: (response) => {
             mergeState({ loading: false, error: null, response });
             if (!responseMap.has(componentId)) {
               onResponse?.forEach((handler, index) => {
