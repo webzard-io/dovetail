@@ -1,4 +1,5 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useMemo } from "react";
+import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 import { Type } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { StringUnion, PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
@@ -234,6 +235,9 @@ export const KubectlGetDetail = implementRuntimeComponent({
     state: KubectlGetDetailState,
     methods: {
       setActiveTab: Type.Object({ activeTab: Type.String() }),
+      delete: Type.Object({
+        items: Type.Array(Type.Any()),
+      }),
     },
     slots: {
       tab: {
@@ -311,6 +315,8 @@ export const KubectlGetDetail = implementRuntimeComponent({
     const [activeTab, setActiveTab] = useState<string>(
       layout.tabs?.[0]?.key || ""
     );
+    const kubeSkd = useMemo(() => new KubeSdk({ basePath }), [basePath]);
+
     const onResponse = useCallback(
       (res) => {
         mergeState({
@@ -323,7 +329,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
           callbackMap?.onItemDeleted?.();
         }
       },
-      [mergeState]
+      [mergeState, callbackMap]
     );
     const onTabChange = useCallback(
       (key: string) => {
@@ -339,8 +345,11 @@ export const KubectlGetDetail = implementRuntimeComponent({
         setActiveTab: ({ activeTab: newActiveTab }) => {
           setActiveTab(newActiveTab);
         },
+        delete({ items }) {
+          kubeSkd.deleteYaml(items);
+        },
       });
-    }, [setActiveTab]);
+    }, [subscribeMethods, setActiveTab, kubeSkd]);
 
     return (
       <BaseKubectlGetDetail
