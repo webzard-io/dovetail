@@ -294,6 +294,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
     errorDetail,
     submitting,
     app,
+    allComponents,
     component,
     services,
     mergeState,
@@ -413,6 +414,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
               {
                 app,
                 component,
+                allComponents,
                 services,
                 slotsElements,
                 slot: "field",
@@ -438,6 +440,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
               {
                 app,
                 component,
+                allComponents,
                 services,
                 slotsElements,
                 slot: "helper",
