@@ -3,37 +3,43 @@ import { cx } from "@linaria/core";
 import { IconWrapper } from "./Icon.style";
 import pickBy from "lodash/pickBy";
 import ArrowChevronUp16BoldSecondary from "../../images/1-arrow-chevron-up-16-bold-secondary.svg";
-import ArrowChevronDown16Blue from '../../images/1-arrow-chevron-down-16-blue.svg';
-import ArrowChevronDown16BoldBlue from '../../images/1-arrow-chevron-down-16-bold-blue.svg';
-import ArrowChevronDownSmall16Blue from '../../images/1-arrow-chevron-down-small-16-blue.svg';
-import ArrowChevronDownSmall16BoldBlue from '../../images/1-arrow-chevron-down-small-16-bold-blue.svg';
-import ArrowChevronDownSmall16Secondary from '../../images/1-arrow-chevron-down-small-16-secondary.svg';
-import ArrowChevronLeftSmall16BoldBlue from '../../images/1-arrow-chevron-left-small-16-bold-blue.svg';
-import SettingGear16GradientBlue from '../../images/1-settings-gear-16-gradient-blue.svg';
-import SettingGear16GradientGray from '../../images/1-settings-gear-16-gradient-gray.svg';
-import StatusUnknownQuestionmark16Red from '../../images/1-status-unknown-questionmark-16-red.svg';
-import ExclamationErrorCircleFill16Red from '../../images/1-exclamation-error-circle-fill-16-red.svg';
-import XmarkRemove16Secondary from '../../images/1-xmark-remove-16-secondary.svg';
-import CaretTriangleDown16 from '../../images/1-caret-triangle-down-16.svg';
-import PlusAddCreateNew16Gray from '../../images/1-plus-add-create-new-16-gray.svg';
-import PlusAddCreateNew16Blue from '../../images/1-plus-add-create-new-16-blue.svg';
+import ArrowChevronDown16Blue from "../../images/1-arrow-chevron-down-16-blue.svg";
+import ArrowChevronDown16BoldBlue from "../../images/1-arrow-chevron-down-16-bold-blue.svg";
+import ArrowChevronDownSmall16Blue from "../../images/1-arrow-chevron-down-small-16-blue.svg";
+import ArrowChevronDownSmall16BoldBlue from "../../images/1-arrow-chevron-down-small-16-bold-blue.svg";
+import ArrowChevronDownSmall16Secondary from "../../images/1-arrow-chevron-down-small-16-secondary.svg";
+import ArrowChevronLeftSmall16BoldBlue from "../../images/1-arrow-chevron-left-small-16-bold-blue.svg";
+import SettingGear16GradientBlue from "../../images/1-settings-gear-16-gradient-blue.svg";
+import SettingGear16GradientGray from "../../images/1-settings-gear-16-gradient-gray.svg";
+import StatusUnknownQuestionmark16Red from "../../images/1-status-unknown-questionmark-16-red.svg";
+import ExclamationErrorCircleFill16Red from "../../images/1-exclamation-error-circle-fill-16-red.svg";
+import XmarkRemove16Secondary from "../../images/1-xmark-remove-16-secondary.svg";
+import CaretTriangleDown16 from "../../images/1-caret-triangle-down-16.svg";
+import PlusAddCreateNew16Gray from "../../images/1-plus-add-create-new-16-gray.svg";
+import PlusAddCreateNew16Blue from "../../images/1-plus-add-create-new-16-blue.svg";
+import PlusAddCreateNew16Secondary from "../../images/1-plus-add-create-new-16-secondary.svg";
+import XmarkRemoveSmall16Secondary from "../../images/1-xmark-remove-small-16-secondary.svg";
+import XmarkRemoveSmall16Blue from "../../images/1-xmark-remove-small-16-blue.svg";
 
 const ICON_MAP = {
-  '1-arrow-chevron-down-16-blue': ArrowChevronDown16Blue,
-  '1-arrow-chevron-down-16-bold-blue': ArrowChevronDown16BoldBlue,
-  '1-arrow-chevron-down-small-16-blue': ArrowChevronDownSmall16Blue,
-  '1-arrow-chevron-down-small-16-bold-blue': ArrowChevronDownSmall16BoldBlue,
-  '1-arrow-chevron-down-small-16-secondary': ArrowChevronDownSmall16Secondary,
-  '1-arrow-chevron-up-16-bold-secondary': ArrowChevronUp16BoldSecondary,
-  '1-arrow-chevron-left-small-16-bold-blue': ArrowChevronLeftSmall16BoldBlue,
-  '1-settings-gear-16-gradient-blue': SettingGear16GradientBlue,
-  '1-settings-gear-16-gradient-gray': SettingGear16GradientGray,
-  '1-status-unknown-questionmark-16-red': StatusUnknownQuestionmark16Red,
-  '1-xmark-remove-16-secondary': XmarkRemove16Secondary,
-  '1-exclamation-error-circle-fill-16-red': ExclamationErrorCircleFill16Red,
-  '1-caret-triangle-down-16': CaretTriangleDown16,
-  '1-plus-add-create-new-16-gray': PlusAddCreateNew16Gray,
-  '1-plus-add-create-new-16-blue': PlusAddCreateNew16Blue
+  "1-arrow-chevron-down-16-blue": ArrowChevronDown16Blue,
+  "1-arrow-chevron-down-16-bold-blue": ArrowChevronDown16BoldBlue,
+  "1-arrow-chevron-down-small-16-blue": ArrowChevronDownSmall16Blue,
+  "1-arrow-chevron-down-small-16-bold-blue": ArrowChevronDownSmall16BoldBlue,
+  "1-arrow-chevron-down-small-16-secondary": ArrowChevronDownSmall16Secondary,
+  "1-arrow-chevron-up-16-bold-secondary": ArrowChevronUp16BoldSecondary,
+  "1-arrow-chevron-left-small-16-bold-blue": ArrowChevronLeftSmall16BoldBlue,
+  "1-settings-gear-16-gradient-blue": SettingGear16GradientBlue,
+  "1-settings-gear-16-gradient-gray": SettingGear16GradientGray,
+  "1-status-unknown-questionmark-16-red": StatusUnknownQuestionmark16Red,
+  "1-xmark-remove-16-secondary": XmarkRemove16Secondary,
+  "1-exclamation-error-circle-fill-16-red": ExclamationErrorCircleFill16Red,
+  "1-caret-triangle-down-16": CaretTriangleDown16,
+  "1-plus-add-create-new-16-gray": PlusAddCreateNew16Gray,
+  "1-plus-add-create-new-16-blue": PlusAddCreateNew16Blue,
+  "1-plus-add-create-new-16-secondary": PlusAddCreateNew16Secondary,
+  "1-xmark-remove-small-16-secondary": XmarkRemoveSmall16Secondary,
+  "1-xmark-remove-small-16-blue": XmarkRemoveSmall16Blue,
 };
 
 export type IconTypes = keyof typeof ICON_MAP;
@@ -56,9 +62,16 @@ type IconProps = React.HTMLAttributes<HTMLSpanElement> & {
     hoverType?: string;
     activeType?: string;
   };
+  style?: React.CSSProperties;
+  onMouseEnter?: (e: MouseEvent)=> void;
+  onMouseLeave?: (e: MouseEvent)=> void;
+  onMouseMove?: (e: MouseEvent)=> void;
 };
 
-const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
+const Icon = React.forwardRef<HTMLSpanElement, IconProps>(function Icon(
+  props,
+  ref
+) {
   const {
     type = "",
     hoverType,
@@ -80,15 +93,15 @@ const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
     ...restProps
   } = props;
   const [hover, setHover] = useState(false);
-  const [src, setSrc] = useState('');
+  const [src, setSrc] = useState(type);
   const defaultWidth = 16;
   const _iconWidth = iconWidth || (type.includes("24") ? 24 : defaultWidth);
   const _iconHeight = iconHeight || _iconWidth;
 
   useEffect(() => {
-    (async ()=> {
-      let src = ''
-      
+    (async () => {
+      let src = "";
+
       if (active && activeType) {
         src = ICON_MAP[activeType];
       } else if (hover && hoverType) {
@@ -96,9 +109,9 @@ const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
       } else if (type) {
         src = ICON_MAP[type];
       }
-  
+
       setSrc(src);
-    })()
+    })();
   }, [active, activeType, hoverType, type, hover, fileFormat]);
 
   return (
@@ -134,7 +147,6 @@ const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
       {prefix}
       <span className="icon-inner">
         <img
-          alt={type}
           src={src}
           width={`${_iconWidth}px`}
           height={
