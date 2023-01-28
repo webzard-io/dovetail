@@ -8,7 +8,6 @@ import {
 import { Select } from "chakra-react-select";
 import {
   implementWidget,
-  ExpressionWidget,
   SpecWidget,
 } from "@sunmao-ui/editor-sdk";
 import { mergeWidgetOptionsByPath } from "../../../utils/schema";

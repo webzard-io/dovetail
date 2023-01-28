@@ -1,6 +1,6 @@
 import {
   implementWidget,
-  ObjectField,
+  CategoryWidget,
 } from "@sunmao-ui/editor-sdk";
 import React, { useMemo } from "react";
 import { omit } from "lodash";
@@ -92,5 +92,5 @@ export default implementWidget<"kui/v1/KubectlApplyFormFieldWidget">({
     };
   }, [props.spec, props.value, applyFormSchemas, parentPath]);
 
-  return <ObjectField {...props} spec={spec}></ObjectField>;
+  return <CategoryWidget {...props} spec={spec}></CategoryWidget>;
 });
