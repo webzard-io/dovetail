@@ -20,6 +20,9 @@ import { LAYOUT_WIDGETS_MAP } from "../../_internal/molecules/layout";
 import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 import { generateSlotChildren } from "../utils/slot";
 
+const LABEL_CATEGORY = "Label";
+const WIDGET_CATEGORY = "Widget";
+const SUMMARY_CATEGORY = "Summary List";
 const FIELD_CONDITIONS = [
   {
     or: [
@@ -46,56 +49,79 @@ const UiConfigFieldSpecProperties = {
     title: "Path",
     widget: "kui/v1/PathWidget",
     conditions: FIELD_CONDITIONS,
+    category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
   key: Type.String({
     title: "Key",
     description: "Use for the `latestChangedKey` state",
     conditions: FIELD_CONDITIONS,
+    category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
-  label: Type.String({ title: "Label", conditions: FIELD_CONDITIONS }),
-  labelWidth: Type.Number({
-    title: "Label Width",
-    conditions: FIELD_CONDITIONS,
-  }),
-  isDisplayLabel: Type.Boolean({
-    title: "Is display label",
-    conditions: FIELD_CONDITIONS,
-  }),
-  layout: StringUnion(["horizontal", "vertical"], {
-    title: "Layout",
-    conditions: FIELD_CONDITIONS,
+  condition: Type.Boolean({
+    title: "Is display",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+    default: true,
   }),
   helperText: Type.String({
     title: "Helper text",
     conditions: FIELD_CONDITIONS,
+    category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
-  sectionTitle: Type.String({ title: "Section title" }),
-  error: Type.String({ title: "Error", conditions: FIELD_CONDITIONS }),
-  condition: Type.Boolean({ title: "Condition" }),
+  sectionTitle: Type.String({
+    title: "Section title",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+  }),
+  label: Type.String({
+    title: "Label",
+    conditions: FIELD_CONDITIONS,
+    category: LABEL_CATEGORY,
+  }),
+  isDisplayLabel: Type.Boolean({
+    title: "Is display label",
+    conditions: FIELD_CONDITIONS,
+    category: LABEL_CATEGORY,
+    default: true,
+  }),
+  labelWidth: Type.Number({
+    title: "Label Width",
+    conditions: FIELD_CONDITIONS,
+    category: LABEL_CATEGORY,
+  }),
+  layout: StringUnion(["horizontal", "vertical"], {
+    title: "Layout of label and input",
+    conditions: FIELD_CONDITIONS,
+    category: LABEL_CATEGORY,
+  }),
+  error: Type.String({
+    title: "Error",
+    conditions: FIELD_CONDITIONS,
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+  }),
   col: Type.Number({
     title: "Col",
     conditions: FIELD_CONDITIONS,
+    default: 24,
+    category: PRESET_PROPERTY_CATEGORY.Style,
   }),
   splitLine: Type.Boolean({
     title: "Split line",
+    category: PRESET_PROPERTY_CATEGORY.Style,
   }),
   widget: StringUnion(
     ["default", "component"].concat(Object.keys(FORM_WIDGETS_MAP)),
     {
       title: "Widget",
       conditions: FIELD_CONDITIONS,
+      category: WIDGET_CATEGORY,
     }
   ),
-  indent: Type.Boolean({
-    title: "Indent",
-    conditions: LAYOUT_CONDITION,
-  }),
   widgetOptions: Type.Record(Type.String(), Type.Any(), {
     title: "Widget options",
     widget: "kui/v1/OptionsWidget",
     widgetOptions: {
       optionsMap: FORM_WIDGET_OPTIONS_MAP,
     },
+    category: WIDGET_CATEGORY,
   }),
   componentId: Type.String({
     title: "ComponentId",
@@ -110,27 +136,43 @@ const UiConfigFieldSpecProperties = {
         value: "component",
       },
     ],
+    category: WIDGET_CATEGORY,
   }),
-  summaryConfig: Type.Object({
-    type: StringUnion(["auto", "item"]),
-    label: Type.String(),
-    value: Type.String(),
-    icon: Type.String(),
-    hidden: Type.Boolean(),
-  }),
+  summaryConfig: Type.Object(
+    {
+      type: StringUnion(["auto", "item"]),
+      label: Type.String(),
+      value: Type.String(),
+      icon: Type.String(),
+      hidden: Type.Boolean(),
+    },
+    {
+      category: SUMMARY_CATEGORY,
+    }
+  ),
 };
 const UiConfigFieldSpec = Type.Object(
   {
+    type: StringUnion(["field", "layout"], {
+      title: "Choose Config",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
+    }),
     ...UiConfigFieldSpecProperties,
-    type: StringUnion(["field", "layout"], { title: "Choose Config" }),
     layoutWidget: StringUnion(Object.keys(LAYOUT_WIDGETS_MAP), {
       title: "Layout Widget",
       conditions: LAYOUT_CONDITION,
+      category: WIDGET_CATEGORY,
+    }),
+    indent: Type.Boolean({
+      title: "Indent",
+      conditions: LAYOUT_CONDITION,
+      category: PRESET_PROPERTY_CATEGORY.Style,
     }),
     fields: Type.Array(Type.Object(UiConfigFieldSpecProperties), {
       title: "Fields",
       widget: "core/v1/array",
       widgetOptions: { displayedKeys: ["path", "label"], appendToBody: true },
+      category: PRESET_PROPERTY_CATEGORY.Basic,
     }),
   },
   {
@@ -228,16 +270,6 @@ const KubectlApplyFormProps = Type.Object({
     title: "Base path",
     category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
-  applyConfig: Type.Object(
-    {
-      create: Type.Boolean({ title: "Create" }),
-      patch: Type.Boolean({ title: "Patch" }),
-    },
-    {
-      title: "Apply config",
-      category: PRESET_PROPERTY_CATEGORY.Basic,
-    }
-  ),
   formConfig: Type.Object(
     {
       yaml: Type.String({
@@ -425,22 +457,24 @@ export const KubectlApplyForm = implementRuntimeComponent({
             mergeState({
               loading: true,
             });
-            sdk.applyYaml(appliedValues).catch((error: { response: Response }) => {
-              if (error.response) {
-                error.response
-                  .clone()
-                  .json()
-                  .then((result: any) => {
-                    mergeState({
-                      error: {
-                        ...error,
-                        responseJsonBody: result,
-                      },
-                    });
-                  })
-                  .catch(() => {});
-              }
-            });
+            sdk
+              .applyYaml(appliedValues)
+              .catch((error: { response: Response }) => {
+                if (error.response) {
+                  error.response
+                    .clone()
+                    .json()
+                    .then((result: any) => {
+                      mergeState({
+                        error: {
+                          ...error,
+                          responseJsonBody: result,
+                        },
+                      });
+                    })
+                    .catch(() => {});
+                }
+              });
 
             mergeState({
               loading: false,
