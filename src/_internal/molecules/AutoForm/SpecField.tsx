@@ -241,6 +241,11 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       valuePath: "metadata.name",
       ...widgetOptions,
     } as Static<typeof FORM_WIDGET_OPTIONS_MAP.k8sSelect>;
+  } else if (
+    field?.path.includes("metadata.annotations") ||
+    field?.path.includes("metadata.labels")
+  ) {
+    Component = FORM_WIDGETS_MAP.k8sLabelGroup;
   } else if (spec.type === "object") {
     Component = ObjectField;
     isNest = true;
