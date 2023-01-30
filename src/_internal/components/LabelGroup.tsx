@@ -82,7 +82,7 @@ const InputsWrapper = styled.div`
   white-space: pre;
 `;
 
-type Label = {
+export type Label = {
   key: string;
   value?: string;
 };
@@ -96,7 +96,7 @@ type ValidateError = {
 };
 
 export type LabelGroupProps = {
-  className: string;
+  className?: string;
   labels: Label[];
   loading?: boolean;
   hasMargin?: boolean;
