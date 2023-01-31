@@ -1,7 +1,4 @@
-import {
-  implementWidget,
-  CategoryWidget,
-} from "@sunmao-ui/editor-sdk";
+import { implementWidget, CategoryWidget } from "@sunmao-ui/editor-sdk";
 import React, { useMemo } from "react";
 import { omit } from "lodash";
 import { Type } from "@sinclair/typebox";
@@ -37,20 +34,12 @@ export default implementWidget<"kui/v1/KubectlApplyFormFieldWidget">({
         applyFormSchemas[Number(index)],
         path.join(".")
       );
-      const isArraySchema =
-        applyFormSchema?.type === "array" &&
-        (applyFormSchema?.items as JSONSchema7)?.type === "object";
+      const isArrayField = ["$i", "$add"].includes(path[path.length - 1]);
       const subPaths = applyFormSchema
-        ? Object.keys(getFields(applyFormSchema)).map((subPath) =>
-            // if it is the array schema, then the sub path should remove the `$add` or the `$i`
-            isArraySchema ? subPath.split(".").slice(1).join(".") : subPath
-          )
+        ? Object.keys(getFields(applyFormSchema)).map((subPath) => subPath)
         : [];
 
-      if (
-        applyFormSchema &&
-        (applyFormSchema.type === "object" || isArraySchema)
-      ) {
+      if (applyFormSchema && applyFormSchema.type === "object") {
         spec = mergeWidgetOptionsByPath(spec, "fields.$i", {
           parentPath: props.value.path,
         });
@@ -61,7 +50,9 @@ export default implementWidget<"kui/v1/KubectlApplyFormFieldWidget">({
           parentPath: props.value.path,
         });
 
-        return spec;
+        return { ...spec, properties: omit(spec.properties, "subItem") };
+      } else if (isArrayField && props.value.subItem) {
+        return { ...spec, properties: omit(spec.properties, "fields") };
       }
     } else if (props.value.type === "layout") {
       const subPaths: string[] = applyFormSchemas
@@ -88,7 +79,7 @@ export default implementWidget<"kui/v1/KubectlApplyFormFieldWidget">({
 
     return {
       ...spec,
-      properties: omit(spec.properties, "fields"),
+      properties: omit(spec.properties, ["fields", "subItem"]),
     };
   }, [props.spec, props.value, applyFormSchemas, parentPath]);
 

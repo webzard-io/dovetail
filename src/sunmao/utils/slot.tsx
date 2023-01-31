@@ -66,6 +66,7 @@ export const generateSlotChildren = (
             key={child.id}
             component={child}
             app={app}
+            allComponents={allComponents}
             services={services}
             allComponents={allComponents}
             childrenMap={{}}

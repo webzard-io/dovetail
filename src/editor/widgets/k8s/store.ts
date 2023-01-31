@@ -24,7 +24,9 @@ export class WidgetStore {
 
   get paths() {
     if (this.schemas.length) {
-      return this.schemas.map((schema) => Object.keys(getFields(schema)));
+      return this.schemas.map((schema) =>
+        Object.keys(schema ? getFields(schema) : {})
+      );
     }
 
     return [];
