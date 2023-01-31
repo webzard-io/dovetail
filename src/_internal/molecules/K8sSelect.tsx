@@ -99,9 +99,7 @@ const K8sSelect = (props: Props) => {
             ...displayValues,
             [path]: option.label,
           },
-          `${
-            props.subKey ? `${props.subKey}${props.field?.key ? "-" : ""}` : ""
-          }${props.field?.key || ""}`,
+          props.itemKey,
           props.path
         )
       }

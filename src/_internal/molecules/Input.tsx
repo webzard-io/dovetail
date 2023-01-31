@@ -25,9 +25,7 @@ const Input = (props: Props) => {
       props.onChange(
         e.target.value,
         displayValues,
-        `${
-          props.subKey ? `${props.subKey}${props.field?.key ? "-" : ""}` : ""
-        }${props.field?.key || ""}`,
+        props.itemKey,
         props.path
       );
     },

@@ -1,5 +1,11 @@
 import { JSONSchema7 } from "json-schema";
-import React, { useContext, useMemo, useState, useRef } from "react";
+import React, {
+  useContext,
+  useMemo,
+  useState,
+  useRef,
+  useImperativeHandle,
+} from "react";
 import set from "lodash/set";
 import { getFields } from "../../molecules/AutoForm/get-fields";
 import CodeEditor from "../../atoms/CodeEditor";
@@ -12,7 +18,7 @@ import {
   WizardStyle,
 } from "./KubectlApplyForm.style";
 import { cx, css as dCss } from "@emotion/css";
-import { Steps, Row, Alert } from "antd";
+import { Steps, Row, Alert, Form } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import SpecField from "../../molecules/AutoForm/SpecField";
 import Icon from "../../atoms/themes/CloudTower/components/Icon/Icon";
@@ -39,20 +45,21 @@ import {
   Services,
   Events,
   Store,
-  FormItemData
+  FormItemData,
 } from "./type";
 import { transformFields } from "./utils";
 import mitt from "mitt";
 
 export const CUSTOM_SCHEMA_KIND = "x-dovetail-custom-kind";
 
+export type KubectlApplyFormRef = {
+  validate: () => Record<string, string[]>;
+  getElementRef: () => React.RefObject<HTMLDivElement>;
+};
+
 export type KubectlApplyFormProps = {
   className?: string;
   basePath: string;
-  applyConfig: {
-    create?: boolean;
-    patch?: boolean;
-  };
   schemas: JSONSchema7[];
   uiConfig: {
     allowToggleYaml: boolean;
@@ -97,7 +104,7 @@ export type KubectlApplyFormProps = {
 };
 
 const KubectlApplyForm = React.forwardRef<
-  HTMLDivElement,
+  KubectlApplyFormRef,
   KubectlApplyFormProps
 >(
   function KubectlApplyForm(
@@ -112,20 +119,21 @@ const KubectlApplyForm = React.forwardRef<
       error,
       errorDetail,
       submitting,
-      onChange,
-      onDisplayValuesChange,
+      step,
       getSlot,
       getHelperSlot,
-      step,
       setStep,
+      onChange,
+      onDisplayValuesChange,
       onNextStep,
       onCancel,
       onSubmit,
     },
     ref
   ) {
+    const elementRef = useRef(null);
     const [yamlMode, setYamlMode] = useState(false);
-    const fieldsArray = useMemo(() => {
+    const specsArray = useMemo(() => {
       return schemas.map((s) => getFields(s));
     }, [schemas]);
     const kit = useContext(KitContext);
@@ -149,7 +157,7 @@ const KubectlApplyForm = React.forwardRef<
     function getComponent(f: TransformedField) {
       const [indexStr, path] = f.path.split(/\.(.*)/s);
       const index = parseInt(indexStr, 10);
-      const { spec } = fieldsArray?.[index]?.[path] || {};
+      const { spec } = specsArray?.[index]?.[path] || {};
       const isLayout = f.type === "layout";
 
       const component = (
@@ -158,14 +166,14 @@ const KubectlApplyForm = React.forwardRef<
           services={services}
           basePath={basePath}
           field={f}
+          itemKey={f.key || ""}
           error={f.error}
           widget={f.widget}
           widgetOptions={f.widgetOptions}
           spec={{ ...spec, title: f.label }}
-          fieldsArray={fieldsArray}
+          specsArray={specsArray}
           level={0}
           path={f.dataPath}
-          stepElsRef={{}}
           value={isLayout ? values : f.value}
           displayValues={displayValues}
           slot={getSlot}
@@ -428,8 +436,28 @@ const KubectlApplyForm = React.forwardRef<
       }
     }
 
+    useImperativeHandle(
+      ref,
+      () => ({
+        validate() {
+          const result = {};
+
+          services.event.emit("validate", {
+            result,
+          });
+
+          return result;
+        },
+        getElementRef() {
+          return elementRef;
+        },
+      }),
+
+      [services.event]
+    );
+
     return (
-      <div ref={ref} className={cx(className, KubectlApplyFormStyle)}>
+      <div ref={elementRef} className={cx(className, KubectlApplyFormStyle)}>
         {title && (
           <div
             className={cx(

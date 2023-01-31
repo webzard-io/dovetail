@@ -122,7 +122,7 @@ const ArrayGroups = (props: Props) => {
             key={itemIndex}
             value={itemValue}
             spec={itemSpec as JSONSchema7}
-            subKey={`${props.field?.key}-${itemIndex}`}
+            superiorKey={`${props.field?.key}-${itemIndex}`}
             index={itemIndex}
             error={errorInfo instanceof Array ? errorInfo[itemIndex] : ""}
             widgetOptions={{
@@ -155,7 +155,7 @@ const ArrayGroups = (props: Props) => {
         );
       })}
       {widgetOptions.addable !== false &&
-      value.length < (widgetOptions?.maxLength || Number.MAX_SAFE_INTEGER) ? (
+      (value || []).length < (widgetOptions?.maxLength || Number.MAX_SAFE_INTEGER) ? (
         <div>
           {widgetOptions.addedButtonIcon ? (
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>

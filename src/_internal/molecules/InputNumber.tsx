@@ -22,9 +22,7 @@ const InputNumber = (props: Props) => {
       props.onChange(
         Number(newValue),
         displayValues,
-        `${
-          props.subKey ? `${props.subKey}${props.field?.key ? "-" : ""}` : ""
-        }${props.field?.key ?? ""}`,
+        props.itemKey,
         props.path
       );
       setStringValue(newValue);

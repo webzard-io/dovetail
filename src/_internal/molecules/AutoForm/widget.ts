@@ -20,17 +20,14 @@ export type WidgetProps<
   services: Services;
   basePath: string;
   field?: Field;
+  item?: Field["subItem"]
+  itemKey: string;
   spec: JSONSchema7;
   widget?: string;
   widgetOptions?: WidgetOptions;
   level: number;
   path: string;
-  step?: number;
-  layout?: {
-    steps?: { paths: string[] }[];
-  };
-  stepElsRef: Record<number, HTMLElement | null>;
-  subKey?: string;
+  superiorKey?: string;
   index?: number;
   error?: string | string[] | Record<string, string>;
   value: Value;
@@ -44,5 +41,5 @@ export type WidgetProps<
   onDisplayValuesChange: (displayValues: Record<string, unknown>) => void;
   slot?: SlotFunction;
   helperSlot?: SlotFunction;
-  fieldsArray: Record<string, { spec: JSONSchema7 }>[];
+  specsArray: Record<string, { spec: JSONSchema7 }>[];
 };

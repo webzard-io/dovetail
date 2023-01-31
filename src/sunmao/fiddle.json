@@ -21,54 +21,1136 @@
           ]
         },
         {
-          "id": "kubectl_get_table3",
-          "type": "kui/v1/kubectl_get_table",
+          "id": "workload_cluster_form",
+          "type": "kui/v1/kubectl_apply_form",
           "properties": {
-            "basePath": "/api/k8s",
-            "apiBase": "apis/kubesmart.smtx.io/v1alpha1",
-            "resource": "kubesmartclusters",
-            "columns": [
-              {
-                "key": "name",
-                "title": "Name",
-                "dataIndex": "metadata.name",
-                "width": 100,
-                "sortType": "auto",
-                "filters": []
-              },
-              {
-                "key": "namespace",
-                "title": "Namespace",
-                "dataIndex": "metadata.namespace",
-                "sortType": "none",
-                "width": 200,
-                "filters": []
-              },
-              {
-                "key": "age",
-                "title": "Age",
-                "dataIndex": "metadata.creationTimestamp",
-                "sortType": "auto",
-                "width": 100,
-                "filters": []
-              }
-            ],
-            "canActive": true,
-            "defaultSize": 10,
-            "empty": "No Data.",
-            "watchWsBasePath": "",
-            "namespace": "",
-            "fieldSelector": "",
-            "customizable": false,
-            "customizableKey": "",
-            "resizable": false,
-            "enableRowSelection": false,
-            "scroll": {
-              "x": "",
-              "y": ""
+            "applyConfig": {
+              "create": true,
+              "patch": true
             },
-            "tableLayout": "auto",
-            "bordered": false
+            "formConfig": {
+              "yaml": "apiVersion: kubesmart.smtx.io/v1alpha1\nkind: KubeSmartCluster\nmetadata:\n  name: mycluster\n  namespace: default\nspec:\n  version: v1.23.6\n  controlPlaneEndpoint:\n    host: YOUR_INPUT_VIP\n    port: 6443\n  network:\n    services:\n      cidrBlocks:\n      - 10.96.0.0/12\n    pods:\n      cidrBlocks:\n      - 172.0.0.0/24\n  cni:\n    name: calico\n  topology:\n    controlPlane:\n      name: controlplane\n      replicas: 1\n      nodeConfig:\n        cpuCores: 2\n        memoryMB: 4096\n        diskSizeGB: 40\n        cloneMode: FastClone\n        network:\n          devices:\n          - networkType: IPV4_DHCP\n            vlan: YOUR_INPUT_MGMT_NETWORK_VLAN\n          - networkType: IPV4_DHCP\n            vlan: YOUR_INPUT_STORAGE_NETWORK_VLAN\n    workers:\n    - name: workergroup\n      replicas: 1\n      nodeConfig:\n        cpuCores: 4\n        memoryMB: 12288\n        diskSizeGB: 40\n        cloneMode: FastClone\n        network:\n          devices:\n          - networkType: IPV4_DHCP\n            vlan: YOUR_INPUT_MGMT_NETWORK_VLAN\n            routes:\n            - gateway: 1.2.3.4\n          - networkType: IPV4_DHCP\n            vlan: YOUR_INPUT_STORAGE_NETWORK_VLAN\n            routes:\n            - gateway: 4.3.2.1\n\n  cloudProvider:\n    name: cloudtower\n    cloudtower:\n      server: YOUR_INPUT\n      authMode:\n      username:\n      password:\n      elfCluster:\n      elfVlan:\n      elfVmTemplate:\n      zbsVip:\n  clusterNetwork:\n    pods:\n      cidrBlocks:\n      - \"\"\n    services:\n      cidrBlocks:\n      - \"\"\n  # optional cluster configuration          \n  clusterConfiguration:\n    customImageRegistry: \"registry.smtx.io/kubesmart\"\n    security:\n      sshAuthorizedPubicKey: \"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG05SWM1VyU8lwLjvFVx/crv1IXc10am3bMU1LokWCgz fedora\"\n      sshPassword: \"abc123!@#\"",
+              "schemas": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "apiVersion": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "namespace": {
+                          "type": "string"
+                        },
+                        "annotations": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        },
+                        "labels": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "spec": {
+                      "type": "object",
+                      "properties": {
+                        "cloudProvider": {
+                          "type": "object",
+                          "required": [
+                            "name"
+                          ],
+                          "properties": {
+                            "cloudtower": {
+                              "type": "object",
+                              "properties": {
+                                "authMode": {
+                                  "type": "string",
+                                  "enum": [
+                                    "LOCAL",
+                                    "LDAP"
+                                  ]
+                                },
+                                "elfCluster": {
+                                  "type": "string"
+                                },
+                                "elfVlan": {
+                                  "type": "string"
+                                },
+                                "elfVmTemplate": {
+                                  "type": "string"
+                                },
+                                "password": {
+                                  "type": "string"
+                                },
+                                "server": {
+                                  "type": "string"
+                                },
+                                "username": {
+                                  "type": "string"
+                                },
+                                "zbsVip": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "name": {
+                              "type": "string",
+                              "enum": [
+                                "cloudtower",
+                                "vsphere"
+                              ]
+                            }
+                          }
+                        },
+                        "clusterConfiguration": {
+                          "type": "object",
+                          "properties": {
+                            "caCerts": {
+                              "type": "string"
+                            },
+                            "customImageRegistry": {
+                              "type": "string"
+                            },
+                            "proxy": {
+                              "type": "object",
+                              "properties": {
+                                "http": {
+                                  "type": "string"
+                                },
+                                "https": {
+                                  "type": "string"
+                                },
+                                "noProxy": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "security": {
+                              "type": "object",
+                              "properties": {
+                                "sshAuthorizedPubicKey": {
+                                  "type": "string"
+                                },
+                                "sshPassword": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "clusterNetwork": {
+                          "type": "object",
+                          "properties": {
+                            "apiServerPort": {
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pods": {
+                              "type": "object",
+                              "required": [
+                                "cidrBlocks"
+                              ],
+                              "properties": {
+                                "cidrBlocks": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            },
+                            "serviceDomain": {
+                              "type": "string"
+                            },
+                            "services": {
+                              "type": "object",
+                              "required": [
+                                "cidrBlocks"
+                              ],
+                              "properties": {
+                                "cidrBlocks": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "cni": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "enum": [
+                                "calico",
+                                "everoute"
+                              ]
+                            },
+                            "version": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "components": {
+                          "type": "object",
+                          "properties": {
+                            "loadbalancer": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean"
+                                },
+                                "metallb": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "logging": {
+                              "type": "object",
+                              "properties": {
+                                "elasticcurator": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "elasticsearch": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "enabled": {
+                                  "type": "boolean"
+                                },
+                                "fluentbit": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "kibana": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "loggingoperator": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "monitoring": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean"
+                                },
+                                "kubeprometheus": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "controlPlaneEndpoint": {
+                          "type": "object",
+                          "required": [
+                            "host",
+                            "port"
+                          ],
+                          "properties": {
+                            "host": {
+                              "type": "string"
+                            },
+                            "port": {
+                              "type": "integer",
+                              "format": "int32"
+                            }
+                          }
+                        },
+                        "topology": {
+                          "type": "object",
+                          "properties": {
+                            "controlPlane": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "nodeConfig": {
+                                  "type": "object",
+                                  "properties": {
+                                    "cloneMode": {
+                                      "type": "string"
+                                    },
+                                    "cpuCores": {
+                                      "type": "integer",
+                                      "format": "int32"
+                                    },
+                                    "diskSizeGB": {
+                                      "type": "integer",
+                                      "format": "int32"
+                                    },
+                                    "memoryMB": {
+                                      "type": "integer",
+                                      "format": "int32"
+                                    },
+                                    "network": {
+                                      "type": "object",
+                                      "required": [
+                                        "devices"
+                                      ],
+                                      "properties": {
+                                        "devices": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "required": [
+                                              "networkType"
+                                            ],
+                                            "properties": {
+                                              "ipAddrs": {
+                                                "type": "array",
+                                                "items": {
+                                                  "type": "string"
+                                                }
+                                              },
+                                              "macAddr": {
+                                                "type": "string"
+                                              },
+                                              "netmask": {
+                                                "type": "string"
+                                              },
+                                              "networkType": {
+                                                "type": "string"
+                                              },
+                                              "routes": {
+                                                "type": "array",
+                                                "items": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "gateway": {
+                                                      "type": "string"
+                                                    },
+                                                    "netmask": {
+                                                      "type": "string"
+                                                    },
+                                                    "network": {
+                                                      "type": "string"
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "vlan": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "vmTemplate": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "replicas": {
+                                  "type": "integer",
+                                  "format": "int32"
+                                }
+                              }
+                            },
+                            "workers": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "nodeConfig": {
+                                    "type": "object",
+                                    "properties": {
+                                      "cloneMode": {
+                                        "type": "string"
+                                      },
+                                      "cpuCores": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                      },
+                                      "diskSizeGB": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                      },
+                                      "memoryMB": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                      },
+                                      "network": {
+                                        "type": "object",
+                                        "required": [
+                                          "devices"
+                                        ],
+                                        "properties": {
+                                          "devices": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "required": [
+                                                "networkType"
+                                              ],
+                                              "properties": {
+                                                "ipAddrs": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "macAddr": {
+                                                  "type": "string"
+                                                },
+                                                "netmask": {
+                                                  "type": "string"
+                                                },
+                                                "networkType": {
+                                                  "type": "string"
+                                                },
+                                                "routes": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                      "gateway": {
+                                                        "type": "string"
+                                                      },
+                                                      "netmask": {
+                                                        "type": "string"
+                                                      },
+                                                      "network": {
+                                                        "type": "string"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "vlan": {
+                                                  "type": "string"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "vmTemplate": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "replicas": {
+                                    "type": "integer",
+                                    "format": "int32"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "version": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "x-kubernetes-group-version-kind": [
+                    {
+                      "group": "kubesmart.smtx.io",
+                      "kind": "KubeSmartCluster",
+                      "version": "v1alpha1"
+                    }
+                  ]
+                }
+              ],
+              "defaultValues": [
+                {
+                  "apiVersion": "kubesmart.smtx.io/v1alpha1",
+                  "kind": "KubeSmartCluster",
+                  "metadata": {
+                    "name": "mycluster",
+                    "namespace": "default"
+                  },
+                  "spec": {
+                    "version": "v1.23.6",
+                    "controlPlaneEndpoint": {
+                      "host": "YOUR_INPUT_VIP",
+                      "port": 6443
+                    },
+                    "network": {
+                      "services": {
+                        "cidrBlocks": [
+                          "10.96.0.0/12"
+                        ]
+                      },
+                      "pods": {
+                        "cidrBlocks": [
+                          "172.0.0.0/24"
+                        ]
+                      }
+                    },
+                    "cni": {
+                      "name": "calico"
+                    },
+                    "topology": {
+                      "controlPlane": {
+                        "name": "controlplane",
+                        "replicas": 1,
+                        "nodeConfig": {
+                          "cpuCores": 2,
+                          "memoryMB": 4096,
+                          "diskSizeGB": 40,
+                          "cloneMode": "FastClone",
+                          "network": {
+                            "devices": [
+                              {
+                                "networkType": "IPV4_DHCP",
+                                "vlan": "YOUR_INPUT_MGMT_NETWORK_VLAN"
+                              },
+                              {
+                                "networkType": "IPV4_DHCP",
+                                "vlan": "YOUR_INPUT_STORAGE_NETWORK_VLAN"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "workers": [
+                        {
+                          "name": "workergroup",
+                          "replicas": 1,
+                          "nodeConfig": {
+                            "cpuCores": 4,
+                            "memoryMB": 12288,
+                            "diskSizeGB": 40,
+                            "cloneMode": "FastClone",
+                            "network": {
+                              "devices": [
+                                {
+                                  "networkType": "IPV4_DHCP",
+                                  "vlan": "YOUR_INPUT_MGMT_NETWORK_VLAN",
+                                  "routes": [
+                                    {
+                                      "gateway": "1.2.3.4"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "networkType": "IPV4_DHCP",
+                                  "vlan": "YOUR_INPUT_STORAGE_NETWORK_VLAN",
+                                  "routes": [
+                                    {
+                                      "gateway": "4.3.2.1"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "cloudProvider": {
+                      "name": "cloudtower",
+                      "cloudtower": {
+                        "server": "YOUR_INPUT",
+                        "authMode": null,
+                        "username": null,
+                        "password": null,
+                        "elfCluster": null,
+                        "elfVlan": null,
+                        "elfVmTemplate": null,
+                        "zbsVip": null
+                      }
+                    },
+                    "clusterNetwork": {
+                      "pods": {
+                        "cidrBlocks": [
+                          ""
+                        ]
+                      },
+                      "services": {
+                        "cidrBlocks": [
+                          ""
+                        ]
+                      }
+                    },
+                    "clusterConfiguration": {
+                      "customImageRegistry": "registry.smtx.io/kubesmart",
+                      "security": {
+                        "sshAuthorizedPubicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG05SWM1VyU8lwLjvFVx/crv1IXc10am3bMU1LokWCgz fedora",
+                        "sshPassword": "abc123!@#"
+                      }
+                    }
+                  }
+                }
+              ],
+              "uiConfig": {
+                "allowTogggleYaml": false,
+                "layout": {
+                  "type": "wizard",
+                  "steps": [
+                    {
+                      "title": "基本信息",
+                      "fields": [
+                        {
+                          "path": "0.metadata.name",
+                          "label": "名称",
+                          "helperText": "",
+                          "sectionTitle": "",
+                          "widget": "",
+                          "error": "",
+                          "rules": [
+                            {
+                              "message": "请填写名称",
+                              "required": true
+                            },
+                            {
+                              "message": "只能填写字母和数字",
+                              "required": false,
+                              "min": 0,
+                              "max": 9007199254740991,
+                              "pattern": "^[a-zA-Z0-9]+$",
+                              "validator": ""
+                            }
+                          ],
+                          "key": "name"
+                        },
+                        {
+                          "path": "0.spec.cloudProvider.cloudtower.elfCluster",
+                          "label": "创建位置",
+                          "helperText": "",
+                          "sectionTitle": "",
+                          "error": "",
+                          "widget": "",
+                          "rules": [
+                            {
+                              "message": "请填写",
+                              "required": true,
+                              "min": 0,
+                              "max": 9007199254740991,
+                              "pattern": "",
+                              "validator": ""
+                            }
+                          ],
+                          "key": "position"
+                        },
+                        {
+                          "path": "0.spec.version",
+                          "label": "Kubernetes 版本",
+                          "helperText": "",
+                          "sectionTitle": "",
+                          "error": "",
+                          "widget": "component",
+                          "componentId": "workload_cluster_form_select_version",
+                          "rules": [
+                            {
+                              "message": "请选择版本",
+                              "required": true,
+                              "min": 0,
+                              "max": 9007199254740991,
+                              "pattern": "",
+                              "validator": ""
+                            },
+                            {
+                              "message": "请选择正确版本",
+                              "required": false,
+                              "min": 0,
+                              "max": 9007199254740991,
+                              "pattern": "",
+                              "validator": "{{(rule, value)=> value === 'v1.2.36'}}"
+                            }
+                          ],
+                          "key": "version"
+                        },
+                        {
+                          "type": "field",
+                          "path": "0.spec.topology.controlPlane",
+                          "key": "controlPlane",
+                          "label": "controlPlane",
+                          "condition": true,
+                          "helperText": "",
+                          "sectionTitle": "",
+                          "isDisplayLabel": true,
+                          "labelWidth": 0,
+                          "layout": "horizontal",
+                          "rules": [],
+                          "error": "",
+                          "col": 24,
+                          "splitLine": false,
+                          "widget": "default",
+                          "widgetOptions": {},
+                          "componentId": "",
+                          "summaryConfig": {
+                            "type": "auto",
+                            "label": "",
+                            "value": "",
+                            "icon": "",
+                            "hidden": false
+                          },
+                          "layoutWidget": "default",
+                          "indent": false,
+                          "fields": [
+                            {
+                              "path": "name",
+                              "key": "controlPlaneName",
+                              "label": "controlPlaneName",
+                              "condition": true,
+                              "helperText": "",
+                              "sectionTitle": "",
+                              "isDisplayLabel": true,
+                              "labelWidth": 0,
+                              "layout": "horizontal",
+                              "rules": [
+                                {
+                                  "message": "请填写controlPlaneName",
+                                  "required": true,
+                                  "min": 0,
+                                  "max": 9007199254740991,
+                                  "pattern": "",
+                                  "validator": ""
+                                }
+                              ],
+                              "error": "",
+                              "col": 24,
+                              "splitLine": false,
+                              "widget": "component",
+                              "widgetOptions": {},
+                              "componentId": "workload_cluster_form_select_controlPlaneName",
+                              "summaryConfig": {
+                                "type": "auto",
+                                "label": "",
+                                "value": "",
+                                "icon": "",
+                                "hidden": false
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "field",
+                          "path": "0.spec.topology.workers.$add",
+                          "key": "workers",
+                          "label": "workers",
+                          "condition": true,
+                          "helperText": "",
+                          "sectionTitle": "",
+                          "isDisplayLabel": true,
+                          "labelWidth": 0,
+                          "layout": "horizontal",
+                          "rules": [],
+                          "subRules": [],
+                          "error": "",
+                          "col": 24,
+                          "splitLine": false,
+                          "widget": "component",
+                          "widgetOptions": {},
+                          "componentId": "workload_cluster_form_select_231065",
+                          "summaryConfig": {
+                            "type": "auto",
+                            "label": "",
+                            "value": "",
+                            "icon": "",
+                            "hidden": false
+                          },
+                          "layoutWidget": "default",
+                          "indent": false,
+                          "fields": [
+                            {
+                              "path": "name",
+                              "key": "workersName",
+                              "label": "name",
+                              "condition": true,
+                              "helperText": "",
+                              "sectionTitle": "",
+                              "isDisplayLabel": true,
+                              "labelWidth": 0,
+                              "layout": "horizontal",
+                              "rules": [
+                                {
+                                  "message": "请填写名称",
+                                  "required": true,
+                                  "min": 0,
+                                  "max": 9007199254740991,
+                                  "pattern": "",
+                                  "validator": ""
+                                }
+                              ],
+                              "subRules": [],
+                              "error": "",
+                              "col": 24,
+                              "splitLine": false,
+                              "widget": "component",
+                              "widgetOptions": {},
+                              "componentId": "workload_cluster_form_select_workersName",
+                              "summaryConfig": {
+                                "type": "auto",
+                                "label": "",
+                                "value": "",
+                                "icon": "",
+                                "hidden": false
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "field",
+                          "path": "0.metadata.annotations",
+                          "key": "annotations",
+                          "condition": true,
+                          "helperText": "",
+                          "sectionTitle": "",
+                          "label": "Annotations",
+                          "isDisplayLabel": true,
+                          "labelWidth": 0,
+                          "layout": "horizontal",
+                          "error": "",
+                          "col": 24,
+                          "splitLine": false,
+                          "widget": "default",
+                          "widgetOptions": {},
+                          "componentId": "",
+                          "summaryConfig": {
+                            "type": "auto",
+                            "label": "",
+                            "value": "",
+                            "icon": "",
+                            "hidden": false
+                          },
+                          "layoutWidget": "default",
+                          "indent": false,
+                          "fields": [
+                            {
+                              "path": "",
+                              "key": "",
+                              "condition": true,
+                              "helperText": "",
+                              "sectionTitle": "",
+                              "label": "",
+                              "isDisplayLabel": true,
+                              "labelWidth": 0,
+                              "layout": "horizontal",
+                              "error": "",
+                              "rules": [],
+                              "col": 24,
+                              "splitLine": false,
+                              "widget": "default",
+                              "widgetOptions": {},
+                              "componentId": "",
+                              "summaryConfig": {
+                                "type": "auto",
+                                "label": "",
+                                "value": "",
+                                "icon": "",
+                                "hidden": false
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "field",
+                          "path": "0.spec.clusterNetwork.services.cidrBlocks.$add",
+                          "key": "cirdBlock",
+                          "condition": true,
+                          "helperText": " ",
+                          "sectionTitle": "",
+                          "label": "Services",
+                          "isDisplayLabel": true,
+                          "labelWidth": 0,
+                          "layout": "horizontal",
+                          "subItem": {
+                            "widget": "component",
+                            "rules": [
+                              {
+                                "message": "请填写",
+                                "required": true,
+                                "pattern": "",
+                                "min": 0,
+                                "max": 9007199254740991,
+                                "validator": ""
+                              }
+                            ],
+                            "componentId": "workload_cluster_form_select_cirdBlock"
+                          },
+                          "rules": [
+                            {
+                              "message": "最多3项",
+                              "required": true,
+                              "min": 0,
+                              "max": 3,
+                              "pattern": "",
+                              "validator": "",
+                              "len": "{{undefined}}"
+                            }
+                          ],
+                          "error": "",
+                          "col": 24,
+                          "splitLine": false,
+                          "widget": "default",
+                          "widgetOptions": {},
+                          "componentId": "",
+                          "summaryConfig": {
+                            "type": "auto",
+                            "label": "",
+                            "value": "",
+                            "icon": "",
+                            "hidden": false
+                          },
+                          "layoutWidget": "default",
+                          "indent": false,
+                          "fields": []
+                        },
+                        {
+                          "type": "field",
+                          "path": "0.spec.cloudProvider.cloudtower.elfVlan",
+                          "key": "elfVlan",
+                          "label": "elfVlan",
+                          "condition": true,
+                          "helperText": "",
+                          "sectionTitle": "",
+                          "isDisplayLabel": true,
+                          "labelWidth": 0,
+                          "layout": "horizontal",
+                          "rules": [],
+                          "subRules": [],
+                          "error": "{{workload_cluster_form.validatedResult.elfVlan?.errors[0]?.message || fetch0.fetch.data.code === 1 ? '异步错误' : ''}}",
+                          "col": 24,
+                          "splitLine": false,
+                          "widget": "default",
+                          "widgetOptions": {},
+                          "componentId": "",
+                          "summaryConfig": {
+                            "type": "auto",
+                            "label": "",
+                            "value": "",
+                            "icon": "",
+                            "hidden": false
+                          },
+                          "layoutWidget": "default",
+                          "indent": false,
+                          "fields": []
+                        }
+                      ],
+                      "prevText": "上一步",
+                      "nextText": "下一步"
+                    },
+                    {
+                      "title": "其他",
+                      "fields": [],
+                      "disabled": false,
+                      "prevText": "上一步",
+                      "nextText": "提交"
+                    }
+                  ]
+                },
+                "cancelText": "取消1",
+                "title": "",
+                "allowToggleYaml": true,
+                "isDisplayFooter": true
+              }
+            },
+            "k8sConfig": {
+              "basePath": ""
+            },
+            "submitting": "{{fetch0.fetch.loading}}"
           },
           "traits": [
             {
@@ -79,6 +1161,373 @@
                   "slot": "root"
                 },
                 "ifCondition": true
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onNextStep",
+                    "componentId": "workload_cluster_form",
+                    "method": {
+                      "name": "validateFields",
+                      "parameters": {
+                        "names": "{{['elfVlan']}}"
+                      }
+                    },
+                    "wait": {
+                      "type": "debounce",
+                      "time": 0
+                    },
+                    "disabled": false
+                  },
+                  {
+                    "type": "onNextStep",
+                    "componentId": "fetch0",
+                    "method": {
+                      "name": "triggerFetch",
+                      "parameters": {}
+                    },
+                    "wait": {
+                      "type": "debounce",
+                      "time": 0
+                    },
+                    "disabled": false
+                  },
+                  {
+                    "type": "onNextStep",
+                    "componentId": "workload_cluster_form",
+                    "method": {
+                      "name": "nextStep",
+                      "parameters": {
+                        "disabled": "{{Object.values(workload_cluster_form.validatedResult).some(({ isInvalid })=> isInvalid) || fetch0.fetch.loading}}"
+                      }
+                    },
+                    "wait": {
+                      "type": "debounce",
+                      "time": 0
+                    },
+                    "disabled": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "core/v1/validation",
+              "properties": {
+                "validators": [
+                  {
+                    "name": "elfVlan",
+                    "value": "{{workload_cluster_form.value[0].spec.cloudProvider.cloudtower.elfVlan}}",
+                    "rules": [
+                      {
+                        "type": "required",
+                        "validate": "",
+                        "error": {
+                          "message": "请填写 elfVlan"
+                        },
+                        "minLength": 0,
+                        "maxLength": 0,
+                        "includeList": [],
+                        "excludeList": [],
+                        "min": 0,
+                        "max": 0,
+                        "regex": "",
+                        "flags": "",
+                        "customOptions": {}
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "workload_cluster_form_select_version",
+          "type": "kui/v1/select",
+          "properties": {
+            "options": [
+              {
+                "text": "option 1",
+                "value": 1
+              },
+              {
+                "text": "option 2",
+                "value": "2"
+              }
+            ]
+          },
+          "traits": [
+            {
+              "type": "core/v2/slot",
+              "properties": {
+                "container": {
+                  "id": "workload_cluster_form",
+                  "slot": "field"
+                },
+                "ifCondition": "{{ $slot.itemKey === `version`}}"
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onChange",
+                    "componentId": "workload_cluster_form",
+                    "method": {
+                      "name": "setField",
+                      "parameters": {
+                        "fieldPath": "{{`0.spec.version`}}",
+                        "value": "{{workload_cluster_form_select_version.value}}",
+                        "displayValue": "{{workload_cluster_form_select_version.displayValue}}"
+                      }
+                    },
+                    "wait": {
+                      "type": "debounce",
+                      "time": 0
+                    },
+                    "disabled": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "kui/v2/sync_kubectl_apply_form",
+              "properties": {
+                "syncs": [
+                  {
+                    "formValue": "{{ workload_cluster_form.value[0].spec.version}}",
+                    "setValueMethod": "setValue"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "workload_cluster_form_select_controlPlaneName",
+          "type": "kui/v1/select",
+          "properties": {
+            "options": [
+              {
+                "text": "option 1",
+                "value": 1
+              },
+              {
+                "text": "option 2",
+                "value": "2"
+              }
+            ]
+          },
+          "traits": [
+            {
+              "type": "core/v2/slot",
+              "properties": {
+                "container": {
+                  "id": "workload_cluster_form",
+                  "slot": "field"
+                },
+                "ifCondition": "{{ $slot.itemKey === `controlPlaneName`}}"
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onChange",
+                    "componentId": "workload_cluster_form",
+                    "method": {
+                      "name": "setField",
+                      "parameters": {
+                        "fieldPath": "{{`0.spec.topology.controlPlane.name`}}",
+                        "value": "{{workload_cluster_form_select_controlPlaneName.value}}",
+                        "displayValue": "{{workload_cluster_form_select_controlPlaneName.displayValue}}"
+                      }
+                    },
+                    "wait": {
+                      "type": "debounce",
+                      "time": 0
+                    },
+                    "disabled": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "kui/v2/sync_kubectl_apply_form",
+              "properties": {
+                "syncs": [
+                  {
+                    "formValue": "{{ workload_cluster_form.value[0].spec.topology.controlPlane.name}}",
+                    "setValueMethod": "setValue"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "workload_cluster_form_select_workersName",
+          "type": "kui/v1/select",
+          "properties": {
+            "options": [
+              {
+                "text": "option 1",
+                "value": 1
+              },
+              {
+                "text": "option 2",
+                "value": "2"
+              }
+            ]
+          },
+          "traits": [
+            {
+              "type": "core/v2/slot",
+              "properties": {
+                "container": {
+                  "id": "workload_cluster_form",
+                  "slot": "field"
+                },
+                "ifCondition": "{{ $slot.itemKey === `workers-${$slot.index}-workersName`}}"
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onChange",
+                    "componentId": "workload_cluster_form",
+                    "method": {
+                      "name": "setField",
+                      "parameters": {
+                        "fieldPath": "{{`0.spec.topology.workers.${$slot.index}.name`}}",
+                        "value": "{{workload_cluster_form_select_workersName_{{$slot.index}}.value}}",
+                        "displayValue": "{{workload_cluster_form_select_workersName_{{$slot.index}}.displayValue}}"
+                      }
+                    },
+                    "wait": {
+                      "type": "debounce",
+                      "time": 0
+                    },
+                    "disabled": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "kui/v2/sync_kubectl_apply_form",
+              "properties": {
+                "syncs": [
+                  {
+                    "formValue": "{{ workload_cluster_form.value[0].spec.topology.workers[{{$slot.index}}].name}}",
+                    "setValueMethod": "setValue"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "workload_cluster_form_select_cirdBlock",
+          "type": "kui/v1/select",
+          "properties": {
+            "options": [
+              {
+                "text": "option 1",
+                "value": 1
+              },
+              {
+                "text": "option 2",
+                "value": "2"
+              }
+            ]
+          },
+          "traits": [
+            {
+              "type": "core/v2/slot",
+              "properties": {
+                "container": {
+                  "id": "workload_cluster_form",
+                  "slot": "field"
+                },
+                "ifCondition": "{{ $slot.itemKey === `cirdBlock-${$slot.index}`}}"
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onChange",
+                    "componentId": "workload_cluster_form",
+                    "method": {
+                      "name": "setField",
+                      "parameters": {
+                        "fieldPath": "{{`0.spec.clusterNetwork.services.cidrBlocks.${$slot.index}`}}",
+                        "value": "{{workload_cluster_form_select_cirdBlock_{{$slot.index}}.value}}",
+                        "displayValue": "{{workload_cluster_form_select_cirdBlock_{{$slot.index}}.displayValue}}"
+                      }
+                    },
+                    "wait": {
+                      "type": "debounce",
+                      "time": 0
+                    },
+                    "disabled": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "kui/v2/sync_kubectl_apply_form",
+              "properties": {
+                "syncs": [
+                  {
+                    "formValue": "{{ workload_cluster_form.value[0].spec.clusterNetwork.services.cidrBlocks[{{$slot.index}}]}}",
+                    "setValueMethod": "setValue"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "fetch0",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/fetch",
+              "properties": {
+                "url": "https://www.mxnzp.com/api/food_heat/food/details?foodId=befa2163948534a9&app_id=rgihdrm0kslojqvm&app_secret=WnhrK251TWlUUThqaVFWbG5OeGQwdz09",
+                "method": "get",
+                "lazy": true,
+                "disabled": false,
+                "headers": {},
+                "body": {},
+                "bodyType": "json",
+                "onComplete": [
+                  {
+                    "componentId": "workload_cluster_form",
+                    "method": {
+                      "name": "nextStep",
+                      "parameters": {
+                        "disabled": false
+                      }
+                    },
+                    "wait": {
+                      "type": "debounce",
+                      "time": 0
+                    },
+                    "disabled": false
+                  }
+                ],
+                "onError": []
               }
             }
           ]

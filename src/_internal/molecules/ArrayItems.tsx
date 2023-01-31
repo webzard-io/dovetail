@@ -125,10 +125,11 @@ const ArrayItems = (props: Props) => {
             <SpecField
               {...props}
               field={undefined}
+              item={field && "subItem" in field ? field.subItem : undefined}
               error={errorInfo instanceof Array ? errorInfo[itemIndex] : ""}
-              widget="default"
+              widget={field?.subItem?.widget || "default"}
               value={itemValue}
-              subKey={`${props.field?.key}-${itemIndex}`}
+              superiorKey={`${props.field?.key || ""}-${itemIndex}`}
               index={itemIndex}
               spec={{
                 ...itemSpec,
@@ -136,7 +137,7 @@ const ArrayItems = (props: Props) => {
               }}
               path={path.concat(`.${itemIndex}`)}
               level={level + 1}
-              widgetOptions={{}}
+              widgetOptions={field?.subItem?.widgetOptions || {}}
               onChange={(
                 newItemValue: any,
                 newDisplayValues: Record<string, any>,

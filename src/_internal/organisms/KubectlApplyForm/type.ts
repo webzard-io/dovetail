@@ -1,8 +1,13 @@
 import { Emitter } from "mitt";
+import { RuleItem } from "async-validator";
 
 export type Field = {
   type?: "field" | "layout";
+  rules?: RuleItem[];
   fields?: Field[];
+  subItem?: Pick<Field, "widget" | "widgetOptions" | "componentId" | "rules"> & {
+    type?: undefined;
+  };
   path: string;
   key?: string;
   label: string;
@@ -30,7 +35,9 @@ export type Field = {
   };
 };
 
-export type FormItemData = (Field | Record<string, unknown>) & { index?: number; };
+export type FormItemData = (Field | Record<string, unknown>) & {
+  index?: number;
+};
 
 export type TransformedField = Field & { dataPath: string; value: any };
 
@@ -61,6 +68,9 @@ export type Events = {
   remove: {
     index: number;
     fieldKey: string;
+  };
+  validate: {
+    result: Record<string, string[]>;
   };
 };
 
