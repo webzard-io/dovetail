@@ -37,7 +37,9 @@
     "lodash": "^4.17.21",
     "monaco-editor": "^0.33.0",
     "rc-util": "^5.25.2",
-    "react-use": "^17.3.2"
+    "react-use": "^17.3.2",
+    "i18next": "^21.9.1",
+    "react-i18next": "^11.18.4"
   },
   "devDependencies": {
     "@kubernetes/client-node": "^0.16.3",
@@ -67,13 +69,11 @@
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-react": "^7.31.11",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "i18next": "^21.9.1",
     "less": "^3.10.3",
     "mobx": "^6.6.1",
     "mobx-react-lite": "^3.4.0",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
-    "react-i18next": "^11.18.4",
     "sass": "^1.51.0",
     "typescript": "^4.6.3",
     "vite": "^3.0.0",
@@ -87,9 +87,7 @@
     "@sunmao-ui/editor-sdk": "^0.10.0",
     "@sunmao-ui/runtime": "^0.10.0",
     "@sunmao-ui/shared": "^0.10.0",
-    "i18next": "^21.9.1",
     "react": "^17.0.0",
-    "react-dom": "^17.0.0",
-    "react-i18next": "^11.18.4"
+    "react-dom": "^17.0.0"
   }
 }
