@@ -3,6 +3,7 @@ import { Type } from "@sinclair/typebox";
 import { PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
 import { css } from "@emotion/css";
 import BaseK8sLabelGroup from "../../_internal/components/K8sLabelGroup";
+import { Label } from "../../_internal/components/LabelGroup";
 import { omit } from "lodash";
 import React, { useCallback, useState, useEffect } from "react";
 
@@ -62,8 +63,8 @@ export const K8sLabelGroup = implementRuntimeComponent({
 
   const onChange = useCallback(
     (newLabelsArray) => {
-      const newLabels = newLabelsArray.reduce((result, label) => {
-        result[label.key] = label.value;
+      const newLabels = newLabelsArray.reduce((result: Record<string, string>, label: Label) => {
+        result[label.key] = label.value || "";
 
         return result;
       }, {});

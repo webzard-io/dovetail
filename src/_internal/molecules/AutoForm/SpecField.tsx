@@ -33,6 +33,7 @@ type TemplateProps = {
   label?: string;
   layout?: "horizontal" | "vertical";
   error?: string;
+  widgetErrors: string[];
   description?: React.ReactNode;
   hidden?: boolean;
   required?: boolean;
@@ -134,6 +135,7 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
       label,
       children,
       error,
+      widgetErrors,
       description,
       hidden,
       displayLabel,
@@ -155,7 +157,7 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
         }),
       [fieldOrItem?.rules, value]
     );
-    const finalError = error || errors?.[0];
+    const finalError = error || errors?.[0] || widgetErrors[0] || "";
 
     const validate = useCallback(
       (callback?: (messages: string[]) => void) => {
@@ -173,10 +175,10 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
     const onValidate = useCallback(
       ({ result }: Events["validate"]) => {
         validate((messages: string[]) => {
-          result[itemKey] = error ? messages.concat(error) : messages;
+          result[itemKey] = error ? messages.concat(error, widgetErrors) : messages;
         });
       },
-      [itemKey, error, validate]
+      [itemKey, error, widgetErrors, validate]
     );
 
     useEffect(() => {
@@ -242,7 +244,7 @@ function shouldDisplayDescription(spec: JSONSchema7): boolean {
   return true;
 }
 
-type SpecFieldProps = WidgetProps & {
+type SpecFieldProps = Omit<WidgetProps, "setWidgetErrors"> & {
   children?: React.ReactNode;
 };
 
@@ -268,6 +270,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     onDisplayValuesChange,
   } = props;
   let { widgetOptions = {} } = props;
+  const [widgetErrors, setWidgetErrors] = useState([]);
   const { title } = spec;
   const label = title ?? "";
   const displayLabel =
@@ -340,6 +343,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       itemKey={itemKey}
       widgetOptions={widgetOptions}
       error={typeof error !== "string" ? error : undefined}
+      setWidgetErrors={setWidgetErrors}
       field={field}
       item={item}
       spec={spec}
@@ -387,6 +391,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
         displayDescription={displayDescription}
         spec={spec}
         error={typeof error === "string" ? error : ""}
+        widgetErrors={widgetErrors}
         testId={`${path}-${field?.key || ""}`}
       >
         {slot?.(
