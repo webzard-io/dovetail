@@ -31,8 +31,8 @@ type Options = {
 };
 
 export const generateSlotChildren = (
-  { allComponents, component, services, slotsElements, slot, slotKey, fallback }: Props,
-  { generateId, generateProps }: Options
+  { allComponents, app, component, services, slot, slotKey, fallback }: Props,
+  { generateId }: Options
 ) => {
   const renderSet = new Set<string>();
   const slotTraitTypes = ["core/v1/slot", "core/v2/slot"];
@@ -55,8 +55,6 @@ export const generateSlotChildren = (
       id,
     };
   });
-  const slots =
-    slotsElements[slot]?.(generateProps(), fallback, slotKey) || fallback;
 
   return _childrenSchema.length
     ? _childrenSchema.map((child) => {
@@ -66,6 +64,7 @@ export const generateSlotChildren = (
             component={child}
             app={app}
             services={services}
+            allComponents={allComponents}
             childrenMap={{}}
             isInModule
             slotContext={{
