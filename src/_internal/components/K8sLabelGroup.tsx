@@ -11,8 +11,8 @@ enum LabelKeyErrorCode {
 
 enum LabelValueErrorCode {
   VALUE_REQUIRED = "VALUE_REQUIRED",
-  VALUE_OUT_OF_LENGTH = "NAME_OUT_OF_LENGTH",
-  VALUE_WRONG_FORMAT = "NAME_WRONG_FORMAT",
+  VALUE_OUT_OF_LENGTH = "VALUE_OUT_OF_LENGTH",
+  VALUE_WRONG_FORMAT = "VALUE_WRONG_FORMAT",
 }
 
 export type LabelKeyValidationError = {

@@ -91,8 +91,8 @@ type Validator = {
   validate: (value: string) => null | string;
 };
 
-type ValidateError = {
-  code: string | null;
+export type ValidateError = {
+  code: string;
 };
 
 export type LabelGroupProps = {
@@ -104,6 +104,8 @@ export type LabelGroupProps = {
   keyValidators?: Validator[];
   valueValidators?: Validator[];
   onChange?: (labels: Label[]) => void;
+  onSubmit?: (labels: Label[], errors: ValidateError[]) => void;
+  onCancel?: () => void;
   onEditedKeyChange?: (value: string, errors: ValidateError[]) => void;
   onEditedValueChange?: (value: string, errors: ValidateError[]) => void;
 };
@@ -129,6 +131,8 @@ const LabelGroup = React.forwardRef<HTMLDivElement, LabelGroupProps>(
       keyValidators,
       valueValidators,
       onChange,
+      onSubmit,
+      onCancel,
       onEditedKeyChange,
       onEditedValueChange,
     },
@@ -166,10 +170,13 @@ const LabelGroup = React.forwardRef<HTMLDivElement, LabelGroupProps>(
       (event: React.KeyboardEvent<HTMLInputElement>) => {
         switch (event.key) {
           case "Enter": {
-            if (
-              runValidators(editedKey, keyValidators).length ||
-              runValidators(editedValue, valueValidators).length
-            ) {
+            const errors = [
+              ...runValidators(editedKey, keyValidators),
+              ...runValidators(editedValue, valueValidators),
+            ];
+
+            if (errors.length) {
+              onSubmit?.(labels, errors);
               return;
             }
 
@@ -185,6 +192,7 @@ const LabelGroup = React.forwardRef<HTMLDivElement, LabelGroupProps>(
             break;
           }
           case "Escape": {
+            onCancel?.();
             setEditing(false);
             setEditedKey("");
             setEditedValue("");
@@ -192,7 +200,16 @@ const LabelGroup = React.forwardRef<HTMLDivElement, LabelGroupProps>(
           }
         }
       },
-      [labels, editedKey, editedValue, onChange]
+      [
+        labels,
+        editedKey,
+        editedValue,
+        keyValidators,
+        valueValidators,
+        onChange,
+        onSubmit,
+        onCancel,
+      ]
     );
 
     return (

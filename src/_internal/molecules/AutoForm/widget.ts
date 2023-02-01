@@ -41,5 +41,6 @@ export type WidgetProps<
   onDisplayValuesChange: (displayValues: Record<string, unknown>) => void;
   slot?: SlotFunction;
   helperSlot?: SlotFunction;
+  setWidgetErrors: (errors: string[])=> void;
   specsArray: Record<string, { spec: JSONSchema7 }>[];
 };
