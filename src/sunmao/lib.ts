@@ -18,7 +18,7 @@ import { KubectlGetDetail } from "./components/KubectlGetDetail";
 import { KubectlGetList } from "./components/KubectlGetList";
 import { ConfirmModal } from "./components/ConfirmModal";
 import { K8sLabelGroup } from "./components/K8sLabelGroup";
-
+import { K8sNamespaceSelect } from "./components/K8sNamespaceSelect";
 import SyncKubectlApplyForm from "./traits/SyncKubectlApplyForm";
 import SyncKubectlApplyFormV2 from "./traits/v2/SyncKubectlApplyForm";
 import KubeAPITrait from "./traits/KubeAPITrait";
@@ -54,6 +54,7 @@ export const libs: SunmaoLib[] = [
       FullscreenModal,
       ConfirmModal,
       K8sLabelGroup,
+      K8sNamespaceSelect,
     ],
     utilMethods: [
       () =>
