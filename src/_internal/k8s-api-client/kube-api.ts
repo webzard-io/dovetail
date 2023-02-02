@@ -192,7 +192,7 @@ export class KubeApi<T> {
     const response = await this.list({
       namespace,
       query,
-      fetchOptions: { timeout: 0 },
+      fetchOptions: { timeout: false },
     });
     const stop = this.watch(
       watchUrl,
