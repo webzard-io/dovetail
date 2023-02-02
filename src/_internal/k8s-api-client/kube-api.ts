@@ -55,7 +55,7 @@ type KubeApiListOptions = {
 };
 
 type KubeApiListWatchOptions<T> = KubeApiListOptions & {
-  onResponse?: (value: T) => void;
+  onResponse?: (response: T) => void;
 };
 
 type KubeApiLinkRef = {
@@ -215,7 +215,7 @@ export class KubeApi<T extends UnstructuredList> {
       this.listWatch.bind(this, {
         namespace,
         query,
-        onResponse: onResponse,
+        onResponse,
       })
     );
 
