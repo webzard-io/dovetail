@@ -183,7 +183,7 @@ type KubectlGetDetailProps = {
 const KubectlGetDetail = React.forwardRef<
   HTMLDivElement,
   KubectlGetDetailProps
->((props, ref) => {
+>(function KubectlGetDetail(props, ref) {
   const {
     className,
     basePath,
@@ -220,8 +220,8 @@ const KubectlGetDetail = React.forwardRef<
       basePath: basePath,
       watchWsBasePath,
       objectConstructor: {
-        apiBase: `${apiBase}/${resource}`,
-        kind: "",
+        resourceBasePath: apiBase,
+        resource,
         namespace,
       },
     });
@@ -234,7 +234,7 @@ const KubectlGetDetail = React.forwardRef<
           namespace,
           fieldSelector: compact([`metadata.name=${name}`]),
         },
-        cb: (res) => {
+        onResponse: (res) => {
           setResponse(() => ({
             loading: false,
             error: null,
@@ -245,7 +245,7 @@ const KubectlGetDetail = React.forwardRef<
       .catch((err) => {
         setResponse(() => ({ loading: false, error: err, data: null }));
       });
-  }, [basePath, apiBase, namespace, resource, name]);
+  }, [basePath, watchWsBasePath, apiBase, namespace, resource, name]);
 
   useEffect(() => {
     onResponse?.(response);

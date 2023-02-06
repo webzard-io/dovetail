@@ -92,7 +92,7 @@ export const emptyData = {
 };
 
 const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
-  (
+  function KubectlGetTable(
     {
       tableKey,
       basePath,
@@ -110,7 +110,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       ...tableProps
     },
     ref
-  ) => {
+  ) {
     const kit = useContext(KitContext);
     const { t } = useTranslation();
     const auxiliaryLine = useRef(null);
@@ -125,8 +125,8 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
           basePath,
           watchWsBasePath,
           objectConstructor: {
-            kind: "",
-            apiBase: `${apiBase}/${resource}`,
+            resourceBasePath: apiBase,
+            resource,
             namespace,
           },
         }),
@@ -285,7 +285,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       const stopP = api
         .listWatch({
           query: fieldSelector ? { fieldSelector, namespace } : { namespace },
-          cb: (res) => {
+          onResponse: (res) => {
             onResponse?.({
               loading: false,
               error: null,

@@ -62,8 +62,8 @@ const K8sSelect = (props: Props) => {
         basePath: basePath || "",
         watchWsBasePath,
         objectConstructor: {
-          kind: "",
-          apiBase: `${apiBase}/${resource}`,
+          resourceBasePath: apiBase || "",
+          resource: resource || "",
           namespace: namespace || "",
         },
       }),

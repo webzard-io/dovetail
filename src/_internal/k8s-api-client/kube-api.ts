@@ -1,5 +1,5 @@
 // highly inspired by https://github.com/lensapp/lens/blob/1a29759bff/src/common/k8s-api/kube-api.ts
-import ky, { SearchParamsOption } from "ky";
+import ky, { SearchParamsOption, Options } from "ky";
 import type {
   APIResource,
   APIResourceList,
@@ -7,6 +7,20 @@ import type {
   ObjectMeta,
   Status,
 } from "kubernetes-types/meta/v1";
+import { informerLog } from "../utils/log";
+
+export type UnstructuredList = {
+  apiVersion: string;
+  kind: string;
+  metadata: ListMeta;
+  items: Unstructured[];
+};
+
+export type Unstructured = {
+  apiVersion: string;
+  kind: string;
+  metadata: ObjectMeta;
+};
 
 type KubeApiQueryParams = {
   watch?: boolean | number;
@@ -36,24 +50,24 @@ type ResourceDescriptor = {
 type KubeApiListOptions = {
   namespace?: string;
   query?: KubeApiQueryParams;
+  fetchOptions?: Options;
 };
 
 type KubeApiListWatchOptions<T> = KubeApiListOptions & {
-  cb?: (value: T) => void;
+  onResponse?: (value: T) => void;
 };
 
 type KubeApiLinkRef = {
-  apiPrefix?: string;
-  apiVersion: string;
+  resourceBasePath: string;
   resource: string;
   name?: string;
   namespace?: string;
 };
 
 type KubeObjectConstructor = {
-  kind: string;
+  resourceBasePath: string;
   namespace?: string;
-  apiBase: string;
+  resource: string;
 };
 
 type KubeApiOptions = {
@@ -65,20 +79,30 @@ type KubeApiOptions = {
   objectConstructor: KubeObjectConstructor;
 };
 
-type KubeApiParsed = KubeApiLinkRef & {
-  apiBase: string;
-  apiGroup: string;
-  apiVersionWithGroup: string;
+type StopWatchHandler = () => void;
+
+type K8sObject = { apiVersion?: string; kind?: string; metadata?: ObjectMeta };
+
+type ExtendedWebsocketClient = WebSocket & {
+  pingTimeout?: ReturnType<typeof setTimeout>;
+};
+
+type WatchEvent = {
+  type: "ADDED" | "MODIFIED" | "DELETED" | "PING";
+  object: Unstructured;
 };
 
 function createKubeApiURL({
-  apiPrefix = "/apis",
-  resource,
-  apiVersion,
-  name,
+  resourceBasePath,
   namespace,
+  resource,
+  name,
 }: KubeApiLinkRef): string {
-  const parts = [apiPrefix, apiVersion];
+  const parts = [resourceBasePath];
+
+  if (namespace) {
+    parts.push(`/namespaces/${namespace}`);
+  }
 
   parts.push(resource);
 
@@ -87,102 +111,6 @@ function createKubeApiURL({
   }
 
   return parts.join("/");
-}
-
-function splitArray<T>(array: T[], element: T): [T[], T[], boolean] {
-  const index = array.indexOf(element);
-
-  if (index < 0) {
-    return [array, [], false];
-  }
-
-  return [array.slice(0, index), array.slice(index + 1, array.length), true];
-}
-
-export function parseKubeApi(path: string): KubeApiParsed {
-  const apiPath = new URL(path, "http://localhost").pathname;
-  const [, prefix, ...parts] = apiPath.split("/");
-  const apiPrefix = `/${prefix}`;
-  const [left, right, namespaced] = splitArray(parts, "namespaces");
-  let apiGroup, apiVersion, namespace, resource, name;
-
-  if (namespaced) {
-    switch (right.length) {
-      case 1:
-        name = right[0];
-      // fallthrough
-      case 0:
-        resource = "namespaces"; // special case this due to `split` removing namespaces
-        break;
-      default:
-        [namespace, resource, name] = right;
-        break;
-    }
-
-    apiVersion = left.pop();
-    apiGroup = left.join("/");
-  } else {
-    switch (left.length) {
-      case 0:
-        throw new Error(`invalid apiPath: ${apiPath}`);
-      case 4:
-        [apiGroup, apiVersion, resource, name] = left;
-        break;
-      case 2:
-        resource = left.pop();
-      // fallthrough
-      case 1:
-        apiVersion = left.pop();
-        apiGroup = "";
-        break;
-      default:
-        /**
-         * Given that
-         *  - `apiVersion` is `GROUP/VERSION` and
-         *  - `VERSION` is `DNS_LABEL` which is /^[a-z0-9]((-[a-z0-9])|[a-z0-9])*$/i
-         *     where length <= 63
-         *  - `GROUP` is /^D(\.D)*$/ where D is `DNS_LABEL` and length <= 253
-         *
-         * There is no well defined selection from an array of items that were
-         * separated by '/'
-         *
-         * Solution is to create a heuristic. Namely:
-         * 1. if '.' in left[0] then apiGroup <- left[0]
-         * 2. if left[1] matches /^v[0-9]/ then apiGroup, apiVersion <- left[0], left[1]
-         * 3. otherwise assume apiVersion <- left[0]
-         * 4. always resource, name <- left[(0 or 1)+1..]
-         */
-        if (left[0].includes(".") || left[1].match(/^v[0-9]/)) {
-          [apiGroup, apiVersion] = left;
-          resource = left.slice(2).join("/");
-        } else {
-          apiGroup = "";
-          apiVersion = left[0];
-          [resource, name] = left.slice(1);
-        }
-        break;
-    }
-  }
-
-  const apiVersionWithGroup = [apiGroup, apiVersion].filter((v) => v).join("/");
-  const apiBase = [apiPrefix, apiGroup, apiVersion, resource]
-    .filter((v) => v)
-    .join("/");
-
-  if (!apiBase) {
-    throw new Error(`invalid apiPath: ${apiPath}`);
-  }
-
-  return {
-    apiBase,
-    apiPrefix,
-    apiGroup,
-    apiVersion: apiVersion ?? "",
-    apiVersionWithGroup,
-    namespace,
-    resource: resource ?? "",
-    name,
-  };
 }
 
 function findLine(buffer: string, fn: (line: string) => void): string {
@@ -201,14 +129,6 @@ function findLine(buffer: string, fn: (line: string) => void): string {
   return findLine(newBuffer, fn);
 }
 
-type StopWatchHandler = () => void;
-
-type K8sObject = { apiVersion?: string; kind?: string; metadata?: ObjectMeta };
-
-type ExtendedWebsocketClient = WebSocket & {
-  pingTimeout?: ReturnType<typeof setTimeout>;
-};
-
 function heartbeat(ws: ExtendedWebsocketClient) {
   clearTimeout(ws.pingTimeout);
 
@@ -226,36 +146,34 @@ function heartbeat(ws: ExtendedWebsocketClient) {
 }
 
 export class KubeApi<T> {
-  private basePath: string;
-  private apiVersion: string;
-  private apiPrefix: string;
-  private apiGroup: string;
-  private apiResource: string;
   private watchWsBasePath?: string;
-  public objectConstructor: KubeObjectConstructor;
+  private basePath: string;
+  private resourceBasePath: string;
+  private namespace?: string;
+  private resource: string;
 
   constructor(protected options: KubeApiOptions) {
     const { objectConstructor, basePath, watchWsBasePath } = options;
-    const { apiPrefix, apiGroup, apiVersion, resource } = parseKubeApi(
-      objectConstructor.apiBase
-    );
 
     this.options = options;
-    this.basePath = basePath;
-    this.apiPrefix = apiPrefix ?? "";
-    this.apiGroup = apiGroup;
-    this.apiVersion = apiVersion;
-    this.apiResource = resource;
     this.watchWsBasePath = watchWsBasePath;
-    this.objectConstructor = objectConstructor;
+    this.basePath = basePath;
+    this.resourceBasePath = objectConstructor.resourceBasePath;
+    this.namespace = objectConstructor.namespace;
+    this.resource = objectConstructor.resource;
   }
 
-  public async list({ namespace, query }: KubeApiListOptions = {}): Promise<T> {
+  public async list({
+    namespace,
+    query,
+    fetchOptions,
+  }: KubeApiListOptions = {}): Promise<T> {
     const url = this.getUrl({ namespace });
     const res = await ky
       .get(url, {
         searchParams: query as URLSearchParams,
         retry: 0,
+        ...(fetchOptions || {}),
       })
       .json<T>();
 
@@ -265,60 +183,51 @@ export class KubeApi<T> {
   public async listWatch({
     namespace,
     query,
-    cb,
+    onResponse,
   }: KubeApiListWatchOptions<T> = {}): Promise<StopWatchHandler> {
-    const controller: {
-      stopHandler: Promise<StopWatchHandler> | null;
-    } = {
-      stopHandler: null,
-    };
     const url = this.getUrl({ namespace });
     const watchUrl = this.watchWsBasePath
       ? this.getUrl({ namespace }, undefined, true)
       : url;
-    const startWatch = async () => {
-      const res = await ky
-        .get(url, {
-          searchParams: query as URLSearchParams,
-          retry: 0,
-          timeout: false,
-        })
-        .json<T>();
+    const response = await this.list({
+      namespace,
+      query,
+      fetchOptions: { timeout: false },
+    });
+    const stop = this.watch(
+      watchUrl,
+      response,
+      onResponse,
+      this.listWatch.bind(this, {
+        namespace,
+        query,
+        onResponse: onResponse,
+      })
+    );
 
-      cb?.(res);
+    onResponse?.(response);
 
-      controller.stopHandler = this.watch(watchUrl, res, cb, startWatch);
-    };
-
-    await startWatch();
-
-    return async () => {
-      if (controller.stopHandler) {
-        const h = await controller.stopHandler;
-        h();
-      }
-    };
+    return stop;
   }
 
   private async watch(
     url: string,
-    res: T,
-    cb: KubeApiListWatchOptions<T>["cb"],
+    response: T,
+    onResponse: KubeApiListWatchOptions<T>["onResponse"],
     // let listwatch know it needs retry
-    retryCb: () => void
+    retry: () => Promise<StopWatchHandler>
   ): Promise<StopWatchHandler> {
-    const { resourceVersion } = (res as unknown as UnstructuredList).metadata;
-    let shouldCloseAfterConnected = false;
-    let { items } = res as unknown as UnstructuredList;
+    let { items } = response as unknown as UnstructuredList;
 
-    const self = this;
-
-    const handleEvent = (event: any) => {
+    const handleEvent = (event: WatchEvent) => {
       if (event.type === "PING") {
         return;
       }
-      self.informerLog(event);
+
+      informerLog("INFORMER", event);
+
       const name = event.object.metadata.name;
+
       switch (event.type) {
         case "ADDED":
           items = items.concat(event.object);
@@ -336,107 +245,141 @@ export class KubeApi<T> {
           break;
         default:
       }
-      cb?.({
-        ...res,
+      onResponse?.({
+        ...response,
         items,
       });
     };
 
     if (this.watchWsBasePath) {
-      const protocol = location.protocol.includes("https") ? "wss" : "ws";
-      const socket = new WebSocket(
-        `${protocol}://${location.host}/${url}?resourceVersion=${resourceVersion}&watch=1`
-      );
-      socket.addEventListener("open", () => {
-        if (shouldCloseAfterConnected) {
-          socket.close(3001, "DOVETAIL_MANUAL_CLOSE");
-          return;
-        }
-        heartbeat(socket);
-      });
-      socket.addEventListener("message", function (msg) {
-        heartbeat(socket);
-        const event = JSON.parse(msg.data);
-        handleEvent(event);
-      });
-      socket.addEventListener("close", (evt) => {
-        clearTimeout((socket as ExtendedWebsocketClient).pingTimeout);
-
-        if (evt.reason === "DOVETAIL_MANUAL_CLOSE") {
-          return;
-        }
-        retryCb();
-      });
-
-      return () => {
-        if (socket.readyState === socket.OPEN) {
-          socket.close(3001, "DOVETAIL_MANUAL_CLOSE");
-        } else {
-          shouldCloseAfterConnected = true;
-        }
-      };
+      return this.watchByWebsocket(url, response, handleEvent, retry);
     }
 
+    return this.watchByHttp(url, response, handleEvent, retry);
+  }
+
+  private watchByWebsocket(
+    url: string,
+    res: T,
+    handleEvent: (event: WatchEvent) => void,
+    // let listwatch know it needs retry
+    retry: () => Promise<StopWatchHandler>
+  ) {
+    const { resourceVersion = "" } = (res as unknown as UnstructuredList)
+      .metadata;
+    const protocol = location.protocol.includes("https") ? "wss" : "ws";
+    const socket = new WebSocket(
+      `${protocol}://${location.host}/${url}?resourceVersion=${resourceVersion}&watch=1`
+    );
+    let shouldCloseAfterConnected = false;
+    let stopWatch: () => void = () => {
+      if (socket.readyState === socket.OPEN) {
+        socket.close(3001, "DOVETAIL_MANUAL_CLOSE");
+      } else {
+        shouldCloseAfterConnected = true;
+      }
+    };
+
+    function stop() {
+      stopWatch();
+    }
+
+    socket.addEventListener("open", () => {
+      if (shouldCloseAfterConnected) {
+        socket.close(3001, "DOVETAIL_MANUAL_CLOSE");
+        return;
+      }
+      heartbeat(socket);
+    });
+    socket.addEventListener("message", function (msg) {
+      const event = JSON.parse(msg.data) as WatchEvent;
+
+      heartbeat(socket);
+      handleEvent(event);
+    });
+    socket.addEventListener("close", (evt) => {
+      clearTimeout((socket as ExtendedWebsocketClient).pingTimeout);
+
+      if (evt.reason === "DOVETAIL_MANUAL_CLOSE") {
+        return;
+      }
+
+      (async () => {
+        stopWatch = await retry();
+      })();
+    });
+
+    return stop;
+  }
+
+  private watchByHttp(
+    url: string,
+    res: T,
+    handleEvent: (event: WatchEvent) => void,
+    // let listwatch know it needs retry
+    retry: () => Promise<StopWatchHandler>
+  ) {
+    const { resourceVersion = "" } = (res as unknown as UnstructuredList)
+      .metadata;
     const controller = new AbortController();
     const { signal } = controller;
-    ky.get(url, {
-      searchParams: {
-        watch: 1,
-        resourceVersion,
-      } as SearchParamsOption,
-      timeout: false,
-      signal,
-    })
-      .then((streamRes) => {
-        const stream = streamRes.body?.getReader();
+    let stopWatch = () => controller.abort();
+
+    function stop() {
+      stopWatch();
+    }
+
+    (async () => {
+      try {
+        const streamResponse = await ky.get(url, {
+          searchParams: {
+            watch: 1,
+            resourceVersion,
+          } as SearchParamsOption,
+          timeout: false,
+          signal,
+        });
+        const stream = streamResponse.body?.getReader();
         const utf8Decoder = new TextDecoder("utf-8");
         let buffer = "";
 
         // wait for an update and prepare to read it
-        stream
-          ?.read()
-          .then(function onIncomingStream({
-            done,
-            value,
-          }): Promise<ReadableStreamDefaultReadResult<Uint8Array> | void> {
-            if (done) {
-              return Promise.resolve();
+        (async function readStream(): Promise<ReadableStreamDefaultReadResult<Uint8Array> | void> {
+          if (!stream) return Promise.reject();
+
+          const { done, value } = await stream.read();
+
+          if (done) {
+            return Promise.resolve();
+          }
+
+          buffer += utf8Decoder.decode(value);
+          const remainingBuffer = findLine(buffer, (line) => {
+            try {
+              const event = JSON.parse(line) as WatchEvent;
+
+              handleEvent(event);
+            } catch (error) {
+              informerLog("INFORMER", "Error while parsing", line, "\n", error);
             }
-            buffer += utf8Decoder.decode(value);
-            const remainingBuffer = findLine(buffer, (line) => {
-              try {
-                const event = JSON.parse(line);
-                handleEvent(event);
-              } catch (error) {
-                self.informerLog("Error while parsing", line, "\n", error);
-              }
-            });
-
-            buffer = remainingBuffer;
-
-            // continue waiting & reading the stream of updates from the server
-            return stream.read().then(onIncomingStream);
           });
-      })
-      .catch((err) => {
+
+          buffer = remainingBuffer;
+
+          // continue waiting & reading the stream of updates from the server
+          return readStream();
+        })();
+      } catch (err: any) {
         if (err.name === "AbortError") {
           return; // ignore
         }
-        this.informerLog("watch API error:", err);
-        retryCb();
-      });
 
-    return () => {
-      controller.abort();
-    };
-  }
+        informerLog("INFORMER", "watch API error:", err);
+        stopWatch = await retry();
+      }
+    })();
 
-  private informerLog(...args: Parameters<typeof console.log>) {
-    return console.log("[DOVETAIL INFORMER]", ...args);
-  }
-
-  private get apiVersionWithGroup() {
-    return [this.apiGroup, this.apiVersion].filter(Boolean).join("/");
+    return stop;
   }
 
   private getUrl(
@@ -445,17 +388,15 @@ export class KubeApi<T> {
     watch?: boolean
   ) {
     const resourcePath = createKubeApiURL({
-      apiPrefix: this.apiPrefix,
-      apiVersion: this.apiVersionWithGroup,
-      resource: this.apiResource,
-      namespace: this.objectConstructor.namespace,
+      resourceBasePath: this.resourceBasePath,
+      resource: this.resource,
+      namespace: namespace || this.namespace,
       name,
     });
 
     const searchParams = new URLSearchParams(
       this.normalizeQuery(query) as URLSearchParams
     );
-
     const basePath = watch ? this.watchWsBasePath : this.basePath;
 
     return (
@@ -596,6 +537,7 @@ export class KubeSdk {
 
   private apiVersionPath(apiVersion: string): string {
     const api = apiVersion.includes("/") ? "apis" : "api";
+
     return [this.basePath, api, apiVersion].join("/");
   }
 
@@ -606,35 +548,41 @@ export class KubeSdk {
     if (!spec.kind) {
       throw new Error("Required spec property kind is not set");
     }
-    if (!spec.apiVersion) {
-      spec.apiVersion = "v1";
-    }
-    if (!spec.metadata) {
-      spec.metadata = {};
-    }
+
+    spec.apiVersion = spec.apiVersion || "v1";
+    spec.metadata = spec.metadata || {};
+
     const resource = await this.resource(spec.apiVersion, spec.kind);
+
     if (!resource) {
       throw new Error(
         `Unrecognized API version and kind: ${spec.apiVersion} ${spec.kind}`
       );
     }
+
     if (resource.namespaced && !spec.metadata.namespace && action !== "list") {
       spec.metadata.namespace = this.defaultNamespace;
     }
+
     const parts = [this.apiVersionPath(spec.apiVersion)];
+
     if (resource.namespaced && spec.metadata.namespace) {
       parts.push(
         "namespaces",
         encodeURIComponent(String(spec.metadata.namespace))
       );
     }
+
     parts.push(resource.name);
+
     if (action !== "create" && action !== "list") {
       if (!spec.metadata.name) {
         throw new Error("Required spec property name is not set");
       }
+
       parts.push(encodeURIComponent(String(spec.metadata.name)));
     }
+
     return parts.join("/").toLowerCase();
   }
 
@@ -667,16 +615,3 @@ export class KubeSdk {
     return `${apiVersion}@${this.basePath}`;
   }
 }
-
-export type UnstructuredList = {
-  apiVersion: string;
-  kind: string;
-  metadata: ListMeta;
-  items: Unstructured[];
-};
-
-export type Unstructured = {
-  apiVersion: string;
-  kind: string;
-  metadata: ObjectMeta;
-};
