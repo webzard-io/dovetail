@@ -238,7 +238,13 @@ const KubectlGetDetail = React.forwardRef<
           setResponse(() => ({
             loading: false,
             error: null,
-            data: res.items[0],
+            data: res.items[0]
+              ? {
+                  ...res.items[0],
+                  kind: res.kind.replace(/List$/g, ""),
+                  apiVersion: res.apiVersion,
+                }
+              : null,
           }));
         },
       })
