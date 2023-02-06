@@ -5,7 +5,7 @@ import { css } from "@emotion/css";
 import BaseKubectlGetList, {
   type Response,
 } from "../../_internal/organisms/KubectlGetList";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 
 export const KubectlGetList = implementRuntimeComponent({
@@ -106,9 +106,20 @@ export const KubectlGetList = implementRuntimeComponent({
     mergeState,
   }) => {
     const kubeSdk = useMemo(() => new KubeSdk({ basePath }), [basePath]);
+    const [response, setResponse] = useState<Response>({
+      data: {
+        apiVersion: "",
+        metadata: {},
+        kind: "",
+        items: [],
+      },
+      loading: false,
+      error: null,
+    });
 
     const onResponse = useCallback(
       (response: Response) => {
+        setResponse(response);
         mergeState({
           items: response.data.items,
         });
@@ -134,10 +145,16 @@ export const KubectlGetList = implementRuntimeComponent({
     useEffect(() => {
       subscribeMethods({
         delete({ items }) {
-          kubeSdk.deleteYaml(items);
+          kubeSdk.deleteYaml(
+            items.map((item) => ({
+              ...item,
+              kind: response.data.kind.replace(/List$/g, ""),
+              apiVersion: response.data.apiVersion,
+            }))
+          );
         },
       });
-    }, [subscribeMethods, kubeSdk]);
+    }, [subscribeMethods, kubeSdk, response]);
 
     return (
       <div className={css(customStyle?.content)} ref={elementRef}>

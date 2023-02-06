@@ -468,7 +468,13 @@ export const KubectlGetTable = implementRuntimeComponent({
           setActiveKey(activeKey);
         },
         delete({ items }) {
-          kubeSdk.deleteYaml(items);
+          kubeSdk.deleteYaml(
+            items.map((item) => ({
+              ...item,
+              kind: response.data.kind.replace(/List$/g, ""),
+              apiVersion: response.data.apiVersion,
+            }))
+          );
         },
       });
     }, [
