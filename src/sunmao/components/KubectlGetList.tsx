@@ -5,7 +5,8 @@ import { css } from "@emotion/css";
 import BaseKubectlGetList, {
   type Response,
 } from "../../_internal/organisms/KubectlGetList";
-import { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 
 export const KubectlGetList = implementRuntimeComponent({
   version: "kui/v1",
@@ -79,7 +80,11 @@ export const KubectlGetList = implementRuntimeComponent({
       items: Type.Array(Type.Any()),
       lastClickItem: Type.Any(),
     }),
-    methods: {},
+    methods: {
+      delete: Type.Object({
+        items: Type.Array(Type.Any()),
+      }),
+    },
     slots: {},
     styleSlots: ["content"],
     events: ["onClickItem"],
@@ -97,10 +102,24 @@ export const KubectlGetList = implementRuntimeComponent({
     customStyle,
     elementRef,
     callbackMap,
+    subscribeMethods,
     mergeState,
   }) => {
+    const kubeSdk = useMemo(() => new KubeSdk({ basePath }), [basePath]);
+    const [response, setResponse] = useState<Response>({
+      data: {
+        apiVersion: "",
+        metadata: {},
+        kind: "",
+        items: [],
+      },
+      loading: false,
+      error: null,
+    });
+
     const onResponse = useCallback(
       (response: Response) => {
+        setResponse(response);
         mergeState({
           items: response.data.items,
         });
@@ -123,6 +142,19 @@ export const KubectlGetList = implementRuntimeComponent({
         lastClickItem: null,
       });
     }, []);
+    useEffect(() => {
+      subscribeMethods({
+        delete({ items }) {
+          kubeSdk.deleteYaml(
+            items.map((item) => ({
+              ...item,
+              kind: response.data.kind.replace(/List$/g, ""),
+              apiVersion: response.data.apiVersion,
+            }))
+          );
+        },
+      });
+    }, [subscribeMethods, kubeSdk, response]);
 
     return (
       <div className={css(customStyle?.content)} ref={elementRef}>

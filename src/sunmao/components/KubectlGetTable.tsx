@@ -2,7 +2,10 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { StringUnion, PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
 import { Type, Static } from "@sinclair/typebox";
-import { UnstructuredList } from "../../_internal/k8s-api-client/kube-api";
+import {
+  UnstructuredList,
+  KubeSdk,
+} from "../../_internal/k8s-api-client/kube-api";
 import {
   DISPLAY_WIDGETS_MAP,
   DISPLAY_WIDGET_OPTIONS_MAP,
@@ -325,6 +328,9 @@ export const KubectlGetTable = implementRuntimeComponent({
       setActive: Type.Object({
         activeKey: Type.String(),
       }),
+      delete: Type.Object({
+        items: Type.Array(Type.Any()),
+      }),
     },
     slots: {
       cell: {
@@ -390,6 +396,8 @@ export const KubectlGetTable = implementRuntimeComponent({
     const [columnSortOrder, setColumnSortOrder] = useState<
       Record<string, "ascend" | "descend">
     >({});
+
+    const kubeSdk = useMemo(() => new KubeSdk({ basePath }), [basePath]);
 
     const onSelectChange = useCallback(
       (newSelectedRowKeys, newSelectedRows) => {
@@ -459,8 +467,24 @@ export const KubectlGetTable = implementRuntimeComponent({
         setActive({ activeKey }) {
           setActiveKey(activeKey);
         },
+        delete({ items }) {
+          kubeSdk.deleteYaml(
+            items.map((item) => ({
+              ...item,
+              kind: response.data.kind.replace(/List$/g, ""),
+              apiVersion: response.data.apiVersion,
+            }))
+          );
+        },
       });
-    }, [subscribeMethods, mergeState, response, selectedKeys, setSelectedKeys]);
+    }, [
+      subscribeMethods,
+      mergeState,
+      response,
+      selectedKeys,
+      setSelectedKeys,
+      kubeSdk,
+    ]);
     useEffect(() => {
       mergeState({
         items: response.data.items,
@@ -475,7 +499,7 @@ export const KubectlGetTable = implementRuntimeComponent({
             `${item.metadata.namespace}/${item.metadata.name}` === activeKey
         ),
       });
-    }, [activeKey, response]);
+    }, [activeKey, response, mergeState]);
     useEffect(() => {
       mergeState({
         selectedItems: response.data.items.filter((item) =>
@@ -484,7 +508,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           )
         ),
       });
-    }, [selectedKeys, response]);
+    }, [selectedKeys, response, mergeState]);
     useEffect(() => {
       mergeState({
         currentPage: 1,
