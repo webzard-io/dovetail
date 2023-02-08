@@ -18,6 +18,7 @@ import {
   FORM_WIDGETS_MAP,
   FORM_WIDGET_OPTIONS_MAP,
 } from "../../molecules/form";
+import AllFields from "../AllFields";
 import { LAYOUT_WIDGETS_MAP } from "../../molecules/layout";
 import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
 import { Static } from "@sinclair/typebox";
@@ -175,7 +176,9 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
     const onValidate = useCallback(
       ({ result }: Events["validate"]) => {
         validate((messages: string[]) => {
-          result[itemKey] = error ? messages.concat(error, widgetErrors) : messages;
+          result[itemKey] = error
+            ? messages.concat(error, widgetErrors)
+            : messages;
         });
       },
       [itemKey, error, widgetErrors, validate]
@@ -273,10 +276,8 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   const [widgetErrors, setWidgetErrors] = useState([]);
   const { title } = spec;
   const label = title ?? "";
-  const displayLabel =
-    field?.type === "layout"
-      ? field.indent
-      : field?.isDisplayLabel ?? shouldDisplayLabel(spec, label);
+  let isDisplayLabel =
+    field?.type === "layout" ? field.indent : field?.isDisplayLabel;
   const displayDescription = shouldDisplayDescription(spec);
   const fieldOrItem = field || item;
   const itemKey = `${
@@ -303,6 +304,8 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       LAYOUT_WIDGETS_MAP[
         fieldOrItem.layoutWidget as keyof typeof LAYOUT_WIDGETS_MAP
       ];
+  } else if (field?.path.includes("*")) {
+    Component = AllFields;
   } else if (field?.path.includes("metadata.namespace")) {
     Component = FORM_WIDGETS_MAP.k8sSelect;
     widgetOptions = {
@@ -314,15 +317,19 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     } as Static<typeof FORM_WIDGET_OPTIONS_MAP.k8sSelect>;
   } else if (
     field?.path.includes("metadata.annotations") ||
-    field?.path.includes("metadata.labels")
+    path.endsWith("metadata.annotations") ||
+    field?.path.includes("metadata.labels") ||
+    path.endsWith("metadata.labels")
   ) {
     Component = FORM_WIDGETS_MAP.k8sLabelGroup;
   } else if (spec.type === "object") {
     Component = ObjectField;
+    isDisplayLabel = isDisplayLabel ?? false;
   } else if (spec.type === "string") {
     Component = StringField;
   } else if (spec.type === "array") {
     Component = ArrayField;
+    isDisplayLabel = isDisplayLabel ?? false;
   } else if (spec.type === "boolean") {
     Component = BooleanField;
   } else if (spec.type === "integer" || spec.type === "number") {
@@ -334,6 +341,8 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   } else if (path) {
     console.info("Found unsupported spec", spec);
   }
+
+  isDisplayLabel = isDisplayLabel ?? true;
 
   const FieldComponent = (
     <Component
@@ -387,7 +396,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
           ) || field?.helperText
         }
         labelWidth={field?.labelWidth}
-        displayLabel={displayLabel}
+        displayLabel={isDisplayLabel}
         displayDescription={displayDescription}
         spec={spec}
         error={typeof error === "string" ? error : ""}
