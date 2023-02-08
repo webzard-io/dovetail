@@ -31,7 +31,7 @@ type Options = {
 };
 
 export const generateSlotChildren = (
-  { allComponents, component, services, slotsElements, slot, slotKey, fallback }: Props,
+  { app, allComponents, component, services, slotsElements, slot, slotKey, fallback }: Props,
   { generateId, generateProps }: Options
 ) => {
   const renderSet = new Set<string>();
@@ -65,6 +65,7 @@ export const generateSlotChildren = (
             key={child.id}
             component={child}
             app={app}
+            allComponents={allComponents}
             services={services}
             childrenMap={{}}
             isInModule

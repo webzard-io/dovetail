@@ -10,8 +10,16 @@ import { isObject } from "lodash";
 import { JSONSchema7 } from "json-schema";
 
 export function resolveSubFields(props: WidgetProps) {
-  const { fieldsArray, field, spec, value, path, level, error, onChange } =
-    props;
+  const {
+    specsArray,
+    field,
+    spec,
+    value,
+    path,
+    level,
+    error,
+    onChange,
+  } = props;
   const fields: Field[] = field?.fields || [];
   const properties = Object.keys(spec.properties || {});
   const isLayout = field?.type === "layout";
@@ -27,9 +35,9 @@ export function resolveSubFields(props: WidgetProps) {
       if (field?.path) {
         subSpec = getJsonSchemaByPath(spec, subField.path);
       } else {
-        const [index, ...subPath] = subField.path.split(".");
+        const [schemaIndex, ...subPath] = subField.path.split(".");
 
-        subSpec = fieldsArray[Number(index)]?.[subPath.join(".")].spec || {};
+        subSpec = specsArray[Number(schemaIndex)]?.[subPath.join(".")].spec || {};
       }
 
       return (
@@ -56,7 +64,7 @@ export function resolveSubFields(props: WidgetProps) {
               onChange(newValue, displayValues, key, dataPath);
             } else {
               const result = immutableSet(value, subField.path, newValue);
-  
+
               onChange(result, displayValues, key, dataPath);
             }
           }}

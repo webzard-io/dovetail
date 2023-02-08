@@ -6,12 +6,7 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import { Select } from "chakra-react-select";
-import {
-  implementWidget,
-  ExpressionWidget,
-  SpecWidget,
-} from "@sunmao-ui/editor-sdk";
-import { mergeWidgetOptionsByPath } from "../../../utils/schema";
+import { implementWidget, SpecWidget } from "@sunmao-ui/editor-sdk";
 import { Type } from "@sinclair/typebox";
 import { last, get } from "lodash";
 import { observer } from "mobx-react-lite";
@@ -48,16 +43,75 @@ const FieldCustomComponentWidget =
     observer(({ spec, services, component, value, path, level, onChange }) => {
       const parentPath = spec.widgetOptions?.parentPath || "";
       const { registry, editorStore, appModelManager } = services;
+      const isSubItem = path.join(".").endsWith("subItem.componentId");
+      const isSubField = /fields.\d.fields.\d.componentId$/.test(
+        path.join(".")
+      );
+      const parentFieldKey = useMemo(
+        () =>
+          isSubField || isSubItem
+            ? get(
+                component.properties,
+                path
+                  .slice(0, path.length - (isSubField ? 3 : 2))
+                  .concat(["key"])
+                  .join(".")
+              )
+            : null,
+        [path, component, isSubField, isSubItem]
+      );
+      const parentFieldPath = useMemo(
+        () =>
+          isSubField || isSubItem
+            ? get(
+                component.properties,
+                path
+                  .slice(0, path.length - (isSubField ? 3 : 2))
+                  .concat(["path"])
+                  .join(".")
+              )
+            : null,
+        [path, component, isSubField, isSubItem]
+      );
+      const fieldKey = useMemo(
+        () =>
+          isSubItem
+            ? null
+            : get(
+                component.properties,
+                path
+                  .slice(0, path.length - 1)
+                  .concat(["key"])
+                  .join(".")
+              ),
+        [path, component, isSubItem]
+      );
       const fieldPath = useMemo(
         () =>
-          get(
-            component.properties,
-            path
-              .slice(0, path.length - 1)
-              .concat(["path"])
-              .join(".")
-          ),
-        [path, component]
+          isSubItem
+            ? null
+            : get(
+                component.properties,
+                path
+                  .slice(0, path.length - 1)
+                  .concat(["path"])
+                  .join(".")
+              ),
+        [path, component, isSubItem]
+      );
+      const isArrayField = useMemo(
+        () =>
+          parentFieldPath &&
+          ((parentFieldPath as string).endsWith("$i") ||
+            (parentFieldPath as string).endsWith("$add")),
+        [parentFieldPath]
+      );
+      const realParentFieldPath = useMemo(
+        () =>
+          isArrayField
+            ? (parentFieldPath as string).replace(/(\.\$add|\.\$i)/, "")
+            : parentFieldPath,
+        [isArrayField, parentFieldPath]
       );
       const inputComponent = useMemo(
         () =>
@@ -96,9 +150,10 @@ const FieldCustomComponentWidget =
       const onTypeChange = useCallback(
         (item) => {
           const newType = item?.value;
-          const newComponentId = `${component.id}_${last(
-            newType.split("/")
-          )}_${String(Date.now()).slice(-6)}`;
+          const newComponentId = `${component.id}_${last(newType.split("/"))}_${
+            (isSubItem ? parentFieldKey : fieldKey) ||
+            String(Date.now()).slice(-6)
+          }`;
           const operations: Parameters<typeof appModelManager.doOperations>[0] =
             [
               {
@@ -120,7 +175,11 @@ const FieldCustomComponentWidget =
                       id: component.id,
                       slot: "field",
                     },
-                    ifCondition: `{{ $slot.path === '${fieldPath}' }}`,
+                    ifCondition: `{{ $slot.itemKey === \`${
+                      isArrayField ? `${parentFieldKey}-\$\{$slot.index\}` : ""
+                    }${isArrayField && !isSubItem ? "-" : ""}${
+                      fieldKey || ""
+                    }\`}}`,
                   },
                 },
               },
@@ -137,11 +196,19 @@ const FieldCustomComponentWidget =
                         method: {
                           name: "setField",
                           parameters: {
-                            fieldPath: parentPath
-                              ? `${parentPath}.${fieldPath}`
-                              : fieldPath,
-                            value: `{{${newComponentId}.value}}`,
-                            displayValue: `{{${newComponentId}.displayValue}}`,
+                            fieldPath: `{{\`${[
+                              realParentFieldPath,
+                              isArrayField ? "${$slot.index}" : "",
+                              fieldPath,
+                            ]
+                              .filter((value) => value)
+                              .join(".")}\`}}`,
+                            value: `{{${newComponentId}${
+                              isArrayField ? "_{{$slot.index}}" : ""
+                            }.value}}`,
+                            displayValue: `{{${newComponentId}${
+                              isArrayField ? "_{{$slot.index}}" : ""
+                            }.displayValue}}`,
                           },
                         },
                         wait: {
@@ -162,12 +229,16 @@ const FieldCustomComponentWidget =
                   properties: {
                     syncs: [
                       {
-                        formValue: `{{ ${component.id}.value${
-                          parentPath ? `['${parentPath}']` : ""
-                        }${(fieldPath as string)
-                          .split(".")
-                          .map((key) => `['${key}']`)
-                          .join("")} }}`,
+                        formValue: `{{ ${component.id}.value.${[
+                          realParentFieldPath,
+                          isArrayField ? "{{$slot.index}}" : "",
+                          fieldPath,
+                        ]
+                          .filter((value) => value)
+                          .join(".")}}}`.replace(
+                          /\.(\d|({{\$slot.index}}))/g,
+                          (match, p0, p1) => `[${p0 || p1}]`
+                        ),
                         setValueMethod: "setValue",
                       },
                     ],
@@ -190,7 +261,18 @@ const FieldCustomComponentWidget =
           setType(newType);
           onChange(newComponentId);
         },
-        [appModelManager, onChange, value]
+        [
+          appModelManager,
+          onChange,
+          value,
+          component.id,
+          fieldKey,
+          fieldPath,
+          isArrayField,
+          isSubItem,
+          parentFieldKey,
+          realParentFieldPath,
+        ]
       );
       const onTraitValueChange = useCallback(
         (traitValue: string) => {
