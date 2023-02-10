@@ -44,7 +44,7 @@ export default defineConfig({
     proxy: {
       "/proxy-k8s": getProxyConfig(),
       "/api": {
-        target: "http://192.168.24.235",
+        target: "http://10.255.5.44",
         ws: true,
       },
     },
