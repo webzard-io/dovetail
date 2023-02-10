@@ -64,7 +64,7 @@ const K8sSelect = (props: Props) => {
         objectConstructor: {
           kind: "",
           apiBase: `${apiBase}/${resource}`,
-          namespace: namespace || '',
+          namespace: namespace || "",
         },
       }),
     [basePath, watchWsBasePath, apiBase, resource, namespace]
@@ -74,7 +74,7 @@ const K8sSelect = (props: Props) => {
     (async function () {
       const result = await api.list({
         query: {
-          namespace: namespace || '',
+          namespace: namespace || "",
           fieldSelector: compact([fieldSelector]).join(","),
         },
       });
@@ -106,7 +106,11 @@ const K8sSelect = (props: Props) => {
     >
       {options.map((option, idx) => {
         return (
-          <AntdSelect.Option key={idx} value={option.value || ""}>
+          <AntdSelect.Option
+            key={idx}
+            value={option.value || ""}
+            label={option.value || ""}
+          >
             {option.label}
           </AntdSelect.Option>
         );
