@@ -150,6 +150,7 @@ type KubectlGetDetailProps = {
   namespace?: string;
   resource: string;
   name: string;
+  query?: Record<string, any>;
   layout: Layout;
   errorText?: string;
   renderTab?: (
@@ -192,6 +193,7 @@ const KubectlGetDetail = React.forwardRef<
     namespace,
     resource,
     name,
+    query,
     layout,
     errorText,
     renderTab,
@@ -231,8 +233,12 @@ const KubectlGetDetail = React.forwardRef<
     return api
       .listWatch({
         query: {
-          namespace,
-          fieldSelector: compact([`metadata.name=${name}`]),
+          ...(query || {}),
+          fieldSelector: compact(
+            (name ? [`metadata.name=${name}`] : []).concat(
+              query?.fieldSelector || []
+            )
+          ),
         },
         onResponse: (res) => {
           setResponse(() => ({

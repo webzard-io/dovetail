@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useMemo } from "react";
-import { KubeSdk, K8sObject } from "../../_internal/k8s-api-client/kube-api";
+import { KubeSdk, Unstructured } from "../../_internal/k8s-api-client/kube-api";
 import { Type } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { StringUnion, PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
@@ -114,8 +114,8 @@ const KubectlGetDetailProps = Type.Object({
     title: "Name",
     category: PRESET_PROPERTY_CATEGORY.Data,
   }),
-  fieldSelector: Type.String({
-    title: "Field selector",
+  query: Type.Record(Type.String(), Type.Any(), {
+    title: "Query",
     category: PRESET_PROPERTY_CATEGORY.Data,
   }),
   layout: Type.Object(
@@ -225,6 +225,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
         ],
         sections: [],
       },
+      query: {}
     },
     annotations: {
       category: "Display",
@@ -235,7 +236,11 @@ export const KubectlGetDetail = implementRuntimeComponent({
     state: KubectlGetDetailState,
     methods: {
       setActiveTab: Type.Object({ activeTab: Type.String() }),
-      delete: Type.Object({}),
+      delete: Type.Object({
+        options: Type.Object({
+          sync: Type.Boolean(),
+        }),
+      }),
     },
     slots: {
       tab: {
@@ -304,6 +309,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
     name,
     layout,
     errorText,
+    query,
     mergeState,
     customStyle,
     slotsElements,
@@ -313,7 +319,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
     const [activeTab, setActiveTab] = useState<string>(
       layout.tabs?.[0]?.key || ""
     );
-    const [data, setData] = useState<K8sObject | null>(null);
+    const [data, setData] = useState<Unstructured | null>(null);
     const kubeSdk = useMemo(() => new KubeSdk({ basePath }), [basePath]);
 
     const onResponse = useCallback(
@@ -345,9 +351,9 @@ export const KubectlGetDetail = implementRuntimeComponent({
         setActiveTab: ({ activeTab: newActiveTab }) => {
           setActiveTab(newActiveTab);
         },
-        delete() {
+        delete({ options }) {
           if (data) {
-            kubeSdk.deleteYaml([data]);
+            kubeSdk.deleteYaml([data], options);
           }
         },
       });
@@ -363,6 +369,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
         namespace={namespace}
         resource={resource}
         name={name}
+        query={query}
         layout={layout}
         renderTab={(params, data, fallback) => {
           return slotsElements.tab?.(

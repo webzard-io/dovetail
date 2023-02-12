@@ -8,6 +8,7 @@ import type {
   Status,
 } from "kubernetes-types/meta/v1";
 import { informerLog } from "../utils/log";
+import mitt from "mitt";
 
 export type UnstructuredList = {
   apiVersion: string;
@@ -81,7 +82,11 @@ type KubeApiOptions = {
 
 type StopWatchHandler = () => void;
 
-type K8sObject = { apiVersion?: string; kind?: string; metadata?: ObjectMeta };
+export type K8sObject = {
+  apiVersion?: string;
+  kind?: string;
+  metadata?: ObjectMeta;
+};
 
 type ExtendedWebsocketClient = WebSocket & {
   pingTimeout?: ReturnType<typeof setTimeout>;
@@ -145,7 +150,16 @@ function heartbeat(ws: ExtendedWebsocketClient) {
   }, 30_000 * 1.5);
 }
 
-export class KubeApi<T> {
+type KubeAPIEvent = {
+  change: {
+    type: WatchEvent["type"];
+    items: Unstructured[];
+  };
+};
+
+const event = mitt<KubeAPIEvent>();
+
+export class KubeApi<T extends UnstructuredList> {
   private watchWsBasePath?: string;
   private basePath: string;
   private resourceBasePath: string;
@@ -218,6 +232,7 @@ export class KubeApi<T> {
     retry: () => Promise<StopWatchHandler>
   ): Promise<StopWatchHandler> {
     let { items } = response as unknown as UnstructuredList;
+    const stops: Function[] = [];
 
     const handleEvent = (event: WatchEvent) => {
       if (event.type === "PING") {
@@ -227,21 +242,45 @@ export class KubeApi<T> {
       informerLog("INFORMER", event);
 
       const name = event.object.metadata.name;
+      const namespace = event.object.metadata.namespace;
 
       switch (event.type) {
         case "ADDED":
-          items = items.concat(event.object);
+          // maybe already added by sdk event
+          let exist = false;
+
+          items = items
+            .map((item) => {
+              if (
+                item.metadata.name === name &&
+                item.metadata.namespace === namespace
+              ) {
+                exist = true;
+                return event.object;
+              }
+
+              return item;
+            })
+            .concat(exist ? [] : [event.object]);
+
           break;
         case "MODIFIED":
           items = items.map((item) => {
-            if (item.metadata.name === name) {
+            if (
+              item.metadata.name === name &&
+              item.metadata.namespace === namespace
+            ) {
               return event.object;
             }
             return item;
           });
           break;
         case "DELETED":
-          items = items.filter((item) => item.metadata.name !== name);
+          items = items.filter(
+            (item) =>
+              item.metadata.name !== name ||
+              item.metadata.namespace !== namespace
+          );
           break;
         default:
       }
@@ -251,11 +290,38 @@ export class KubeApi<T> {
       });
     };
 
+    stops.push(this.watchBySdk(response, handleEvent));
+
     if (this.watchWsBasePath) {
-      return this.watchByWebsocket(url, response, handleEvent, retry);
+      stops.push(this.watchByWebsocket(url, response, handleEvent, retry));
+    } else {
+      stops.push(this.watchByHttp(url, response, handleEvent, retry));
     }
 
-    return this.watchByHttp(url, response, handleEvent, retry);
+    return () => {
+      stops.forEach((stop) => stop());
+    };
+  }
+
+  private watchBySdk(response: T, handleEvent: (event: WatchEvent) => void) {
+    function onChange(params: KubeAPIEvent["change"]) {
+      const { type, items } = params;
+
+      items.forEach((object) => {
+        if (
+          object.apiVersion === response.apiVersion &&
+          object.kind === response.kind.replace(/List$/g, "")
+        ) {
+          handleEvent({ type, object });
+        }
+      });
+    }
+
+    event.on("change", onChange);
+
+    return () => {
+      event.off("change", onChange);
+    };
   }
 
   private watchByWebsocket(
@@ -431,6 +497,10 @@ type KubernetesApiAction =
 
 const apiVersionResourceCache: Record<string, APIResourceList> = {};
 
+type OperationOptions = {
+  sync?: boolean;
+};
+
 export class KubeSdk {
   private basePath: string;
   private defaultNamespace = "default";
@@ -442,9 +512,11 @@ export class KubeSdk {
     this.basePath = basePath;
   }
 
-  public async applyYaml(specs: K8sObject[]) {
+  public async applyYaml(specs: Unstructured[]) {
     const validSpecs = specs.filter((s) => s && s.kind && s.metadata);
-    const created: K8sObject[] = [];
+    const changed: Unstructured[] = [];
+    const created: Unstructured[] = [];
+    const updated: Unstructured[] = [];
 
     for (const spec of validSpecs) {
       spec.metadata = spec.metadata || {};
@@ -466,21 +538,41 @@ export class KubeSdk {
       const response = exist
         ? await this.patch(spec, "application/merge-patch+json")
         : await this.create(spec);
-      created.push(response as K8sObject);
+      if (exist) {
+        updated.push(response as Unstructured);
+      } else {
+        created.push(response as Unstructured);
+      }
+      changed.push(response as Unstructured);
     }
 
-    return created;
+    if (created.length) {
+      event.emit("change", { type: "ADDED", items: created });
+    }
+
+    if (updated.length) {
+      event.emit("change", { type: "MODIFIED", items: updated });
+    }
+
+    return changed;
   }
 
-  public async deleteYaml(specs: K8sObject[]) {
+  public async deleteYaml(specs: Unstructured[], options?: OperationOptions) {
+    const { sync } = options || {};
     const validSpecs = specs.filter((s) => s && s.kind && s.metadata);
     const deleted: Status[] = [];
+    const deletedItems: Unstructured[] = [];
 
     for (const spec of validSpecs) {
       spec.metadata = spec.metadata || {};
       spec.metadata.annotations = spec.metadata.annotations || {};
       const response = await this.delete(spec);
       deleted.push(response as Status);
+      deletedItems.push(spec);
+    }
+
+    if (sync) {
+      event.emit("change", { type: "DELETED", items: deletedItems });
     }
 
     return deleted;

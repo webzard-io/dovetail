@@ -204,8 +204,8 @@ const KubectlGetTableProps = Type.Object({
       },
     ],
   }),
-  fieldSelector: Type.String({
-    title: "Field selector",
+  query: Type.Record(Type.String(), Type.Any(), {
+    title: "Query",
     category: PRESET_PROPERTY_CATEGORY.Data,
   }),
   columns: Type.Array(ColumnSpec, {
@@ -330,6 +330,9 @@ export const KubectlGetTable = implementRuntimeComponent({
       }),
       delete: Type.Object({
         items: Type.Array(Type.Any()),
+        options: Type.Object({
+          sync: Type.Boolean(),
+        }),
       }),
     },
     slots: {
@@ -359,7 +362,7 @@ export const KubectlGetTable = implementRuntimeComponent({
     apiBase,
     namespace,
     resource,
-    fieldSelector,
+    query,
     columns,
     customizable,
     customizableKey,
@@ -467,13 +470,14 @@ export const KubectlGetTable = implementRuntimeComponent({
         setActive({ activeKey }) {
           setActiveKey(activeKey);
         },
-        delete({ items }) {
+        delete({ items, options }) {
           kubeSdk.deleteYaml(
             items.map((item) => ({
               ...item,
               kind: response.data.kind.replace(/List$/g, ""),
               apiVersion: response.data.apiVersion,
-            }))
+            })),
+            options
           );
         },
       });
@@ -529,7 +533,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           resource={resource}
           namespace={namespace}
           apiBase={apiBase}
-          fieldSelector={fieldSelector}
+          query={query}
           onResponse={setResponse}
           columns={columns.map((col, colIndex) => ({
             ...col,

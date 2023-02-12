@@ -70,7 +70,7 @@ type KubectlGetTableProps = {
   resource: string;
   namespace: string;
   apiBase: string;
-  fieldSelector: string;
+  query: Record<string, any>;
   defaultSize?: number;
   columns: Columns;
   response: {
@@ -100,7 +100,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       apiBase,
       namespace,
       resource,
-      fieldSelector,
+      query,
       defaultSize,
       response,
       wrapper,
@@ -284,7 +284,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
 
       const stopP = api
         .listWatch({
-          query: fieldSelector ? { fieldSelector, namespace } : { namespace },
+          query: query || {},
           onResponse: (res) => {
             onResponse?.({
               loading: false,
@@ -310,7 +310,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       };
 
       return stop.current;
-    }, [api, namespace, fieldSelector]);
+    }, [api, namespace, query]);
     useEffect(() => {
       const stop = fetch();
 
