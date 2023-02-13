@@ -46,7 +46,63 @@ function recursiveGetFields(spec: JSONSchema7, ctx: RecursiveContext) {
     };
   }
 
-  ctx.fields[ctx.path || "*"] = {
-    spec,
+  if (ctx.path) {
+    ctx.fields[ctx.path] = {
+      spec,
+    };
+  } else {
+    ctx.fields["*"] = {
+      spec: getFieldsForWildcard(spec),
+    };
+  }
+}
+
+function getFieldsByLevel(spec: JSONSchema7, level = 0, maxLevel = 0) {
+  const newSpec: JSONSchema7 = {
+    ...spec,
+    properties: {},
   };
+
+  for (const key in spec.properties) {
+    const propertySpec = spec.properties[key];
+
+    if (typeof propertySpec !== "boolean") {
+      switch (propertySpec.type) {
+        case "object": {
+          if (level < maxLevel) {
+            const objectSpec = getFieldsByLevel(
+              propertySpec,
+              level + 1,
+              maxLevel
+            );
+
+            if (Object.keys(objectSpec.properties).length) {
+              newSpec.properties[key] = objectSpec;
+            }
+          }
+          break;
+        }
+        case "array": {
+          if (
+            propertySpec.items instanceof Array === false &&
+            propertySpec.items.type !== "object" &&
+            propertySpec.items.type !== "array"
+          ) {
+            newSpec.properties[key] = propertySpec;
+          }
+          break;
+        }
+        default: {
+          newSpec.properties[key] = propertySpec;
+          break;
+        }
+      }
+    }
+  }
+
+  return newSpec;
+}
+
+function getFieldsForWildcard(spec: JSONSchema7) {
+  return getFieldsByLevel(spec, 0, 2);
 }
