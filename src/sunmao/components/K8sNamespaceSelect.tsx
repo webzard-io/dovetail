@@ -18,12 +18,9 @@ export const K8sNamespaceSelect = implementRuntimeComponent({
     name: "k8s_namespace_select",
     displayName: "K8sNamespaceSelect",
     description: "",
-    isDraggable: false,
-    isResizable: false,
     exampleProperties: {
       placeholder: "Please select"
     },
-    exampleSize: [1, 1],
     annotations: {
       category: PRESET_PROPERTY_CATEGORY.Basic,
     },
