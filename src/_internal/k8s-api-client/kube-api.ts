@@ -153,6 +153,7 @@ function heartbeat(ws: ExtendedWebsocketClient) {
 type KubeAPIEvent = {
   change: {
     type: WatchEvent["type"];
+    basePath: string;
     items: Unstructured[];
   };
 };
@@ -304,8 +305,10 @@ export class KubeApi<T extends UnstructuredList> {
   }
 
   private watchBySdk(response: T, handleEvent: (event: WatchEvent) => void) {
-    function onChange(params: KubeAPIEvent["change"]) {
-      const { type, items } = params;
+    const onChange = (params: KubeAPIEvent["change"]) => {
+      const { type, basePath, items } = params;
+
+      if (basePath !== this.basePath) return;
 
       items.forEach((object) => {
         if (
@@ -315,7 +318,7 @@ export class KubeApi<T extends UnstructuredList> {
           handleEvent({ type, object });
         }
       });
-    }
+    };
 
     event.on("change", onChange);
 
@@ -547,11 +550,19 @@ export class KubeSdk {
     }
 
     if (created.length) {
-      event.emit("change", { type: "ADDED", items: created });
+      event.emit("change", {
+        type: "ADDED",
+        basePath: this.basePath,
+        items: created,
+      });
     }
 
     if (updated.length) {
-      event.emit("change", { type: "MODIFIED", items: updated });
+      event.emit("change", {
+        type: "MODIFIED",
+        basePath: this.basePath,
+        items: updated,
+      });
     }
 
     return changed;
@@ -572,7 +583,11 @@ export class KubeSdk {
     }
 
     if (sync) {
-      event.emit("change", { type: "DELETED", items: deletedItems });
+      event.emit("change", {
+        type: "DELETED",
+        basePath: this.basePath,
+        items: deletedItems,
+      });
     }
 
     return deleted;
