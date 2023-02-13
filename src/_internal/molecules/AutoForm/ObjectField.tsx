@@ -3,7 +3,7 @@ import { WidgetProps } from "./widget";
 import Group from "../Group";
 import SpecField from "./SpecField";
 import { getJsonSchemaByPath } from "src/_internal/utils/schema";
-import { immutableSet } from "../../../editor/utils/object";
+import { immutableSet } from "../../../sunmao/utils/object";
 import { get } from "lodash";
 import type { Field } from "../../organisms/KubectlApplyForm/type";
 import { isObject } from "lodash";
