@@ -52,7 +52,7 @@ type KubectlGetListProps = {
   resource: string;
   namespace?: string;
   apiBase: string;
-  fieldSelector?: string;
+  query?: Record<string, any>;
   emptyText?: string;
   errorText?: string;
   onResponse?: (res: Response) => void;
@@ -66,7 +66,7 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
     apiBase,
     namespace,
     resource,
-    fieldSelector,
+    query,
     emptyText,
     errorText,
     onResponse,
@@ -94,7 +94,7 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
       setResponse((prev) => ({ ...prev, loading: true }));
       return api
         .listWatch({
-          query: fieldSelector ? { fieldSelector } : {},
+          query: query || {},
           onResponse: (res) => {
             setResponse(() => ({
               loading: false,
@@ -113,7 +113,14 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
         .catch((err) => {
           setResponse(() => ({ loading: false, error: err, data: emptyData }));
         });
-    }, [apiBase, watchWsBasePath, resource, namespace, basePath, fieldSelector]);
+    }, [
+      apiBase,
+      watchWsBasePath,
+      resource,
+      namespace,
+      basePath,
+      query,
+    ]);
 
     useEffect(() => {
       const stopP = fetch();

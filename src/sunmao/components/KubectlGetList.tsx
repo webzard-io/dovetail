@@ -63,8 +63,8 @@ export const KubectlGetList = implementRuntimeComponent({
           },
         ],
       }),
-      fieldSelector: Type.String({
-        title: "Field selector",
+      query: Type.Record(Type.String(), Type.Any(), {
+        title: "Query",
         category: PRESET_PROPERTY_CATEGORY.Data,
       }),
       emptyText: Type.String({
@@ -83,6 +83,9 @@ export const KubectlGetList = implementRuntimeComponent({
     methods: {
       delete: Type.Object({
         items: Type.Array(Type.Any()),
+        options: Type.Object({
+          sync: Type.Boolean(),
+        }),
       }),
     },
     slots: {},
@@ -96,7 +99,7 @@ export const KubectlGetList = implementRuntimeComponent({
     apiBase,
     namespace,
     resource,
-    fieldSelector,
+    query,
     emptyText,
     errorText,
     customStyle,
@@ -144,13 +147,14 @@ export const KubectlGetList = implementRuntimeComponent({
     }, []);
     useEffect(() => {
       subscribeMethods({
-        delete({ items }) {
+        delete({ items, options }) {
           kubeSdk.deleteYaml(
             items.map((item) => ({
               ...item,
               kind: response.data.kind.replace(/List$/g, ""),
               apiVersion: response.data.apiVersion,
-            }))
+            })),
+            options
           );
         },
       });
@@ -164,7 +168,7 @@ export const KubectlGetList = implementRuntimeComponent({
           apiBase={apiBase}
           namespace={namespace}
           resource={resource}
-          fieldSelector={fieldSelector}
+          query={query}
           emptyText={emptyText}
           errorText={errorText}
           onResponse={onResponse}

@@ -31,12 +31,21 @@ type Options = {
 };
 
 export const generateSlotChildren = (
-  { app, allComponents, component, services, slotsElements, slot, slotKey, fallback }: Props,
+  {
+    allComponents,
+    component,
+    services,
+    app,
+    slotsElements,
+    slot,
+    slotKey,
+    fallback,
+  }: Props,
   { generateId, generateProps }: Options
 ) => {
   const renderSet = new Set<string>();
   const slotTraitTypes = ["core/v1/slot", "core/v2/slot"];
-  const childrenSchema = allComponents.filter((c) => {
+  const childrenSchema = (allComponents || []).filter((c) => {
     return c.traits.find(
       (t) =>
         slotTraitTypes.includes(t.type) &&

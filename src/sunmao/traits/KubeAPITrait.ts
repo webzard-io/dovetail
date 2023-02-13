@@ -95,8 +95,8 @@ export const KubeAPITraitPropertiesSpec = Type.Object({
   name: Type.String({
     title: "Name",
   }),
-  fieldSelector: Type.String({
-    title: "Field selector",
+  query: Type.Record(Type.String(), Type.Any(), {
+    title: "Query",
   }),
   isAutoWatch: Type.Boolean({
     title: "Is auto watch",
@@ -150,7 +150,7 @@ export default implementRuntimeTrait({
     resource,
     name,
     namespace,
-    fieldSelector,
+    query,
     isAutoWatch,
     onDataUpdate,
     onResponse,
@@ -189,11 +189,12 @@ export default implementRuntimeTrait({
       const stopFn = await api
         .listWatch({
           query: {
-            namespace,
-            fieldSelector: compact([
-              name && `metadata.name=${name}`,
-              fieldSelector,
-            ]).join(","),
+            ...(query || {}),
+            fieldSelector: compact(
+              (name ? [`metadata.name=${name}`] : []).concat(
+                query?.fieldSelector || []
+              )
+            ),
           },
           onResponse: (response) => {
             mergeState({ loading: false, error: null, response });
@@ -250,11 +251,12 @@ export default implementRuntimeTrait({
       try {
         const response = await api.list({
           query: {
-            namespace,
-            fieldSelector: compact([
-              name && `metadata.name=${name}`,
-              fieldSelector,
-            ]).join(","),
+            ...(query || {}),
+            fieldSelector: compact(
+              (name ? [`metadata.name=${name}`] : []).concat(
+                query?.fieldSelector || []
+              )
+            ),
           },
         });
 
