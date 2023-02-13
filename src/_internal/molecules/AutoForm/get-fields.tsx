@@ -58,7 +58,7 @@ function recursiveGetFields(spec: JSONSchema7, ctx: RecursiveContext) {
 }
 
 function getFieldsByLevel(spec: JSONSchema7, level = 0, maxLevel = 0) {
-  const newSpec: JSONSchema7 = {
+  const newSpec: JSONSchema7 & { properties: Record<string, JSONSchema7> } = {
     ...spec,
     properties: {},
   };
@@ -76,7 +76,10 @@ function getFieldsByLevel(spec: JSONSchema7, level = 0, maxLevel = 0) {
               maxLevel
             );
 
-            if (Object.keys(objectSpec.properties).length) {
+            if (
+              objectSpec.properties &&
+              Object.keys(objectSpec.properties).length
+            ) {
               newSpec.properties[key] = objectSpec;
             }
           }
@@ -84,7 +87,9 @@ function getFieldsByLevel(spec: JSONSchema7, level = 0, maxLevel = 0) {
         }
         case "array": {
           if (
-            propertySpec.items instanceof Array === false &&
+            propertySpec.items &&
+            typeof propertySpec.items !== "boolean" &&
+            !("length" in propertySpec.items) &&
             propertySpec.items.type !== "object" &&
             propertySpec.items.type !== "array"
           ) {
