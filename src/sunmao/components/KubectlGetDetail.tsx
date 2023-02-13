@@ -176,6 +176,7 @@ const KubectlGetDetailState = Type.Object({
   loading: Type.Boolean(),
   error: Type.String(),
   activeTab: Type.String(),
+  deleting: Type.Boolean(),
 });
 
 export const KubectlGetDetail = implementRuntimeComponent({
@@ -296,7 +297,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
       },
     },
     styleSlots: ["content"],
-    events: ["onItemDeleted"],
+    events: ["onItemDeleted", "onDeleteSuccess", "onDeleteFail"],
   },
 })(
   ({
@@ -351,13 +352,28 @@ export const KubectlGetDetail = implementRuntimeComponent({
         setActiveTab: ({ activeTab: newActiveTab }) => {
           setActiveTab(newActiveTab);
         },
-        delete({ options }) {
+        async delete() {
           if (data) {
-            kubeSdk.deleteYaml([data], options);
+            try {
+              mergeState({ deleting: true });
+              await kubeSdk.deleteYaml([data]);
+              callbackMap?.onDeleteSuccess?.();
+            } catch {
+              callbackMap?.onDeleteFail?.();
+            } finally {
+              mergeState({ deleting: false });
+            }
           }
         },
       });
-    }, [subscribeMethods, setActiveTab, kubeSdk, data]);
+    }, [
+      subscribeMethods,
+      setActiveTab,
+      mergeState,
+      callbackMap,
+      kubeSdk,
+      data,
+    ]);
 
     return (
       <BaseKubectlGetDetail
