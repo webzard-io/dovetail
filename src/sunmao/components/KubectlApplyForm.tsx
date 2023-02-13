@@ -22,7 +22,7 @@ import {
 import { LAYOUT_WIDGETS_MAP } from "../../_internal/molecules/layout";
 import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 import { generateSlotChildren } from "../utils/slot";
-import { immutableSet } from "../utils/object";
+import produce from "immer";
 
 const LABEL_CATEGORY = "Label Style";
 const VALIDATION_CATEGORY = "Validation";
@@ -574,11 +574,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
               Object.keys(transformMap || {}).forEach((path) => {
                 const transformedValue = transformMap[path];
 
-                transformedValues = immutableSet(
-                  values,
-                  path,
-                  transformedValue
-                ) as any[];
+                transformedValues = produce(values, (draftState) => {
+                  set(draftState, path, transformedValue);
+                }) as any[];
               });
               const appliedValues = transformedValues.filter(
                 (value, index) => !formConfig.schemas[index][CUSTOM_SCHEMA_KIND]
