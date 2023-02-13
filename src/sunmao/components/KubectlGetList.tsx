@@ -79,6 +79,7 @@ export const KubectlGetList = implementRuntimeComponent({
     state: Type.Object({
       items: Type.Array(Type.Any()),
       lastClickItem: Type.Any(),
+      deleting: Type.Boolean(),
     }),
     methods: {
       delete: Type.Object({
@@ -90,7 +91,7 @@ export const KubectlGetList = implementRuntimeComponent({
     },
     slots: {},
     styleSlots: ["content"],
-    events: ["onClickItem"],
+    events: ["onClickItem", "onDeleteSuccess", "onDeleteFail"],
   },
 })(
   ({
@@ -147,18 +148,25 @@ export const KubectlGetList = implementRuntimeComponent({
     }, []);
     useEffect(() => {
       subscribeMethods({
-        delete({ items, options }) {
-          kubeSdk.deleteYaml(
-            items.map((item) => ({
-              ...item,
-              kind: response.data.kind.replace(/List$/g, ""),
-              apiVersion: response.data.apiVersion,
-            })),
-            options
-          );
+        async delete({ items }) {
+          try {
+            mergeState({ deleting: true });
+            await kubeSdk.deleteYaml(
+              items.map((item) => ({
+                ...item,
+                kind: response.data.kind.replace(/List$/g, ""),
+                apiVersion: response.data.apiVersion,
+              }))
+            );
+            callbackMap?.onDeleteSuccess?.();
+          } catch {
+            callbackMap?.onDeleteFail?.();
+          } finally {
+            mergeState({ deleting: false });
+          }
         },
       });
-    }, [subscribeMethods, kubeSdk, response]);
+    }, [subscribeMethods, mergeState, callbackMap, kubeSdk, response]);
 
     return (
       <div className={css(customStyle?.content)} ref={elementRef}>

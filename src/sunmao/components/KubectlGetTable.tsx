@@ -273,6 +273,7 @@ const KubectlGetTableState = Type.Object({
   columnSortOrder: Type.Record(Type.String(), Type.String()),
   currentPage: Type.Number(),
   currentSize: Type.Number(),
+  deleting: Type.Boolean(),
 });
 
 export const KubectlGetTable = implementRuntimeComponent({
@@ -353,6 +354,8 @@ export const KubectlGetTable = implementRuntimeComponent({
       "onSort",
       "onPageChange",
       "onPageSizeChange",
+      "onDeleteSuccess",
+      "onDeleteFail",
     ],
   },
 })(
@@ -470,20 +473,28 @@ export const KubectlGetTable = implementRuntimeComponent({
         setActive({ activeKey }) {
           setActiveKey(activeKey);
         },
-        delete({ items, options }) {
-          kubeSdk.deleteYaml(
-            items.map((item) => ({
-              ...item,
-              kind: response.data.kind.replace(/List$/g, ""),
-              apiVersion: response.data.apiVersion,
-            })),
-            options
-          );
+        async delete({ items }) {
+          try {
+            mergeState({ deleting: true });
+            await kubeSdk.deleteYaml(
+              items.map((item) => ({
+                ...item,
+                kind: response.data.kind.replace(/List$/g, ""),
+                apiVersion: response.data.apiVersion,
+              }))
+            );
+            callbackMap?.onDeleteSuccess?.();
+          } catch {
+            callbackMap?.onDeleteFail?.();
+          } finally {
+            mergeState({ deleting: false });
+          }
         },
       });
     }, [
       subscribeMethods,
       mergeState,
+      callbackMap,
       response,
       selectedKeys,
       setSelectedKeys,
