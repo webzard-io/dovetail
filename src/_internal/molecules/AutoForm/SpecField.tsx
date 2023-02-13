@@ -230,16 +230,6 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
   }
 );
 
-function shouldDisplayLabel(spec: JSONSchema7, label: string): boolean {
-  if (!label) {
-    return false;
-  }
-  if (spec.type === "object") {
-    return false;
-  }
-  return true;
-}
-
 function shouldDisplayDescription(spec: JSONSchema7): boolean {
   if (spec.type === "object") {
     return false;
@@ -276,10 +266,10 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   const [widgetErrors, setWidgetErrors] = useState([]);
   const { title } = spec;
   const label = title ?? "";
+  const fieldOrItem = field || item;
   let isDisplayLabel =
     field?.type === "layout" ? field.indent : field?.isDisplayLabel;
   const displayDescription = shouldDisplayDescription(spec);
-  const fieldOrItem = field || item;
   const itemKey = `${
     props.superiorKey
       ? `${props.superiorKey}${props.field?.key ? "-" : ""}`
@@ -342,7 +332,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     console.info("Found unsupported spec", spec);
   }
 
-  isDisplayLabel = isDisplayLabel ?? true;
+  isDisplayLabel = isDisplayLabel ?? !!field?.label;
 
   const FieldComponent = (
     <Component
