@@ -332,7 +332,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     console.info("Found unsupported spec", spec);
   }
 
-  isDisplayLabel = isDisplayLabel ?? !!field?.label;
+  isDisplayLabel = isDisplayLabel ?? !!label;
 
   const FieldComponent = (
     <Component
