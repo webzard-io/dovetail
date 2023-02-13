@@ -4,6 +4,7 @@ import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { generateFromSchema } from "../../_internal/utils/schema";
 import merge from "lodash/merge";
+import get from "lodash/set";
 import set from "lodash/set";
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
@@ -21,6 +22,7 @@ import {
 import { LAYOUT_WIDGETS_MAP } from "../../_internal/molecules/layout";
 import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 import { generateSlotChildren } from "../utils/slot";
+import produce from "immer";
 
 const LABEL_CATEGORY = "Label Style";
 const VALIDATION_CATEGORY = "Validation";
@@ -441,6 +443,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
       }),
       apply: Type.Object({
         disabled: Type.Boolean(),
+        transformMap: Type.Record(Type.String(), Type.Any()),
       }),
       clearError: Type.Object({}),
     },
@@ -549,7 +552,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
             changeStep(step + 1);
           }
         },
-        async apply({ disabled }) {
+        async apply({ disabled, transformMap }) {
           try {
             let result: Record<string, string[]> = {};
 
@@ -566,7 +569,16 @@ export const KubectlApplyForm = implementRuntimeComponent({
               const sdk = new KubeSdk({
                 basePath,
               });
-              const appliedValues = values.filter(
+              let transformedValues = values;
+
+              Object.keys(transformMap || {}).forEach((path) => {
+                const transformedValue = transformMap[path];
+
+                transformedValues = produce(values, (draftState) => {
+                  set(draftState, path, transformedValue);
+                }) as any[];
+              });
+              const appliedValues = transformedValues.filter(
                 (value, index) => !formConfig.schemas[index][CUSTOM_SCHEMA_KIND]
               );
 

@@ -44,6 +44,7 @@ specifiers:
   eslint-plugin-react-hooks: ^4.6.0
   framer-motion: ^3
   i18next: ^21.9.1
+  immer: ^9.0.19
   js-yaml: ^4.1.0
   kubernetes-types: 1.21.0-beta.1
   ky: ^0.30.0
@@ -84,6 +85,7 @@ dependencies:
   dayjs: 1.11.2
   framer-motion: 3.10.6_sfoxds7t5ydpegc3knd667wn6m
   i18next: 21.9.1
+  immer: 9.0.19
   js-yaml: 4.1.0
   kubernetes-types: 1.21.0-beta.1
   ky: 0.30.0
@@ -3363,7 +3365,7 @@ packages:
       codemirror: 5.65.10
       formik: 2.2.9_react@17.0.2
       framer-motion: 3.10.6_sfoxds7t5ydpegc3knd667wn6m
-      immer: 9.0.15
+      immer: 9.0.19
       lodash: 4.17.21
       mitt: 3.0.0
       mobx: 6.6.1
@@ -3407,7 +3409,7 @@ packages:
       codemirror: 5.65.10
       escodegen: 2.0.0
       formik: 2.2.9_react@17.0.2
-      immer: 9.0.15
+      immer: 9.0.19
       lodash: 4.17.21
       mobx: 6.6.1
       mobx-react-lite: 3.4.0_vuaia3cr2ucdrk3q4mauc2kfvi
@@ -3441,7 +3443,7 @@ packages:
       '@vue/shared': 3.2.37
       copy-to-clipboard: 3.3.1
       dayjs: 1.11.2
-      immer: 9.0.15
+      immer: 9.0.19
       lodash: 4.17.21
       mitt: 3.0.0
       path-to-regexp: 6.2.1
@@ -5771,8 +5773,8 @@ packages:
     dev: true
     optional: true
 
-  /immer/9.0.15:
-    resolution: {integrity: sha512-2eB/sswms9AEUSkOm4SbV5Y7Vmt/bKRwByd52jfLkW4OLYeaTP3EEiJ9agqU0O/tq6Dk62Zfj+TJSqfm1rLVGQ==}
+  /immer/9.0.19:
+    resolution: {integrity: sha512-eY+Y0qcsB4TZKwgQzLaE/lqYMlKhv5J9dyd2RhhtGhNo2njPXDqU9XPfcNfa3MIDsdtZt5KlkIsirlo4dHsWdQ==}
 
   /immutable/4.1.0:
     resolution: {integrity: sha512-oNkuqVTA8jqG1Q6c+UglTOD1xhC1BtjKI7XkCXRkZHrN5m18/XsnUp8Q89GkQO/z+0WjonSvl0FLhDYftp46nQ==}

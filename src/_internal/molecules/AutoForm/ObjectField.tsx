@@ -3,23 +3,15 @@ import { WidgetProps } from "./widget";
 import Group from "../Group";
 import SpecField from "./SpecField";
 import { getJsonSchemaByPath } from "src/_internal/utils/schema";
-import { immutableSet } from "../../../editor/utils/object";
-import { get } from "lodash";
+import { get, set } from "lodash";
 import type { Field } from "../../organisms/KubectlApplyForm/type";
 import { isObject } from "lodash";
 import { JSONSchema7 } from "json-schema";
+import produce from "immer";
 
 export function resolveSubFields(props: WidgetProps) {
-  const {
-    specsArray,
-    field,
-    spec,
-    value,
-    path,
-    level,
-    error,
-    onChange,
-  } = props;
+  const { specsArray, field, spec, value, path, level, error, onChange } =
+    props;
   const fields: Field[] = field?.fields || [];
   const properties = Object.keys(spec.properties || {});
   const isLayout = field?.type === "layout";
@@ -37,7 +29,8 @@ export function resolveSubFields(props: WidgetProps) {
       } else {
         const [schemaIndex, ...subPath] = subField.path.split(".");
 
-        subSpec = specsArray[Number(schemaIndex)]?.[subPath.join(".")].spec || {};
+        subSpec =
+          specsArray[Number(schemaIndex)]?.[subPath.join(".")].spec || {};
       }
 
       return (
@@ -63,7 +56,9 @@ export function resolveSubFields(props: WidgetProps) {
             if (isLayout) {
               onChange(newValue, displayValues, key, dataPath);
             } else {
-              const result = immutableSet(value, subField.path, newValue);
+              const result = produce(value, (draftState: any) => {
+                set(draftState, subField.path, newValue);
+              });
 
               onChange(result, displayValues, key, dataPath);
             }
