@@ -171,17 +171,17 @@ const ColumnSpec = Type.Object(
     }),
     sortType: StringUnion(["none", "auto", "server"], {
       title: "Sort type",
-      caegory: SORT_CATEGORY,
+      category: SORT_CATEGORY,
     }),
     sortBy: Type.String({
       title: "Sort by",
       description:
         "The field path for sorting. It it is empty, that would use `dataIndex` to sort.",
-      caegory: SORT_CATEGORY,
+      category: SORT_CATEGORY,
     }),
     defaultSortOrder: StringUnion(["ascend", "descend"], {
       title: "Default sort order",
-      caegory: SORT_CATEGORY,
+      category: SORT_CATEGORY,
     }),
     filters: Type.Array(
       Type.Optional(
