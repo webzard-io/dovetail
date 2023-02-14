@@ -11,18 +11,33 @@ import {
 import { renderWidget } from "../utils/widget";
 import { css } from "@emotion/css";
 
+const WIDGET_CATEGORY = "Widget";
+
 const InfoSpec = Type.Object(
   {
-    label: Type.String({ title: "Label" }),
-    key: Type.String({ title: "Key" }),
+    label: Type.String({
+      title: "Label",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
+    }),
+    key: Type.String({
+      title: "Key",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
+    }),
     path: Type.String({
       title: "Path",
       widget: "kui/v1/PathWidget",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
+    }),
+    condition: Type.Boolean({
+      title: "Condition",
+      default: true,
+      category: PRESET_PROPERTY_CATEGORY.Basic,
     }),
     widget: StringUnion(
       ["default", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
       {
         title: "Widget",
+        category: WIDGET_CATEGORY,
       }
     ),
     widgetOptions: Type.Record(Type.String(), Type.Any(), {
@@ -31,6 +46,7 @@ const InfoSpec = Type.Object(
       widgetOptions: {
         optionsMap: DISPLAY_WIDGET_OPTIONS_MAP,
       },
+      category: WIDGET_CATEGORY,
     }),
     componentId: Type.String({
       title: "Component ID",
@@ -47,9 +63,7 @@ const InfoSpec = Type.Object(
           value: "component",
         },
       ],
-    }),
-    condition: Type.Boolean({
-      title: "Condition",
+      category: WIDGET_CATEGORY,
     }),
   },
   {
@@ -184,11 +198,11 @@ export const KubectlGetDetail = implementRuntimeComponent({
     name: "kubectl_get_detail",
     displayName: "Kubectl Get Detail",
     exampleProperties: {
-      basePath: "proxy-k8s",
-      apiBase: "/apis/apps/v1",
-      namespace: "kube-system",
-      resource: "deployments",
-      name: "coredns",
+      basePath: "/api/k8s",
+      apiBase: "/apis/storage.k8s.io/v1",
+      namespace: "",
+      resource: "storageclasses",
+      name: "",
       layout: {
         type: "tabs",
         tabs: [
@@ -203,14 +217,17 @@ export const KubectlGetDetail = implementRuntimeComponent({
                     {
                       label: "Name",
                       path: "metadata.name",
+                      condition: true,
                     },
                     {
                       label: "Labels",
                       path: "metadata.labels",
+                      condition: true,
                     },
                     {
                       label: "Age",
                       path: "metadata.creationTimestamp",
+                      condition: true,
                     },
                   ],
                 },
@@ -225,7 +242,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
         ],
         sections: [],
       },
-      query: {}
+      query: {},
     },
     annotations: {
       category: "Display",
