@@ -32,16 +32,19 @@ export class WidgetStore {
     return [];
   }
 
-  async fetchResourcesSchemas(basePath: string, resources: any[]) {
+  async fetchResourcesSchemas(
+    basePath: string,
+    resources: { apiBase: string; kind: string }[]
+  ) {
     const schemas = await Promise.all(
       resources.map(async (resource) => {
-        const { apiVersionWithGroup, kind } = resource;
+        const { apiBase, kind } = resource;
         const api = k8sOpenAPIMap[basePath] || new K8sOpenAPI({ basePath });
 
         k8sOpenAPIMap[basePath] = api;
 
-        if (apiVersionWithGroup && kind) {
-          const schema = await api.getResourceSchema(apiVersionWithGroup, kind);
+        if (apiBase && kind) {
+          const schema = await api.getResourceSchema(apiBase, kind);
 
           return schema;
         }
