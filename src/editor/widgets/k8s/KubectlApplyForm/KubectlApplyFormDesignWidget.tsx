@@ -163,6 +163,7 @@ const KubectlApplyFormDesignWidget: React.FC<
   const [loadingSchema, setLoadingSchema] = useState(false);
   const [jsonEditorMode, setJsonEditorMode] = useState(false);
   const [uiConfig, setUiConfig] = useState(formConfig.current.uiConfig);
+  const [updater, setUpdater] = useState(1);
   const basePath = useProperty({
     services,
     component,
@@ -194,12 +195,13 @@ const KubectlApplyFormDesignWidget: React.FC<
     }
 
     return spec || UiConfigSpec;
-  }, [formConfig.current.schemas, props.spec]);
+  }, [formConfig.current.schemas, props.spec, updater]);
 
   useEffect(() => {
     store.schemas = formConfig.current.schemas;
   }, []);
 
+  // use updater to trigger update
   return (
     <ChakraProvider theme={theme}>
       <Box>
@@ -218,7 +220,10 @@ const KubectlApplyFormDesignWidget: React.FC<
             <ModalHeader>
               <Steps
                 activeStep={activeStep}
-                onClickStep={(step) => setStep(step)}
+                onClickStep={(step) => {
+                  setStep(step);
+                  setUpdater(updater + 1);
+                }}
                 width="50%"
                 margin="auto"
                 size="sm"
@@ -331,7 +336,8 @@ const KubectlApplyFormDesignWidget: React.FC<
                           </TabPanels>
                         </Tabs>
                       ))}
-                    {activeStep === 2 && (
+                    {activeStep === 2 && updater && (
+                      // use the updater to trigger the updating for using latest schemas
                       <Box>
                         <SpecWidget
                           component={props.component}
@@ -378,6 +384,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                   <Button
                     size="sm"
                     onClick={async () => {
+                      setUpdater(updater + 1);
                       nextStep();
                       if (activeStep === 0) {
                         // go to schema step
