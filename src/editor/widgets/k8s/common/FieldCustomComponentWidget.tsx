@@ -343,16 +343,22 @@ const FieldCustomComponentWidget =
                     ...SyncSpec.properties,
                     setValueMethod: {
                       ...SyncSpec.properties.setValueMethod,
-                      enum: [""]
+                      enum: []
                         .concat(Object.keys(inputComponentMethods))
                         .map((key) => key),
                     },
                   },
+                }, {
+                  title: "Sync Trait Config",
+                  widget: "core/v1/array",
+                  widgetOptions: {
+                    appendToBody: true
+                  }
                 })}
                 value={syncTrait.properties.syncs}
                 component={component}
                 level={level + 1}
-                path={[]}
+                path={path}
                 services={services}
                 onChange={onTraitValueChange}
               ></SpecWidget>
