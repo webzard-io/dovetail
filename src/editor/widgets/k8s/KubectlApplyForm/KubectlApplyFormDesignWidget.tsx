@@ -400,7 +400,10 @@ const KubectlApplyFormDesignWidget: React.FC<
                           await store.fetchResourcesSchemas(
                             basePath,
                             resources.map((resource) => ({
-                              apiVersionWithGroup: resource.apiVersion,
+                              apiBase:
+                                resource.apiVersion === "v1"
+                                  ? `/api/${resource.apiVersion}`
+                                  : `/apis/${resource.apiVersion}`,
                               kind: resource.kind,
                             }))
                           )

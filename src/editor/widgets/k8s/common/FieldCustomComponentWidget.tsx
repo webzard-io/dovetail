@@ -343,7 +343,7 @@ const FieldCustomComponentWidget =
                     ...SyncSpec.properties,
                     setValueMethod: {
                       ...SyncSpec.properties.setValueMethod,
-                      enum: []
+                      enum: ([] as string[])
                         .concat(Object.keys(inputComponentMethods))
                         .map((key) => key),
                     },
