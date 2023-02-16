@@ -31,8 +31,8 @@ type Options = {
 };
 
 export const generateSlotChildren = (
-  { allComponents, app, component, services, slot, slotKey, fallback }: Props,
-  { generateId }: Options
+  { allComponents, app, component, services, slot, slotKey, fallback, slotsElements }: Props,
+  { generateId, generateProps }: Options
 ) => {
   const renderSet = new Set<string>();
   const slotTraitTypes = ["core/v1/slot", "core/v2/slot"];
@@ -55,6 +55,9 @@ export const generateSlotChildren = (
       id,
     };
   });
+  // don't remove this code, it should be called for generate the slot context
+  const slots =
+    slotsElements[slot]?.(generateProps(), fallback, slotKey) || fallback;
 
   return _childrenSchema.length
     ? _childrenSchema.map((child) => {

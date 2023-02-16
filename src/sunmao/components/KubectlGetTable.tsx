@@ -547,7 +547,7 @@ export const KubectlGetTable = implementRuntimeComponent({
                 `column_${colIndex}_${index}`
               );
             },
-            sortOrder: columnSortOrder[col.key],
+            sortOrder: columnSortOrder[col.key] || col.defaultSortOrder,
             sortDirections:
               col.sortType === "none" ? null : ["", "ascend", "descend"],
             sorter:
