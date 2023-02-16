@@ -26,7 +26,7 @@ type Props = WidgetProps;
 
 type SelectOption = { label: string; value: string };
 
-const api = new K8sOpenAPI({ basePath: '' });
+const api = new K8sOpenAPI({ basePath: "" });
 
 export const AutoFormSpecWidget: React.FC<Props> = (props) => {
   const { value, services, onChange } = props;
@@ -94,7 +94,7 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
                   <Box width="350px">
                     <Select
                       value={filter.base}
-                      onChange={(newValue) =>
+                      onChange={(newValue: SelectOption) =>
                         setFilter((prev) => ({
                           ...prev,
                           base: newValue,
@@ -107,7 +107,7 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
                   <Box width="350px" ml={2}>
                     <Select
                       value={filter.def}
-                      onChange={(newValue) =>
+                      onChange={(newValue: SelectOption) =>
                         setFilter((prev) => ({
                           ...prev,
                           def: newValue,

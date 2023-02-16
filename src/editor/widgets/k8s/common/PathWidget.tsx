@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { implementWidget, isExpression } from "@sunmao-ui/editor-sdk";
 import { Select } from "chakra-react-select";
 import { Box } from "@chakra-ui/react";
@@ -40,7 +40,7 @@ export default implementWidget<"kui/v1/PathWidget">({
             value: pathStr,
           }))}
           size="sm"
-          onChange={(newValue) => {
+          onChange={(newValue: { label: string; value: string }) => {
             path.current = newValue?.value || "";
             onChange(path.current);
           }}
