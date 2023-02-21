@@ -6,13 +6,12 @@
     "lib"
   ],
   "types": "lib/index.d.ts",
-  "module": "./dist/index.es.js",
-  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.js",
   "scripts": {
     "dev": "vite",
-    "prepublish": "npm run typings && npm run build",
+    "prepublish": "npm run build && npm run typings",
     "build": "vite build",
-    "postbuild": "sed -i -e 's/\"useInsertionEffect\"/\"useInsertion\"+\"Effect\"/g' ./dist/index.es.js",
+    "postbuild": "sed -i -e 's/\"useInsertionEffect\"/\"useInsertion\"+\"Effect\"/g' ./dist/index.js",
     "typings": "tsc --emitDeclarationOnly",
     "preview": "vite preview"
   },
