@@ -77,7 +77,6 @@ export const generateSlotChildren = (
             app={app}
             allComponents={allComponents}
             services={services}
-            allComponents={allComponents}
             childrenMap={{}}
             isInModule
             slotContext={{
