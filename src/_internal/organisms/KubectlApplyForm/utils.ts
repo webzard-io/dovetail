@@ -24,7 +24,7 @@ function iterateArrPath(
       itemDataPath,
       itemValue,
     });
-    
+
     return;
   }
   const [arrPath] = arrPathMatch;
@@ -73,6 +73,7 @@ export function transformFields(
   defaultValues: any[]
 ): TransformedField[] {
   const newFields = [];
+
   for (const f of fields) {
     if (f.path.includes(".$i")) {
       iterateArrPath(f.path, values, ({ itemDataPath, itemValue }) => {
@@ -84,11 +85,22 @@ export function transformFields(
       });
     } else {
       const dataPath = getDataPath(f.path);
+      const isLayout = f.type === "layout";
+      const value = get(values, dataPath);
+      const defaultValue = get(defaultValues, dataPath);
+
       newFields.push({
         ...f,
         dataPath,
-        value: get(values, dataPath),
-        defaultValue: get(defaultValues, dataPath),
+        value,
+        defaultValue,
+        fields: f.fields
+          ? transformFields(
+              f.fields,
+              isLayout ? values : value,
+              isLayout ? defaultValues : defaultValue
+            )
+          : f.fields,
       });
     }
   }

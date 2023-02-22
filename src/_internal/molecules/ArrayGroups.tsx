@@ -2,7 +2,7 @@ import { WidgetProps } from "./AutoForm/widget";
 import Group from "./Group";
 import { Type, Static } from "@sinclair/typebox";
 import { KitContext } from "../atoms/kit-context";
-import { useContext } from "react";
+import React, { useContext, useEffect, useCallback } from "react";
 import { css } from "@emotion/css";
 import Icon, {
   IconTypes,
@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { cloneDeep } from "lodash";
 import registry from "../../services/Registry";
 import { StringUnion } from "@sunmao-ui/runtime";
+import { set } from "lodash";
 
 const AddedButtonStyle = css``;
 
@@ -52,7 +53,10 @@ const ArrayGroups = (props: Props) => {
   const { t } = useTranslation();
   const kit = useContext(KitContext);
   const {
+    services,
+    field,
     value,
+    displayValues,
     spec,
     path,
     level,
@@ -72,6 +76,43 @@ const ArrayGroups = (props: Props) => {
   const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
   const errorInfo = props.field?.error || props.error;
 
+  const remove = useCallback(
+    (index: number) => {
+      onChange(
+        value.filter((v, i) => i !== index),
+        displayValues
+      );
+    },
+    [onChange, value, displayValues]
+  );
+  const removeEventHandler = useCallback(
+    (eventData: { fieldKey: string; index: number }) => {
+      if (eventData.fieldKey === field?.key) {
+        remove(eventData.index);
+      }
+    },
+    [remove, field]
+  );
+
+  useEffect(() => {
+    services.event.on("remove", removeEventHandler);
+
+    return () => {
+      services.event.off("remove", removeEventHandler);
+    };
+  }, [services, removeEventHandler]);
+  useEffect(() => {
+    if (field?.key) {
+      const store = set(
+        services.store,
+        `summary.removableMap.${field.key || ""}`,
+        value.length > (widgetOptions?.minLength || 0)
+      );
+
+      services.setStore({ ...store });
+    }
+  }, [value?.length, widgetOptions?.minLength, field?.key]);
+
   return (
     <>
       {(value || []).map((itemValue, itemIndex) => {
@@ -81,7 +122,7 @@ const ArrayGroups = (props: Props) => {
             key={itemIndex}
             value={itemValue}
             spec={itemSpec as JSONSchema7}
-            subKey={`${props.field?.key}-${itemIndex}`}
+            superiorKey={`${props.field?.key}-${itemIndex}`}
             index={itemIndex}
             error={errorInfo instanceof Array ? errorInfo[itemIndex] : ""}
             widgetOptions={{
@@ -96,22 +137,25 @@ const ArrayGroups = (props: Props) => {
             level={level + 1}
             onRemove={
               value.length > (widgetOptions?.minLength || 0)
-                ? () => {
-                    onChange(value.filter((v, i) => i !== itemIndex));
-                  }
+                ? () => remove(itemIndex)
                 : undefined
             }
-            onChange={(newItemValue: any, key?: string, dataPath?: string) => {
+            onChange={(
+              newItemValue: any,
+              newDisplayValues: Record<string, any>,
+              key?: string,
+              dataPath?: string
+            ) => {
               const newValue = [...value];
 
               newValue[itemIndex] = newItemValue;
-              onChange(newValue, key, dataPath);
+              onChange(newValue, newDisplayValues, key, dataPath);
             }}
           ></Group>
         );
       })}
       {widgetOptions.addable !== false &&
-      value.length < (widgetOptions?.maxLength || Number.MAX_SAFE_INTEGER) ? (
+      (value || []).length < (widgetOptions?.maxLength || Number.MAX_SAFE_INTEGER) ? (
         <div>
           {widgetOptions.addedButtonIcon ? (
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>
@@ -131,7 +175,8 @@ const ArrayGroups = (props: Props) => {
                   defaultValue && typeof defaultValue === "object"
                     ? cloneDeep(defaultValue)
                     : defaultValue
-                )
+                ),
+                displayValues
               );
             }}
           >

@@ -2,7 +2,10 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { StringUnion, PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
 import { Type, Static } from "@sinclair/typebox";
-import { UnstructuredList } from "../../_internal/k8s-api-client/kube-api";
+import {
+  UnstructuredList,
+  KubeSdk,
+} from "../../_internal/k8s-api-client/kube-api";
 import {
   DISPLAY_WIDGETS_MAP,
   DISPLAY_WIDGET_OPTIONS_MAP,
@@ -79,31 +82,49 @@ const WrapperStyle = css`
   }
 `;
 
+const WIDGET_CATEGORY = "Widget";
+const SORT_CATEGORY = "Sort";
+const FILTER_CATEGORY = "Filter";
+
 const ColumnSpec = Type.Object(
   {
     dataIndex: Type.String({
       title: "Data index",
       description: "The key of the column data.",
       widget: "kui/v1/PathWidget",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
     }),
     key: Type.String({
       title: "Key",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
     }),
-    title: Type.String({ title: "Title" }),
-    titleTooltip: Type.String({ title: "Title tooltip" }),
+    title: Type.String({
+      title: "Title",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
+    }),
+    titleTooltip: Type.String({
+      title: "Title tooltip",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
+    }),
     isActionColumn: Type.Boolean({
       title: "Is action column",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
     }),
     canCustomizable: Type.Boolean({
       title: "Can customizable",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
+      default: true,
     }),
     isDefaultDisplay: Type.Boolean({
       title: "Is default display",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
+      default: true,
     }),
     widget: StringUnion(
       ["default", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
       {
         title: "Widget",
+        category: WIDGET_CATEGORY,
       }
     ),
     widgetOptions: Type.Record(Type.String(), Type.Any(), {
@@ -112,6 +133,7 @@ const ColumnSpec = Type.Object(
       widgetOptions: {
         optionsMap: DISPLAY_WIDGET_OPTIONS_MAP,
       },
+      category: WIDGET_CATEGORY,
     }),
     componentId: Type.String({
       title: "Component ID",
@@ -128,22 +150,38 @@ const ColumnSpec = Type.Object(
           value: "component",
         },
       ],
+      category: WIDGET_CATEGORY,
     }),
     fixed: StringUnion(["none", "left", "right"], {
       title: "Fixed",
       description: "Is the column fixed?",
+      category: PRESET_PROPERTY_CATEGORY.Style,
     }),
-    width: Type.Number({ title: "Width" }),
-    ellipsis: Type.Boolean({ title: "Ellipsis" }),
-    align: StringUnion(["left", "center", "right"], { title: "Align" }),
-    sortType: StringUnion(["none", "auto", "server"], { title: "Sort type" }),
+    width: Type.Number({
+      title: "Width",
+      category: PRESET_PROPERTY_CATEGORY.Style,
+    }),
+    ellipsis: Type.Boolean({
+      title: "Ellipsis",
+      category: PRESET_PROPERTY_CATEGORY.Style,
+    }),
+    align: StringUnion(["left", "center", "right"], {
+      title: "Align",
+      category: PRESET_PROPERTY_CATEGORY.Style,
+    }),
+    sortType: StringUnion(["none", "auto", "server"], {
+      title: "Sort type",
+      category: SORT_CATEGORY,
+    }),
     sortBy: Type.String({
       title: "Sort by",
       description:
         "The field path for sorting. It it is empty, that would use `dataIndex` to sort.",
+      category: SORT_CATEGORY,
     }),
     defaultSortOrder: StringUnion(["ascend", "descend"], {
       title: "Default sort order",
+      category: SORT_CATEGORY,
     }),
     filters: Type.Array(
       Type.Optional(
@@ -153,11 +191,16 @@ const ColumnSpec = Type.Object(
           compare: StringUnion(["equal", "includes"]),
         })
       ),
-      { title: "Filter items", description: "The filter items." }
+      {
+        title: "Filter items",
+        description: "The filter items.",
+        category: FILTER_CATEGORY,
+      }
     ),
     filterMultiple: Type.Boolean({
       title: "Filter multiple",
       description: "Can select multiple filters?",
+      category: FILTER_CATEGORY,
     }),
   },
   {
@@ -201,8 +244,8 @@ const KubectlGetTableProps = Type.Object({
       },
     ],
   }),
-  fieldSelector: Type.String({
-    title: "Field selector",
+  query: Type.Record(Type.String(), Type.Any(), {
+    title: "Query",
     category: PRESET_PROPERTY_CATEGORY.Data,
   }),
   columns: Type.Array(ColumnSpec, {
@@ -270,6 +313,7 @@ const KubectlGetTableState = Type.Object({
   columnSortOrder: Type.Record(Type.String(), Type.String()),
   currentPage: Type.Number(),
   currentSize: Type.Number(),
+  deleting: Type.Boolean(),
 });
 
 export const KubectlGetTable = implementRuntimeComponent({
@@ -325,6 +369,12 @@ export const KubectlGetTable = implementRuntimeComponent({
       setActive: Type.Object({
         activeKey: Type.String(),
       }),
+      delete: Type.Object({
+        items: Type.Array(Type.Any()),
+        options: Type.Object({
+          sync: Type.Boolean(),
+        }),
+      }),
     },
     slots: {
       cell: {
@@ -344,6 +394,8 @@ export const KubectlGetTable = implementRuntimeComponent({
       "onSort",
       "onPageChange",
       "onPageSizeChange",
+      "onDeleteSuccess",
+      "onDeleteFail",
     ],
   },
 })(
@@ -353,7 +405,7 @@ export const KubectlGetTable = implementRuntimeComponent({
     apiBase,
     namespace,
     resource,
-    fieldSelector,
+    query,
     columns,
     customizable,
     customizableKey,
@@ -390,6 +442,8 @@ export const KubectlGetTable = implementRuntimeComponent({
     const [columnSortOrder, setColumnSortOrder] = useState<
       Record<string, "ascend" | "descend">
     >({});
+
+    const kubeSdk = useMemo(() => new KubeSdk({ basePath }), [basePath]);
 
     const onSelectChange = useCallback(
       (newSelectedRowKeys, newSelectedRows) => {
@@ -459,8 +513,33 @@ export const KubectlGetTable = implementRuntimeComponent({
         setActive({ activeKey }) {
           setActiveKey(activeKey);
         },
+        async delete({ items }) {
+          try {
+            mergeState({ deleting: true });
+            await kubeSdk.deleteYaml(
+              items.map((item) => ({
+                ...item,
+                kind: response.data.kind.replace(/List$/g, ""),
+                apiVersion: response.data.apiVersion,
+              }))
+            );
+            callbackMap?.onDeleteSuccess?.();
+          } catch {
+            callbackMap?.onDeleteFail?.();
+          } finally {
+            mergeState({ deleting: false });
+          }
+        },
       });
-    }, [subscribeMethods, mergeState, response, selectedKeys, setSelectedKeys]);
+    }, [
+      subscribeMethods,
+      mergeState,
+      callbackMap,
+      response,
+      selectedKeys,
+      setSelectedKeys,
+      kubeSdk,
+    ]);
     useEffect(() => {
       mergeState({
         items: response.data.items,
@@ -475,7 +554,7 @@ export const KubectlGetTable = implementRuntimeComponent({
             `${item.metadata.namespace}/${item.metadata.name}` === activeKey
         ),
       });
-    }, [activeKey, response]);
+    }, [activeKey, response, mergeState]);
     useEffect(() => {
       mergeState({
         selectedItems: response.data.items.filter((item) =>
@@ -484,7 +563,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           )
         ),
       });
-    }, [selectedKeys, response]);
+    }, [selectedKeys, response, mergeState]);
     useEffect(() => {
       mergeState({
         currentPage: 1,
@@ -505,7 +584,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           resource={resource}
           namespace={namespace}
           apiBase={apiBase}
-          fieldSelector={fieldSelector}
+          query={query}
           onResponse={setResponse}
           columns={columns.map((col, colIndex) => ({
             ...col,

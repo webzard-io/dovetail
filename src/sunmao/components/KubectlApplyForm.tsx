@@ -1,51 +1,156 @@
 import { Type, Static } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { generateFromSchema } from "../../_internal/utils/schema";
 import merge from "lodash/merge";
+import get from "lodash/set";
 import set from "lodash/set";
 import cloneDeep from "lodash/cloneDeep";
-import _KubectlApplyForm from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
+import isEqual from "lodash/isEqual";
+import pick from "lodash/pick";
+import _KubectlApplyForm, {
+  CUSTOM_SCHEMA_KIND,
+  KubectlApplyFormRef,
+} from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
+import { FormItemData } from "../../_internal/organisms/KubectlApplyForm/type";
 import { css } from "@emotion/css";
 import {
   FORM_WIDGETS_MAP,
   FORM_WIDGET_OPTIONS_MAP,
 } from "../../_internal/molecules/form";
-import { KubeApi, KubeSdk } from "../../_internal/k8s-api-client/kube-api";
+import { LAYOUT_WIDGETS_MAP } from "../../_internal/molecules/layout";
+import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 import { generateSlotChildren } from "../utils/slot";
+import produce from "immer";
+
+const LABEL_CATEGORY = "Label Style";
+const VALIDATION_CATEGORY = "Validation";
+const WIDGET_CATEGORY = "Widget";
+const SUMMARY_CATEGORY = "Summary List";
+const STATUS_CATEGORY = "Status";
+const FIELD_CONDITIONS = [
+  {
+    or: [
+      {
+        key: "type",
+        value: "field",
+      },
+      {
+        key: "type",
+        value: undefined as any,
+      },
+    ],
+  },
+];
+const LAYOUT_CONDITION = [
+  {
+    key: "type",
+    value: "layout",
+  },
+];
+
+const ValidationRuleProperties = {
+  message: Type.String({
+    title: "Message",
+  }),
+  required: Type.Boolean({
+    title: "Required",
+  }),
+  pattern: Type.String({
+    title: "RegExp",
+  }),
+  min: Type.Number({
+    title: "Min",
+  }),
+  max: Type.Number({
+    title: "Max",
+    default: Number.MAX_SAFE_INTEGER,
+  }),
+  validator: Type.Any({
+    title: "Validator",
+  }),
+};
 
 const UiConfigFieldSpecProperties = {
   path: Type.String({
     title: "Path",
     widget: "kui/v1/PathWidget",
+    conditions: FIELD_CONDITIONS,
+    category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
   key: Type.String({
     title: "Key",
     description: "Use for the `latestChangedKey` state",
+    conditions: FIELD_CONDITIONS,
+    category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
-  label: Type.String({ title: "Label" }),
-  labelWidth: Type.Number({
-    title: "Label Width",
+  label: Type.String({
+    title: "Label",
+    conditions: FIELD_CONDITIONS,
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+  }),
+  condition: Type.Boolean({
+    title: "Is display",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+    default: true,
+  }),
+  helperText: Type.String({
+    title: "Helper text",
+    conditions: FIELD_CONDITIONS,
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+  }),
+  sectionTitle: Type.String({
+    title: "Section title",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
   isDisplayLabel: Type.Boolean({
     title: "Is display label",
+    conditions: FIELD_CONDITIONS,
+    category: LABEL_CATEGORY,
+    default: true,
   }),
-  layout: StringUnion(["horizontal", "vertical"], { title: "Layout" }),
-  helperText: Type.String({ title: "Helper text" }),
-  sectionTitle: Type.String({ title: "Section title" }),
-  error: Type.String({ title: "Error" }),
-  condition: Type.Boolean({ title: "Condition" }),
+  labelWidth: Type.Number({
+    title: "Label Width",
+    conditions: FIELD_CONDITIONS,
+    category: LABEL_CATEGORY,
+  }),
+  layout: StringUnion(["horizontal", "vertical"], {
+    title: "Layout of label and input",
+    conditions: FIELD_CONDITIONS,
+    category: LABEL_CATEGORY,
+  }),
+  rules: Type.Array(Type.Object(ValidationRuleProperties), {
+    title: "Validation rules",
+    widget: "core/v1/array",
+    conditions: FIELD_CONDITIONS,
+    widgetOptions: {
+      displayedKeys: ["message"],
+      appendToBody: true,
+    },
+    category: VALIDATION_CATEGORY,
+  }),
+  error: Type.String({
+    title: "Error",
+    conditions: FIELD_CONDITIONS,
+    category: VALIDATION_CATEGORY,
+  }),
   col: Type.Number({
     title: "Col",
+    conditions: FIELD_CONDITIONS,
+    default: 24,
+    category: PRESET_PROPERTY_CATEGORY.Style,
   }),
   splitLine: Type.Boolean({
     title: "Split line",
+    category: PRESET_PROPERTY_CATEGORY.Style,
   }),
   widget: StringUnion(
     ["default", "component"].concat(Object.keys(FORM_WIDGETS_MAP)),
     {
       title: "Widget",
+      conditions: FIELD_CONDITIONS,
+      category: WIDGET_CATEGORY,
     }
   ),
   widgetOptions: Type.Record(Type.String(), Type.Any(), {
@@ -54,6 +159,7 @@ const UiConfigFieldSpecProperties = {
     widgetOptions: {
       optionsMap: FORM_WIDGET_OPTIONS_MAP,
     },
+    category: WIDGET_CATEGORY,
   }),
   componentId: Type.String({
     title: "ComponentId",
@@ -68,16 +174,64 @@ const UiConfigFieldSpecProperties = {
         value: "component",
       },
     ],
+    category: WIDGET_CATEGORY,
   }),
+  summaryConfig: Type.Object(
+    {
+      type: StringUnion(["auto", "item"]),
+      label: Type.String(),
+      value: Type.String(),
+      icon: Type.String(),
+      hidden: Type.Boolean(),
+    },
+    {
+      title: "Summary list config",
+      category: SUMMARY_CATEGORY,
+    }
+  ),
 };
 const UiConfigFieldSpec = Type.Object(
   {
-    ...UiConfigFieldSpecProperties,
-    fields: Type.Array(Type.Object(UiConfigFieldSpecProperties), {
-      title: "Fields",
-      widget: "core/v1/array",
-      widgetOptions: { displayedKeys: ["path", "label"], appendToBody: true },
+    type: StringUnion(["field", "layout"], {
+      title: "Choose Config",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
     }),
+    ...UiConfigFieldSpecProperties,
+    layoutWidget: StringUnion(Object.keys(LAYOUT_WIDGETS_MAP), {
+      title: "Layout Widget",
+      conditions: LAYOUT_CONDITION,
+      category: WIDGET_CATEGORY,
+    }),
+    indent: Type.Boolean({
+      title: "Indent",
+      conditions: LAYOUT_CONDITION,
+      category: PRESET_PROPERTY_CATEGORY.Style,
+    }),
+    fields: Type.Array(
+      Type.Object(UiConfigFieldSpecProperties, {
+        widget: "kui/v1/KubectlApplyFormFieldWidget",
+      }),
+      {
+        title: "Fields",
+        widget: "core/v1/array",
+        widgetOptions: { displayedKeys: ["path", "label"], appendToBody: true },
+        category: PRESET_PROPERTY_CATEGORY.Basic,
+      }
+    ),
+    subItem: Type.Object(
+      {
+        ...pick(UiConfigFieldSpecProperties, [
+          "widget",
+          "widgetOptions",
+          "componentId",
+          "rules",
+        ]),
+      },
+      {
+        title: "Sub item",
+        category: PRESET_PROPERTY_CATEGORY.Basic,
+      }
+    ),
   },
   {
     widget: "kui/v1/KubectlApplyFormFieldWidget",
@@ -85,26 +239,15 @@ const UiConfigFieldSpec = Type.Object(
 );
 
 export const UiConfigSpec = Type.Object({
-  allowToggleYaml: Type.Boolean({ title: "Allow toggle YAML" }),
-  isDisplaySummary: Type.Boolean({ title: "Is display summary" }),
-  isDisplayFooter: Type.Boolean({
-    title: "Is display footer",
-  }),
   title: Type.String({
     title: "Title",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
   layout: Type.Object(
     {
-      type: Type.KeyOf(
-        Type.Object({
-          simple: Type.Boolean(),
-          tabs: Type.Boolean(),
-          wizard: Type.Boolean(),
-        }),
-        {
-          title: "Type",
-        }
-      ),
+      type: StringUnion(["simple", "tabs", "wizard"], {
+        title: "Type",
+      }),
       fields: Type.Array(UiConfigFieldSpec, {
         title: "Fields",
         widget: "core/v1/array",
@@ -122,7 +265,10 @@ export const UiConfigSpec = Type.Object({
           fields: Type.Array(UiConfigFieldSpec, {
             title: "Fields",
             widget: "core/v1/array",
-            widgetOptions: { displayedKeys: ["path", "label"], appendToBody: true },
+            widgetOptions: {
+              displayedKeys: ["path", "label"],
+              appendToBody: true,
+            },
           }),
         }),
         {
@@ -143,7 +289,10 @@ export const UiConfigSpec = Type.Object({
           fields: Type.Array(UiConfigFieldSpec, {
             title: "Fields",
             widget: "core/v1/array",
-            widgetOptions: { displayedKeys: ["path", "label"], appendToBody: true },
+            widgetOptions: {
+              displayedKeys: ["path", "label"],
+              appendToBody: true,
+            },
           }),
           disabled: Type.Boolean({ title: "Disabled" }),
           prevText: Type.String({ title: "Previous text" }),
@@ -164,10 +313,44 @@ export const UiConfigSpec = Type.Object({
     },
     {
       title: "Layout",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
     }
   ),
-  confirmText: Type.String({ title: "Confirm text" }),
-  cancelText: Type.String({ title: "Cancel text" }),
+  confirmText: Type.String({
+    title: "Confirm text",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+    conditions: [
+      {
+        key: "isDisplayFooter",
+        value: true,
+      },
+    ],
+  }),
+  cancelText: Type.String({
+    title: "Cancel text",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+    conditions: [
+      {
+        key: "isDisplayFooter",
+        value: true,
+      },
+    ],
+  }),
+  allowToggleYaml: Type.Boolean({
+    title: "Allow toggle YAML",
+    category: PRESET_PROPERTY_CATEGORY.Behavior,
+    default: true,
+  }),
+  isDisplaySummary: Type.Boolean({
+    title: "Is display summary",
+    category: PRESET_PROPERTY_CATEGORY.Behavior,
+    default: true,
+  }),
+  isDisplayFooter: Type.Boolean({
+    title: "Is display footer",
+    category: PRESET_PROPERTY_CATEGORY.Behavior,
+    default: true,
+  }),
 });
 
 const KubectlApplyFormProps = Type.Object({
@@ -175,16 +358,6 @@ const KubectlApplyFormProps = Type.Object({
     title: "Base path",
     category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
-  applyConfig: Type.Object(
-    {
-      create: Type.Boolean({ title: "Create" }),
-      patch: Type.Boolean({ title: "Patch" }),
-    },
-    {
-      title: "Apply config",
-      category: PRESET_PROPERTY_CATEGORY.Basic,
-    }
-  ),
   formConfig: Type.Object(
     {
       yaml: Type.String({
@@ -200,9 +373,13 @@ const KubectlApplyFormProps = Type.Object({
       widget: "kui/v1/KubectlApplyFormDesignWidget",
     }
   ),
+  submitting: Type.Boolean({
+    title: "Submitting",
+    category: STATUS_CATEGORY,
+  }),
   error: Type.String({
-    title: "Error",
-    category: PRESET_PROPERTY_CATEGORY.Behavior,
+    title: "Error text",
+    category: STATUS_CATEGORY,
   }),
   errorDetail: Type.Object(
     {
@@ -211,17 +388,14 @@ const KubectlApplyFormProps = Type.Object({
     },
     {
       title: "Error detail",
-      category: PRESET_PROPERTY_CATEGORY.Behavior,
+      category: STATUS_CATEGORY,
     }
   ),
-  submitting: Type.Boolean({
-    title: "Submitting",
-    category: PRESET_PROPERTY_CATEGORY.Behavior,
-  }),
 });
 
 const KubectlApplyFormState = Type.Object({
   value: Type.Any(),
+  displayValue: Type.Any(),
   latestChangedKey: Type.String(),
   latestChangedPath: Type.String(),
   step: Type.Number(),
@@ -235,10 +409,6 @@ export const KubectlApplyForm = implementRuntimeComponent({
     name: "kubectl_apply_form",
     displayName: "Kubectl Apply Form",
     exampleProperties: {
-      applyConfig: {
-        create: true,
-        patch: true,
-      },
       formConfig: {
         yaml: "",
         schemas: [],
@@ -262,9 +432,19 @@ export const KubectlApplyForm = implementRuntimeComponent({
       setField: Type.Object({
         fieldPath: Type.String(),
         value: Type.Any(),
+        displayValue: Type.Any(),
       }),
-      nextStep: Type.Object({}),
-      apply: Type.Object({}),
+      setDisplayValue: Type.Object({
+        fieldPath: Type.String(),
+        displayValue: Type.Any(),
+      }),
+      nextStep: Type.Object({
+        disabled: Type.Boolean(),
+      }),
+      apply: Type.Object({
+        disabled: Type.Boolean(),
+        transformMap: Type.Record(Type.String(), Type.Any()),
+      }),
       clearError: Type.Object({}),
     },
     slots: {
@@ -288,7 +468,6 @@ export const KubectlApplyForm = implementRuntimeComponent({
 })(
   ({
     basePath,
-    applyConfig,
     formConfig,
     error,
     errorDetail,
@@ -297,12 +476,12 @@ export const KubectlApplyForm = implementRuntimeComponent({
     allComponents,
     component,
     services,
-    mergeState,
     slotsElements,
-    subscribeMethods,
     customStyle,
     callbackMap,
     elementRef,
+    mergeState,
+    subscribeMethods,
   }) => {
     const [step, setStep] = useState(0);
     const [values, setValues] = useState<any[]>(() => {
@@ -313,45 +492,113 @@ export const KubectlApplyForm = implementRuntimeComponent({
       mergeState({ value: initValues });
       return initValues;
     });
+    const [displayValues, setDisplayValues] = useState<Record<string, any>>({});
+    const ref = useRef<KubectlApplyFormRef>(null);
+    const updatedDisplayValuesRef = useRef<Record<string, any>>({});
+
+    const changeStep = useCallback(
+      (newStep) => {
+        mergeState({
+          step: newStep,
+        });
+        setStep(newStep);
+      },
+      [mergeState]
+    );
+
     useEffect(() => {
       subscribeMethods({
-        setField({ fieldPath, value: fieldValue }) {
+        setField({ fieldPath, value: fieldValue, displayValue }) {
           const finalFieldValue =
             fieldValue && typeof fieldValue === "object"
               ? cloneDeep(fieldValue)
               : fieldValue;
           const newValues = set(values, fieldPath, finalFieldValue);
+          updatedDisplayValuesRef.current = {
+            ...updatedDisplayValuesRef.current,
+            ...displayValues,
+            [fieldPath]: displayValue,
+          };
 
           mergeState({
             value: newValues,
+            displayValue: updatedDisplayValuesRef.current,
           });
           setValues([...newValues]);
+          setDisplayValues(updatedDisplayValuesRef.current);
         },
-        nextStep() {
+        setDisplayValue({ fieldPath, displayValue }) {
+          updatedDisplayValuesRef.current = {
+            ...updatedDisplayValuesRef.current,
+            ...displayValues,
+            [fieldPath]: displayValue,
+          };
           mergeState({
-            step: step + 1,
+            displayValue: updatedDisplayValuesRef.current,
           });
-          setStep(step + 1);
+          setDisplayValues(updatedDisplayValuesRef.current);
         },
-        async apply() {
+        nextStep({ disabled }) {
+          let result: Record<string, string[]> = {};
+
+          if (ref.current) {
+            result = ref.current.validate();
+          }
+
+          if (
+            Object.values(result).every((messages) => messages.length === 0) &&
+            !disabled
+          ) {
+            changeStep(step + 1);
+          }
+        },
+        async apply({ disabled, transformMap }) {
           try {
-            const sdk = new KubeSdk({
-              basePath,
-            });
-            mergeState({
-              loading: true,
-            });
-            await sdk.applyYaml(values);
-            mergeState({
-              loading: false,
-            });
-            callbackMap?.onApplySuccess?.();
+            let result: Record<string, string[]> = {};
+
+            if (ref.current) {
+              result = ref.current.validate();
+            }
+
+            if (
+              Object.values(result).every(
+                (messages) => messages.length === 0
+              ) &&
+              !disabled
+            ) {
+              const sdk = new KubeSdk({
+                basePath,
+              });
+              let transformedValues = values;
+
+              Object.keys(transformMap || {}).forEach((path) => {
+                const transformedValue = transformMap[path];
+
+                transformedValues = produce(transformedValues, (draftState) => {
+                  set(draftState, path, transformedValue);
+                }) as any[];
+              });
+              const appliedValues = transformedValues.filter(
+                (value, index) => !formConfig.schemas[index][CUSTOM_SCHEMA_KIND]
+              );
+
+              mergeState({
+                loading: true,
+              });
+
+              await sdk.applyYaml(appliedValues);
+
+              mergeState({
+                loading: false,
+              });
+              callbackMap?.onApplySuccess?.();
+            }
           } catch (error: any) {
             if (error.response) {
               error.response
                 .clone()
                 .json()
-                .then((result: any) => {
+                .then((result: unknown) => {
                   mergeState({
                     error: {
                       ...error,
@@ -363,7 +610,6 @@ export const KubectlApplyForm = implementRuntimeComponent({
 
             mergeState({
               loading: false,
-              error,
             });
             callbackMap?.onApplyFail?.();
           }
@@ -374,41 +620,76 @@ export const KubectlApplyForm = implementRuntimeComponent({
           });
         },
       });
-    }, [step, subscribeMethods, mergeState, values, callbackMap]);
+    }, [
+      step,
+      values,
+      displayValues,
+      callbackMap,
+      basePath,
+      subscribeMethods,
+      mergeState,
+      changeStep,
+      formConfig.schemas,
+    ]);
+    useEffect(() => {
+      if (isEqual(updatedDisplayValuesRef.current, displayValues)) {
+        updatedDisplayValuesRef.current = {};
+      }
+    }, [displayValues]);
+
+    if (ref.current && elementRef) {
+      elementRef.current = ref.current.getElementRef().current;
+    }
 
     return (
       <_KubectlApplyForm
-        ref={elementRef}
+        ref={ref}
         className={css(customStyle?.content)}
         basePath={basePath}
-        applyConfig={applyConfig}
         schemas={formConfig.schemas}
         uiConfig={formConfig.uiConfig}
         values={values}
+        displayValues={displayValues}
         error={error}
         errorDetail={errorDetail}
         submitting={submitting}
         step={step}
-        setStep={(step) => {
-          mergeState({
-            step,
-          });
-          setStep(step);
-        }}
+        setStep={changeStep}
         defaultValues={formConfig.defaultValues}
-        onChange={(newValues: any, key?: string, dataPath?: string) => {
+        onChange={(
+          newValues: any,
+          displayValues: Record<string, any>,
+          key?: string,
+          dataPath?: string
+        ) => {
+          updatedDisplayValuesRef.current = {
+            ...updatedDisplayValuesRef.current,
+            ...displayValues,
+          };
           setValues(newValues);
+          setDisplayValues(updatedDisplayValuesRef.current);
           mergeState({
             value: newValues,
+            displayValue: updatedDisplayValuesRef.current,
             latestChangedKey: key,
             latestChangedPath: dataPath,
           });
           callbackMap?.onChange?.();
         }}
+        onDisplayValuesChange={(displayValues: Record<string, any>) => {
+          updatedDisplayValuesRef.current = {
+            ...updatedDisplayValuesRef.current,
+            ...displayValues,
+          };
+          setDisplayValues(updatedDisplayValuesRef.current);
+          mergeState({
+            displayValue: updatedDisplayValuesRef.current,
+          });
+        }}
         onNextStep={callbackMap?.onNextStep}
         onSubmit={callbackMap?.onSubmit}
         onCancel={callbackMap?.onCancel}
-        getSlot={(f, fallback, slotKey) => {
+        getSlot={(field: FormItemData, fallback, slotKey) => {
           return (
             generateSlotChildren(
               {
@@ -423,18 +704,18 @@ export const KubectlApplyForm = implementRuntimeComponent({
               },
               {
                 generateId(child) {
-                  return f.index !== undefined
-                    ? `${child.id}_${f.index}`
+                  return field.index !== undefined
+                    ? `${child.id}_${field.index}`
                     : child.id;
                 },
                 generateProps() {
-                  return (f as Static<typeof UiConfigFieldSpec>) || {};
+                  return (field as Static<typeof UiConfigFieldSpec>) || {};
                 },
               }
             ) || fallback
           );
         }}
-        getHelperSlot={(f, fallback, slotKey) => {
+        getHelperSlot={(field: FormItemData, fallback, slotKey) => {
           return (
             generateSlotChildren(
               {
@@ -449,12 +730,12 @@ export const KubectlApplyForm = implementRuntimeComponent({
               },
               {
                 generateId(child) {
-                  return f.index !== undefined
-                    ? `${child.id}_${f.index}`
+                  return field.index !== undefined
+                    ? `${child.id}_${field.index}`
                     : child.id;
                 },
                 generateProps() {
-                  return (f as Static<typeof UiConfigFieldSpec>) || {};
+                  return (field as Static<typeof UiConfigFieldSpec>) || {};
                 },
               }
             ) || fallback

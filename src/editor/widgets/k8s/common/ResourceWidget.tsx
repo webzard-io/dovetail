@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { first } from "lodash";
 import store from "../store";
 import { observer } from "mobx-react-lite";
-import { parseKubeApi } from "src/_internal/k8s-api-client/kube-api";
 import useProperty from "../../../hooks/useProperty";
 
 export default implementWidget({
@@ -47,17 +46,14 @@ export default implementWidget({
 
     const fetchResourceSchema = useCallback(
       (resource: string) => {
-        const apiPath = `${apiBase}/${resource}`;
-        const { apiVersionWithGroup } = parseKubeApi(apiPath);
-
         store.fetchResourcesSchemas(basePath || "", [
           {
-            apiVersionWithGroup,
+            apiBase,
             kind: map[resource].kind,
           },
         ]);
       },
-      [apiBase, map]
+      [basePath, apiBase, map]
     );
 
     useEffect(() => {

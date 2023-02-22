@@ -11,6 +11,7 @@ import { css } from "@emotion/css";
 import Icon from "../atoms/themes/CloudTower/components/Icon/Icon";
 import registry from "../../services/Registry";
 import { StringUnion } from "@sunmao-ui/runtime";
+import { last } from "lodash";
 
 const { Panel } = Collapse;
 
@@ -116,7 +117,7 @@ type GroupProps = WidgetProps<
 };
 
 const Group = (props: GroupProps) => {
-  const { widgetOptions, onRemove } = props;
+  const { path, widgetOptions, onRemove } = props;
   const kit = useContext(KitContext);
   const icon = registry.icons.get(widgetOptions?.icon as any);
 
@@ -134,7 +135,9 @@ const Group = (props: GroupProps) => {
                 ></Icon>
               ) : null}
               {icon ? <GroupIcon>{icon}</GroupIcon> : null}
-              <GroupTitle>{widgetOptions?.title}</GroupTitle>
+              <GroupTitle>
+                {widgetOptions?.title || last(path.split("."))}
+              </GroupTitle>
             </GroupTitleWrapper>
             {onRemove ? (
               <span>

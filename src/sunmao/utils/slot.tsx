@@ -31,12 +31,21 @@ type Options = {
 };
 
 export const generateSlotChildren = (
-  { allComponents, app, component, services, slot, slotKey, fallback, slotsElements }: Props,
+  {
+    allComponents,
+    component,
+    services,
+    app,
+    slotsElements,
+    slot,
+    slotKey,
+    fallback,
+  }: Props,
   { generateId, generateProps }: Options
 ) => {
   const renderSet = new Set<string>();
   const slotTraitTypes = ["core/v1/slot", "core/v2/slot"];
-  const childrenSchema = allComponents.filter((c) => {
+  const childrenSchema = (allComponents || []).filter((c) => {
     return c.traits.find(
       (t) =>
         slotTraitTypes.includes(t.type) &&
@@ -66,8 +75,8 @@ export const generateSlotChildren = (
             key={child.id}
             component={child}
             app={app}
-            services={services}
             allComponents={allComponents}
+            services={services}
             childrenMap={{}}
             isInModule
             slotContext={{

@@ -11,7 +11,7 @@ import K8sOpenAPI, { k8sOpenAPIMap } from "./remote-schema";
 
 export class WidgetStore {
   resources = [];
-  schemas: JSONSchema7[] = [];
+  schemas: (JSONSchema7 | null)[] = [];
 
   constructor() {
     makeObservable(this, {
@@ -24,31 +24,34 @@ export class WidgetStore {
 
   get paths() {
     if (this.schemas.length) {
-      return this.schemas.map((schema) => Object.keys(getFields(schema)));
+      return this.schemas.map((schema) =>
+        Object.keys(schema ? getFields(schema) : {})
+      );
     }
 
     return [];
   }
 
-  async fetchResourcesSchemas(basePath: string, resources: any[]) {
-    const schemas = (
-      await Promise.all(
-        resources.map(async (resource) => {
-          const { apiVersionWithGroup, kind } = resource;
-          const api = k8sOpenAPIMap[basePath] || new K8sOpenAPI({basePath});
+  async fetchResourcesSchemas(
+    basePath: string,
+    resources: { apiBase: string; kind: string }[]
+  ) {
+    const schemas = await Promise.all(
+      resources.map(async (resource) => {
+        const { apiBase, kind } = resource;
+        const api = k8sOpenAPIMap[basePath] || new K8sOpenAPI({ basePath });
 
-          k8sOpenAPIMap[basePath] = api;
+        k8sOpenAPIMap[basePath] = api;
 
-          if (apiVersionWithGroup && kind) {
-            const schema = await api.getResourceSchema(apiVersionWithGroup, kind);
+        if (apiBase && kind) {
+          const schema = await api.getResourceSchema(apiBase, kind);
 
-            return schema;
-          }
+          return schema;
+        }
 
-          return null;
-        })
-      )
-    ).filter((schema): schema is JSONSchema7 => schema !== null);
+        return null;
+      })
+    );
 
     runInAction(() => {
       this.schemas = schemas;

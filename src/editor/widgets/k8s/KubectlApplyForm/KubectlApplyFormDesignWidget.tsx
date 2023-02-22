@@ -37,6 +37,7 @@ import MonacoEditor from "./MonacoEditor";
 import get from "lodash/get";
 import omit from "lodash/omit";
 import type { KubectlApplyFormProps } from "src/_internal/organisms/KubectlApplyForm/KubectlApplyForm";
+import { CUSTOM_SCHEMA_KIND } from "src/_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 import { Field } from "src/_internal/organisms/KubectlApplyForm/type";
 import { getJsonSchemaByPath } from "src/_internal/utils/schema";
 import { UiConfigSpec } from "src/sunmao/components/KubectlApplyForm";
@@ -162,6 +163,7 @@ const KubectlApplyFormDesignWidget: React.FC<
   const [loadingSchema, setLoadingSchema] = useState(false);
   const [jsonEditorMode, setJsonEditorMode] = useState(false);
   const [uiConfig, setUiConfig] = useState(formConfig.current.uiConfig);
+  const [updater, setUpdater] = useState(1);
   const basePath = useProperty({
     services,
     component,
@@ -193,12 +195,13 @@ const KubectlApplyFormDesignWidget: React.FC<
     }
 
     return spec || UiConfigSpec;
-  }, [formConfig.current.schemas, props.spec]);
+  }, [formConfig.current.schemas, props.spec, updater]);
 
   useEffect(() => {
     store.schemas = formConfig.current.schemas;
   }, []);
 
+  // use updater to trigger update
   return (
     <ChakraProvider theme={theme}>
       <Box>
@@ -217,7 +220,10 @@ const KubectlApplyFormDesignWidget: React.FC<
             <ModalHeader>
               <Steps
                 activeStep={activeStep}
-                onClickStep={(step) => setStep(step)}
+                onClickStep={(step) => {
+                  setStep(step);
+                  setUpdater(updater + 1);
+                }}
                 width="50%"
                 margin="auto"
                 size="sm"
@@ -260,11 +266,13 @@ const KubectlApplyFormDesignWidget: React.FC<
                         >
                           <TabList>
                             {formConfig.current.schemas.map((s, idx) => {
-                              const resource = get(
-                                s,
-                                "x-kubernetes-group-version-kind[0].kind",
-                                `Resource ${idx + 1}`
-                              );
+                              const resource =
+                                get(
+                                  s,
+                                  "x-kubernetes-group-version-kind[0].kind"
+                                ) ||
+                                get(s, `${CUSTOM_SCHEMA_KIND}[0].kind`) ||
+                                `Resource ${idx + 1}`;
                               return <Tab key={idx}>{resource}</Tab>;
                             })}
                           </TabList>
@@ -328,7 +336,8 @@ const KubectlApplyFormDesignWidget: React.FC<
                           </TabPanels>
                         </Tabs>
                       ))}
-                    {activeStep === 2 && (
+                    {activeStep === 2 && updater && (
+                      // use the updater to trigger the updating for using latest schemas
                       <Box>
                         <SpecWidget
                           component={props.component}
@@ -375,6 +384,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                   <Button
                     size="sm"
                     onClick={async () => {
+                      setUpdater(updater + 1);
                       nextStep();
                       if (activeStep === 0) {
                         // go to schema step
@@ -385,15 +395,31 @@ const KubectlApplyFormDesignWidget: React.FC<
 
                         formConfig.current.defaultValues = resources;
                         setLoadingSchema(true);
+
                         formConfig.current.schemas = (
                           await store.fetchResourcesSchemas(
                             basePath,
                             resources.map((resource) => ({
-                              apiVersionWithGroup: resource.apiVersion,
+                              apiBase:
+                                resource.apiVersion === "v1"
+                                  ? `/api/${resource.apiVersion}`
+                                  : `/apis/${resource.apiVersion}`,
                               kind: resource.kind,
                             }))
                           )
-                        ).map((schema) => omit(schema, ["properties.status"]));
+                        ).map((schema, index) =>
+                          schema
+                            ? omit(schema, ["properties.status"])
+                            : formConfig.current.schemas[index] || {
+                                type: "object",
+                                properties: {},
+                                [CUSTOM_SCHEMA_KIND]: [
+                                  {
+                                    kind: resources[index].kind,
+                                  },
+                                ],
+                              }
+                        );
 
                         if (fieldsIsEmpty(formConfig.current.uiConfig)) {
                           formConfig.current.uiConfig.layout = {

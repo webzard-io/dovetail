@@ -1,4 +1,5 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useMemo } from "react";
+import { KubeSdk, Unstructured } from "../../_internal/k8s-api-client/kube-api";
 import { Type } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { StringUnion, PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
@@ -10,18 +11,33 @@ import {
 import { renderWidget } from "../utils/widget";
 import { css } from "@emotion/css";
 
+const WIDGET_CATEGORY = "Widget";
+
 const InfoSpec = Type.Object(
   {
-    label: Type.String({ title: "Label" }),
-    key: Type.String({ title: "Key" }),
+    label: Type.String({
+      title: "Label",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
+    }),
+    key: Type.String({
+      title: "Key",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
+    }),
     path: Type.String({
       title: "Path",
       widget: "kui/v1/PathWidget",
+      category: PRESET_PROPERTY_CATEGORY.Basic,
+    }),
+    condition: Type.Boolean({
+      title: "Condition",
+      default: true,
+      category: PRESET_PROPERTY_CATEGORY.Basic,
     }),
     widget: StringUnion(
       ["default", "component"].concat(Object.keys(DISPLAY_WIDGETS_MAP)),
       {
         title: "Widget",
+        category: WIDGET_CATEGORY,
       }
     ),
     widgetOptions: Type.Record(Type.String(), Type.Any(), {
@@ -30,6 +46,7 @@ const InfoSpec = Type.Object(
       widgetOptions: {
         optionsMap: DISPLAY_WIDGET_OPTIONS_MAP,
       },
+      category: WIDGET_CATEGORY,
     }),
     componentId: Type.String({
       title: "Component ID",
@@ -46,9 +63,7 @@ const InfoSpec = Type.Object(
           value: "component",
         },
       ],
-    }),
-    condition: Type.Boolean({
-      title: "Condition",
+      category: WIDGET_CATEGORY,
     }),
   },
   {
@@ -113,8 +128,8 @@ const KubectlGetDetailProps = Type.Object({
     title: "Name",
     category: PRESET_PROPERTY_CATEGORY.Data,
   }),
-  fieldSelector: Type.String({
-    title: "Field selector",
+  query: Type.Record(Type.String(), Type.Any(), {
+    title: "Query",
     category: PRESET_PROPERTY_CATEGORY.Data,
   }),
   layout: Type.Object(
@@ -175,6 +190,7 @@ const KubectlGetDetailState = Type.Object({
   loading: Type.Boolean(),
   error: Type.String(),
   activeTab: Type.String(),
+  deleting: Type.Boolean(),
 });
 
 export const KubectlGetDetail = implementRuntimeComponent({
@@ -183,11 +199,11 @@ export const KubectlGetDetail = implementRuntimeComponent({
     name: "kubectl_get_detail",
     displayName: "Kubectl Get Detail",
     exampleProperties: {
-      basePath: "proxy-k8s",
-      apiBase: "/apis/apps/v1",
-      namespace: "kube-system",
-      resource: "deployments",
-      name: "coredns",
+      basePath: "/api/k8s",
+      apiBase: "/apis/storage.k8s.io/v1",
+      namespace: "",
+      resource: "storageclasses",
+      name: "",
       layout: {
         type: "tabs",
         tabs: [
@@ -202,14 +218,17 @@ export const KubectlGetDetail = implementRuntimeComponent({
                     {
                       label: "Name",
                       path: "metadata.name",
+                      condition: true,
                     },
                     {
                       label: "Labels",
                       path: "metadata.labels",
+                      condition: true,
                     },
                     {
                       label: "Age",
                       path: "metadata.creationTimestamp",
+                      condition: true,
                     },
                   ],
                 },
@@ -224,6 +243,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
         ],
         sections: [],
       },
+      query: {},
     },
     annotations: {
       category: "Display",
@@ -234,6 +254,11 @@ export const KubectlGetDetail = implementRuntimeComponent({
     state: KubectlGetDetailState,
     methods: {
       setActiveTab: Type.Object({ activeTab: Type.String() }),
+      delete: Type.Object({
+        options: Type.Object({
+          sync: Type.Boolean(),
+        }),
+      }),
     },
     slots: {
       tab: {
@@ -289,7 +314,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
       },
     },
     styleSlots: ["content"],
-    events: ["onItemDeleted"],
+    events: ["onItemDeleted", "onDeleteSuccess", "onDeleteFail"],
   },
 })(
   ({
@@ -302,6 +327,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
     name,
     layout,
     errorText,
+    query,
     mergeState,
     customStyle,
     slotsElements,
@@ -311,8 +337,12 @@ export const KubectlGetDetail = implementRuntimeComponent({
     const [activeTab, setActiveTab] = useState<string>(
       layout.tabs?.[0]?.key || ""
     );
+    const [data, setData] = useState<Unstructured | null>(null);
+    const kubeSdk = useMemo(() => new KubeSdk({ basePath }), [basePath]);
+
     const onResponse = useCallback(
       (res) => {
+        setData(res.data);
         mergeState({
           data: res.data,
           loading: res.loading,
@@ -323,7 +353,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
           callbackMap?.onItemDeleted?.();
         }
       },
-      [mergeState]
+      [mergeState, callbackMap]
     );
     const onTabChange = useCallback(
       (key: string) => {
@@ -339,8 +369,28 @@ export const KubectlGetDetail = implementRuntimeComponent({
         setActiveTab: ({ activeTab: newActiveTab }) => {
           setActiveTab(newActiveTab);
         },
+        async delete() {
+          if (data) {
+            try {
+              mergeState({ deleting: true });
+              await kubeSdk.deleteYaml([data]);
+              callbackMap?.onDeleteSuccess?.();
+            } catch {
+              callbackMap?.onDeleteFail?.();
+            } finally {
+              mergeState({ deleting: false });
+            }
+          }
+        },
       });
-    }, [setActiveTab]);
+    }, [
+      subscribeMethods,
+      setActiveTab,
+      mergeState,
+      callbackMap,
+      kubeSdk,
+      data,
+    ]);
 
     return (
       <BaseKubectlGetDetail
@@ -352,6 +402,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
         namespace={namespace}
         resource={resource}
         name={name}
+        query={query}
         layout={layout}
         renderTab={(params, data, fallback) => {
           return slotsElements.tab?.(

@@ -11,9 +11,9 @@ export default implementWidget<"kui/v1/ApiBaseWidget">({
     name: "ApiBaseWidget",
   },
 })((props) => {
-  const { component, path, services, } = props;
+  const { component, path, services } = props;
   const [apiBases, setApiBases] = useState<string[]>([]);
-  const basePath = useProperty({
+  const basePath: string = useProperty({
     services,
     component,
     path,
@@ -21,7 +21,11 @@ export default implementWidget<"kui/v1/ApiBaseWidget">({
   });
 
   const api = useMemo(
-    () => k8sOpenAPIMap[basePath] || new K8sOpenAPI({ basePath }),
+    () =>
+      k8sOpenAPIMap[basePath] ||
+      new K8sOpenAPI({
+        basePath: basePath.endsWith("/") ? basePath : `${basePath}/`,
+      }),
     [basePath]
   );
 

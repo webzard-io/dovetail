@@ -150,6 +150,7 @@ type KubectlGetDetailProps = {
   namespace?: string;
   resource: string;
   name: string;
+  query?: Record<string, any>;
   layout: Layout;
   errorText?: string;
   renderTab?: (
@@ -183,7 +184,7 @@ type KubectlGetDetailProps = {
 const KubectlGetDetail = React.forwardRef<
   HTMLDivElement,
   KubectlGetDetailProps
->((props, ref) => {
+>(function KubectlGetDetail(props, ref) {
   const {
     className,
     basePath,
@@ -192,6 +193,7 @@ const KubectlGetDetail = React.forwardRef<
     namespace,
     resource,
     name,
+    query,
     layout,
     errorText,
     renderTab,
@@ -220,8 +222,8 @@ const KubectlGetDetail = React.forwardRef<
       basePath: basePath,
       watchWsBasePath,
       objectConstructor: {
-        apiBase: `${apiBase}/${resource}`,
-        kind: "",
+        resourceBasePath: apiBase,
+        resource,
         namespace,
       },
     });
@@ -231,21 +233,31 @@ const KubectlGetDetail = React.forwardRef<
     return api
       .listWatch({
         query: {
-          namespace,
-          fieldSelector: compact([`metadata.name=${name}`]),
+          ...(query || {}),
+          fieldSelector: compact(
+            (name ? [`metadata.name=${name}`] : []).concat(
+              query?.fieldSelector || []
+            )
+          ),
         },
-        cb: (res) => {
+        onResponse: (res) => {
           setResponse(() => ({
             loading: false,
             error: null,
-            data: res.items[0],
+            data: res.items[0]
+              ? {
+                  ...res.items[0],
+                  kind: res.kind.replace(/List$/g, ""),
+                  apiVersion: res.apiVersion,
+                }
+              : null,
           }));
         },
       })
       .catch((err) => {
         setResponse(() => ({ loading: false, error: err, data: null }));
       });
-  }, [basePath, apiBase, namespace, resource, name]);
+  }, [basePath, watchWsBasePath, apiBase, namespace, resource, name]);
 
   useEffect(() => {
     onResponse?.(response);

@@ -52,7 +52,7 @@ type KubectlGetListProps = {
   resource: string;
   namespace?: string;
   apiBase: string;
-  fieldSelector?: string;
+  query?: Record<string, any>;
   emptyText?: string;
   errorText?: string;
   onResponse?: (res: Response) => void;
@@ -60,18 +60,18 @@ type KubectlGetListProps = {
 };
 
 const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
-  ({
+  function KubectlGetList({
     basePath,
     watchWsBasePath,
     apiBase,
     namespace,
     resource,
-    fieldSelector,
+    query,
     emptyText,
     errorText,
     onResponse,
     onClickItem,
-  }) => {
+  }) {
     const { t } = useTranslation();
     const kit = useContext(KitContext);
     const [response, setResponse] = useState<Response>({
@@ -86,16 +86,16 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
         basePath,
         watchWsBasePath,
         objectConstructor: {
-          kind: "",
-          apiBase: `${apiBase}/${resource}`,
+          resourceBasePath: apiBase,
+          resource,
           namespace,
         },
       });
       setResponse((prev) => ({ ...prev, loading: true }));
       return api
         .listWatch({
-          query: fieldSelector ? { fieldSelector } : {},
-          cb: (res) => {
+          query: query || {},
+          onResponse: (res) => {
             setResponse(() => ({
               loading: false,
               error: null,
@@ -113,7 +113,14 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
         .catch((err) => {
           setResponse(() => ({ loading: false, error: err, data: emptyData }));
         });
-    }, [apiBase, resource, namespace, basePath, fieldSelector]);
+    }, [
+      apiBase,
+      watchWsBasePath,
+      resource,
+      namespace,
+      basePath,
+      query,
+    ]);
 
     useEffect(() => {
       const stopP = fetch();

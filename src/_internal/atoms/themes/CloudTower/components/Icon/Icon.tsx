@@ -17,6 +17,9 @@ import XmarkRemove16Secondary from "../../images/1-xmark-remove-16-secondary.svg
 import CaretTriangleDown16 from "../../images/1-caret-triangle-down-16.svg";
 import PlusAddCreateNew16Gray from "../../images/1-plus-add-create-new-16-gray.svg";
 import PlusAddCreateNew16Blue from "../../images/1-plus-add-create-new-16-blue.svg";
+import PlusAddCreateNew16Secondary from "../../images/1-plus-add-create-new-16-secondary.svg";
+import XmarkRemoveSmall16Secondary from "../../images/1-xmark-remove-small-16-secondary.svg";
+import XmarkRemoveSmall16Blue from "../../images/1-xmark-remove-small-16-blue.svg";
 
 const ICON_MAP = {
   "1-arrow-chevron-down-16-blue": ArrowChevronDown16Blue,
@@ -33,7 +36,10 @@ const ICON_MAP = {
   "1-exclamation-error-circle-fill-16-red": ExclamationErrorCircleFill16Red,
   "1-caret-triangle-down-16": CaretTriangleDown16,
   "1-plus-add-create-new-16-gray": PlusAddCreateNew16Gray,
-  "1-plus-add-create-new-16-blue": PlusAddCreateNew16Blue
+  "1-plus-add-create-new-16-blue": PlusAddCreateNew16Blue,
+  "1-plus-add-create-new-16-secondary": PlusAddCreateNew16Secondary,
+  "1-xmark-remove-small-16-secondary": XmarkRemoveSmall16Secondary,
+  "1-xmark-remove-small-16-blue": XmarkRemoveSmall16Blue,
 };
 
 export type IconTypes = keyof typeof ICON_MAP;
@@ -56,9 +62,16 @@ type IconProps = React.HTMLAttributes<HTMLSpanElement> & {
     hoverType?: string;
     activeType?: string;
   };
+  style?: React.CSSProperties;
+  onMouseEnter?: (e: MouseEvent)=> void;
+  onMouseLeave?: (e: MouseEvent)=> void;
+  onMouseMove?: (e: MouseEvent)=> void;
 };
 
-const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
+const Icon = React.forwardRef<HTMLSpanElement, IconProps>(function Icon(
+  props,
+  ref
+) {
   const {
     type = "",
     hoverType,
@@ -86,9 +99,9 @@ const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
   const _iconHeight = iconHeight || _iconWidth;
 
   useEffect(() => {
-    (async ()=> {
-      let src = ""
-      
+    (async () => {
+      let src = "";
+
       if (active && activeType) {
         src = ICON_MAP[activeType];
       } else if (hover && hoverType) {
@@ -96,9 +109,9 @@ const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
       } else if (type) {
         src = ICON_MAP[type];
       }
-  
+
       setSrc(src);
-    })()
+    })();
   }, [active, activeType, hoverType, type, hover, fileFormat]);
 
   return (
@@ -134,7 +147,6 @@ const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
       {prefix}
       <span className="icon-inner">
         <img
-          alt={type}
           src={src}
           width={`${_iconWidth}px`}
           height={

@@ -3,23 +3,35 @@ import { WidgetProps } from "./widget";
 import Group from "../Group";
 import SpecField from "./SpecField";
 import { getJsonSchemaByPath } from "src/_internal/utils/schema";
-import { immutableSet } from "../../../editor/utils/object";
-import { get } from "lodash";
+import { get, set } from "lodash";
 import type { Field } from "../../organisms/KubectlApplyForm/type";
 import { isObject } from "lodash";
+import { JSONSchema7 } from "json-schema";
+import produce from "immer";
 
 export function resolveSubFields(props: WidgetProps) {
-  const { field, spec, value, path, level, error, onChange } = props;
+  const { specsArray, field, spec, value, path, level, error, onChange } =
+    props;
   const fields: Field[] = field?.fields || [];
   const properties = Object.keys(spec.properties || {});
+  const isLayout = field?.type === "layout";
 
   if (fields.length) {
     // if configure the sub fields then use them
     return fields.map((subField) => {
       if (!subField.path) return null;
 
-      const subSpec = getJsonSchemaByPath(spec, subField.path) || {};
+      let subSpec: JSONSchema7 | null = {};
       const errorInfo = subField?.error || error;
+
+      if (field?.path) {
+        subSpec = getJsonSchemaByPath(spec, subField.path);
+      } else {
+        const [schemaIndex, ...subPath] = subField.path.split(".");
+
+        subSpec =
+          specsArray[Number(schemaIndex)]?.[subPath.join(".")].spec || {};
+      }
 
       return (
         <SpecField
@@ -37,13 +49,19 @@ export function resolveSubFields(props: WidgetProps) {
             ...subSpec,
             title: subField.label,
           }}
-          path={path.concat(`.${subField.path}`)}
+          path={path.concat(isLayout ? subField.path : `.${subField.path}`)}
           level={level + 1}
           value={get(value, subField.path)}
-          onChange={(newValue, key, dataPath) => {
-            const result = immutableSet(value, subField.path, newValue);
+          onChange={(newValue, displayValues, key, dataPath) => {
+            if (isLayout) {
+              onChange(newValue, displayValues, key, dataPath);
+            } else {
+              const result = produce(value || {}, (draftState: any) => {
+                set(draftState, subField.path, newValue);
+              });
 
-            onChange(result, key, dataPath);
+              onChange(result, displayValues, key, dataPath);
+            }
           }}
         />
       );

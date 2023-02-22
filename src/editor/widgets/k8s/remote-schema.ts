@@ -190,7 +190,7 @@ class K8sOpenAPI {
     }
 
     const properties = this.cache.openApi.definitions[def].properties;
-    let spec = key ? properties[key] : properties;
+    const spec = key ? properties[key] : properties;
 
     this.resolveRef(spec, {
       prune: {
@@ -206,13 +206,20 @@ class K8sOpenAPI {
   }
 
   async getResourceSchema(
-    apiVersionWithGroup: string,
+    apiBase: string,
     kind: string
   ): Promise<JSONSchema7 | null> {
     if (!this.cache.openApi.swagger) {
-      this.cache.openApi = await ky
-        .get(`${this.options.basePath}/openapi/v2`)
-        .json<any>();
+      try {
+        this.cache.openApi = await ky
+          .get(`${this.options.basePath}/openapi/v2`, {
+            timeout: false,
+            retry: 0,
+          })
+          .json<any>();
+      } catch {
+        return null;
+      }
     }
 
     let schema;
@@ -223,9 +230,16 @@ class K8sOpenAPI {
         continue;
       }
       const gvk = value["x-kubernetes-group-version-kind"][0];
+      const defVersionWithGroup = `${gvk.group ? `${gvk.group}/` : ""}${
+        gvk.version
+      }`;
+      const defApiBase =
+        defVersionWithGroup === "v1"
+          ? `/api/${defVersionWithGroup}`
+          : `/apis/${defVersionWithGroup}`;
+
       if (
-        `${gvk.group ? `${gvk.group}/` : ""}${gvk.version}` ===
-          apiVersionWithGroup &&
+        defApiBase === apiBase &&
         value["x-kubernetes-group-version-kind"][0].kind === kind
       ) {
         schema = value;
@@ -253,6 +267,7 @@ class K8sOpenAPI {
         xProperty: true,
       },
     });
+
     return schema;
   }
 }

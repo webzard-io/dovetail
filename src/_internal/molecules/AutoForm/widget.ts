@@ -1,5 +1,5 @@
 import { JSONSchema7 } from "json-schema";
-import type { Field } from "../../organisms/KubectlApplyForm/type";
+import type { Field, Services, FormItemData } from "../../organisms/KubectlApplyForm/type";
 
 type WidgetOptions = Partial<{
   displayLabel: boolean;
@@ -7,24 +7,40 @@ type WidgetOptions = Partial<{
   step?: number;
 }>;
 
-export type WidgetProps<Value = any, WidgetOptions = Record<string, any>> = {
+type SlotFunction = (
+  props: FormItemData,
+  fallback: React.ReactNode,
+  key: string
+) => React.ReactNode;
+
+export type WidgetProps<
+  Value = any,
+  WidgetOptions = Record<string, unknown>
+> = {
+  services: Services;
   basePath: string;
   field?: Field;
+  item?: Field["subItem"]
+  itemKey: string;
   spec: JSONSchema7;
   widget?: string;
   widgetOptions?: WidgetOptions;
   level: number;
   path: string;
-  step?: number;
-  layout?: {
-    steps?: { paths: string[] }[];
-  };
-  stepElsRef: Record<number, HTMLElement | null>;
-  subKey?: string;
+  superiorKey?: string;
   index?: number;
   error?: string | string[] | Record<string, string>;
   value: Value;
-  onChange: (newValue: Value, key?: string, dataPath?: string) => void;
-  slot?: Function;
-  helperSlot?: Function;
+  displayValues: Record<string, unknown>;
+  onChange: (
+    newValue: Value,
+    displayValues: Record<string, unknown>,
+    key?: string,
+    dataPath?: string
+  ) => void;
+  onDisplayValuesChange: (displayValues: Record<string, unknown>) => void;
+  slot?: SlotFunction;
+  helperSlot?: SlotFunction;
+  setWidgetErrors: (errors: string[])=> void;
+  specsArray: Record<string, { spec: JSONSchema7 }>[];
 };

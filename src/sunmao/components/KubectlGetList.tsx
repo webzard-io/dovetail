@@ -5,7 +5,8 @@ import { css } from "@emotion/css";
 import BaseKubectlGetList, {
   type Response,
 } from "../../_internal/organisms/KubectlGetList";
-import { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 
 export const KubectlGetList = implementRuntimeComponent({
   version: "kui/v1",
@@ -62,8 +63,8 @@ export const KubectlGetList = implementRuntimeComponent({
           },
         ],
       }),
-      fieldSelector: Type.String({
-        title: "Field selector",
+      query: Type.Record(Type.String(), Type.Any(), {
+        title: "Query",
         category: PRESET_PROPERTY_CATEGORY.Data,
       }),
       emptyText: Type.String({
@@ -78,11 +79,19 @@ export const KubectlGetList = implementRuntimeComponent({
     state: Type.Object({
       items: Type.Array(Type.Any()),
       lastClickItem: Type.Any(),
+      deleting: Type.Boolean(),
     }),
-    methods: {},
+    methods: {
+      delete: Type.Object({
+        items: Type.Array(Type.Any()),
+        options: Type.Object({
+          sync: Type.Boolean(),
+        }),
+      }),
+    },
     slots: {},
     styleSlots: ["content"],
-    events: ["onClickItem"],
+    events: ["onClickItem", "onDeleteSuccess", "onDeleteFail"],
   },
 })(
   ({
@@ -91,16 +100,30 @@ export const KubectlGetList = implementRuntimeComponent({
     apiBase,
     namespace,
     resource,
-    fieldSelector,
+    query,
     emptyText,
     errorText,
     customStyle,
     elementRef,
     callbackMap,
+    subscribeMethods,
     mergeState,
   }) => {
+    const kubeSdk = useMemo(() => new KubeSdk({ basePath }), [basePath]);
+    const [response, setResponse] = useState<Response>({
+      data: {
+        apiVersion: "",
+        metadata: {},
+        kind: "",
+        items: [],
+      },
+      loading: false,
+      error: null,
+    });
+
     const onResponse = useCallback(
       (response: Response) => {
+        setResponse(response);
         mergeState({
           items: response.data.items,
         });
@@ -123,6 +146,27 @@ export const KubectlGetList = implementRuntimeComponent({
         lastClickItem: null,
       });
     }, []);
+    useEffect(() => {
+      subscribeMethods({
+        async delete({ items }) {
+          try {
+            mergeState({ deleting: true });
+            await kubeSdk.deleteYaml(
+              items.map((item) => ({
+                ...item,
+                kind: response.data.kind.replace(/List$/g, ""),
+                apiVersion: response.data.apiVersion,
+              }))
+            );
+            callbackMap?.onDeleteSuccess?.();
+          } catch {
+            callbackMap?.onDeleteFail?.();
+          } finally {
+            mergeState({ deleting: false });
+          }
+        },
+      });
+    }, [subscribeMethods, mergeState, callbackMap, kubeSdk, response]);
 
     return (
       <div className={css(customStyle?.content)} ref={elementRef}>
@@ -132,7 +176,7 @@ export const KubectlGetList = implementRuntimeComponent({
           apiBase={apiBase}
           namespace={namespace}
           resource={resource}
-          fieldSelector={fieldSelector}
+          query={query}
           emptyText={emptyText}
           errorText={errorText}
           onResponse={onResponse}

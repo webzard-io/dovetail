@@ -1,21 +1,9 @@
-import React from "react";
 import { JSONSchema7 } from "json-schema";
 import { WidgetProps } from "./widget";
-import UnsupportedField from "./UnsupportedField";
-import StringField from "./StringField";
-import ArrayField, { AddToArrayField } from "./ArrayField";
-import BooleanField from "./BooleanField";
-import NumberField from "./NumberField";
-import NullField from "./NullField";
-import ObjectField from "./ObjectField";
-import MultiSpecField from "./MultiSpecField";
 
-export function getFields(
-  spec: JSONSchema7
-): Record<
+export function getFields(spec: JSONSchema7): Record<
   string,
   {
-    Component: React.FC<WidgetProps>;
     spec: JSONSchema7;
   }
 > {
@@ -33,9 +21,7 @@ type RecursiveContext = {
 };
 
 function recursiveGetFields(spec: JSONSchema7, ctx: RecursiveContext) {
-  let Component = UnsupportedField;
   if (spec.type === "object") {
-    Component = ObjectField;
     const properties = Object.keys(spec.properties || {});
     for (const name of properties) {
       const subSpec = (spec.properties || {})[name] as WidgetProps["spec"];
@@ -47,32 +33,81 @@ function recursiveGetFields(spec: JSONSchema7, ctx: RecursiveContext) {
       }
     }
   } else if (spec.type === "string") {
-    Component = StringField;
   } else if (spec.type === "array") {
-    Component = ArrayField;
     const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
     if (itemSpec && typeof itemSpec === "object") {
       recursiveGetFields(itemSpec, {
         ...ctx,
-        path: ctx.path.concat(ctx.path ? `.$i` : '$i'),
+        path: ctx.path.concat(ctx.path ? ".$i" : "$i"),
       });
     }
-    ctx.fields[ctx.path.concat(ctx.path ? `.$add` : '$add')] = {
-      Component: AddToArrayField,
+    ctx.fields[ctx.path.concat(ctx.path ? ".$add" : "$add")] = {
       spec,
     };
-  } else if (spec.type === "boolean") {
-    Component = BooleanField;
-  } else if (spec.type === "integer" || spec.type === "number") {
-    Component = NumberField;
-  } else if (spec.type === "null") {
-    Component = NullField;
-  } else if ("anyOf" in spec || "oneOf" in spec) {
-    Component = MultiSpecField;
   }
 
-  ctx.fields[ctx.path || "*"] = {
-    Component,
-    spec,
+  if (ctx.path) {
+    ctx.fields[ctx.path] = {
+      spec,
+    };
+  } else {
+    ctx.fields["*"] = {
+      spec: getFieldsForWildcard(spec),
+    };
+  }
+}
+
+function getFieldsByLevel(spec: JSONSchema7, level = 0, maxLevel = 0) {
+  const newSpec: JSONSchema7 & { properties: Record<string, JSONSchema7> } = {
+    ...spec,
+    properties: {},
   };
+
+  for (const key in spec.properties) {
+    const propertySpec = spec.properties[key];
+
+    if (typeof propertySpec !== "boolean") {
+      switch (propertySpec.type) {
+        case "object": {
+          if (level < maxLevel) {
+            const objectSpec = getFieldsByLevel(
+              propertySpec,
+              level + 1,
+              maxLevel
+            );
+
+            if (
+              objectSpec.properties &&
+              Object.keys(objectSpec.properties).length
+            ) {
+              newSpec.properties[key] = objectSpec;
+            }
+          }
+          break;
+        }
+        case "array": {
+          if (
+            propertySpec.items &&
+            typeof propertySpec.items !== "boolean" &&
+            !("length" in propertySpec.items) &&
+            propertySpec.items.type !== "object" &&
+            propertySpec.items.type !== "array"
+          ) {
+            newSpec.properties[key] = propertySpec;
+          }
+          break;
+        }
+        default: {
+          newSpec.properties[key] = propertySpec;
+          break;
+        }
+      }
+    }
+  }
+
+  return newSpec;
+}
+
+function getFieldsForWildcard(spec: JSONSchema7) {
+  return getFieldsByLevel(spec, 0, 2);
 }

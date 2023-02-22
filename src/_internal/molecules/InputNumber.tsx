@@ -13,6 +13,7 @@ export const OptionsSpec = Type.Object({
 type Props = WidgetProps<number, Static<typeof OptionsSpec>>;
 
 const InputNumber = (props: Props) => {
+  const { displayValues } = props;
   const kit = useContext(KitContext);
   const [stringValue, setStringValue] = useState(props.value);
 
@@ -20,14 +21,13 @@ const InputNumber = (props: Props) => {
     (event, newValue) => {
       props.onChange(
         Number(newValue),
-        `${
-          props.subKey ? `${props.subKey}${props.field?.key ? "-" : ""}` : ""
-        }${props.field?.key ?? ""}`,
+        displayValues,
+        props.itemKey,
         props.path
       );
       setStringValue(newValue);
     },
-    [setStringValue, props]
+    [setStringValue, props, displayValues]
   );
 
   useEffect(() => {
