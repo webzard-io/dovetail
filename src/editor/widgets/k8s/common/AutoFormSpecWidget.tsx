@@ -94,7 +94,7 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
                   <Box width="350px">
                     <Select
                       value={filter.base}
-                      onChange={(newValue: SelectOption) =>
+                      onChange={(newValue: SelectOption | null) =>
                         setFilter((prev) => ({
                           ...prev,
                           base: newValue,
@@ -107,7 +107,7 @@ export const AutoFormSpecWidget: React.FC<Props> = (props) => {
                   <Box width="350px" ml={2}>
                     <Select
                       value={filter.def}
-                      onChange={(newValue: SelectOption) =>
+                      onChange={(newValue: SelectOption | null) =>
                         setFilter((prev) => ({
                           ...prev,
                           def: newValue,

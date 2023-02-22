@@ -538,15 +538,23 @@ export class KubeSdk {
         exist = false;
       }
 
-      const response = exist
-        ? await this.patch(spec, "application/merge-patch+json")
-        : await this.create(spec);
-      if (exist) {
-        updated.push(response as Unstructured);
-      } else {
-        created.push(response as Unstructured);
+      try {
+        const response = exist
+          ? await this.patch(spec, "application/merge-patch+json")
+          : await this.create(spec);
+
+        if (exist) {
+          updated.push(response as Unstructured);
+        } else {
+          created.push(response as Unstructured);
+        }
+        changed.push(response as Unstructured);
+      } catch (error) {
+        delete spec.metadata.annotations[
+          "kubectl.kubernetes.io/last-applied-configuration"
+        ];
+        throw error;
       }
-      changed.push(response as Unstructured);
     }
 
     if (created.length) {

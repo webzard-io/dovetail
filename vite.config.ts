@@ -18,15 +18,26 @@ const globalSass = fs.readFileSync(globalSassPath, "utf-8");
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  
   build: {
+    assetsInlineLimit: 0,
     minify: false,
-    lib: {
-      entry: path.resolve(__dirname, "src/index.ts"),
-      name: "Kui",
-      fileName: (format) => `index.${format}.js`,
-      formats: ["es", "cjs"],
-    },
     rollupOptions: {
+      preserveEntrySignatures: 'strict',
+      input: {
+        index: path.resolve(__dirname, "src/index.ts"),
+        widgets: path.resolve(__dirname, "src/widgets.ts"),
+      },
+      output: {
+        manualChunks: {
+          empty: []
+        },
+        format: 'es',
+        dir: path.resolve(__dirname, 'dist'),
+        entryFileNames: '[name].js',
+        assetFileNames: '[name][extname]',
+        chunkFileNames: '[name].js'
+      },
       external: [
         "react",
         "react-dom",

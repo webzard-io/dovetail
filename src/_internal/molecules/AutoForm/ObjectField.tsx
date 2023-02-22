@@ -56,7 +56,7 @@ export function resolveSubFields(props: WidgetProps) {
             if (isLayout) {
               onChange(newValue, displayValues, key, dataPath);
             } else {
-              const result = produce(value, (draftState: any) => {
+              const result = produce(value || {}, (draftState: any) => {
                 set(draftState, subField.path, newValue);
               });
 

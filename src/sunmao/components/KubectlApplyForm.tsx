@@ -574,7 +574,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
               Object.keys(transformMap || {}).forEach((path) => {
                 const transformedValue = transformMap[path];
 
-                transformedValues = produce(values, (draftState) => {
+                transformedValues = produce(transformedValues, (draftState) => {
                   set(draftState, path, transformedValue);
                 }) as any[];
               });

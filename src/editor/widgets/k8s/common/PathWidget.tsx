@@ -40,7 +40,7 @@ export default implementWidget<"kui/v1/PathWidget">({
             value: pathStr,
           }))}
           size="sm"
-          onChange={(newValue: { label: string; value: string }) => {
+          onChange={(newValue: { label: string; value: string } | null) => {
             path.current = newValue?.value || "";
             onChange(path.current);
           }}
