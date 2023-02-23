@@ -1,6 +1,6 @@
 {
   "name": "kui-shadow",
-  "version": "0.3.1",
+  "version": "0.3.2-canary.0",
   "files": [
     "dist"
   ],
