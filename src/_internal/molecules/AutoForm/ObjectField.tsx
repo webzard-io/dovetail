@@ -7,7 +7,7 @@ import { get, set } from "lodash";
 import type { Field } from "../../organisms/KubectlApplyForm/type";
 import { isObject } from "lodash";
 import { JSONSchema7 } from "json-schema";
-import produce from "immer";
+import { immutableSet } from "../../../sunmao/utils/object";
 
 export function resolveSubFields(props: WidgetProps) {
   const { specsArray, field, spec, value, path, level, error, onChange } =
@@ -56,9 +56,7 @@ export function resolveSubFields(props: WidgetProps) {
             if (isLayout) {
               onChange(newValue, displayValues, key, dataPath);
             } else {
-              const result = produce(value || {}, (draftState: any) => {
-                set(draftState, subField.path, newValue);
-              });
+              const result = immutableSet(value, subField.path, newValue);
 
               onChange(result, displayValues, key, dataPath);
             }
