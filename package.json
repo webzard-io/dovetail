@@ -2,10 +2,9 @@
   "name": "kui-shadow",
   "version": "0.3.0",
   "files": [
-    "dist",
-    "lib"
+    "dist"
   ],
-  "types": "lib/index.d.ts",
+  "types": "dist/index.d.ts",
   "module": "./dist/index.js",
   "scripts": {
     "dev": "vite",
