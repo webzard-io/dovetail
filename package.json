@@ -1,5 +1,5 @@
 {
-  "name": "kui-shadow",
+  "name": "@dovetail-ui/ui",
   "version": "0.3.3",
   "files": [
     "dist"
