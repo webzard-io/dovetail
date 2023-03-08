@@ -71,6 +71,14 @@ export default defineConfig({
           name: "yzFiddle",
           path: path.resolve(__dirname, "./src/sunmao/yz-fiddle.json"),
         },
+        {
+          name: "kgt",
+          path: path.resolve(__dirname, "./src/sunmao/kgt.json"),
+        },
+        {
+          name: "deployment",
+          path: path.resolve(__dirname, "./src/sunmao/deployment.json"),
+        },
       ],
     }),
     vitePluginImp({

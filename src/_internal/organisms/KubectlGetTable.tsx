@@ -38,6 +38,15 @@ const TableContent = styled.div`
   .dovetail-ant-pagination {
     display: none;
   }
+
+  .dovetail-ant-table-container {
+    display: flex;
+    flex-direction: column;
+    
+    .dovetail-ant-table-body {
+      flex: 1;
+    }
+  }
 `;
 const TooltipStyle = css`
   .dovetail-ant-tooltip-inner {

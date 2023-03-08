@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import isEmpty from "lodash/isEmpty";
 // TODO: use kit context when I have time:)
 import { Form, Col } from "antd";
-import Schema, { ValidateError } from "async-validator";
+import Schema, { ValidateError, RuleType } from "async-validator";
 import { css, cx } from "@linaria/core";
 import { JSONSchema7 } from "json-schema";
 import { WidgetProps } from "./widget";
@@ -129,6 +129,7 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
   function FormItem(props, ref) {
     const {
       field,
+      spec,
       item,
       value,
       itemKey,
@@ -152,11 +153,11 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
         new Schema({
           value: (fieldOrItem?.rules || []).map((rule) => ({
             ...rule,
-            type: value instanceof Array ? "array" : rule.type,
+            type: spec.type as RuleType,
             pattern: rule.pattern ? new RegExp(rule.pattern, "g") : undefined,
           })),
         }),
-      [fieldOrItem?.rules, value]
+      [fieldOrItem?.rules, spec]
     );
     const finalError = error || errors?.[0] || widgetErrors[0] || "";
 

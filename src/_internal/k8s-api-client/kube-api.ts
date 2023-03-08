@@ -338,7 +338,9 @@ export class KubeApi<T extends UnstructuredList> {
       .metadata;
     const protocol = location.protocol.includes("https") ? "wss" : "ws";
     const socket = new WebSocket(
-      `${protocol}://${location.host}/${url}?resourceVersion=${resourceVersion}&watch=1`
+      url.includes("://")
+        ? `${url}?resourceVersion=${resourceVersion}&watch=1`
+        : `${protocol}://${location.host}/${url}?resourceVersion=${resourceVersion}&watch=1`
     );
     let shouldCloseAfterConnected = false;
     let stopWatch: () => void = () => {

@@ -1,0 +1,110 @@
+{
+  "application": {
+    "version": "sunmao/v1",
+    "kind": "Application",
+    "metadata": {
+      "name": "kgt"
+    },
+    "spec": {
+      "components": [
+        {
+          "id": "root0",
+          "type": "kui/v1/root",
+          "properties": {},
+          "traits": []
+        },
+        {
+          "id": "kubectl_get_table1",
+          "type": "kui/v1/kubectl_get_table",
+          "properties": {
+            "basePath": "/api/k8s",
+            "apiBase": "/apis/apps/v1",
+            "resource": "deployments",
+            "columns": [
+              {
+                "key": "name",
+                "title": "Name",
+                "dataIndex": "metadata.name",
+                "width": 100,
+                "sortType": "auto",
+                "filters": []
+              },
+              {
+                "key": "namespace",
+                "title": "Namespace",
+                "dataIndex": "metadata.namespace",
+                "sortType": "none",
+                "width": 200,
+                "filters": []
+              },
+              {
+                "key": "age",
+                "title": "Age",
+                "dataIndex": "metadata.creationTimestamp",
+                "sortType": "auto",
+                "width": 100,
+                "filters": []
+              },
+              {
+                "dataIndex": "",
+                "key": "action",
+                "title": "",
+                "titleTooltip": "",
+                "isActionColumn": true,
+                "canCustomizable": true,
+                "isDefaultDisplay": true,
+                "widget": "default",
+                "widgetOptions": {},
+                "componentId": "",
+                "fixed": "right",
+                "width": 0,
+                "ellipsis": false,
+                "align": "left",
+                "sortType": "none",
+                "sortBy": "",
+                "defaultSortOrder": "ascend",
+                "filters": [],
+                "filterMultiple": false
+              }
+            ],
+            "canActive": true,
+            "defaultSize": 10,
+            "empty": "No Data.",
+            "watchWsBasePath": "/api/sks-ws/k8s",
+            "customizable": true,
+            "scroll": {
+              "x": "",
+              "y": ""
+            },
+            "tableLayout": ""
+          },
+          "traits": [
+            {
+              "type": "core/v2/slot",
+              "properties": {
+                "container": {
+                  "id": "root0",
+                  "slot": "root"
+                },
+                "ifCondition": true
+              }
+            },
+            {
+              "type": "core/v1/style",
+              "properties": {
+                "styles": [
+                  {
+                    "styleSlot": "content",
+                    "style": "height: 100%;",
+                    "cssProperties": {}
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "modules": []
+}

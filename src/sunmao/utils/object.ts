@@ -7,10 +7,10 @@ export function immutableSet<T>(
 ): T | Record<string, any> {
   if (value !== undefined && value instanceof Object === false) return value;
 
-  const object: Record<string, any> = value || {};
   const pathArray = path.split(".");
   const nextPath = pathArray.slice(1).join(".");
   const key = first(pathArray) || "";
+  const object: Record<string, any> = value || (/\d+/g.test(key) ? [] : {});
   const oldValue = object[key];
   const result: Record<string, any> =
     object instanceof Array

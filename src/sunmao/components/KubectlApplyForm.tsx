@@ -2,9 +2,6 @@ import { Type, Static } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { generateFromSchema } from "../../_internal/utils/schema";
-import merge from "lodash/merge";
-import get from "lodash/set";
 import set from "lodash/set";
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
@@ -22,7 +19,7 @@ import {
 import { LAYOUT_WIDGETS_MAP } from "../../_internal/molecules/layout";
 import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 import { generateSlotChildren } from "../utils/slot";
-import produce from "immer";
+import { immutableSet } from "../utils/object";
 
 const LABEL_CATEGORY = "Label Style";
 const VALIDATION_CATEGORY = "Validation";
@@ -486,7 +483,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
     const [step, setStep] = useState(0);
     const [values, setValues] = useState<any[]>(() => {
       const initValues = (formConfig.schemas || []).map((s, idx) => {
-        return merge(generateFromSchema(s), formConfig.defaultValues?.[idx]);
+        return formConfig.defaultValues?.[idx];
       });
 
       mergeState({ value: initValues });
@@ -574,9 +571,11 @@ export const KubectlApplyForm = implementRuntimeComponent({
               Object.keys(transformMap || {}).forEach((path) => {
                 const transformedValue = transformMap[path];
 
-                transformedValues = produce(transformedValues, (draftState) => {
-                  set(draftState, path, transformedValue);
-                }) as any[];
+                transformedValues = immutableSet(
+                  transformedValues,
+                  path,
+                  transformedValue
+                ) as any[];
               });
               const appliedValues = transformedValues.filter(
                 (value, index) => !formConfig.schemas[index][CUSTOM_SCHEMA_KIND]
