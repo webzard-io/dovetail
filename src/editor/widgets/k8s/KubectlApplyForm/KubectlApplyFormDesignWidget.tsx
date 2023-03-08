@@ -350,6 +350,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                             const newValue = inferLayout(uiConfig, _newValue);
                             setUiConfig(newValue);
                             formConfig.current.uiConfig = newValue;
+                            onChange(formConfig.current);
                           }}
                         />
                       </Box>
@@ -442,6 +443,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                         }
                         setLoadingSchema(false);
                       }
+                      onChange(formConfig.current);
                     }}
                   >
                     Next
