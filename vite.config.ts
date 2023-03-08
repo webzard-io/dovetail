@@ -8,6 +8,7 @@ import sunmaoFsVitePlugin from "./tools/sunmao-fs-vite-plugin";
 import linariaVitePlugin from "./tools/linaria-vite-plugin";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { getProxyConfig, applyK8sYamlPlugin } from "./tools/proxy-k8s";
+import dts from "vite-plugin-dts";
 import monacoEditorPlugin from "vite-plugin-monaco-editor";
 
 const globalSassPath = path.resolve(
@@ -18,26 +19,18 @@ const globalSass = fs.readFileSync(globalSassPath, "utf-8");
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  
   build: {
-    assetsInlineLimit: 0,
     minify: false,
-    rollupOptions: {
-      preserveEntrySignatures: 'strict',
-      input: {
+    lib: {
+      entry: {
         index: path.resolve(__dirname, "src/index.ts"),
         widgets: path.resolve(__dirname, "src/widgets.ts"),
       },
-      output: {
-        manualChunks: {
-          empty: []
-        },
-        format: 'es',
-        dir: path.resolve(__dirname, 'dist'),
-        entryFileNames: '[name].js',
-        assetFileNames: '[name][extname]',
-        chunkFileNames: '[name].js'
-      },
+      name: "Kui",
+      fileName: (format, entryName) => `${entryName}.js`,
+      formats: ["es", "cjs"],
+    },
+    rollupOptions: {
       external: [
         "react",
         "react-dom",
@@ -60,6 +53,10 @@ export default defineConfig({
   },
   plugins: [
     tsconfigPaths(),
+    dts({
+      insertTypesEntry: true,
+      tsConfigFilePath: path.resolve(__dirname, './tsconfig.json'),
+    }),
     sunmaoFsVitePlugin({
       schemas: [
         {
