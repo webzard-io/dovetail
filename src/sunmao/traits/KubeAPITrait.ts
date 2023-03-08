@@ -299,12 +299,15 @@ export default implementRuntimeTrait({
       stop,
     });
 
-    if (isAutoWatch) {
-      watch();
-    }
-
     return {
       props: {
+        traitPropertiesDidUpdated: [
+          () => {
+            if (isAutoWatch) {
+              watch();
+            }
+          },
+        ],
         componentDidUnmount: [
           () => {
             responseMap.delete(componentId);
