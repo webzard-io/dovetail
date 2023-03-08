@@ -2,9 +2,6 @@ import { Type, Static } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { generateFromSchema } from "../../_internal/utils/schema";
-import merge from "lodash/merge";
-import get from "lodash/set";
 import set from "lodash/set";
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
@@ -486,7 +483,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
     const [step, setStep] = useState(0);
     const [values, setValues] = useState<any[]>(() => {
       const initValues = (formConfig.schemas || []).map((s, idx) => {
-        return merge(formConfig.defaultValues?.[idx]);
+        return formConfig.defaultValues?.[idx];
       });
 
       mergeState({ value: initValues });
