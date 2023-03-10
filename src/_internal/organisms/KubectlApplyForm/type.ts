@@ -3,9 +3,12 @@ import { RuleItem } from "async-validator";
 
 export type Field = {
   type?: "field" | "layout";
-  rules?: RuleItem[];
+  disabledValidation?: boolean;
+  rules?: (RuleItem & {
+    validatorType?: string;
+  })[];
   fields?: Field[];
-  subItem?: Pick<Field, "widget" | "widgetOptions" | "componentId" | "rules"> & {
+  subItem?: Pick<Field, "widget" | "widgetOptions" | "componentId" | "rules" | "disabledValidation"> & {
     type?: undefined;
   };
   path: string;
