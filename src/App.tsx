@@ -5,6 +5,7 @@ import fiddle from "./sunmao/fiddle.json";
 import yzFiddle from "./sunmao/yz-fiddle.json";
 import kgt from "./sunmao/kgt.json";
 import deployment from "./sunmao/deployment.json";
+import validation from "./sunmao/validation.json";
 import type { Schema } from "./types";
 import "./i18n";
 
@@ -17,6 +18,7 @@ function App() {
       yzFiddle,
       kgt,
       deployment,
+      validation,
     } as Record<string, Schema>
   )[search.get("app") || "fiddle"];
   const Page = registerSunmaoApp(schema, {

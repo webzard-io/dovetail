@@ -61,7 +61,10 @@
                     },
                     "spec": {
                       "type": "object",
-                      "required": ["selector", "template"],
+                      "required": [
+                        "selector",
+                        "template"
+                      ],
                       "properties": {
                         "minReadySeconds": {
                           "type": "integer",
@@ -89,7 +92,10 @@
                               "type": "array",
                               "items": {
                                 "type": "object",
-                                "required": ["key", "operator"],
+                                "required": [
+                                  "key",
+                                  "operator"
+                                ],
                                 "properties": {
                                   "key": {
                                     "type": "string"
@@ -163,7 +169,9 @@
                             },
                             "spec": {
                               "type": "object",
-                              "required": ["containers"],
+                              "required": [
+                                "containers"
+                              ],
                               "properties": {
                                 "activeDeadlineSeconds": {
                                   "type": "integer",
@@ -246,7 +254,9 @@
                                         },
                                         "requiredDuringSchedulingIgnoredDuringExecution": {
                                           "type": "object",
-                                          "required": ["nodeSelectorTerms"],
+                                          "required": [
+                                            "nodeSelectorTerms"
+                                          ],
                                           "properties": {
                                             "nodeSelectorTerms": {
                                               "type": "array",
@@ -322,7 +332,9 @@
                                             "properties": {
                                               "podAffinityTerm": {
                                                 "type": "object",
-                                                "required": ["topologyKey"],
+                                                "required": [
+                                                  "topologyKey"
+                                                ],
                                                 "properties": {
                                                   "labelSelector": {
                                                     "type": "object",
@@ -381,7 +393,9 @@
                                           "type": "array",
                                           "items": {
                                             "type": "object",
-                                            "required": ["topologyKey"],
+                                            "required": [
+                                              "topologyKey"
+                                            ],
                                             "properties": {
                                               "labelSelector": {
                                                 "type": "object",
@@ -446,7 +460,9 @@
                                             "properties": {
                                               "podAffinityTerm": {
                                                 "type": "object",
-                                                "required": ["topologyKey"],
+                                                "required": [
+                                                  "topologyKey"
+                                                ],
                                                 "properties": {
                                                   "labelSelector": {
                                                     "type": "object",
@@ -505,7 +521,9 @@
                                           "type": "array",
                                           "items": {
                                             "type": "object",
-                                            "required": ["topologyKey"],
+                                            "required": [
+                                              "topologyKey"
+                                            ],
                                             "properties": {
                                               "labelSelector": {
                                                 "type": "object",
@@ -565,7 +583,9 @@
                                   "type": "array",
                                   "items": {
                                     "type": "object",
-                                    "required": ["name"],
+                                    "required": [
+                                      "name"
+                                    ],
                                     "properties": {
                                       "args": {
                                         "type": "array",
@@ -583,7 +603,9 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name"],
+                                          "required": [
+                                            "name"
+                                          ],
                                           "properties": {
                                             "name": {
                                               "type": "string"
@@ -596,7 +618,9 @@
                                               "properties": {
                                                 "configMapKeyRef": {
                                                   "type": "object",
-                                                  "required": ["key"],
+                                                  "required": [
+                                                    "key"
+                                                  ],
                                                   "properties": {
                                                     "key": {
                                                       "type": "string"
@@ -611,7 +635,9 @@
                                                 },
                                                 "fieldRef": {
                                                   "type": "object",
-                                                  "required": ["fieldPath"],
+                                                  "required": [
+                                                    "fieldPath"
+                                                  ],
                                                   "properties": {
                                                     "apiVersion": {
                                                       "type": "string"
@@ -623,7 +649,9 @@
                                                 },
                                                 "resourceFieldRef": {
                                                   "type": "object",
-                                                  "required": ["resource"],
+                                                  "required": [
+                                                    "resource"
+                                                  ],
                                                   "properties": {
                                                     "containerName": {
                                                       "type": "string"
@@ -638,7 +666,9 @@
                                                 },
                                                 "secretKeyRef": {
                                                   "type": "object",
-                                                  "required": ["key"],
+                                                  "required": [
+                                                    "key"
+                                                  ],
                                                   "properties": {
                                                     "key": {
                                                       "type": "string"
@@ -714,7 +744,9 @@
                                               },
                                               "httpGet": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -751,7 +783,9 @@
                                               },
                                               "tcpSocket": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -780,7 +814,9 @@
                                               },
                                               "httpGet": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -817,7 +853,9 @@
                                               },
                                               "tcpSocket": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -852,7 +890,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -861,7 +901,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -898,7 +941,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -922,7 +967,9 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["containerPort"],
+                                          "required": [
+                                            "containerPort"
+                                          ],
                                           "properties": {
                                             "containerPort": {
                                               "type": "integer",
@@ -964,7 +1011,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -973,7 +1022,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -1010,7 +1062,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -1106,7 +1160,9 @@
                                           },
                                           "seccompProfile": {
                                             "type": "object",
-                                            "required": ["type"],
+                                            "required": [
+                                              "type"
+                                            ],
                                             "properties": {
                                               "localhostProfile": {
                                                 "type": "string"
@@ -1152,7 +1208,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -1161,7 +1219,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -1198,7 +1259,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -1234,7 +1297,10 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name", "devicePath"],
+                                          "required": [
+                                            "name",
+                                            "devicePath"
+                                          ],
                                           "properties": {
                                             "devicePath": {
                                               "type": "string"
@@ -1249,7 +1315,10 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name", "mountPath"],
+                                          "required": [
+                                            "name",
+                                            "mountPath"
+                                          ],
                                           "properties": {
                                             "mountPath": {
                                               "type": "string"
@@ -1319,7 +1388,9 @@
                                   "type": "array",
                                   "items": {
                                     "type": "object",
-                                    "required": ["name"],
+                                    "required": [
+                                      "name"
+                                    ],
                                     "properties": {
                                       "args": {
                                         "type": "array",
@@ -1337,7 +1408,9 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name"],
+                                          "required": [
+                                            "name"
+                                          ],
                                           "properties": {
                                             "name": {
                                               "type": "string"
@@ -1350,7 +1423,9 @@
                                               "properties": {
                                                 "configMapKeyRef": {
                                                   "type": "object",
-                                                  "required": ["key"],
+                                                  "required": [
+                                                    "key"
+                                                  ],
                                                   "properties": {
                                                     "key": {
                                                       "type": "string"
@@ -1365,7 +1440,9 @@
                                                 },
                                                 "fieldRef": {
                                                   "type": "object",
-                                                  "required": ["fieldPath"],
+                                                  "required": [
+                                                    "fieldPath"
+                                                  ],
                                                   "properties": {
                                                     "apiVersion": {
                                                       "type": "string"
@@ -1377,7 +1454,9 @@
                                                 },
                                                 "resourceFieldRef": {
                                                   "type": "object",
-                                                  "required": ["resource"],
+                                                  "required": [
+                                                    "resource"
+                                                  ],
                                                   "properties": {
                                                     "containerName": {
                                                       "type": "string"
@@ -1392,7 +1471,9 @@
                                                 },
                                                 "secretKeyRef": {
                                                   "type": "object",
-                                                  "required": ["key"],
+                                                  "required": [
+                                                    "key"
+                                                  ],
                                                   "properties": {
                                                     "key": {
                                                       "type": "string"
@@ -1468,7 +1549,9 @@
                                               },
                                               "httpGet": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -1505,7 +1588,9 @@
                                               },
                                               "tcpSocket": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -1534,7 +1619,9 @@
                                               },
                                               "httpGet": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -1571,7 +1658,9 @@
                                               },
                                               "tcpSocket": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -1606,7 +1695,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -1615,7 +1706,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -1652,7 +1746,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -1676,7 +1772,9 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["containerPort"],
+                                          "required": [
+                                            "containerPort"
+                                          ],
                                           "properties": {
                                             "containerPort": {
                                               "type": "integer",
@@ -1718,7 +1816,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -1727,7 +1827,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -1764,7 +1867,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -1860,7 +1965,9 @@
                                           },
                                           "seccompProfile": {
                                             "type": "object",
-                                            "required": ["type"],
+                                            "required": [
+                                              "type"
+                                            ],
                                             "properties": {
                                               "localhostProfile": {
                                                 "type": "string"
@@ -1906,7 +2013,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -1915,7 +2024,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -1952,7 +2064,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -1991,7 +2105,10 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name", "devicePath"],
+                                          "required": [
+                                            "name",
+                                            "devicePath"
+                                          ],
                                           "properties": {
                                             "devicePath": {
                                               "type": "string"
@@ -2006,7 +2123,10 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name", "mountPath"],
+                                          "required": [
+                                            "name",
+                                            "mountPath"
+                                          ],
                                           "properties": {
                                             "mountPath": {
                                               "type": "string"
@@ -2079,7 +2199,9 @@
                                   "type": "array",
                                   "items": {
                                     "type": "object",
-                                    "required": ["name"],
+                                    "required": [
+                                      "name"
+                                    ],
                                     "properties": {
                                       "args": {
                                         "type": "array",
@@ -2097,7 +2219,9 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name"],
+                                          "required": [
+                                            "name"
+                                          ],
                                           "properties": {
                                             "name": {
                                               "type": "string"
@@ -2110,7 +2234,9 @@
                                               "properties": {
                                                 "configMapKeyRef": {
                                                   "type": "object",
-                                                  "required": ["key"],
+                                                  "required": [
+                                                    "key"
+                                                  ],
                                                   "properties": {
                                                     "key": {
                                                       "type": "string"
@@ -2125,7 +2251,9 @@
                                                 },
                                                 "fieldRef": {
                                                   "type": "object",
-                                                  "required": ["fieldPath"],
+                                                  "required": [
+                                                    "fieldPath"
+                                                  ],
                                                   "properties": {
                                                     "apiVersion": {
                                                       "type": "string"
@@ -2137,7 +2265,9 @@
                                                 },
                                                 "resourceFieldRef": {
                                                   "type": "object",
-                                                  "required": ["resource"],
+                                                  "required": [
+                                                    "resource"
+                                                  ],
                                                   "properties": {
                                                     "containerName": {
                                                       "type": "string"
@@ -2152,7 +2282,9 @@
                                                 },
                                                 "secretKeyRef": {
                                                   "type": "object",
-                                                  "required": ["key"],
+                                                  "required": [
+                                                    "key"
+                                                  ],
                                                   "properties": {
                                                     "key": {
                                                       "type": "string"
@@ -2228,7 +2360,9 @@
                                               },
                                               "httpGet": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -2265,7 +2399,9 @@
                                               },
                                               "tcpSocket": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -2294,7 +2430,9 @@
                                               },
                                               "httpGet": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -2331,7 +2469,9 @@
                                               },
                                               "tcpSocket": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -2366,7 +2506,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -2375,7 +2517,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -2412,7 +2557,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -2436,7 +2583,9 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["containerPort"],
+                                          "required": [
+                                            "containerPort"
+                                          ],
                                           "properties": {
                                             "containerPort": {
                                               "type": "integer",
@@ -2478,7 +2627,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -2487,7 +2638,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -2524,7 +2678,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -2620,7 +2776,9 @@
                                           },
                                           "seccompProfile": {
                                             "type": "object",
-                                            "required": ["type"],
+                                            "required": [
+                                              "type"
+                                            ],
                                             "properties": {
                                               "localhostProfile": {
                                                 "type": "string"
@@ -2666,7 +2824,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -2675,7 +2835,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -2712,7 +2875,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -2748,7 +2913,10 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name", "devicePath"],
+                                          "required": [
+                                            "name",
+                                            "devicePath"
+                                          ],
                                           "properties": {
                                             "devicePath": {
                                               "type": "string"
@@ -2763,7 +2931,10 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name", "mountPath"],
+                                          "required": [
+                                            "name",
+                                            "mountPath"
+                                          ],
                                           "properties": {
                                             "mountPath": {
                                               "type": "string"
@@ -2821,7 +2992,9 @@
                                   "type": "array",
                                   "items": {
                                     "type": "object",
-                                    "required": ["conditionType"],
+                                    "required": [
+                                      "conditionType"
+                                    ],
                                     "properties": {
                                       "conditionType": {
                                         "type": "string"
@@ -2878,7 +3051,9 @@
                                     },
                                     "seccompProfile": {
                                       "type": "object",
-                                      "required": ["type"],
+                                      "required": [
+                                        "type"
+                                      ],
                                       "properties": {
                                         "localhostProfile": {
                                           "type": "string"
@@ -2899,7 +3074,10 @@
                                       "type": "array",
                                       "items": {
                                         "type": "object",
-                                        "required": ["name", "value"],
+                                        "required": [
+                                          "name",
+                                          "value"
+                                        ],
                                         "properties": {
                                           "name": {
                                             "type": "string"
@@ -2986,7 +3164,10 @@
                                             "type": "array",
                                             "items": {
                                               "type": "object",
-                                              "required": ["key", "operator"],
+                                              "required": [
+                                                "key",
+                                                "operator"
+                                              ],
                                               "properties": {
                                                 "key": {
                                                   "type": "string"
@@ -3028,11 +3209,15 @@
                                   "type": "array",
                                   "items": {
                                     "type": "object",
-                                    "required": ["name"],
+                                    "required": [
+                                      "name"
+                                    ],
                                     "properties": {
                                       "awsElasticBlockStore": {
                                         "type": "object",
-                                        "required": ["volumeID"],
+                                        "required": [
+                                          "volumeID"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"
@@ -3051,7 +3236,10 @@
                                       },
                                       "azureDisk": {
                                         "type": "object",
-                                        "required": ["diskName", "diskURI"],
+                                        "required": [
+                                          "diskName",
+                                          "diskURI"
+                                        ],
                                         "properties": {
                                           "cachingMode": {
                                             "type": "string"
@@ -3075,7 +3263,10 @@
                                       },
                                       "azureFile": {
                                         "type": "object",
-                                        "required": ["secretName", "shareName"],
+                                        "required": [
+                                          "secretName",
+                                          "shareName"
+                                        ],
                                         "properties": {
                                           "readOnly": {
                                             "type": "boolean"
@@ -3090,7 +3281,9 @@
                                       },
                                       "cephfs": {
                                         "type": "object",
-                                        "required": ["monitors"],
+                                        "required": [
+                                          "monitors"
+                                        ],
                                         "properties": {
                                           "monitors": {
                                             "type": "array",
@@ -3122,7 +3315,9 @@
                                       },
                                       "cinder": {
                                         "type": "object",
-                                        "required": ["volumeID"],
+                                        "required": [
+                                          "volumeID"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"
@@ -3154,7 +3349,10 @@
                                             "type": "array",
                                             "items": {
                                               "type": "object",
-                                              "required": ["key", "path"],
+                                              "required": [
+                                                "key",
+                                                "path"
+                                              ],
                                               "properties": {
                                                 "key": {
                                                   "type": "string"
@@ -3179,7 +3377,9 @@
                                       },
                                       "csi": {
                                         "type": "object",
-                                        "required": ["driver"],
+                                        "required": [
+                                          "driver"
+                                        ],
                                         "properties": {
                                           "driver": {
                                             "type": "string"
@@ -3217,11 +3417,15 @@
                                             "type": "array",
                                             "items": {
                                               "type": "object",
-                                              "required": ["path"],
+                                              "required": [
+                                                "path"
+                                              ],
                                               "properties": {
                                                 "fieldRef": {
                                                   "type": "object",
-                                                  "required": ["fieldPath"],
+                                                  "required": [
+                                                    "fieldPath"
+                                                  ],
                                                   "properties": {
                                                     "apiVersion": {
                                                       "type": "string"
@@ -3240,7 +3444,9 @@
                                                 },
                                                 "resourceFieldRef": {
                                                   "type": "object",
-                                                  "required": ["resource"],
+                                                  "required": [
+                                                    "resource"
+                                                  ],
                                                   "properties": {
                                                     "containerName": {
                                                       "type": "string"
@@ -3277,7 +3483,9 @@
                                           },
                                           "volumeClaimTemplate": {
                                             "type": "object",
-                                            "required": ["spec"],
+                                            "required": [
+                                              "spec"
+                                            ],
                                             "properties": {
                                               "metadata": {
                                                 "type": "object",
@@ -3425,7 +3633,9 @@
                                       },
                                       "flexVolume": {
                                         "type": "object",
-                                        "required": ["driver"],
+                                        "required": [
+                                          "driver"
+                                        ],
                                         "properties": {
                                           "driver": {
                                             "type": "string"
@@ -3465,7 +3675,9 @@
                                       },
                                       "gcePersistentDisk": {
                                         "type": "object",
-                                        "required": ["pdName"],
+                                        "required": [
+                                          "pdName"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"
@@ -3484,7 +3696,9 @@
                                       },
                                       "gitRepo": {
                                         "type": "object",
-                                        "required": ["repository"],
+                                        "required": [
+                                          "repository"
+                                        ],
                                         "properties": {
                                           "directory": {
                                             "type": "string"
@@ -3499,7 +3713,10 @@
                                       },
                                       "glusterfs": {
                                         "type": "object",
-                                        "required": ["endpoints", "path"],
+                                        "required": [
+                                          "endpoints",
+                                          "path"
+                                        ],
                                         "properties": {
                                           "endpoints": {
                                             "type": "string"
@@ -3514,7 +3731,9 @@
                                       },
                                       "hostPath": {
                                         "type": "object",
-                                        "required": ["path"],
+                                        "required": [
+                                          "path"
+                                        ],
                                         "properties": {
                                           "path": {
                                             "type": "string"
@@ -3581,7 +3800,10 @@
                                       },
                                       "nfs": {
                                         "type": "object",
-                                        "required": ["server", "path"],
+                                        "required": [
+                                          "server",
+                                          "path"
+                                        ],
                                         "properties": {
                                           "path": {
                                             "type": "string"
@@ -3596,7 +3818,9 @@
                                       },
                                       "persistentVolumeClaim": {
                                         "type": "object",
-                                        "required": ["claimName"],
+                                        "required": [
+                                          "claimName"
+                                        ],
                                         "properties": {
                                           "claimName": {
                                             "type": "string"
@@ -3608,7 +3832,9 @@
                                       },
                                       "photonPersistentDisk": {
                                         "type": "object",
-                                        "required": ["pdID"],
+                                        "required": [
+                                          "pdID"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"
@@ -3620,7 +3846,9 @@
                                       },
                                       "portworxVolume": {
                                         "type": "object",
-                                        "required": ["volumeID"],
+                                        "required": [
+                                          "volumeID"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"
@@ -3685,7 +3913,9 @@
                                                       "type": "array",
                                                       "items": {
                                                         "type": "object",
-                                                        "required": ["path"],
+                                                        "required": [
+                                                          "path"
+                                                        ],
                                                         "properties": {
                                                           "fieldRef": {
                                                             "type": "object",
@@ -3765,7 +3995,9 @@
                                                 },
                                                 "serviceAccountToken": {
                                                   "type": "object",
-                                                  "required": ["path"],
+                                                  "required": [
+                                                    "path"
+                                                  ],
                                                   "properties": {
                                                     "audience": {
                                                       "type": "string"
@@ -3786,7 +4018,10 @@
                                       },
                                       "quobyte": {
                                         "type": "object",
-                                        "required": ["registry", "volume"],
+                                        "required": [
+                                          "registry",
+                                          "volume"
+                                        ],
                                         "properties": {
                                           "group": {
                                             "type": "string"
@@ -3810,7 +4045,10 @@
                                       },
                                       "rbd": {
                                         "type": "object",
-                                        "required": ["monitors", "image"],
+                                        "required": [
+                                          "monitors",
+                                          "image"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"
@@ -3902,7 +4140,10 @@
                                             "type": "array",
                                             "items": {
                                               "type": "object",
-                                              "required": ["key", "path"],
+                                              "required": [
+                                                "key",
+                                                "path"
+                                              ],
                                               "properties": {
                                                 "key": {
                                                   "type": "string"
@@ -3952,7 +4193,9 @@
                                       },
                                       "vsphereVolume": {
                                         "type": "object",
-                                        "required": ["volumePath"],
+                                        "required": [
+                                          "volumePath"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"
@@ -4029,244 +4272,253 @@
               ],
               "uiConfig": {
                 "layout": {
-                  "type": "simple",
-                  "fields": [
+                  "type": "tabs",
+                  "tabs": [
                     {
-                      "type": "field",
-                      "path": "0.metadata.name",
-                      "key": "name",
-                      "label": "Name",
-                      "condition": true,
-                      "helperText": "",
-                      "sectionTitle": "",
-                      "isDisplayLabel": true,
-                      "labelWidth": 0,
-                      "layout": "horizontal",
-                      "rules": [
+                      "title": "Tab 1",
+                      "fields": [
                         {
-                          "message": "请填写名称",
-                          "required": true,
-                          "pattern": "",
-                          "min": 0,
-                          "max": 9007199254740991,
-                          "validator": ""
-                        }
-                      ],
-                      "error": "",
-                      "col": 24,
-                      "splitLine": false,
-                      "widget": "default",
-                      "widgetOptions": {},
-                      "componentId": "",
-                      "summaryConfig": {
-                        "type": "auto",
-                        "label": "",
-                        "value": "",
-                        "icon": "",
-                        "hidden": false
-                      },
-                      "layoutWidget": "default",
-                      "indent": false,
-                      "fields": [],
-                      "subItem": {
-                        "widget": "default",
-                        "widgetOptions": {},
-                        "componentId": "",
-                        "rules": []
-                      }
-                    },
-                    {
-                      "type": "field",
-                      "path": "0.spec.replicas",
-                      "key": "replicas",
-                      "label": "Replicas",
-                      "condition": true,
-                      "helperText": "",
-                      "sectionTitle": "",
-                      "isDisplayLabel": true,
-                      "labelWidth": 0,
-                      "layout": "horizontal",
-                      "rules": [
+                          "type": "field",
+                          "path": "0.metadata.name",
+                          "key": "name",
+                          "label": "Name",
+                          "condition": true,
+                          "helperText": "",
+                          "sectionTitle": "",
+                          "isDisplayLabel": true,
+                          "labelWidth": 0,
+                          "layout": "horizontal",
+                          "rules": [
+                            {
+                              "message": "请填写名称",
+                              "required": true,
+                              "pattern": "",
+                              "min": 0,
+                              "max": 9007199254740991,
+                              "validator": ""
+                            }
+                          ],
+                          "error": "",
+                          "col": 24,
+                          "splitLine": false,
+                          "widget": "default",
+                          "widgetOptions": {},
+                          "componentId": "",
+                          "summaryConfig": {
+                            "type": "auto",
+                            "label": "",
+                            "value": "",
+                            "icon": "",
+                            "hidden": false
+                          },
+                          "layoutWidget": "default",
+                          "indent": false,
+                          "fields": [],
+                          "subItem": {
+                            "widget": "default",
+                            "widgetOptions": {},
+                            "componentId": "",
+                            "rules": []
+                          }
+                        },
                         {
-                          "message": "请填写副本数",
-                          "required": true,
-                          "pattern": "",
-                          "min": 0,
-                          "max": 9007199254740991,
-                          "validator": ""
-                        }
-                      ],
-                      "error": "",
-                      "col": 24,
-                      "splitLine": false,
-                      "widget": "default",
-                      "widgetOptions": {},
-                      "componentId": "",
-                      "summaryConfig": {
-                        "type": "auto",
-                        "label": "",
-                        "value": "",
-                        "icon": "",
-                        "hidden": false
-                      },
-                      "layoutWidget": "default",
-                      "indent": false,
-                      "fields": [],
-                      "subItem": {
-                        "widget": "default",
-                        "widgetOptions": {},
-                        "componentId": "",
-                        "rules": []
-                      }
-                    },
-                    {
-                      "type": "field",
-                      "path": "0.spec.selector.matchLabels",
-                      "key": "matchlabels",
-                      "label": "Match Labels",
-                      "condition": true,
-                      "helperText": "",
-                      "sectionTitle": "",
-                      "isDisplayLabel": true,
-                      "labelWidth": 0,
-                      "layout": "horizontal",
-                      "rules": [],
-                      "error": "",
-                      "col": 24,
-                      "splitLine": false,
-                      "widget": "k8sLabelGroup",
-                      "widgetOptions": {},
-                      "componentId": "",
-                      "summaryConfig": {
-                        "type": "auto",
-                        "label": "",
-                        "value": "",
-                        "icon": "",
-                        "hidden": false
-                      },
-                      "layoutWidget": "default",
-                      "indent": false,
-                      "fields": [],
-                      "subItem": {
-                        "widget": "default",
-                        "widgetOptions": {},
-                        "componentId": "",
-                        "rules": []
-                      }
-                    },
-                    {
-                      "type": "field",
-                      "path": "0.spec.template.metadata.labels",
-                      "key": "label",
-                      "label": "labels",
-                      "condition": true,
-                      "helperText": "",
-                      "sectionTitle": "",
-                      "isDisplayLabel": true,
-                      "labelWidth": 0,
-                      "layout": "horizontal",
-                      "rules": [
+                          "type": "field",
+                          "path": "0.spec.replicas",
+                          "key": "replicas",
+                          "label": "Replicas",
+                          "condition": true,
+                          "helperText": "",
+                          "sectionTitle": "",
+                          "isDisplayLabel": true,
+                          "labelWidth": 0,
+                          "layout": "horizontal",
+                          "rules": [
+                            {
+                              "message": "请填写副本数",
+                              "required": true,
+                              "pattern": "",
+                              "min": 0,
+                              "max": 9007199254740991,
+                              "validator": ""
+                            }
+                          ],
+                          "error": "",
+                          "col": 24,
+                          "splitLine": false,
+                          "widget": "default",
+                          "widgetOptions": {},
+                          "componentId": "",
+                          "summaryConfig": {
+                            "type": "auto",
+                            "label": "",
+                            "value": "",
+                            "icon": "",
+                            "hidden": false
+                          },
+                          "layoutWidget": "default",
+                          "indent": false,
+                          "fields": [],
+                          "subItem": {
+                            "widget": "default",
+                            "widgetOptions": {},
+                            "componentId": "",
+                            "rules": []
+                          }
+                        },
                         {
-                          "message": "请填写标签",
-                          "required": true,
-                          "pattern": "",
-                          "min": 0,
-                          "max": 9007199254740991,
-                          "validator": ""
+                          "type": "field",
+                          "path": "0.spec.selector.matchLabels",
+                          "key": "matchlabels",
+                          "label": "Match Labels",
+                          "condition": true,
+                          "helperText": "",
+                          "sectionTitle": "",
+                          "isDisplayLabel": true,
+                          "labelWidth": 0,
+                          "layout": "horizontal",
+                          "rules": [],
+                          "error": "",
+                          "col": 24,
+                          "splitLine": false,
+                          "widget": "k8sLabelGroup",
+                          "widgetOptions": {},
+                          "componentId": "",
+                          "summaryConfig": {
+                            "type": "auto",
+                            "label": "",
+                            "value": "",
+                            "icon": "",
+                            "hidden": false
+                          },
+                          "layoutWidget": "default",
+                          "indent": false,
+                          "fields": [],
+                          "subItem": {
+                            "widget": "default",
+                            "widgetOptions": {},
+                            "componentId": "",
+                            "rules": []
+                          }
+                        },
+                        {
+                          "type": "field",
+                          "path": "0.spec.template.metadata.labels",
+                          "key": "label",
+                          "label": "labels",
+                          "condition": true,
+                          "helperText": "",
+                          "sectionTitle": "",
+                          "isDisplayLabel": true,
+                          "labelWidth": 0,
+                          "layout": "horizontal",
+                          "rules": [
+                            {
+                              "message": "请填写标签",
+                              "required": true,
+                              "pattern": "",
+                              "min": 0,
+                              "max": 9007199254740991,
+                              "validator": ""
+                            }
+                          ],
+                          "error": "",
+                          "col": 24,
+                          "splitLine": false,
+                          "widget": "default",
+                          "widgetOptions": {},
+                          "componentId": "",
+                          "summaryConfig": {
+                            "type": "auto",
+                            "label": "",
+                            "value": "",
+                            "icon": "",
+                            "hidden": false
+                          },
+                          "layoutWidget": "default",
+                          "indent": false,
+                          "fields": [],
+                          "subItem": {
+                            "widget": "default",
+                            "widgetOptions": {},
+                            "componentId": "",
+                            "rules": []
+                          }
+                        },
+                        {
+                          "type": "field",
+                          "path": "1.container",
+                          "key": "container",
+                          "label": "",
+                          "condition": true,
+                          "helperText": "",
+                          "sectionTitle": "",
+                          "isDisplayLabel": true,
+                          "labelWidth": 0,
+                          "layout": "horizontal",
+                          "disabledValidation": false,
+                          "rules": [],
+                          "error": "",
+                          "col": 24,
+                          "splitLine": false,
+                          "widget": "default",
+                          "widgetOptions": {},
+                          "componentId": "",
+                          "summaryConfig": {
+                            "type": "auto",
+                            "label": "",
+                            "value": "",
+                            "icon": "",
+                            "hidden": false
+                          },
+                          "layoutWidget": "default",
+                          "indent": false,
+                          "fields": [
+                            {
+                              "path": "name",
+                              "key": "",
+                              "label": "",
+                              "condition": true,
+                              "helperText": "",
+                              "sectionTitle": "",
+                              "isDisplayLabel": true,
+                              "labelWidth": 0,
+                              "layout": "horizontal",
+                              "disabledValidation": false,
+                              "rules": [
+                                {
+                                  "message": "",
+                                  "required": true,
+                                  "pattern": "",
+                                  "min": 0,
+                                  "max": 9007199254740991,
+                                  "validatorType": "custom",
+                                  "validator": ""
+                                }
+                              ],
+                              "error": "",
+                              "col": 24,
+                              "splitLine": false,
+                              "widget": "default",
+                              "widgetOptions": {},
+                              "componentId": "",
+                              "summaryConfig": {
+                                "type": "auto",
+                                "label": "",
+                                "value": "",
+                                "icon": "",
+                                "hidden": false
+                              }
+                            }
+                          ],
+                          "subItem": {
+                            "widget": "default",
+                            "widgetOptions": {},
+                            "componentId": "",
+                            "disabledValidation": false,
+                            "rules": []
+                          }
                         }
-                      ],
-                      "error": "",
-                      "col": 24,
-                      "splitLine": false,
-                      "widget": "default",
-                      "widgetOptions": {},
-                      "componentId": "",
-                      "summaryConfig": {
-                        "type": "auto",
-                        "label": "",
-                        "value": "",
-                        "icon": "",
-                        "hidden": false
-                      },
-                      "layoutWidget": "default",
-                      "indent": false,
-                      "fields": [],
-                      "subItem": {
-                        "widget": "default",
-                        "widgetOptions": {},
-                        "componentId": "",
-                        "rules": []
-                      }
-                    },
-                    {
-                      "type": "field",
-                      "path": "1.container.name",
-                      "key": "containerName",
-                      "label": "containerName",
-                      "condition": true,
-                      "helperText": "",
-                      "sectionTitle": "",
-                      "isDisplayLabel": true,
-                      "labelWidth": 0,
-                      "layout": "horizontal",
-                      "rules": [],
-                      "error": "",
-                      "col": 24,
-                      "splitLine": false,
-                      "widget": "default",
-                      "widgetOptions": {},
-                      "componentId": "",
-                      "summaryConfig": {
-                        "type": "auto",
-                        "label": "",
-                        "value": "",
-                        "icon": "",
-                        "hidden": false
-                      },
-                      "layoutWidget": "default",
-                      "indent": false,
-                      "fields": [],
-                      "subItem": {
-                        "widget": "default",
-                        "widgetOptions": {},
-                        "componentId": "",
-                        "rules": []
-                      }
-                    },
-                    {
-                      "type": "field",
-                      "path": "1.container.image",
-                      "key": "image",
-                      "label": "image",
-                      "condition": true,
-                      "helperText": "",
-                      "sectionTitle": "",
-                      "isDisplayLabel": true,
-                      "labelWidth": 0,
-                      "layout": "horizontal",
-                      "rules": [],
-                      "error": "",
-                      "col": 24,
-                      "splitLine": false,
-                      "widget": "default",
-                      "widgetOptions": {},
-                      "componentId": "",
-                      "summaryConfig": {
-                        "type": "auto",
-                        "label": "",
-                        "value": "",
-                        "icon": "",
-                        "hidden": false
-                      },
-                      "layoutWidget": "default",
-                      "indent": false,
-                      "fields": [],
-                      "subItem": {
-                        "widget": "default",
-                        "widgetOptions": {},
-                        "componentId": "",
-                        "rules": []
-                      }
+                      ]
                     }
                   ]
                 },
@@ -4663,7 +4915,10 @@
                     },
                     "spec": {
                       "type": "object",
-                      "required": ["selector", "template"],
+                      "required": [
+                        "selector",
+                        "template"
+                      ],
                       "properties": {
                         "minReadySeconds": {
                           "type": "integer",
@@ -4691,7 +4946,10 @@
                               "type": "array",
                               "items": {
                                 "type": "object",
-                                "required": ["key", "operator"],
+                                "required": [
+                                  "key",
+                                  "operator"
+                                ],
                                 "properties": {
                                   "key": {
                                     "type": "string"
@@ -4765,7 +5023,9 @@
                             },
                             "spec": {
                               "type": "object",
-                              "required": ["containers"],
+                              "required": [
+                                "containers"
+                              ],
                               "properties": {
                                 "activeDeadlineSeconds": {
                                   "type": "integer",
@@ -4848,7 +5108,9 @@
                                         },
                                         "requiredDuringSchedulingIgnoredDuringExecution": {
                                           "type": "object",
-                                          "required": ["nodeSelectorTerms"],
+                                          "required": [
+                                            "nodeSelectorTerms"
+                                          ],
                                           "properties": {
                                             "nodeSelectorTerms": {
                                               "type": "array",
@@ -4924,7 +5186,9 @@
                                             "properties": {
                                               "podAffinityTerm": {
                                                 "type": "object",
-                                                "required": ["topologyKey"],
+                                                "required": [
+                                                  "topologyKey"
+                                                ],
                                                 "properties": {
                                                   "labelSelector": {
                                                     "type": "object",
@@ -4983,7 +5247,9 @@
                                           "type": "array",
                                           "items": {
                                             "type": "object",
-                                            "required": ["topologyKey"],
+                                            "required": [
+                                              "topologyKey"
+                                            ],
                                             "properties": {
                                               "labelSelector": {
                                                 "type": "object",
@@ -5048,7 +5314,9 @@
                                             "properties": {
                                               "podAffinityTerm": {
                                                 "type": "object",
-                                                "required": ["topologyKey"],
+                                                "required": [
+                                                  "topologyKey"
+                                                ],
                                                 "properties": {
                                                   "labelSelector": {
                                                     "type": "object",
@@ -5107,7 +5375,9 @@
                                           "type": "array",
                                           "items": {
                                             "type": "object",
-                                            "required": ["topologyKey"],
+                                            "required": [
+                                              "topologyKey"
+                                            ],
                                             "properties": {
                                               "labelSelector": {
                                                 "type": "object",
@@ -5167,7 +5437,9 @@
                                   "type": "array",
                                   "items": {
                                     "type": "object",
-                                    "required": ["name"],
+                                    "required": [
+                                      "name"
+                                    ],
                                     "properties": {
                                       "args": {
                                         "type": "array",
@@ -5185,7 +5457,9 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name"],
+                                          "required": [
+                                            "name"
+                                          ],
                                           "properties": {
                                             "name": {
                                               "type": "string"
@@ -5198,7 +5472,9 @@
                                               "properties": {
                                                 "configMapKeyRef": {
                                                   "type": "object",
-                                                  "required": ["key"],
+                                                  "required": [
+                                                    "key"
+                                                  ],
                                                   "properties": {
                                                     "key": {
                                                       "type": "string"
@@ -5213,7 +5489,9 @@
                                                 },
                                                 "fieldRef": {
                                                   "type": "object",
-                                                  "required": ["fieldPath"],
+                                                  "required": [
+                                                    "fieldPath"
+                                                  ],
                                                   "properties": {
                                                     "apiVersion": {
                                                       "type": "string"
@@ -5225,7 +5503,9 @@
                                                 },
                                                 "resourceFieldRef": {
                                                   "type": "object",
-                                                  "required": ["resource"],
+                                                  "required": [
+                                                    "resource"
+                                                  ],
                                                   "properties": {
                                                     "containerName": {
                                                       "type": "string"
@@ -5240,7 +5520,9 @@
                                                 },
                                                 "secretKeyRef": {
                                                   "type": "object",
-                                                  "required": ["key"],
+                                                  "required": [
+                                                    "key"
+                                                  ],
                                                   "properties": {
                                                     "key": {
                                                       "type": "string"
@@ -5316,7 +5598,9 @@
                                               },
                                               "httpGet": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -5353,7 +5637,9 @@
                                               },
                                               "tcpSocket": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -5382,7 +5668,9 @@
                                               },
                                               "httpGet": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -5419,7 +5707,9 @@
                                               },
                                               "tcpSocket": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -5454,7 +5744,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -5463,7 +5755,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -5500,7 +5795,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -5524,7 +5821,9 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["containerPort"],
+                                          "required": [
+                                            "containerPort"
+                                          ],
                                           "properties": {
                                             "containerPort": {
                                               "type": "integer",
@@ -5566,7 +5865,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -5575,7 +5876,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -5612,7 +5916,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -5708,7 +6014,9 @@
                                           },
                                           "seccompProfile": {
                                             "type": "object",
-                                            "required": ["type"],
+                                            "required": [
+                                              "type"
+                                            ],
                                             "properties": {
                                               "localhostProfile": {
                                                 "type": "string"
@@ -5754,7 +6062,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -5763,7 +6073,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -5800,7 +6113,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -5836,7 +6151,10 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name", "devicePath"],
+                                          "required": [
+                                            "name",
+                                            "devicePath"
+                                          ],
                                           "properties": {
                                             "devicePath": {
                                               "type": "string"
@@ -5851,7 +6169,10 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name", "mountPath"],
+                                          "required": [
+                                            "name",
+                                            "mountPath"
+                                          ],
                                           "properties": {
                                             "mountPath": {
                                               "type": "string"
@@ -5921,7 +6242,9 @@
                                   "type": "array",
                                   "items": {
                                     "type": "object",
-                                    "required": ["name"],
+                                    "required": [
+                                      "name"
+                                    ],
                                     "properties": {
                                       "args": {
                                         "type": "array",
@@ -5939,7 +6262,9 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name"],
+                                          "required": [
+                                            "name"
+                                          ],
                                           "properties": {
                                             "name": {
                                               "type": "string"
@@ -5952,7 +6277,9 @@
                                               "properties": {
                                                 "configMapKeyRef": {
                                                   "type": "object",
-                                                  "required": ["key"],
+                                                  "required": [
+                                                    "key"
+                                                  ],
                                                   "properties": {
                                                     "key": {
                                                       "type": "string"
@@ -5967,7 +6294,9 @@
                                                 },
                                                 "fieldRef": {
                                                   "type": "object",
-                                                  "required": ["fieldPath"],
+                                                  "required": [
+                                                    "fieldPath"
+                                                  ],
                                                   "properties": {
                                                     "apiVersion": {
                                                       "type": "string"
@@ -5979,7 +6308,9 @@
                                                 },
                                                 "resourceFieldRef": {
                                                   "type": "object",
-                                                  "required": ["resource"],
+                                                  "required": [
+                                                    "resource"
+                                                  ],
                                                   "properties": {
                                                     "containerName": {
                                                       "type": "string"
@@ -5994,7 +6325,9 @@
                                                 },
                                                 "secretKeyRef": {
                                                   "type": "object",
-                                                  "required": ["key"],
+                                                  "required": [
+                                                    "key"
+                                                  ],
                                                   "properties": {
                                                     "key": {
                                                       "type": "string"
@@ -6070,7 +6403,9 @@
                                               },
                                               "httpGet": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -6107,7 +6442,9 @@
                                               },
                                               "tcpSocket": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -6136,7 +6473,9 @@
                                               },
                                               "httpGet": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -6173,7 +6512,9 @@
                                               },
                                               "tcpSocket": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -6208,7 +6549,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -6217,7 +6560,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -6254,7 +6600,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -6278,7 +6626,9 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["containerPort"],
+                                          "required": [
+                                            "containerPort"
+                                          ],
                                           "properties": {
                                             "containerPort": {
                                               "type": "integer",
@@ -6320,7 +6670,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -6329,7 +6681,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -6366,7 +6721,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -6462,7 +6819,9 @@
                                           },
                                           "seccompProfile": {
                                             "type": "object",
-                                            "required": ["type"],
+                                            "required": [
+                                              "type"
+                                            ],
                                             "properties": {
                                               "localhostProfile": {
                                                 "type": "string"
@@ -6508,7 +6867,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -6517,7 +6878,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -6554,7 +6918,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -6593,7 +6959,10 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name", "devicePath"],
+                                          "required": [
+                                            "name",
+                                            "devicePath"
+                                          ],
                                           "properties": {
                                             "devicePath": {
                                               "type": "string"
@@ -6608,7 +6977,10 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name", "mountPath"],
+                                          "required": [
+                                            "name",
+                                            "mountPath"
+                                          ],
                                           "properties": {
                                             "mountPath": {
                                               "type": "string"
@@ -6681,7 +7053,9 @@
                                   "type": "array",
                                   "items": {
                                     "type": "object",
-                                    "required": ["name"],
+                                    "required": [
+                                      "name"
+                                    ],
                                     "properties": {
                                       "args": {
                                         "type": "array",
@@ -6699,7 +7073,9 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name"],
+                                          "required": [
+                                            "name"
+                                          ],
                                           "properties": {
                                             "name": {
                                               "type": "string"
@@ -6712,7 +7088,9 @@
                                               "properties": {
                                                 "configMapKeyRef": {
                                                   "type": "object",
-                                                  "required": ["key"],
+                                                  "required": [
+                                                    "key"
+                                                  ],
                                                   "properties": {
                                                     "key": {
                                                       "type": "string"
@@ -6727,7 +7105,9 @@
                                                 },
                                                 "fieldRef": {
                                                   "type": "object",
-                                                  "required": ["fieldPath"],
+                                                  "required": [
+                                                    "fieldPath"
+                                                  ],
                                                   "properties": {
                                                     "apiVersion": {
                                                       "type": "string"
@@ -6739,7 +7119,9 @@
                                                 },
                                                 "resourceFieldRef": {
                                                   "type": "object",
-                                                  "required": ["resource"],
+                                                  "required": [
+                                                    "resource"
+                                                  ],
                                                   "properties": {
                                                     "containerName": {
                                                       "type": "string"
@@ -6754,7 +7136,9 @@
                                                 },
                                                 "secretKeyRef": {
                                                   "type": "object",
-                                                  "required": ["key"],
+                                                  "required": [
+                                                    "key"
+                                                  ],
                                                   "properties": {
                                                     "key": {
                                                       "type": "string"
@@ -6830,7 +7214,9 @@
                                               },
                                               "httpGet": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -6867,7 +7253,9 @@
                                               },
                                               "tcpSocket": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -6896,7 +7284,9 @@
                                               },
                                               "httpGet": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -6933,7 +7323,9 @@
                                               },
                                               "tcpSocket": {
                                                 "type": "object",
-                                                "required": ["port"],
+                                                "required": [
+                                                  "port"
+                                                ],
                                                 "properties": {
                                                   "host": {
                                                     "type": "string"
@@ -6968,7 +7360,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -6977,7 +7371,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -7014,7 +7411,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -7038,7 +7437,9 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["containerPort"],
+                                          "required": [
+                                            "containerPort"
+                                          ],
                                           "properties": {
                                             "containerPort": {
                                               "type": "integer",
@@ -7080,7 +7481,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -7089,7 +7492,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -7126,7 +7532,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -7222,7 +7630,9 @@
                                           },
                                           "seccompProfile": {
                                             "type": "object",
-                                            "required": ["type"],
+                                            "required": [
+                                              "type"
+                                            ],
                                             "properties": {
                                               "localhostProfile": {
                                                 "type": "string"
@@ -7268,7 +7678,9 @@
                                           },
                                           "httpGet": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -7277,7 +7689,10 @@
                                                 "type": "array",
                                                 "items": {
                                                   "type": "object",
-                                                  "required": ["name", "value"],
+                                                  "required": [
+                                                    "name",
+                                                    "value"
+                                                  ],
                                                   "properties": {
                                                     "name": {
                                                       "type": "string"
@@ -7314,7 +7729,9 @@
                                           },
                                           "tcpSocket": {
                                             "type": "object",
-                                            "required": ["port"],
+                                            "required": [
+                                              "port"
+                                            ],
                                             "properties": {
                                               "host": {
                                                 "type": "string"
@@ -7350,7 +7767,10 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name", "devicePath"],
+                                          "required": [
+                                            "name",
+                                            "devicePath"
+                                          ],
                                           "properties": {
                                             "devicePath": {
                                               "type": "string"
@@ -7365,7 +7785,10 @@
                                         "type": "array",
                                         "items": {
                                           "type": "object",
-                                          "required": ["name", "mountPath"],
+                                          "required": [
+                                            "name",
+                                            "mountPath"
+                                          ],
                                           "properties": {
                                             "mountPath": {
                                               "type": "string"
@@ -7423,7 +7846,9 @@
                                   "type": "array",
                                   "items": {
                                     "type": "object",
-                                    "required": ["conditionType"],
+                                    "required": [
+                                      "conditionType"
+                                    ],
                                     "properties": {
                                       "conditionType": {
                                         "type": "string"
@@ -7480,7 +7905,9 @@
                                     },
                                     "seccompProfile": {
                                       "type": "object",
-                                      "required": ["type"],
+                                      "required": [
+                                        "type"
+                                      ],
                                       "properties": {
                                         "localhostProfile": {
                                           "type": "string"
@@ -7501,7 +7928,10 @@
                                       "type": "array",
                                       "items": {
                                         "type": "object",
-                                        "required": ["name", "value"],
+                                        "required": [
+                                          "name",
+                                          "value"
+                                        ],
                                         "properties": {
                                           "name": {
                                             "type": "string"
@@ -7588,7 +8018,10 @@
                                             "type": "array",
                                             "items": {
                                               "type": "object",
-                                              "required": ["key", "operator"],
+                                              "required": [
+                                                "key",
+                                                "operator"
+                                              ],
                                               "properties": {
                                                 "key": {
                                                   "type": "string"
@@ -7630,11 +8063,15 @@
                                   "type": "array",
                                   "items": {
                                     "type": "object",
-                                    "required": ["name"],
+                                    "required": [
+                                      "name"
+                                    ],
                                     "properties": {
                                       "awsElasticBlockStore": {
                                         "type": "object",
-                                        "required": ["volumeID"],
+                                        "required": [
+                                          "volumeID"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"
@@ -7653,7 +8090,10 @@
                                       },
                                       "azureDisk": {
                                         "type": "object",
-                                        "required": ["diskName", "diskURI"],
+                                        "required": [
+                                          "diskName",
+                                          "diskURI"
+                                        ],
                                         "properties": {
                                           "cachingMode": {
                                             "type": "string"
@@ -7677,7 +8117,10 @@
                                       },
                                       "azureFile": {
                                         "type": "object",
-                                        "required": ["secretName", "shareName"],
+                                        "required": [
+                                          "secretName",
+                                          "shareName"
+                                        ],
                                         "properties": {
                                           "readOnly": {
                                             "type": "boolean"
@@ -7692,7 +8135,9 @@
                                       },
                                       "cephfs": {
                                         "type": "object",
-                                        "required": ["monitors"],
+                                        "required": [
+                                          "monitors"
+                                        ],
                                         "properties": {
                                           "monitors": {
                                             "type": "array",
@@ -7724,7 +8169,9 @@
                                       },
                                       "cinder": {
                                         "type": "object",
-                                        "required": ["volumeID"],
+                                        "required": [
+                                          "volumeID"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"
@@ -7756,7 +8203,10 @@
                                             "type": "array",
                                             "items": {
                                               "type": "object",
-                                              "required": ["key", "path"],
+                                              "required": [
+                                                "key",
+                                                "path"
+                                              ],
                                               "properties": {
                                                 "key": {
                                                   "type": "string"
@@ -7781,7 +8231,9 @@
                                       },
                                       "csi": {
                                         "type": "object",
-                                        "required": ["driver"],
+                                        "required": [
+                                          "driver"
+                                        ],
                                         "properties": {
                                           "driver": {
                                             "type": "string"
@@ -7819,11 +8271,15 @@
                                             "type": "array",
                                             "items": {
                                               "type": "object",
-                                              "required": ["path"],
+                                              "required": [
+                                                "path"
+                                              ],
                                               "properties": {
                                                 "fieldRef": {
                                                   "type": "object",
-                                                  "required": ["fieldPath"],
+                                                  "required": [
+                                                    "fieldPath"
+                                                  ],
                                                   "properties": {
                                                     "apiVersion": {
                                                       "type": "string"
@@ -7842,7 +8298,9 @@
                                                 },
                                                 "resourceFieldRef": {
                                                   "type": "object",
-                                                  "required": ["resource"],
+                                                  "required": [
+                                                    "resource"
+                                                  ],
                                                   "properties": {
                                                     "containerName": {
                                                       "type": "string"
@@ -7879,7 +8337,9 @@
                                           },
                                           "volumeClaimTemplate": {
                                             "type": "object",
-                                            "required": ["spec"],
+                                            "required": [
+                                              "spec"
+                                            ],
                                             "properties": {
                                               "metadata": {
                                                 "type": "object",
@@ -8027,7 +8487,9 @@
                                       },
                                       "flexVolume": {
                                         "type": "object",
-                                        "required": ["driver"],
+                                        "required": [
+                                          "driver"
+                                        ],
                                         "properties": {
                                           "driver": {
                                             "type": "string"
@@ -8067,7 +8529,9 @@
                                       },
                                       "gcePersistentDisk": {
                                         "type": "object",
-                                        "required": ["pdName"],
+                                        "required": [
+                                          "pdName"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"
@@ -8086,7 +8550,9 @@
                                       },
                                       "gitRepo": {
                                         "type": "object",
-                                        "required": ["repository"],
+                                        "required": [
+                                          "repository"
+                                        ],
                                         "properties": {
                                           "directory": {
                                             "type": "string"
@@ -8101,7 +8567,10 @@
                                       },
                                       "glusterfs": {
                                         "type": "object",
-                                        "required": ["endpoints", "path"],
+                                        "required": [
+                                          "endpoints",
+                                          "path"
+                                        ],
                                         "properties": {
                                           "endpoints": {
                                             "type": "string"
@@ -8116,7 +8585,9 @@
                                       },
                                       "hostPath": {
                                         "type": "object",
-                                        "required": ["path"],
+                                        "required": [
+                                          "path"
+                                        ],
                                         "properties": {
                                           "path": {
                                             "type": "string"
@@ -8183,7 +8654,10 @@
                                       },
                                       "nfs": {
                                         "type": "object",
-                                        "required": ["server", "path"],
+                                        "required": [
+                                          "server",
+                                          "path"
+                                        ],
                                         "properties": {
                                           "path": {
                                             "type": "string"
@@ -8198,7 +8672,9 @@
                                       },
                                       "persistentVolumeClaim": {
                                         "type": "object",
-                                        "required": ["claimName"],
+                                        "required": [
+                                          "claimName"
+                                        ],
                                         "properties": {
                                           "claimName": {
                                             "type": "string"
@@ -8210,7 +8686,9 @@
                                       },
                                       "photonPersistentDisk": {
                                         "type": "object",
-                                        "required": ["pdID"],
+                                        "required": [
+                                          "pdID"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"
@@ -8222,7 +8700,9 @@
                                       },
                                       "portworxVolume": {
                                         "type": "object",
-                                        "required": ["volumeID"],
+                                        "required": [
+                                          "volumeID"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"
@@ -8287,7 +8767,9 @@
                                                       "type": "array",
                                                       "items": {
                                                         "type": "object",
-                                                        "required": ["path"],
+                                                        "required": [
+                                                          "path"
+                                                        ],
                                                         "properties": {
                                                           "fieldRef": {
                                                             "type": "object",
@@ -8367,7 +8849,9 @@
                                                 },
                                                 "serviceAccountToken": {
                                                   "type": "object",
-                                                  "required": ["path"],
+                                                  "required": [
+                                                    "path"
+                                                  ],
                                                   "properties": {
                                                     "audience": {
                                                       "type": "string"
@@ -8388,7 +8872,10 @@
                                       },
                                       "quobyte": {
                                         "type": "object",
-                                        "required": ["registry", "volume"],
+                                        "required": [
+                                          "registry",
+                                          "volume"
+                                        ],
                                         "properties": {
                                           "group": {
                                             "type": "string"
@@ -8412,7 +8899,10 @@
                                       },
                                       "rbd": {
                                         "type": "object",
-                                        "required": ["monitors", "image"],
+                                        "required": [
+                                          "monitors",
+                                          "image"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"
@@ -8504,7 +8994,10 @@
                                             "type": "array",
                                             "items": {
                                               "type": "object",
-                                              "required": ["key", "path"],
+                                              "required": [
+                                                "key",
+                                                "path"
+                                              ],
                                               "properties": {
                                                 "key": {
                                                   "type": "string"
@@ -8554,7 +9047,9 @@
                                       },
                                       "vsphereVolume": {
                                         "type": "object",
-                                        "required": ["volumePath"],
+                                        "required": [
+                                          "volumePath"
+                                        ],
                                         "properties": {
                                           "fsType": {
                                             "type": "string"

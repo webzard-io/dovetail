@@ -20,6 +20,7 @@ import { LAYOUT_WIDGETS_MAP } from "../../_internal/molecules/layout";
 import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 import { generateSlotChildren } from "../utils/slot";
 import { immutableSet } from "../utils/object";
+import registry from "../../services/Registry";
 
 const LABEL_CATEGORY = "Label Style";
 const VALIDATION_CATEGORY = "Validation";
@@ -64,6 +65,12 @@ const ValidationRuleProperties = {
     title: "Max",
     default: Number.MAX_SAFE_INTEGER,
   }),
+  validatorType: StringUnion(
+    ["custom"].concat(Array.from(registry.validators.keys())),
+    {
+      title: "Validator type",
+    }
+  ),
   validator: Type.Any({
     title: "Validator",
   }),
@@ -116,6 +123,10 @@ const UiConfigFieldSpecProperties = {
     title: "Layout of label and input",
     conditions: FIELD_CONDITIONS,
     category: LABEL_CATEGORY,
+  }),
+  disabledValidation: Type.Boolean({
+    title: "Disabled Validation",
+    category: VALIDATION_CATEGORY,
   }),
   rules: Type.Array(Type.Object(ValidationRuleProperties), {
     title: "Validation rules",
@@ -221,6 +232,7 @@ const UiConfigFieldSpec = Type.Object(
           "widget",
           "widgetOptions",
           "componentId",
+          "disabledValidation",
           "rules",
         ]),
       },
