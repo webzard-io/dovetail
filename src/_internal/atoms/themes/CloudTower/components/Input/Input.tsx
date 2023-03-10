@@ -227,12 +227,12 @@ const Input: React.FC<InputProps> = ({
 
   return props.type === "password" ? (
     <AntdInput.Password
+      visibilityToggle
       {...props}
       className={cs(className, InputStyle, typo, error ? "error" : "")}
       size={size}
       onChange={onChange}
       onBlur={onInputBlur}
-      visibilityToggle
     ></AntdInput.Password>
   ) : (
     <AntdInput

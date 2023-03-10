@@ -11,6 +11,7 @@ export const OptionsSpec = Type.Object({
   addonAfter: Type.Optional(Type.String()),
   type: Type.Optional(StringUnion(["input", "password"])),
   autoComplete: Type.Optional(StringUnion(["on", "off"])),
+  visibilityToggle: Type.Optional(Type.Boolean()),
 });
 
 type Props = WidgetProps<string, Static<typeof OptionsSpec>>;
@@ -22,12 +23,7 @@ const Input = (props: Props) => {
   const onChange = useCallback(
     (e) => {
       setInput(e.target.value);
-      props.onChange(
-        e.target.value,
-        displayValues,
-        props.itemKey,
-        props.path
-      );
+      props.onChange(e.target.value, displayValues, props.itemKey, props.path);
     },
     [props, displayValues]
   );
