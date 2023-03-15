@@ -23,6 +23,7 @@ import { LAYOUT_WIDGETS_MAP } from "../../molecules/layout";
 import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
 import { Static } from "@sinclair/typebox";
 import { Field, Services, Events } from "../../organisms/KubectlApplyForm/type";
+import registry from "../../../services/Registry";
 
 type TemplateProps = {
   id?: string;
@@ -151,13 +152,21 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
     const validator = useMemo(
       () =>
         new Schema({
-          value: (fieldOrItem?.rules || []).map((rule) => ({
+          value: (fieldOrItem?.disabledValidation
+            ? []
+            : fieldOrItem?.rules || []
+          ).map((rule) => ({
             ...rule,
+            validator:
+              typeof rule.validatorType === "string" &&
+              registry.validators.has(rule.validatorType)
+                ? registry.validators.get(rule.validatorType)
+                : rule.validator,
             type: spec.type as RuleType,
             pattern: rule.pattern ? new RegExp(rule.pattern, "g") : undefined,
           })),
         }),
-      [fieldOrItem?.rules, spec]
+      [fieldOrItem, spec]
     );
     const finalError = error || errors?.[0] || widgetErrors[0] || "";
 
