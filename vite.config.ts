@@ -79,6 +79,10 @@ export default defineConfig({
           name: "deployment",
           path: path.resolve(__dirname, "./src/sunmao/deployment.json"),
         },
+        {
+          name: "validation",
+          path: path.resolve(__dirname, "./src/sunmao/validation.json"),
+        },
       ],
     }),
     vitePluginImp({
