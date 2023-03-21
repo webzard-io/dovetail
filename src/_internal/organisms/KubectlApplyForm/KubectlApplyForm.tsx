@@ -13,6 +13,7 @@ import yaml, { dump } from "js-yaml";
 import {
   KubectlApplyFormStyle,
   FormWrapperStyle,
+  WizardBodyWrapperStyle,
   WizardBodyStyle,
   WizardFooterStyle,
   WizardStyle,
@@ -323,59 +324,61 @@ const KubectlApplyForm = React.forwardRef<
 
           return (
             <div className={cx(WizardStyle)}>
-              <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
-                <div className="left">
-                  <Steps
-                    style={{ minWidth: 192 }}
-                    current={step}
-                    onChange={(value) => {
-                      setStep(value);
-                    }}
-                    direction="vertical"
-                  >
-                    {(layout.steps || []).map((s, idx) => (
-                      <Steps.Step
-                        key={`${s.title}-${idx}`}
-                        title={
-                          <>
-                            {idx >= step ? (
-                              <span className="step-index">{idx + 1}</span>
-                            ) : (
-                              <CheckOutlined className="step-index" />
-                            )}
-                            {s.title}
-                          </>
-                        }
-                        disabled={
-                          s.disabled || idx > step
-                          // (wizard?.disablePrevStep && idx !== step)
-                        }
-                      />
-                    ))}
-                  </Steps>
-                </div>
-                <Row gutter={[24, 16]} className="middle">
-                  <div className="middle-form-wrapper">
-                    {transformFields(
-                      layout.steps[step].fields,
-                      values,
-                      defaultValues
-                    ).map((f) => {
-                      const { component } = getComponent(f);
-
-                      return component;
-                    })}
+              <div className={WizardBodyWrapperStyle}>
+                <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
+                  <div className="left">
+                    <Steps
+                      style={{ minWidth: 192 }}
+                      current={step}
+                      onChange={(value) => {
+                        setStep(value);
+                      }}
+                      direction="vertical"
+                    >
+                      {(layout.steps || []).map((s, idx) => (
+                        <Steps.Step
+                          key={`${s.title}-${idx}`}
+                          title={
+                            <>
+                              {idx >= step ? (
+                                <span className="step-index">{idx + 1}</span>
+                              ) : (
+                                <CheckOutlined className="step-index" />
+                              )}
+                              {s.title}
+                            </>
+                          }
+                          disabled={
+                            s.disabled || idx > step
+                            // (wizard?.disablePrevStep && idx !== step)
+                          }
+                        />
+                      ))}
+                    </Steps>
                   </div>
-                  {errorContent}
-                </Row>
-                <div className="right">
-                  {uiConfig.isDisplaySummary ? (
-                    <SummaryList
-                      title={uiConfig.title || ""}
-                      groups={summaryInfo?.groups}
-                      services={services}
-                    ></SummaryList>
-                  ) : null}
+                  <Row gutter={[24, 16]} className="middle">
+                    <div className="middle-form-wrapper">
+                      {transformFields(
+                        layout.steps[step].fields,
+                        values,
+                        defaultValues
+                      ).map((f) => {
+                        const { component } = getComponent(f);
+
+                        return component;
+                      })}
+                    </div>
+                    {errorContent}
+                  </Row>
+                  <div className="right">
+                    {uiConfig.isDisplaySummary ? (
+                      <SummaryList
+                        title={uiConfig.title || ""}
+                        groups={summaryInfo?.groups}
+                        services={services}
+                      ></SummaryList>
+                    ) : null}
+                  </div>
                 </div>
               </div>
               {uiConfig.isDisplayFooter ? (

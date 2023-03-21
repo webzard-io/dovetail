@@ -1,0 +1,3186 @@
+{
+  "application": {
+    "version": "sunmao/v1",
+    "kind": "Application",
+    "metadata": {
+      "name": "mt"
+    },
+    "spec": {
+      "components": [
+        {
+          "id": "root0",
+          "type": "kui/v1/root",
+          "properties": {},
+          "traits": []
+        },
+        {
+          "id": "kubectl_apply_form1",
+          "type": "kui/v1/kubectl_apply_form",
+          "properties": {
+            "formConfig": {
+              "yaml": "apiVersion: kubesmart.smtx.io/v1alpha1\nkind: KubeSmartCluster\nmetadata:\n  name: \"\"\n  namespace: default\n  annotations:\n    sks-display-name: \"\"\nspec:\n  controlPlaneEndpoint:\n    host: \"\"\n    port: 6443\n  network:\n    cni:\n      name: calico\n    services:\n      cidrBlocks:\n      - \"10.96.0.0/22\"\n    pods:\n      cidrBlocks:\n      - \"172.16.0.0/16\"\n  storage:\n    csi:\n      elf: {}\n      zbs: null\n      stub: null\n      name: 'elf'\n  components:\n    logging:\n      enabled: false\n    monitoring:\n      enabled: false\n    ingress:\n      enabled: false\n    loadbalancer:\n      enabled: false\n    externaldns:\n      enabled: false\n  cloudProvider:\n    name: cloudtower\n    cloudtower:\n      server: \"\"\n      authMode:\n      username: \"\"\n      password: \"\"\n      elfCluster:\n      elfVlan:\n      elfVmTemplate: \"\"\n      zbsVip: \"\"\n      cloudtowerServer:\n        secretRef:\n          name: \"cloudtower-server\"\n          namespace: \"default\"\n  # optional cluster configuration          \n  clusterConfiguration:\n    customImageRegistry: \"{{ deploy_registry_manager.registry.hostname }}/sks\"\n    security:\n      sshAuthorizedPublicKey: \"\"\n      sshPassword: \"\"\n---\napiVersion: custom/v1\nkind: Custom\nnameservers: \n  - \"\"\nbusinessNetwork:\n  vlan: \"\"\n  networkType: \"IPV4_DHCP\"\niomeshNetwork:\n  vlan: \"\"\necpNetwork:\n  vlan: \"\"\n  cidr: \"\"\n  subnet: \"\"\n  gateway: \"\"\ncontrolPlaneEndpointNetworkType: \"MANUAL\"\ncontrolPlane:\n  name: \"controlplane\"\n  replicas: 1\n  nodeConfig:\n    cpuCores: 4\n    memoryMB: 8192\n    memoryGB: 8\n    diskSizeGB: 100\n    cloneMode: FastClone\n    network:\n      devices: \nworkers:\n- name: \"\"\n  replicas: 1\n  nodeConfig:\n    cpuCores: 4\n    memoryMB: 8196\n    memoryGB: 8\n    diskSizeGB: 100\n    cloneMode: FastClone\n    network:\n      devices:",
+              "schemas": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "apiVersion": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "namespace": {
+                          "type": "string"
+                        },
+                        "annotations": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        },
+                        "labels": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "spec": {
+                      "type": "object",
+                      "required": [
+                        "version"
+                      ],
+                      "properties": {
+                        "cloudProvider": {
+                          "type": "object",
+                          "required": [
+                            "name"
+                          ],
+                          "properties": {
+                            "cloudtower": {
+                              "type": "object",
+                              "required": [
+                                "cloudtowerServer",
+                                "elfCluster",
+                                "zbsVip"
+                              ],
+                              "properties": {
+                                "cloudtowerServer": {
+                                  "type": "object",
+                                  "properties": {
+                                    "secretRef": {
+                                      "type": "object",
+                                      "properties": {
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "namespace": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "spec": {
+                                      "type": "object",
+                                      "required": [
+                                        "authMode",
+                                        "password",
+                                        "server",
+                                        "username"
+                                      ],
+                                      "properties": {
+                                        "authMode": {
+                                          "type": "string",
+                                          "enum": [
+                                            "LOCAL",
+                                            "LDAP"
+                                          ]
+                                        },
+                                        "password": {
+                                          "type": "string"
+                                        },
+                                        "server": {
+                                          "type": "string"
+                                        },
+                                        "skipTLSVerify": {
+                                          "type": "boolean"
+                                        },
+                                        "username": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "elfCluster": {
+                                  "type": "string"
+                                },
+                                "elfVlan": {
+                                  "type": "string"
+                                },
+                                "vmTemplate": {
+                                  "type": "string"
+                                },
+                                "zbsVip": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "name": {
+                              "type": "string",
+                              "enum": [
+                                "cloudtower",
+                                "vsphere"
+                              ]
+                            }
+                          }
+                        },
+                        "clusterConfiguration": {
+                          "type": "object",
+                          "properties": {
+                            "caCerts": {
+                              "type": "string"
+                            },
+                            "customImageRegistry": {
+                              "type": "string"
+                            },
+                            "kubernetes": {
+                              "type": "object",
+                              "properties": {
+                                "controlPlane": {
+                                  "type": "object",
+                                  "properties": {
+                                    "clusterConfiguration": {
+                                      "type": "object",
+                                      "properties": {
+                                        "apiServer": {
+                                          "type": "object",
+                                          "properties": {
+                                            "certSANs": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "extraArgs": {
+                                              "type": "object",
+                                              "additionalProperties": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "extraVolumes": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "required": [
+                                                  "hostPath",
+                                                  "mountPath",
+                                                  "name"
+                                                ],
+                                                "properties": {
+                                                  "hostPath": {
+                                                    "type": "string"
+                                                  },
+                                                  "mountPath": {
+                                                    "type": "string"
+                                                  },
+                                                  "name": {
+                                                    "type": "string"
+                                                  },
+                                                  "pathType": {
+                                                    "type": "string"
+                                                  },
+                                                  "readOnly": {
+                                                    "type": "boolean"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "timeoutForControlPlane": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "apiVersion": {
+                                          "type": "string"
+                                        },
+                                        "certificatesDir": {
+                                          "type": "string"
+                                        },
+                                        "clusterName": {
+                                          "type": "string"
+                                        },
+                                        "controlPlaneEndpoint": {
+                                          "type": "string"
+                                        },
+                                        "controllerManager": {
+                                          "type": "object",
+                                          "properties": {
+                                            "extraArgs": {
+                                              "type": "object",
+                                              "additionalProperties": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "extraVolumes": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "required": [
+                                                  "hostPath",
+                                                  "mountPath",
+                                                  "name"
+                                                ],
+                                                "properties": {
+                                                  "hostPath": {
+                                                    "type": "string"
+                                                  },
+                                                  "mountPath": {
+                                                    "type": "string"
+                                                  },
+                                                  "name": {
+                                                    "type": "string"
+                                                  },
+                                                  "pathType": {
+                                                    "type": "string"
+                                                  },
+                                                  "readOnly": {
+                                                    "type": "boolean"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "dns": {
+                                          "type": "object",
+                                          "properties": {
+                                            "imageRepository": {
+                                              "type": "string"
+                                            },
+                                            "imageTag": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "etcd": {
+                                          "type": "object",
+                                          "properties": {
+                                            "external": {
+                                              "type": "object",
+                                              "required": [
+                                                "caFile",
+                                                "certFile",
+                                                "endpoints",
+                                                "keyFile"
+                                              ],
+                                              "properties": {
+                                                "caFile": {
+                                                  "type": "string"
+                                                },
+                                                "certFile": {
+                                                  "type": "string"
+                                                },
+                                                "endpoints": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "keyFile": {
+                                                  "type": "string"
+                                                }
+                                              }
+                                            },
+                                            "local": {
+                                              "type": "object",
+                                              "properties": {
+                                                "dataDir": {
+                                                  "type": "string"
+                                                },
+                                                "extraArgs": {
+                                                  "type": "object",
+                                                  "additionalProperties": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "imageRepository": {
+                                                  "type": "string"
+                                                },
+                                                "imageTag": {
+                                                  "type": "string"
+                                                },
+                                                "peerCertSANs": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "serverCertSANs": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "featureGates": {
+                                          "type": "object",
+                                          "additionalProperties": {
+                                            "type": "boolean"
+                                          }
+                                        },
+                                        "imageRepository": {
+                                          "type": "string"
+                                        },
+                                        "kind": {
+                                          "type": "string"
+                                        },
+                                        "kubernetesVersion": {
+                                          "type": "string"
+                                        },
+                                        "networking": {
+                                          "type": "object",
+                                          "properties": {
+                                            "dnsDomain": {
+                                              "type": "string"
+                                            },
+                                            "podSubnet": {
+                                              "type": "string"
+                                            },
+                                            "serviceSubnet": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "scheduler": {
+                                          "type": "object",
+                                          "properties": {
+                                            "extraArgs": {
+                                              "type": "object",
+                                              "additionalProperties": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "extraVolumes": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "required": [
+                                                  "hostPath",
+                                                  "mountPath",
+                                                  "name"
+                                                ],
+                                                "properties": {
+                                                  "hostPath": {
+                                                    "type": "string"
+                                                  },
+                                                  "mountPath": {
+                                                    "type": "string"
+                                                  },
+                                                  "name": {
+                                                    "type": "string"
+                                                  },
+                                                  "pathType": {
+                                                    "type": "string"
+                                                  },
+                                                  "readOnly": {
+                                                    "type": "boolean"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "diskSetup": {
+                                      "type": "object",
+                                      "properties": {
+                                        "filesystems": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "required": [
+                                              "device",
+                                              "filesystem",
+                                              "label"
+                                            ],
+                                            "properties": {
+                                              "device": {
+                                                "type": "string"
+                                              },
+                                              "extraOpts": {
+                                                "type": "array",
+                                                "items": {
+                                                  "type": "string"
+                                                }
+                                              },
+                                              "filesystem": {
+                                                "type": "string"
+                                              },
+                                              "label": {
+                                                "type": "string"
+                                              },
+                                              "overwrite": {
+                                                "type": "boolean"
+                                              },
+                                              "partition": {
+                                                "type": "string"
+                                              },
+                                              "replaceFS": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "partitions": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "required": [
+                                              "device",
+                                              "layout"
+                                            ],
+                                            "properties": {
+                                              "device": {
+                                                "type": "string"
+                                              },
+                                              "layout": {
+                                                "type": "boolean"
+                                              },
+                                              "overwrite": {
+                                                "type": "boolean"
+                                              },
+                                              "tableType": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "files": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "required": [
+                                          "path"
+                                        ],
+                                        "properties": {
+                                          "append": {
+                                            "type": "boolean"
+                                          },
+                                          "content": {
+                                            "type": "string"
+                                          },
+                                          "contentFrom": {
+                                            "type": "object",
+                                            "required": [
+                                              "secret"
+                                            ],
+                                            "properties": {
+                                              "secret": {
+                                                "type": "object",
+                                                "required": [
+                                                  "key",
+                                                  "name"
+                                                ],
+                                                "properties": {
+                                                  "key": {
+                                                    "type": "string"
+                                                  },
+                                                  "name": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "encoding": {
+                                            "type": "string",
+                                            "enum": [
+                                              "base64",
+                                              "gzip",
+                                              "gzip+base64"
+                                            ]
+                                          },
+                                          "owner": {
+                                            "type": "string"
+                                          },
+                                          "path": {
+                                            "type": "string"
+                                          },
+                                          "permissions": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "format": {
+                                      "type": "string",
+                                      "enum": [
+                                        "cloud-config",
+                                        "ignition"
+                                      ]
+                                    },
+                                    "ignition": {
+                                      "type": "object",
+                                      "properties": {
+                                        "containerLinuxConfig": {
+                                          "type": "object",
+                                          "properties": {
+                                            "additionalConfig": {
+                                              "type": "string"
+                                            },
+                                            "strict": {
+                                              "type": "boolean"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "initConfiguration": {
+                                      "type": "object",
+                                      "properties": {
+                                        "apiVersion": {
+                                          "type": "string"
+                                        },
+                                        "bootstrapTokens": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "required": [
+                                              "token"
+                                            ],
+                                            "properties": {
+                                              "description": {
+                                                "type": "string"
+                                              },
+                                              "expires": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                              },
+                                              "groups": {
+                                                "type": "array",
+                                                "items": {
+                                                  "type": "string"
+                                                }
+                                              },
+                                              "token": {
+                                                "type": "string"
+                                              },
+                                              "ttl": {
+                                                "type": "string"
+                                              },
+                                              "usages": {
+                                                "type": "array",
+                                                "items": {
+                                                  "type": "string"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "kind": {
+                                          "type": "string"
+                                        },
+                                        "localAPIEndpoint": {
+                                          "type": "object",
+                                          "properties": {
+                                            "advertiseAddress": {
+                                              "type": "string"
+                                            },
+                                            "bindPort": {
+                                              "type": "integer",
+                                              "format": "int32"
+                                            }
+                                          }
+                                        },
+                                        "nodeRegistration": {
+                                          "type": "object",
+                                          "properties": {
+                                            "criSocket": {
+                                              "type": "string"
+                                            },
+                                            "ignorePreflightErrors": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "kubeletExtraArgs": {
+                                              "type": "object",
+                                              "additionalProperties": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "taints": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "required": [
+                                                  "effect",
+                                                  "key"
+                                                ],
+                                                "properties": {
+                                                  "effect": {
+                                                    "type": "string"
+                                                  },
+                                                  "key": {
+                                                    "type": "string"
+                                                  },
+                                                  "timeAdded": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                  },
+                                                  "value": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "patches": {
+                                          "type": "object",
+                                          "properties": {
+                                            "directory": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "skipPhases": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "joinConfiguration": {
+                                      "type": "object",
+                                      "properties": {
+                                        "apiVersion": {
+                                          "type": "string"
+                                        },
+                                        "caCertPath": {
+                                          "type": "string"
+                                        },
+                                        "controlPlane": {
+                                          "type": "object",
+                                          "properties": {
+                                            "localAPIEndpoint": {
+                                              "type": "object",
+                                              "properties": {
+                                                "advertiseAddress": {
+                                                  "type": "string"
+                                                },
+                                                "bindPort": {
+                                                  "type": "integer",
+                                                  "format": "int32"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "discovery": {
+                                          "type": "object",
+                                          "properties": {
+                                            "bootstrapToken": {
+                                              "type": "object",
+                                              "required": [
+                                                "token"
+                                              ],
+                                              "properties": {
+                                                "apiServerEndpoint": {
+                                                  "type": "string"
+                                                },
+                                                "caCertHashes": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "token": {
+                                                  "type": "string"
+                                                },
+                                                "unsafeSkipCAVerification": {
+                                                  "type": "boolean"
+                                                }
+                                              }
+                                            },
+                                            "file": {
+                                              "type": "object",
+                                              "required": [
+                                                "kubeConfigPath"
+                                              ],
+                                              "properties": {
+                                                "kubeConfigPath": {
+                                                  "type": "string"
+                                                }
+                                              }
+                                            },
+                                            "timeout": {
+                                              "type": "string"
+                                            },
+                                            "tlsBootstrapToken": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "kind": {
+                                          "type": "string"
+                                        },
+                                        "nodeRegistration": {
+                                          "type": "object",
+                                          "properties": {
+                                            "criSocket": {
+                                              "type": "string"
+                                            },
+                                            "ignorePreflightErrors": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "kubeletExtraArgs": {
+                                              "type": "object",
+                                              "additionalProperties": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "taints": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "required": [
+                                                  "effect",
+                                                  "key"
+                                                ],
+                                                "properties": {
+                                                  "effect": {
+                                                    "type": "string"
+                                                  },
+                                                  "key": {
+                                                    "type": "string"
+                                                  },
+                                                  "timeAdded": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                  },
+                                                  "value": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "patches": {
+                                          "type": "object",
+                                          "properties": {
+                                            "directory": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "skipPhases": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "mounts": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "ntp": {
+                                      "type": "object",
+                                      "properties": {
+                                        "enabled": {
+                                          "type": "boolean"
+                                        },
+                                        "servers": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "postKubeadmCommands": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "preKubeadmCommands": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "useExperimentalRetryJoin": {
+                                      "type": "boolean"
+                                    },
+                                    "users": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "required": [
+                                          "name"
+                                        ],
+                                        "properties": {
+                                          "gecos": {
+                                            "type": "string"
+                                          },
+                                          "groups": {
+                                            "type": "string"
+                                          },
+                                          "homeDir": {
+                                            "type": "string"
+                                          },
+                                          "inactive": {
+                                            "type": "boolean"
+                                          },
+                                          "lockPassword": {
+                                            "type": "boolean"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "passwd": {
+                                            "type": "string"
+                                          },
+                                          "passwdFrom": {
+                                            "type": "object",
+                                            "required": [
+                                              "secret"
+                                            ],
+                                            "properties": {
+                                              "secret": {
+                                                "type": "object",
+                                                "required": [
+                                                  "key",
+                                                  "name"
+                                                ],
+                                                "properties": {
+                                                  "key": {
+                                                    "type": "string"
+                                                  },
+                                                  "name": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "primaryGroup": {
+                                            "type": "string"
+                                          },
+                                          "shell": {
+                                            "type": "string"
+                                          },
+                                          "sshAuthorizedKeys": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "sudo": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "verbosity": {
+                                      "type": "integer",
+                                      "format": "int32"
+                                    }
+                                  }
+                                },
+                                "workers": {
+                                  "type": "object",
+                                  "properties": {
+                                    "clusterConfiguration": {
+                                      "type": "object",
+                                      "properties": {
+                                        "apiServer": {
+                                          "type": "object",
+                                          "properties": {
+                                            "certSANs": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "extraArgs": {
+                                              "type": "object",
+                                              "additionalProperties": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "extraVolumes": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "required": [
+                                                  "hostPath",
+                                                  "mountPath",
+                                                  "name"
+                                                ],
+                                                "properties": {
+                                                  "hostPath": {
+                                                    "type": "string"
+                                                  },
+                                                  "mountPath": {
+                                                    "type": "string"
+                                                  },
+                                                  "name": {
+                                                    "type": "string"
+                                                  },
+                                                  "pathType": {
+                                                    "type": "string"
+                                                  },
+                                                  "readOnly": {
+                                                    "type": "boolean"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "timeoutForControlPlane": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "apiVersion": {
+                                          "type": "string"
+                                        },
+                                        "certificatesDir": {
+                                          "type": "string"
+                                        },
+                                        "clusterName": {
+                                          "type": "string"
+                                        },
+                                        "controlPlaneEndpoint": {
+                                          "type": "string"
+                                        },
+                                        "controllerManager": {
+                                          "type": "object",
+                                          "properties": {
+                                            "extraArgs": {
+                                              "type": "object",
+                                              "additionalProperties": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "extraVolumes": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "required": [
+                                                  "hostPath",
+                                                  "mountPath",
+                                                  "name"
+                                                ],
+                                                "properties": {
+                                                  "hostPath": {
+                                                    "type": "string"
+                                                  },
+                                                  "mountPath": {
+                                                    "type": "string"
+                                                  },
+                                                  "name": {
+                                                    "type": "string"
+                                                  },
+                                                  "pathType": {
+                                                    "type": "string"
+                                                  },
+                                                  "readOnly": {
+                                                    "type": "boolean"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "dns": {
+                                          "type": "object",
+                                          "properties": {
+                                            "imageRepository": {
+                                              "type": "string"
+                                            },
+                                            "imageTag": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "etcd": {
+                                          "type": "object",
+                                          "properties": {
+                                            "external": {
+                                              "type": "object",
+                                              "required": [
+                                                "caFile",
+                                                "certFile",
+                                                "endpoints",
+                                                "keyFile"
+                                              ],
+                                              "properties": {
+                                                "caFile": {
+                                                  "type": "string"
+                                                },
+                                                "certFile": {
+                                                  "type": "string"
+                                                },
+                                                "endpoints": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "keyFile": {
+                                                  "type": "string"
+                                                }
+                                              }
+                                            },
+                                            "local": {
+                                              "type": "object",
+                                              "properties": {
+                                                "dataDir": {
+                                                  "type": "string"
+                                                },
+                                                "extraArgs": {
+                                                  "type": "object",
+                                                  "additionalProperties": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "imageRepository": {
+                                                  "type": "string"
+                                                },
+                                                "imageTag": {
+                                                  "type": "string"
+                                                },
+                                                "peerCertSANs": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "serverCertSANs": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "featureGates": {
+                                          "type": "object",
+                                          "additionalProperties": {
+                                            "type": "boolean"
+                                          }
+                                        },
+                                        "imageRepository": {
+                                          "type": "string"
+                                        },
+                                        "kind": {
+                                          "type": "string"
+                                        },
+                                        "kubernetesVersion": {
+                                          "type": "string"
+                                        },
+                                        "networking": {
+                                          "type": "object",
+                                          "properties": {
+                                            "dnsDomain": {
+                                              "type": "string"
+                                            },
+                                            "podSubnet": {
+                                              "type": "string"
+                                            },
+                                            "serviceSubnet": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "scheduler": {
+                                          "type": "object",
+                                          "properties": {
+                                            "extraArgs": {
+                                              "type": "object",
+                                              "additionalProperties": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "extraVolumes": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "required": [
+                                                  "hostPath",
+                                                  "mountPath",
+                                                  "name"
+                                                ],
+                                                "properties": {
+                                                  "hostPath": {
+                                                    "type": "string"
+                                                  },
+                                                  "mountPath": {
+                                                    "type": "string"
+                                                  },
+                                                  "name": {
+                                                    "type": "string"
+                                                  },
+                                                  "pathType": {
+                                                    "type": "string"
+                                                  },
+                                                  "readOnly": {
+                                                    "type": "boolean"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "diskSetup": {
+                                      "type": "object",
+                                      "properties": {
+                                        "filesystems": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "required": [
+                                              "device",
+                                              "filesystem",
+                                              "label"
+                                            ],
+                                            "properties": {
+                                              "device": {
+                                                "type": "string"
+                                              },
+                                              "extraOpts": {
+                                                "type": "array",
+                                                "items": {
+                                                  "type": "string"
+                                                }
+                                              },
+                                              "filesystem": {
+                                                "type": "string"
+                                              },
+                                              "label": {
+                                                "type": "string"
+                                              },
+                                              "overwrite": {
+                                                "type": "boolean"
+                                              },
+                                              "partition": {
+                                                "type": "string"
+                                              },
+                                              "replaceFS": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "partitions": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "required": [
+                                              "device",
+                                              "layout"
+                                            ],
+                                            "properties": {
+                                              "device": {
+                                                "type": "string"
+                                              },
+                                              "layout": {
+                                                "type": "boolean"
+                                              },
+                                              "overwrite": {
+                                                "type": "boolean"
+                                              },
+                                              "tableType": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "files": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "required": [
+                                          "path"
+                                        ],
+                                        "properties": {
+                                          "append": {
+                                            "type": "boolean"
+                                          },
+                                          "content": {
+                                            "type": "string"
+                                          },
+                                          "contentFrom": {
+                                            "type": "object",
+                                            "required": [
+                                              "secret"
+                                            ],
+                                            "properties": {
+                                              "secret": {
+                                                "type": "object",
+                                                "required": [
+                                                  "key",
+                                                  "name"
+                                                ],
+                                                "properties": {
+                                                  "key": {
+                                                    "type": "string"
+                                                  },
+                                                  "name": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "encoding": {
+                                            "type": "string",
+                                            "enum": [
+                                              "base64",
+                                              "gzip",
+                                              "gzip+base64"
+                                            ]
+                                          },
+                                          "owner": {
+                                            "type": "string"
+                                          },
+                                          "path": {
+                                            "type": "string"
+                                          },
+                                          "permissions": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "format": {
+                                      "type": "string",
+                                      "enum": [
+                                        "cloud-config",
+                                        "ignition"
+                                      ]
+                                    },
+                                    "ignition": {
+                                      "type": "object",
+                                      "properties": {
+                                        "containerLinuxConfig": {
+                                          "type": "object",
+                                          "properties": {
+                                            "additionalConfig": {
+                                              "type": "string"
+                                            },
+                                            "strict": {
+                                              "type": "boolean"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "initConfiguration": {
+                                      "type": "object",
+                                      "properties": {
+                                        "apiVersion": {
+                                          "type": "string"
+                                        },
+                                        "bootstrapTokens": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "required": [
+                                              "token"
+                                            ],
+                                            "properties": {
+                                              "description": {
+                                                "type": "string"
+                                              },
+                                              "expires": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                              },
+                                              "groups": {
+                                                "type": "array",
+                                                "items": {
+                                                  "type": "string"
+                                                }
+                                              },
+                                              "token": {
+                                                "type": "string"
+                                              },
+                                              "ttl": {
+                                                "type": "string"
+                                              },
+                                              "usages": {
+                                                "type": "array",
+                                                "items": {
+                                                  "type": "string"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "kind": {
+                                          "type": "string"
+                                        },
+                                        "localAPIEndpoint": {
+                                          "type": "object",
+                                          "properties": {
+                                            "advertiseAddress": {
+                                              "type": "string"
+                                            },
+                                            "bindPort": {
+                                              "type": "integer",
+                                              "format": "int32"
+                                            }
+                                          }
+                                        },
+                                        "nodeRegistration": {
+                                          "type": "object",
+                                          "properties": {
+                                            "criSocket": {
+                                              "type": "string"
+                                            },
+                                            "ignorePreflightErrors": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "kubeletExtraArgs": {
+                                              "type": "object",
+                                              "additionalProperties": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "taints": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "required": [
+                                                  "effect",
+                                                  "key"
+                                                ],
+                                                "properties": {
+                                                  "effect": {
+                                                    "type": "string"
+                                                  },
+                                                  "key": {
+                                                    "type": "string"
+                                                  },
+                                                  "timeAdded": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                  },
+                                                  "value": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "patches": {
+                                          "type": "object",
+                                          "properties": {
+                                            "directory": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "skipPhases": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "joinConfiguration": {
+                                      "type": "object",
+                                      "properties": {
+                                        "apiVersion": {
+                                          "type": "string"
+                                        },
+                                        "caCertPath": {
+                                          "type": "string"
+                                        },
+                                        "controlPlane": {
+                                          "type": "object",
+                                          "properties": {
+                                            "localAPIEndpoint": {
+                                              "type": "object",
+                                              "properties": {
+                                                "advertiseAddress": {
+                                                  "type": "string"
+                                                },
+                                                "bindPort": {
+                                                  "type": "integer",
+                                                  "format": "int32"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "discovery": {
+                                          "type": "object",
+                                          "properties": {
+                                            "bootstrapToken": {
+                                              "type": "object",
+                                              "required": [
+                                                "token"
+                                              ],
+                                              "properties": {
+                                                "apiServerEndpoint": {
+                                                  "type": "string"
+                                                },
+                                                "caCertHashes": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "token": {
+                                                  "type": "string"
+                                                },
+                                                "unsafeSkipCAVerification": {
+                                                  "type": "boolean"
+                                                }
+                                              }
+                                            },
+                                            "file": {
+                                              "type": "object",
+                                              "required": [
+                                                "kubeConfigPath"
+                                              ],
+                                              "properties": {
+                                                "kubeConfigPath": {
+                                                  "type": "string"
+                                                }
+                                              }
+                                            },
+                                            "timeout": {
+                                              "type": "string"
+                                            },
+                                            "tlsBootstrapToken": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "kind": {
+                                          "type": "string"
+                                        },
+                                        "nodeRegistration": {
+                                          "type": "object",
+                                          "properties": {
+                                            "criSocket": {
+                                              "type": "string"
+                                            },
+                                            "ignorePreflightErrors": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "kubeletExtraArgs": {
+                                              "type": "object",
+                                              "additionalProperties": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "taints": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "required": [
+                                                  "effect",
+                                                  "key"
+                                                ],
+                                                "properties": {
+                                                  "effect": {
+                                                    "type": "string"
+                                                  },
+                                                  "key": {
+                                                    "type": "string"
+                                                  },
+                                                  "timeAdded": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                  },
+                                                  "value": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "patches": {
+                                          "type": "object",
+                                          "properties": {
+                                            "directory": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "skipPhases": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "mounts": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "ntp": {
+                                      "type": "object",
+                                      "properties": {
+                                        "enabled": {
+                                          "type": "boolean"
+                                        },
+                                        "servers": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "postKubeadmCommands": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "preKubeadmCommands": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "useExperimentalRetryJoin": {
+                                      "type": "boolean"
+                                    },
+                                    "users": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "required": [
+                                          "name"
+                                        ],
+                                        "properties": {
+                                          "gecos": {
+                                            "type": "string"
+                                          },
+                                          "groups": {
+                                            "type": "string"
+                                          },
+                                          "homeDir": {
+                                            "type": "string"
+                                          },
+                                          "inactive": {
+                                            "type": "boolean"
+                                          },
+                                          "lockPassword": {
+                                            "type": "boolean"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "passwd": {
+                                            "type": "string"
+                                          },
+                                          "passwdFrom": {
+                                            "type": "object",
+                                            "required": [
+                                              "secret"
+                                            ],
+                                            "properties": {
+                                              "secret": {
+                                                "type": "object",
+                                                "required": [
+                                                  "key",
+                                                  "name"
+                                                ],
+                                                "properties": {
+                                                  "key": {
+                                                    "type": "string"
+                                                  },
+                                                  "name": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "primaryGroup": {
+                                            "type": "string"
+                                          },
+                                          "shell": {
+                                            "type": "string"
+                                          },
+                                          "sshAuthorizedKeys": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "sudo": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "verbosity": {
+                                      "type": "integer",
+                                      "format": "int32"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "nodeDrainTimeout": {
+                              "type": "string"
+                            },
+                            "operation": {
+                              "type": "object",
+                              "properties": {
+                                "createClusterTimeout": {
+                                  "type": "string"
+                                },
+                                "rollbackClusterTimeout": {
+                                  "type": "string"
+                                },
+                                "updateClusterTimeout": {
+                                  "type": "string"
+                                },
+                                "upgradeClusterTimeout": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "proxy": {
+                              "type": "object",
+                              "properties": {
+                                "http": {
+                                  "type": "string"
+                                },
+                                "https": {
+                                  "type": "string"
+                                },
+                                "noProxy": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "security": {
+                              "type": "object",
+                              "properties": {
+                                "sshAuthorizedPublicKey": {
+                                  "type": "string"
+                                },
+                                "sshPassword": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "skipTLSVerify": {
+                              "type": "boolean"
+                            }
+                          }
+                        },
+                        "components": {
+                          "type": "object",
+                          "properties": {
+                            "externaldns": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean"
+                                },
+                                "externaldns": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "ingress": {
+                              "type": "object",
+                              "properties": {
+                                "contour": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "enabled": {
+                                  "type": "boolean"
+                                }
+                              }
+                            },
+                            "loadbalancer": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean"
+                                },
+                                "metallb": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "logging": {
+                              "type": "object",
+                              "properties": {
+                                "elasticcurator": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "elasticsearch": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "enabled": {
+                                  "type": "boolean"
+                                },
+                                "fluentbit": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "kibana": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "loggingoperator": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "monitoring": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean"
+                                },
+                                "kubeprometheus": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "disabled": {
+                                      "type": "boolean"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "controlPlaneEndpoint": {
+                          "type": "object",
+                          "required": [
+                            "host",
+                            "port"
+                          ],
+                          "properties": {
+                            "host": {
+                              "type": "string"
+                            },
+                            "port": {
+                              "type": "integer",
+                              "format": "int32"
+                            }
+                          }
+                        },
+                        "network": {
+                          "type": "object",
+                          "properties": {
+                            "apiServerPort": {
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "cni": {
+                              "type": "object",
+                              "properties": {
+                                "config": {
+                                  "type": "object",
+                                  "properties": {
+                                    "secretRef": {
+                                      "type": "object",
+                                      "properties": {
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "namespace": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "yaml": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "ecpConfig": {
+                                  "type": "object",
+                                  "required": [
+                                    "ippools"
+                                  ],
+                                  "properties": {
+                                    "fakeIP": {
+                                      "type": "string"
+                                    },
+                                    "ippools": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "required": [
+                                          "cidr",
+                                          "gateway"
+                                        ],
+                                        "properties": {
+                                          "cidr": {
+                                            "type": "string"
+                                          },
+                                          "gateway": {
+                                            "type": "string"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "subnet": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "uplink": {
+                                      "type": "string"
+                                    },
+                                    "uplinkIP": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "enum": [
+                                    "calico",
+                                    "ecp",
+                                    "none"
+                                  ]
+                                },
+                                "version": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "ipPoolRef": {
+                              "type": "object",
+                              "required": [
+                                "name"
+                              ],
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "namespace": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "managementNetworkInterface": {
+                              "type": "string"
+                            },
+                            "pods": {
+                              "type": "object",
+                              "required": [
+                                "cidrBlocks"
+                              ],
+                              "properties": {
+                                "cidrBlocks": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            },
+                            "serviceDomain": {
+                              "type": "string"
+                            },
+                            "services": {
+                              "type": "object",
+                              "required": [
+                                "cidrBlocks"
+                              ],
+                              "properties": {
+                                "cidrBlocks": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "paused": {
+                          "type": "boolean"
+                        },
+                        "storage": {
+                          "type": "object",
+                          "properties": {
+                            "csi": {
+                              "type": "object",
+                              "properties": {
+                                "elf": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "stub": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "zbs": {
+                                  "type": "object",
+                                  "properties": {
+                                    "config": {
+                                      "type": "object",
+                                      "properties": {
+                                        "secretRef": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "yaml": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "version": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "topology": {
+                          "type": "object",
+                          "properties": {
+                            "controlPlane": {
+                              "type": "object",
+                              "required": [
+                                "name",
+                                "replicas"
+                              ],
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "maxLength": 61,
+                                  "minLength": 1
+                                },
+                                "nodeConfig": {
+                                  "type": "object",
+                                  "properties": {
+                                    "cloneMode": {
+                                      "type": "string"
+                                    },
+                                    "cpuCores": {
+                                      "type": "integer",
+                                      "format": "int32"
+                                    },
+                                    "diskSizeGB": {
+                                      "type": "integer",
+                                      "format": "int32"
+                                    },
+                                    "memoryMB": {
+                                      "type": "integer",
+                                      "format": "int32"
+                                    },
+                                    "network": {
+                                      "type": "object",
+                                      "required": [
+                                        "devices"
+                                      ],
+                                      "properties": {
+                                        "devices": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "properties": {
+                                              "ipAddrs": {
+                                                "type": "array",
+                                                "items": {
+                                                  "type": "string"
+                                                }
+                                              },
+                                              "macAddr": {
+                                                "type": "string"
+                                              },
+                                              "netmask": {
+                                                "type": "string"
+                                              },
+                                              "networkType": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "NONE",
+                                                  "IPV4",
+                                                  "IPV4_DHCP"
+                                                ]
+                                              },
+                                              "routes": {
+                                                "type": "array",
+                                                "items": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                    "gateway": {
+                                                      "type": "string"
+                                                    },
+                                                    "netmask": {
+                                                      "type": "string"
+                                                    },
+                                                    "network": {
+                                                      "type": "string"
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "tag": {
+                                                "type": "string",
+                                                "enum": [
+                                                  "default",
+                                                  "ecp",
+                                                  "storage"
+                                                ]
+                                              },
+                                              "vlan": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "ipPoolRef": {
+                                          "type": "object",
+                                          "required": [
+                                            "name"
+                                          ],
+                                          "properties": {
+                                            "name": {
+                                              "type": "string",
+                                              "minLength": 1
+                                            },
+                                            "namespace": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        },
+                                        "nameservers": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "vmTemplate": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "nodeDrainTimeout": {
+                                  "type": "string"
+                                },
+                                "replicas": {
+                                  "type": "integer",
+                                  "format": "int32",
+                                  "minimum": 1
+                                }
+                              }
+                            },
+                            "workers": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "required": [
+                                  "name",
+                                  "replicas"
+                                ],
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "maxLength": 61,
+                                    "minLength": 1
+                                  },
+                                  "nodeConfig": {
+                                    "type": "object",
+                                    "properties": {
+                                      "cloneMode": {
+                                        "type": "string"
+                                      },
+                                      "cpuCores": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                      },
+                                      "diskSizeGB": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                      },
+                                      "memoryMB": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                      },
+                                      "network": {
+                                        "type": "object",
+                                        "required": [
+                                          "devices"
+                                        ],
+                                        "properties": {
+                                          "devices": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "object",
+                                              "properties": {
+                                                "ipAddrs": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "macAddr": {
+                                                  "type": "string"
+                                                },
+                                                "netmask": {
+                                                  "type": "string"
+                                                },
+                                                "networkType": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "NONE",
+                                                    "IPV4",
+                                                    "IPV4_DHCP"
+                                                  ]
+                                                },
+                                                "routes": {
+                                                  "type": "array",
+                                                  "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                      "gateway": {
+                                                        "type": "string"
+                                                      },
+                                                      "netmask": {
+                                                        "type": "string"
+                                                      },
+                                                      "network": {
+                                                        "type": "string"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "tag": {
+                                                  "type": "string",
+                                                  "enum": [
+                                                    "default",
+                                                    "ecp",
+                                                    "storage"
+                                                  ]
+                                                },
+                                                "vlan": {
+                                                  "type": "string"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "ipPoolRef": {
+                                            "type": "object",
+                                            "required": [
+                                              "name"
+                                            ],
+                                            "properties": {
+                                              "name": {
+                                                "type": "string",
+                                                "minLength": 1
+                                              },
+                                              "namespace": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "nameservers": {
+                                            "type": "array",
+                                            "items": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "vmTemplate": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "nodeDrainTimeout": {
+                                    "type": "string"
+                                  },
+                                  "replicas": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "minimum": 1
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "version": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "x-kubernetes-group-version-kind": [
+                    {
+                      "group": "kubesmart.smtx.io",
+                      "kind": "KubeSmartCluster",
+                      "version": "v1alpha1"
+                    }
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "nameservers": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "businessNetwork": {
+                      "type": "object",
+                      "properties": {
+                        "vlan": {
+                          "type": "string"
+                        },
+                        "networkType": {
+                          "type": "string"
+                        },
+                        "dns": {
+                          "type": "string"
+                        },
+                        "ipPool": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "namespace": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "iomeshNetwork": {
+                      "type": "object",
+                      "properties": {
+                        "vlan": {
+                          "type": "string"
+                        },
+                        "zbsVip": {
+                          "type": "string"
+                        },
+                        "defaultVlan": {
+                          "type": "string"
+                        },
+                        "defaultZbsVip": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "ecpNetwork": {
+                      "type": "object",
+                      "properties": {
+                        "vlan": {
+                          "type": "string"
+                        },
+                        "cidr": {
+                          "type": "string"
+                        },
+                        "subnet": {
+                          "type": "string"
+                        },
+                        "gateway": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "controlPlaneEndpointNetWorkType": {
+                      "type": "string",
+                      "title": "",
+                      "description": "",
+                      "properties": {}
+                    },
+                    "controlPlane": {
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "replicas"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "maxLength": 61,
+                          "minLength": 1
+                        },
+                        "nodeConfig": {
+                          "type": "object",
+                          "properties": {
+                            "cloneMode": {
+                              "type": "string"
+                            },
+                            "cpuCores": {
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "diskSizeGB": {
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "memoryMB": {
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "memoryGB": {
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "network": {
+                              "type": "object",
+                              "required": [
+                                "devices"
+                              ],
+                              "properties": {
+                                "devices": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "ipAddrs": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "macAddr": {
+                                        "type": "string"
+                                      },
+                                      "netmask": {
+                                        "type": "string"
+                                      },
+                                      "networkType": {
+                                        "type": "string",
+                                        "enum": [
+                                          "NONE",
+                                          "IPV4",
+                                          "IPV4_DHCP"
+                                        ]
+                                      },
+                                      "routes": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "gateway": {
+                                              "type": "string"
+                                            },
+                                            "netmask": {
+                                              "type": "string"
+                                            },
+                                            "network": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "tag": {
+                                        "type": "string",
+                                        "enum": [
+                                          "default",
+                                          "ecp",
+                                          "storage"
+                                        ]
+                                      },
+                                      "vlan": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                },
+                                "ipPoolRef": {
+                                  "type": "object",
+                                  "required": [
+                                    "name"
+                                  ],
+                                  "properties": {
+                                    "name": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    },
+                                    "namespace": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "nameservers": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            },
+                            "vmTemplate": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "nodeDrainTimeout": {
+                          "type": "string"
+                        },
+                        "replicas": {
+                          "type": "integer",
+                          "format": "int32",
+                          "minimum": 1
+                        }
+                      }
+                    },
+                    "workers": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "replicas"
+                        ],
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "maxLength": 61,
+                            "minLength": 1
+                          },
+                          "nodeConfig": {
+                            "type": "object",
+                            "properties": {
+                              "cloneMode": {
+                                "type": "string"
+                              },
+                              "cpuCores": {
+                                "type": "integer",
+                                "format": "int32"
+                              },
+                              "diskSizeGB": {
+                                "type": "integer",
+                                "format": "int32"
+                              },
+                              "memoryMB": {
+                                "type": "integer",
+                                "format": "int32"
+                              },
+                              "memoryGB": {
+                                "type": "integer",
+                                "format": "int32"
+                              },
+                              "network": {
+                                "type": "object",
+                                "required": [
+                                  "devices"
+                                ],
+                                "properties": {
+                                  "devices": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "ipAddrs": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "macAddr": {
+                                          "type": "string"
+                                        },
+                                        "netmask": {
+                                          "type": "string"
+                                        },
+                                        "networkType": {
+                                          "type": "string",
+                                          "enum": [
+                                            "NONE",
+                                            "IPV4",
+                                            "IPV4_DHCP"
+                                          ]
+                                        },
+                                        "routes": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "properties": {
+                                              "gateway": {
+                                                "type": "string"
+                                              },
+                                              "netmask": {
+                                                "type": "string"
+                                              },
+                                              "network": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "tag": {
+                                          "type": "string",
+                                          "enum": [
+                                            "default",
+                                            "ecp",
+                                            "storage"
+                                          ]
+                                        },
+                                        "vlan": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "ipPoolRef": {
+                                    "type": "object",
+                                    "required": [
+                                      "name"
+                                    ],
+                                    "properties": {
+                                      "name": {
+                                        "type": "string",
+                                        "minLength": 1
+                                      },
+                                      "namespace": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "nameservers": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              },
+                              "vmTemplate": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "nodeDrainTimeout": {
+                            "type": "string"
+                          },
+                          "replicas": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 1
+                          }
+                        }
+                      }
+                    },
+                    "enableSecurity": {
+                      "type": "boolean",
+                      "title": "",
+                      "description": "",
+                      "properties": {}
+                    }
+                  },
+                  "x-dovetail-custom-kind": [
+                    {
+                      "kind": "Custom"
+                    }
+                  ]
+                }
+              ],
+              "defaultValues": [
+                {
+                  "apiVersion": "kubesmart.smtx.io/v1alpha1",
+                  "kind": "KubeSmartCluster",
+                  "metadata": {
+                    "name": "",
+                    "namespace": "default",
+                    "annotations": {
+                      "sks-display-name": ""
+                    }
+                  },
+                  "spec": {
+                    "controlPlaneEndpoint": {
+                      "host": "",
+                      "port": 6443
+                    },
+                    "network": {
+                      "cni": {
+                        "name": "calico"
+                      },
+                      "services": {
+                        "cidrBlocks": [
+                          "10.96.0.0/22"
+                        ]
+                      },
+                      "pods": {
+                        "cidrBlocks": [
+                          "172.16.0.0/16"
+                        ]
+                      }
+                    },
+                    "storage": {
+                      "csi": {
+                        "elf": {},
+                        "zbs": null,
+                        "stub": null,
+                        "name": "elf"
+                      }
+                    },
+                    "components": {
+                      "logging": {
+                        "enabled": false
+                      },
+                      "monitoring": {
+                        "enabled": false
+                      },
+                      "ingress": {
+                        "enabled": false
+                      },
+                      "loadbalancer": {
+                        "enabled": false
+                      },
+                      "externaldns": {
+                        "enabled": false
+                      }
+                    },
+                    "cloudProvider": {
+                      "name": "cloudtower",
+                      "cloudtower": {
+                        "server": "",
+                        "authMode": null,
+                        "username": "",
+                        "password": "",
+                        "elfCluster": null,
+                        "elfVlan": null,
+                        "elfVmTemplate": "",
+                        "zbsVip": "",
+                        "cloudtowerServer": {
+                          "secretRef": {
+                            "name": "cloudtower-server",
+                            "namespace": "default"
+                          }
+                        }
+                      }
+                    },
+                    "clusterConfiguration": {
+                      "customImageRegistry": "{{ deploy_registry_manager.registry.hostname }}/sks",
+                      "security": {
+                        "sshAuthorizedPublicKey": "",
+                        "sshPassword": ""
+                      }
+                    }
+                  }
+                },
+                {
+                  "apiVersion": "custom/v1",
+                  "kind": "Custom",
+                  "nameservers": [
+                    ""
+                  ],
+                  "businessNetwork": {
+                    "vlan": "",
+                    "networkType": "IPV4_DHCP"
+                  },
+                  "iomeshNetwork": {
+                    "vlan": ""
+                  },
+                  "ecpNetwork": {
+                    "vlan": "",
+                    "cidr": "",
+                    "subnet": "",
+                    "gateway": ""
+                  },
+                  "controlPlaneEndpointNetworkType": "MANUAL",
+                  "controlPlane": {
+                    "name": "controlplane",
+                    "replicas": 1,
+                    "nodeConfig": {
+                      "cpuCores": 4,
+                      "memoryMB": 8192,
+                      "memoryGB": 8,
+                      "diskSizeGB": 100,
+                      "cloneMode": "FastClone",
+                      "network": {
+                        "devices": null
+                      }
+                    }
+                  },
+                  "workers": [
+                    {
+                      "name": "",
+                      "replicas": 1,
+                      "nodeConfig": {
+                        "cpuCores": 4,
+                        "memoryMB": 8196,
+                        "memoryGB": 8,
+                        "diskSizeGB": 100,
+                        "cloneMode": "FastClone",
+                        "network": {
+                          "devices": null
+                        }
+                      }
+                    }
+                  ]
+                }
+              ],
+              "uiConfig": {
+                "layout": {
+                  "type": "simple",
+                  "fields": [
+                    {
+                      "type": "field",
+                      "path": "1.workers.$add",
+                      "key": "workers",
+                      "label": "",
+                      "condition": true,
+                      "helperText": "",
+                      "sectionTitle": "",
+                      "isDisplayLabel": false,
+                      "labelWidth": 0,
+                      "layout": "horizontal",
+                      "rules": [],
+                      "error": "",
+                      "col": 24,
+                      "splitLine": false,
+                      "widget": "default",
+                      "widgetOptions": {},
+                      "componentId": "",
+                      "summaryConfig": {
+                        "type": "auto",
+                        "label": "",
+                        "value": "",
+                        "icon": "",
+                        "hidden": false
+                      },
+                      "layoutWidget": "default",
+                      "indent": false,
+                      "fields": [
+                        {
+                          "path": "name",
+                          "key": "name",
+                          "label": "Name",
+                          "condition": true,
+                          "helperText": "",
+                          "sectionTitle": "",
+                          "isDisplayLabel": true,
+                          "labelWidth": 0,
+                          "layout": "horizontal",
+                          "rules": [
+                            {
+                              "message": "请输入名称",
+                              "required": true,
+                              "pattern": "",
+                              "min": 0,
+                              "max": 9007199254740991,
+                              "validator": ""
+                            }
+                          ],
+                          "error": "",
+                          "col": 24,
+                          "splitLine": false,
+                          "widget": "default",
+                          "widgetOptions": {},
+                          "componentId": "",
+                          "summaryConfig": {
+                            "type": "auto",
+                            "label": "",
+                            "value": "",
+                            "icon": "",
+                            "hidden": false
+                          }
+                        }
+                      ],
+                      "subItem": {
+                        "widget": "default",
+                        "widgetOptions": {},
+                        "componentId": "",
+                        "rules": []
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "basePath": "/api/k8s"
+          },
+          "traits": [
+            {
+              "type": "core/v2/slot",
+              "properties": {
+                "container": {
+                  "id": "root0",
+                  "slot": "root"
+                },
+                "ifCondition": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "modules": []
+}
