@@ -17,13 +17,17 @@ export const WizardStyle = css`
   overflow: hidden;
 `;
 
+export const WizardBodyWrapperStyle = css`
+  overflow: auto;
+  height: 100%;
+`;
+
 export const WizardBodyStyle = css`
   max-width: 1120px;
   width: 100%;
   margin: 0 auto;
   display: flex;
   flex: 1;
-  overflow: auto;
 
   .left,
   .right {
@@ -55,7 +59,6 @@ export const WizardBodyStyle = css`
     .middle-form-wrapper {
       flex: 1;
       width: 100%;
-      overflow: auto;
       margin-bottom: 40px;
     }
 
