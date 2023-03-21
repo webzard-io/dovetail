@@ -375,9 +375,11 @@ export class KubeApi<T extends UnstructuredList> {
         return;
       }
 
-      (async () => {
-        stopWatch = await retry();
-      })();
+      setTimeout(() => {
+        (async () => {
+          stopWatch = await retry();
+        })();
+      }, 10000)
     });
 
     return stop;
