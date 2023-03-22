@@ -166,6 +166,8 @@ export class KubeApi<T extends UnstructuredList> {
   private resourceBasePath: string;
   private namespace?: string;
   private resource: string;
+  private maxTimeout = Math.pow(2, 10) * 1000;
+  private retryTimes = 0;
 
   constructor(protected options: KubeApiOptions) {
     const { objectConstructor, basePath, watchWsBasePath } = options;
@@ -375,11 +377,11 @@ export class KubeApi<T extends UnstructuredList> {
         return;
       }
 
-      setTimeout(() => {
+      this.retryFunc(() => {
         (async () => {
           stopWatch = await retry();
         })();
-      }, 10000)
+      });
     });
 
     return stop;
@@ -487,6 +489,16 @@ export class KubeApi<T extends UnstructuredList> {
     }
 
     return query;
+  }
+
+  private retryFunc(fn: () => void) {
+    // Exponential backoff retry
+    const timeout = Math.min(
+      Math.pow(2, this.retryTimes) * 1000,
+      this.maxTimeout
+    );
+    setTimeout(fn, timeout);
+    this.retryTimes++;
   }
 }
 
