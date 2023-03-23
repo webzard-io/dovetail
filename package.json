@@ -8,7 +8,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "dev": "vite",
-    "prepublish": "npm run build",
+    "prepublish": "npm run build && npm run typings",
     "build": "vite build",
     "postbuild": "sed -i -e 's/\"useInsertionEffect\"/\"useInsertion\"+\"Effect\"/g' ./dist/index.js",
     "typings": "tsc --emitDeclarationOnly",
@@ -78,7 +78,6 @@
     "sass": "^1.51.0",
     "typescript": "^4.6.3",
     "vite": "^3.2.5",
-    "vite-plugin-dts": "2.0.0-beta.3",
     "vite-plugin-imp": "^2.2.0",
     "vite-plugin-monaco-editor": "^1.1.0",
     "vite-tsconfig-paths": "^3.4.1"

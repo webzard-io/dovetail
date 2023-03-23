@@ -1,6 +1,7 @@
 import { DISPLAY_WIDGETS_MAP } from "../../_internal/molecules/display";
 import ObjectAge from "../../_internal/molecules/ObjectAge";
 import ObjectLabel from "../../_internal/molecules/ObjectLabel";
+import React from "react";
 
 export type Field = {
   path: string;
@@ -16,12 +17,18 @@ export type Field = {
 export function renderWidget(
   field: Field,
   data: { value: any; renderedValue?: any; [props: string]: any },
-  slot?: Function,
+  slot?: (
+    props: any,
+    fallback?: React.ReactNode,
+    key?: string | undefined
+  ) => React.ReactNode,
   slotKey?: string
 ) {
   const { value, record, renderedValue } = data;
   const { widget, widgetOptions = {}, transform, ...restField } = field;
-  const transformedValue = transform ? transform(restField, data) : (renderedValue ?? value);
+  const transformedValue = transform
+    ? transform(restField, data)
+    : renderedValue ?? value;
   let node = transformedValue;
 
   if (widget && widget !== "default") {

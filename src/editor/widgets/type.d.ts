@@ -13,19 +13,19 @@ declare module "@sunmao-ui/editor-sdk" {
     "kui/v1/PathWidget": {
       paths: string[];
     };
-    "kui/v1/ApiBaseWidget": {};
-    "kui/v1/KindWidget": {};
-    "kui/v1/ResourceWidget": {};
+    "kui/v1/ApiBaseWidget": Record<string, unknown>;
+    "kui/v1/KindWidget": Record<string, unknown>;
+    "kui/v1/ResourceWidget": Record<string, unknown>;
     "kui/v1/OptionsWidget": {
       optionsMap: Record<string, JSONSchema7>;
     };
-    "kui/v1/KubectlApplyFormDesignWidget": {};
+    "kui/v1/KubectlApplyFormDesignWidget": Record<string, unknown>;
     "kui/v1/KubectlApplyFormFieldWidget": {
       parentPath: string;
     };
-    "kui/v1/KubectlGetDetailLayoutWidget": {};
-    "kui/v1/KubectlGetDetailFieldWidget": {};
-    "kui/v1/KubectlGetTableColumnWidget": {};
+    "kui/v1/KubectlGetDetailLayoutWidget": Record<string, unknown>;
+    "kui/v1/KubectlGetDetailFieldWidget": Record<string, unknown>;
+    "kui/v1/KubectlGetTableColumnWidget": Record<string, unknown>;
   }
 }
 
