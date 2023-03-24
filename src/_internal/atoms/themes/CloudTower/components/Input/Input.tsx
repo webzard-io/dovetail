@@ -15,6 +15,10 @@ export const InputStyle = css`
     border-color: $strokes-light-trans-3;
     transition: height 240ms ease 8ms, border 160ms ease 8ms,
       box-shadow 160ms ease 8ms;
+
+    &::placeholder {
+      font-size: 12px;
+    }
   }
 
   &.dovetail-ant-input.dovetail-ant-input-lg {
