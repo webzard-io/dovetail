@@ -2,6 +2,17 @@ import React, { useCallback, useState, useContext, useEffect } from "react";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
 import { KitContext } from "../atoms/kit-context";
+import { css } from "@linaria/core";
+
+const InputNumberStyle = css`
+  .dovetail-ant-input.dovetail-ant-input:not([disabled]) {
+    &:active,
+    &:hover {
+      box-shadow: none;
+      border: 0;
+    }
+  }
+`;
 
 export const OptionsSpec = Type.Object({
   max: Type.Optional(Type.Number({ title: "Max" })),
@@ -37,6 +48,7 @@ const InputNumber = (props: Props) => {
   return (
     <kit.Input
       {...(props.widgetOptions || {})}
+      className={InputNumberStyle}
       maximum={props.widgetOptions?.max}
       minimum={props.widgetOptions?.min}
       type="int"
