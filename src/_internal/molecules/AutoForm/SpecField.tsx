@@ -72,6 +72,11 @@ const FormItemStyle = css`
     > .dovetail-ant-form-item-control
     > .dovetail-ant-form-item-explain {
     display: none;
+    line-height: 18px;
+    font-size: 12px;
+    color: rgba(240, 72, 62);
+    margin-top: 4px;
+    min-height: 18px;
   }
 
   &.dovetail-ant-form-item-has-error {
@@ -100,7 +105,8 @@ const FormItemStyle = css`
   }
 
   .dovetail-ant-form-item-extra {
-    margin-top: 5px;
+    min-height: 18px;
+    margin-top: 4px;
     color: rgba(44, 56, 82, 0.6);
     font-family: "Inter";
     font-weight: 400;
