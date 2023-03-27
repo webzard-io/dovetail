@@ -6,8 +6,12 @@ import { css } from "@linaria/core";
 
 const InputNumberStyle = css`
   .dovetail-ant-input.dovetail-ant-input:not([disabled]) {
+    box-shadow: none;
+    border: 0;
+    
     &:active,
-    &:hover {
+    &:hover,
+    &:focus {
       box-shadow: none;
       border: 0;
     }
