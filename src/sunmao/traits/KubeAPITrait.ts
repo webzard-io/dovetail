@@ -140,6 +140,7 @@ export default implementRuntimeTrait({
   const responseMap = new Map();
   const stopMap = new Map();
   const timeMap = new Map();
+  const countUpdateMap = new Map();
 
   return ({
     trait,
@@ -303,7 +304,9 @@ export default implementRuntimeTrait({
       props: {
         traitPropertiesDidUpdated: [
           () => {
-            if (isAutoWatch) {
+            countUpdateMap.set(componentId, (countUpdateMap.get(componentId) || 0) + 1)
+
+            if (isAutoWatch && countUpdateMap.get(componentId) > 1) {
               watch();
             }
           },
