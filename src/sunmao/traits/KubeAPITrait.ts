@@ -186,6 +186,8 @@ export default implementRuntimeTrait({
       });
 
       stop();
+      // reset last retry's times and timer
+      api.resetRetryState();
 
       const stopFn = await api
         .listWatch({
@@ -304,7 +306,10 @@ export default implementRuntimeTrait({
       props: {
         traitPropertiesDidUpdated: [
           () => {
-            countUpdateMap.set(componentId, (countUpdateMap.get(componentId) || 0) + 1)
+            countUpdateMap.set(
+              componentId,
+              (countUpdateMap.get(componentId) || 0) + 1
+            );
 
             if (isAutoWatch && countUpdateMap.get(componentId) > 1) {
               watch();
