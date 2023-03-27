@@ -168,6 +168,8 @@ export class KubeApi<T extends UnstructuredList> {
   private resource: string;
   private maxTimeout = Math.pow(2, 10) * 1000;
   private retryTimes = 0;
+  private retryTimer: ReturnType<typeof setTimeout> | undefined;
+  private shouldNotRetry = false;
 
   constructor(protected options: KubeApiOptions) {
     const { objectConstructor, basePath, watchWsBasePath } = options;
@@ -178,6 +180,13 @@ export class KubeApi<T extends UnstructuredList> {
     this.resourceBasePath = objectConstructor.resourceBasePath;
     this.namespace = objectConstructor.namespace;
     this.resource = objectConstructor.resource;
+  }
+
+  public resetRetryState() {
+    this.retryTimes = 0;
+    clearTimeout(this.retryTimer);
+    this.retryTimer = undefined;
+    this.shouldNotRetry = false;
   }
 
   public async list({
@@ -336,6 +345,9 @@ export class KubeApi<T extends UnstructuredList> {
     // let listwatch know it needs retry
     retry: () => Promise<StopWatchHandler>
   ) {
+    if (this.shouldNotRetry) {
+      return () => undefined;
+    }
     const { resourceVersion = "" } = (res as unknown as UnstructuredList)
       .metadata;
     const protocol = location.protocol.includes("https") ? "wss" : "ws";
@@ -378,10 +390,15 @@ export class KubeApi<T extends UnstructuredList> {
       }
 
       this.retryFunc(() => {
-        (async () => {
-          stopWatch = await retry();
-        })();
+        retry();
+        stopWatch = () => {
+          this.shouldNotRetry = true;
+        };
       });
+
+      stopWatch = () => {
+        clearTimeout(this.retryTimer);
+      };
     });
 
     return stop;
@@ -497,7 +514,7 @@ export class KubeApi<T extends UnstructuredList> {
       Math.pow(2, this.retryTimes) * 1000,
       this.maxTimeout
     );
-    setTimeout(fn, timeout);
+    this.retryTimer = setTimeout(fn, timeout);
     this.retryTimes++;
   }
 }
