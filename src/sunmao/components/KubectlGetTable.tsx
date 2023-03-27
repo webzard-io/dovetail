@@ -602,7 +602,7 @@ export const KubectlGetTable = implementRuntimeComponent({
                   record,
                   index,
                 },
-                (slotProps: any, fallback: any, slotKey: string) =>
+                (slotProps: any, fallback: any, slotKey?: string) =>
                   generateSlotChildren(
                     {
                       app,
@@ -611,7 +611,7 @@ export const KubectlGetTable = implementRuntimeComponent({
                       allComponents,
                       slotsElements,
                       slot: "cell",
-                      slotKey,
+                      slotKey: slotKey || "",
                       fallback,
                     },
                     {

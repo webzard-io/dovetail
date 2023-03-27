@@ -8,7 +8,6 @@ import sunmaoFsVitePlugin from "./tools/sunmao-fs-vite-plugin";
 import linariaVitePlugin from "./tools/linaria-vite-plugin";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { getProxyConfig, applyK8sYamlPlugin } from "./tools/proxy-k8s";
-import dts from "vite-plugin-dts";
 import monacoEditorPlugin from "vite-plugin-monaco-editor";
 
 const globalSassPath = path.resolve(
@@ -53,10 +52,6 @@ export default defineConfig({
   },
   plugins: [
     tsconfigPaths(),
-    dts({
-      insertTypesEntry: true,
-      tsConfigFilePath: path.resolve(__dirname, './tsconfig.json'),
-    }),
     sunmaoFsVitePlugin({
       schemas: [
         {
