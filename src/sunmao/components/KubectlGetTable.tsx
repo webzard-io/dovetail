@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useContext,
+} from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { StringUnion, PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
 import { Type, Static } from "@sinclair/typebox";
@@ -17,6 +23,7 @@ import { renderWidget } from "../utils/widget";
 import { generateSlotChildren } from "../utils/slot";
 import { css, cx } from "@emotion/css";
 import { get } from "lodash";
+import { KitContext } from "../../_internal/atoms/kit-context";
 
 const WrapperStyle = css`
   &.table-wrapper.sunmao-cloudtower-table {
@@ -428,6 +435,7 @@ export const KubectlGetTable = implementRuntimeComponent({
     mergeState,
     subscribeMethods,
   }) => {
+    const kit = useContext(KitContext);
     const [response, setResponse] = useState<{
       data: UnstructuredList;
       loading: boolean;
@@ -574,7 +582,12 @@ export const KubectlGetTable = implementRuntimeComponent({
     return (
       <div
         ref={elementRef}
-        className={cx(WrapperStyle, css(customStyle?.content))}
+        className={cx(
+          WrapperStyle,
+          css(customStyle?.content),
+          kit.TABLE_WRAPPER_SELECTOR.replace(".", ""),
+          `${component.id}-table-wrapper`
+        )}
       >
         <BaseKubectlGetTable
           tableKey={component.id}
