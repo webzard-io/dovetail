@@ -35,7 +35,9 @@
                 "dataIndex": "metadata.namespace",
                 "sortType": "none",
                 "width": 200,
-                "filters": []
+                "filters": [],
+                "canCustomizable": true,
+                "isDefaultDisplay": true
               },
               {
                 "key": "age",
@@ -43,11 +45,13 @@
                 "dataIndex": "metadata.creationTimestamp",
                 "sortType": "auto",
                 "width": 100,
-                "filters": []
+                "filters": [],
+                "canCustomizable": true,
+                "isDefaultDisplay": true
               },
               {
                 "dataIndex": "",
-                "key": "action",
+                "key": "_action_",
                 "title": "",
                 "titleTooltip": "",
                 "isActionColumn": true,
@@ -57,7 +61,7 @@
                 "widgetOptions": {},
                 "componentId": "",
                 "fixed": "right",
-                "width": 0,
+                "width": 40,
                 "ellipsis": false,
                 "align": "left",
                 "sortType": "none",
@@ -76,7 +80,8 @@
               "x": "",
               "y": ""
             },
-            "tableLayout": ""
+            "tableLayout": "",
+            "customizableKey": "table"
           },
           "traits": [
             {

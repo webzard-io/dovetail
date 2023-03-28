@@ -21,7 +21,9 @@ const Wrapper = styled.div`
   }
 `;
 const HelperText = styled.div`
-  margin: 8px 0;
+  margin: 4px 0 8px 0;
+  font-size: 12px;
+  line-height: 18px;
   color: rgba(44, 56, 82, 0.6);
 `;
 const CloseButtonStyle = css`
