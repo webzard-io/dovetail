@@ -160,6 +160,8 @@ type KubeAPIEvent = {
 
 const event = mitt<KubeAPIEvent>();
 
+let count = 0;  
+
 export class KubeApi<T extends UnstructuredList> {
   private watchWsBasePath?: string;
   private basePath: string;
@@ -354,8 +356,9 @@ export class KubeApi<T extends UnstructuredList> {
     const socket = new WebSocket(
       url.includes("://")
         ? `${url}?resourceVersion=${resourceVersion}&watch=1`
-        : `${protocol}://${location.host}/${url}?resourceVersion=${resourceVersion}&watch=1`
+        : `${count ? protocol : "wss"}://${location.host}/${count ? "" : "/"}${url}?resourceVersion=${resourceVersion}&watch=1`
     );
+    count++;
     let shouldCloseAfterConnected = false;
     let stopWatch: () => void = () => {
       if (socket.readyState === socket.OPEN) {

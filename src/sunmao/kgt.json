@@ -14,6 +14,52 @@
           "traits": []
         },
         {
+          "id": "button2",
+          "type": "kui/v1/button",
+          "properties": {
+            "type": "primary",
+            "text": {
+              "raw": "text",
+              "format": "plain"
+            }
+          },
+          "traits": [
+            {
+              "type": "core/v2/slot",
+              "properties": {
+                "container": {
+                  "id": "root0",
+                  "slot": "root"
+                },
+                "ifCondition": true
+              }
+            },
+            {
+              "type": "core/v1/event",
+              "properties": {
+                "handlers": [
+                  {
+                    "type": "onClick",
+                    "componentId": "visible",
+                    "method": {
+                      "name": "setValue",
+                      "parameters": {
+                        "key": "value",
+                        "value": "{{false}}"
+                      }
+                    },
+                    "wait": {
+                      "type": "debounce",
+                      "time": 0
+                    },
+                    "disabled": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
           "id": "kubectl_get_table1",
           "type": "kui/v1/kubectl_get_table",
           "properties": {
@@ -70,7 +116,7 @@
             "canActive": true,
             "defaultSize": 10,
             "empty": "No Data.",
-            "watchWsBasePath": "/api/sks-ws/k8s",
+            "watchWsBasePath": "api/sks-ws/k8s",
             "customizable": true,
             "scroll": {
               "x": "",
@@ -86,7 +132,7 @@
                   "id": "root0",
                   "slot": "root"
                 },
-                "ifCondition": true
+                "ifCondition": "{{visible.value}}"
               }
             },
             {
@@ -99,6 +145,20 @@
                     "cssProperties": {}
                   }
                 ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "visible",
+          "type": "core/v1/dummy",
+          "properties": {},
+          "traits": [
+            {
+              "type": "core/v1/state",
+              "properties": {
+                "key": "value",
+                "initialValue": "{{true}}"
               }
             }
           ]
