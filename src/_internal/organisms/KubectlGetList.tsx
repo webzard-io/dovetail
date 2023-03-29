@@ -23,6 +23,10 @@ const EmptyText = styled.div`
 `;
 
 const CardStyle = css`
+  &.card-wrapper {
+    border-radius: 8px;
+    box-shadow: none;
+  }
   .card-body {
     padding: 24px 32px;
   }
@@ -113,14 +117,7 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
         .catch((err) => {
           setResponse(() => ({ loading: false, error: err, data: emptyData }));
         });
-    }, [
-      apiBase,
-      watchWsBasePath,
-      resource,
-      namespace,
-      basePath,
-      query,
-    ]);
+    }, [apiBase, watchWsBasePath, resource, namespace, basePath, query]);
 
     useEffect(() => {
       const stopP = fetch();

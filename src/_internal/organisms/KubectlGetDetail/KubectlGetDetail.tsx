@@ -43,6 +43,10 @@ const LoadingWrapper = styled.div`
   padding: 24px;
 `;
 const CardStyle = css`
+  &.card-wrapper { 
+    border-radius: 8px;
+    box-shadow: none;
+  }
   .card-body {
     padding: 0;
   }
