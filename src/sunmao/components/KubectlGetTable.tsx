@@ -449,7 +449,15 @@ export const KubectlGetTable = implementRuntimeComponent({
     const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
     const [columnSortOrder, setColumnSortOrder] = useState<
       Record<string, "ascend" | "descend">
-    >({});
+    >(
+      columns.reduce((result: Record<string, "ascend" | "descend">, col) => {
+        if (col.defaultSortOrder) {
+          result[col.key] = col.defaultSortOrder;
+        }
+
+        return result;
+      }, {})
+    );
 
     const kubeSdk = useMemo(() => new KubeSdk({ basePath }), [basePath]);
 
@@ -466,7 +474,6 @@ export const KubectlGetTable = implementRuntimeComponent({
     const onSorterChange = useCallback(
       (order, key) => {
         const newColumnSortOrder = {
-          ...columnSortOrder,
           [key]: order,
         };
 
@@ -476,7 +483,7 @@ export const KubectlGetTable = implementRuntimeComponent({
         });
         callbackMap?.onSort?.();
       },
-      [mergeState, columnSortOrder, callbackMap]
+      [mergeState, callbackMap]
     );
     const onActive = useCallback(
       (key: string) => {
@@ -639,7 +646,7 @@ export const KubectlGetTable = implementRuntimeComponent({
                 `column_${colIndex}_${index}`
               );
             },
-            sortOrder: columnSortOrder[col.key] || col.defaultSortOrder,
+            sortOrder: columnSortOrder[col.key],
             sortDirections:
               col.sortType === "none" ? null : ["", "ascend", "descend"],
             sorter:
