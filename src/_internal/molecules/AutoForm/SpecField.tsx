@@ -257,6 +257,31 @@ type SpecFieldProps = Omit<WidgetProps, "setWidgetErrors"> & {
   children?: React.ReactNode;
 };
 
+type TransformFuncProps<T> = T extends Record<string, unknown>
+  ? {
+      [K in keyof T]: T[K] extends (...args: any[]) => unknown
+        ? ReturnType<T[K]>
+        : T[K];
+    }
+  : never;
+
+const transformFuncProps = <
+  T extends Record<string, unknown> = Record<string, unknown>
+>(
+  obj: T,
+  params: Record<string, unknown>
+): TransformFuncProps<T> => {
+  return Object.keys(obj).reduce((result: Partial<T>, key) => {
+    const value = obj[key as keyof T];
+    if (typeof value === "function") {
+      result[key as keyof T] = value(params);
+    } else {
+      result[key as keyof T] = value as T[keyof T];
+    }
+    return result;
+  }, {}) as TransformFuncProps<T>;
+};
+
 const SpecField: React.FC<SpecFieldProps> = (props) => {
   const {
     services,
@@ -282,17 +307,21 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   const [widgetErrors, setWidgetErrors] = useState([]);
   const { title } = spec;
   const label = title ?? "";
-  const fieldOrItem = field || item;
+  const transformedField = field ? transformFuncProps(field, { index }) : field;
+  const transformedItem = item ? transformFuncProps(item, { index }) : item;
+  const fieldOrItem = transformedField || transformedItem;
   let isDisplayLabel =
-    field?.type === "layout" ? field.indent : field?.isDisplayLabel;
+    transformedField?.type === "layout"
+      ? transformedField.indent
+      : transformedField?.isDisplayLabel;
   const displayDescription = shouldDisplayDescription(spec);
   const itemKey = `${
     props.superiorKey
-      ? `${props.superiorKey}${props.field?.key ? "-" : ""}`
+      ? `${props.superiorKey}${transformedField?.key ? "-" : ""}`
       : ""
-  }${props.field?.key || ""}`;
+  }${transformedField?.key || ""}`;
 
-  if (isEmpty(spec) || field?.condition === false) {
+  if (isEmpty(spec) || transformedField?.condition === false) {
     return null;
   }
 
@@ -310,9 +339,9 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       LAYOUT_WIDGETS_MAP[
         fieldOrItem.layoutWidget as keyof typeof LAYOUT_WIDGETS_MAP
       ];
-  } else if (field?.path.includes("*")) {
+  } else if (transformedField?.path.includes("*")) {
     Component = AllFields;
-  } else if (field?.path.includes("metadata.namespace")) {
+  } else if (transformedField?.path.includes("metadata.namespace")) {
     Component = FORM_WIDGETS_MAP.k8sSelect;
     widgetOptions = {
       apiBase: "/api/v1",
@@ -322,9 +351,9 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       ...widgetOptions,
     } as Static<typeof FORM_WIDGET_OPTIONS_MAP.k8sSelect>;
   } else if (
-    field?.path.includes("metadata.annotations") ||
+    transformedField?.path.includes("metadata.annotations") ||
     path.endsWith("metadata.annotations") ||
-    field?.path.includes("metadata.labels") ||
+    transformedField?.path.includes("metadata.labels") ||
     path.endsWith("metadata.labels")
   ) {
     Component = FORM_WIDGETS_MAP.k8sLabelGroup;
@@ -359,8 +388,8 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       widgetOptions={widgetOptions}
       error={typeof error !== "string" ? error : undefined}
       setWidgetErrors={setWidgetErrors}
-      field={field}
-      item={item}
+      field={transformedField}
+      item={transformedItem}
       spec={spec}
       value={value}
       displayValues={displayValues}
@@ -376,41 +405,41 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
 
   return (
     <Col
-      span={field?.col || 24}
+      span={transformedField?.col || 24}
       style={{
-        boxShadow: field?.splitLine
+        boxShadow: transformedField?.splitLine
           ? "inset 0px -1px 0px rgba(211, 218, 235, 0.6)"
           : "",
       }}
     >
-      {field?.sectionTitle && (
-        <div className={FieldSection}>{field?.sectionTitle}</div>
+      {transformedField?.sectionTitle && (
+        <div className={FieldSection}>{transformedField?.sectionTitle}</div>
       )}
       <FormItem
         services={services}
-        field={field}
-        item={item}
+        field={transformedField}
+        item={transformedItem}
         itemKey={itemKey}
         value={value}
         label={label}
-        layout={field?.layout}
+        layout={transformedField?.layout}
         description={
           helperSlot?.(
-            { path, ...(field || {}), index },
-            field?.helperText || "",
+            { path, ...(transformedField || {}), index },
+            transformedField?.helperText || "",
             `helper_${path}`
-          ) || field?.helperText
+          ) || transformedField?.helperText
         }
-        labelWidth={field?.labelWidth}
+        labelWidth={transformedField?.labelWidth}
         displayLabel={isDisplayLabel}
         displayDescription={displayDescription}
         spec={spec}
         error={typeof error === "string" ? error : ""}
         widgetErrors={widgetErrors}
-        testId={`${path}-${field?.key || ""}`}
+        testId={`${path}-${transformedField?.key || ""}`}
       >
         {slot?.(
-          { path, ...(field || {}), itemKey, index },
+          { path, ...(transformedField || {}), itemKey, index },
           FieldComponent,
           `filed_${path}`
         ) || FieldComponent}
