@@ -25,6 +25,12 @@ import { css, cx } from "@emotion/css";
 import { get } from "lodash";
 import { KitContext } from "../../_internal/atoms/kit-context";
 
+type Response = {
+  data: UnstructuredList;
+  loading: boolean;
+  error: null | Error;
+};
+
 const WrapperStyle = css`
   &.table-wrapper.sunmao-cloudtower-table {
     border-top: 0;
@@ -255,6 +261,11 @@ const KubectlGetTableProps = Type.Object({
     title: "Query",
     category: PRESET_PROPERTY_CATEGORY.Data,
   }),
+  customData: Type.Any({
+    title: "Custom Data",
+    description: "The function to set custom data. ({ record, index })=> Record<string, any>",
+    category: PRESET_PROPERTY_CATEGORY.Data,
+  }),
   columns: Type.Array(ColumnSpec, {
     widget: "core/v1/array",
     widgetOptions: {
@@ -418,6 +429,7 @@ export const KubectlGetTable = implementRuntimeComponent({
     customizableKey,
     defaultSize,
     empty,
+    customData,
     canActive,
     resizable,
     enableRowSelection,
@@ -436,11 +448,7 @@ export const KubectlGetTable = implementRuntimeComponent({
     subscribeMethods,
   }) => {
     const kit = useContext(KitContext);
-    const [response, setResponse] = useState<{
-      data: UnstructuredList;
-      loading: boolean;
-      error: null | Error;
-    }>({
+    const [response, setResponse] = useState<Response>({
       data: emptyData,
       loading: false,
       error: null,
@@ -512,6 +520,26 @@ export const KubectlGetTable = implementRuntimeComponent({
       },
       [callbackMap, mergeState]
     );
+    const onResponse = useCallback(
+      (response: Response) => {
+        const items: UnstructuredList["items"] =
+          customData && typeof customData === "function"
+            ? response.data.items.map((record, index) => ({
+                ...record,
+                customData: customData({ record, index }),
+              }))
+            : response.data.items;
+
+        setResponse({
+          ...response,
+          data: {
+            ...response.data,
+            items,
+          },
+        });
+      },
+      [customData]
+    );
 
     useEffect(() => {
       subscribeMethods({
@@ -561,7 +589,7 @@ export const KubectlGetTable = implementRuntimeComponent({
         loading: response.loading,
         error: response.error,
       });
-    }, [response]);
+    }, [response, mergeState]);
     useEffect(() => {
       mergeState({
         activeItem: response.data.items.find(
@@ -605,7 +633,6 @@ export const KubectlGetTable = implementRuntimeComponent({
           namespace={namespace}
           apiBase={apiBase}
           query={query}
-          onResponse={setResponse}
           columns={columns.map((col, colIndex) => ({
             ...col,
             fixed: col.fixed === "none" ? undefined : col.fixed,
@@ -700,6 +727,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           resizable={resizable}
           selectedKeys={selectedKeys}
           wrapper={elementRef!}
+          onResponse={onResponse}
           onSelect={enableRowSelection ? onSelectChange : undefined}
           onActive={onActive}
           onSorterChange={onSorterChange}
