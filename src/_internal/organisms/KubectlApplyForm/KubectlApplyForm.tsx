@@ -228,28 +228,30 @@ const KubectlApplyForm = React.forwardRef<
         case "simple": {
           return (
             <div className={cx(WizardStyle)}>
-              <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
-                <div className="left"></div>
-                <Row gutter={[24, 16]} className="middle">
-                  <div className="middle-form-wrapper">
-                    {transformFields(layout.fields, values, defaultValues).map(
-                      (f) => {
-                        const { component } = getComponent(f);
-                        return component;
-                      }
-                    )}
+              <div className={WizardBodyWrapperStyle}>
+                <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
+                  <div className="left"></div>
+                  <Row gutter={[24, 16]} className="middle">
+                    <div className="middle-form-wrapper">
+                      {transformFields(layout.fields, values, defaultValues).map(
+                        (f) => {
+                          const { component } = getComponent(f);
+                          return component;
+                        }
+                      )}
+                    </div>
+                    {errorContent}
+                  </Row>
+                  <div className="right">
+                    {uiConfig.isDisplaySummary ? (
+                      <SummaryList
+                        title={uiConfig.title || ""}
+                        groups={summaryInfo?.groups || []}
+                        items={summaryInfo.items || []}
+                        services={services}
+                      ></SummaryList>
+                    ) : null}
                   </div>
-                  {errorContent}
-                </Row>
-                <div className="right">
-                  {uiConfig.isDisplaySummary ? (
-                    <SummaryList
-                      title={uiConfig.title || ""}
-                      groups={summaryInfo?.groups || []}
-                      items={summaryInfo.items || []}
-                      services={services}
-                    ></SummaryList>
-                  ) : null}
                 </div>
               </div>
               {uiConfig.isDisplayFooter ? (
