@@ -228,7 +228,7 @@ const KubectlApplyForm = React.forwardRef<
         case "simple": {
           return (
             <div className={cx(WizardStyle)}>
-              <div className={WizardBodyWrapperStyle}>
+              <div className={cx(WizardBodyWrapperStyle, "body-wrapper")}>
                 <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
                   <div className="left"></div>
                   <Row gutter={[24, 16]} className="middle">
@@ -255,7 +255,7 @@ const KubectlApplyForm = React.forwardRef<
                 </div>
               </div>
               {uiConfig.isDisplayFooter ? (
-                <div className={WizardFooterStyle}>
+                <div className={cx(WizardFooterStyle, "footer-wrapper")}>
                   <div className="footer-content">
                     <div className="wizard-footer-left">
                       {error ? (
@@ -326,7 +326,7 @@ const KubectlApplyForm = React.forwardRef<
 
           return (
             <div className={cx(WizardStyle)}>
-              <div className={WizardBodyWrapperStyle}>
+              <div className={cx(WizardBodyWrapperStyle, "body-wrapper")}>
                 <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
                   <div className="left">
                     <Steps
@@ -384,7 +384,7 @@ const KubectlApplyForm = React.forwardRef<
                 </div>
               </div>
               {uiConfig.isDisplayFooter ? (
-                <div className={WizardFooterStyle}>
+                <div className={cx(WizardFooterStyle, "footer-wrapper")}>
                   <div className="footer-content">
                     <div className="wizard-footer-left">
                       {step !== 0 && (
