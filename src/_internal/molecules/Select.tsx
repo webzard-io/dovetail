@@ -15,6 +15,17 @@ const OptionWrapper = styled.div`
   }
 `;
 
+const OptionTip = styled.div`
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  margin-top: 6px;
+  color: rgba(44, 56, 82, 0.6);
+  white-space: pre-wrap;
+`;
+
 export const OptionsSpec = Type.Object({
   options: Type.Array(
     Type.Object({
@@ -27,6 +38,7 @@ export const OptionsSpec = Type.Object({
           color: Type.String(),
         })
       ),
+      tip: Type.Optional(Type.String()),
     })
   ),
   disabled: Type.Optional(Type.Boolean()),
@@ -92,6 +104,7 @@ const Select = (props: Props) => {
                 <kit.Tag color={tag.color}>{tag.name}</kit.Tag>
               ))}
             </OptionWrapper>
+            {option.tip ? <OptionTip>{option.tip}</OptionTip> : null}
           </AntdSelect.Option>
         );
       })}
