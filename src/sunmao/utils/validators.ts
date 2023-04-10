@@ -15,3 +15,15 @@ export function url(rule: RuleItem, value: string) {
     value
   );
 }
+
+export function dnsSubdomain(rule: RuleItem, value: string): boolean {
+  return /(^[a-z0-9]$)|(^[a-z0-9][a-z0-9-.]*?[a-z0-9]$)/.test(value);
+}
+
+export function rfc1123(rule: RuleItem, value: string): boolean {
+  return /(^[a-z0-9]$)|(^[a-z0-9][a-z0-9-]*?[a-z0-9]$)/.test(value);
+}
+
+export function rfc1035(rule: RuleItem, value: string): boolean {
+  return /(^[a-z]$)|(^[a-z0-9][a-z0-9-]*?[a-z0-9]$)/.test(value)
+}
