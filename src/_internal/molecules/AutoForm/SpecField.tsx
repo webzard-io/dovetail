@@ -96,6 +96,7 @@ const FormItemStyle = css`
 
     label:after {
       content: "";
+      margin: 0;
     }
   }
 
