@@ -196,7 +196,7 @@ export const WizardFooterStyle = css`
       }
       .wizard-error {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         margin-right: 12px;
         font-size: 13px;
         color: $red-60;
@@ -204,12 +204,14 @@ export const WizardFooterStyle = css`
 
         .wizard-error-icon {
           margin-right: 6px;
+          flex-shrink: 0;
+          margin-top: 3px;
         }
 
         .wizard-error-text {
-          white-space: nowrap;
+          font-size: 14px;
+          line-height: 22px;
           overflow: hidden;
-          text-overflow: ellipsis;
         }
       }
       .prev-step {

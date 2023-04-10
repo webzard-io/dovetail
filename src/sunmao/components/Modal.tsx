@@ -1,4 +1,10 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   DIALOG_CONTAINER_ID,
   implementRuntimeComponent,
@@ -20,7 +26,7 @@ const FooterWrapper = styled.div`
 `;
 const FooterError = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   margin-right: 12px;
   font-size: 13px;
   color: $red-60;
@@ -28,13 +34,19 @@ const FooterError = styled.div`
 
   .modal-error-icon {
     margin-right: 6px;
+    margin-top: 3px;
+    flex-shrink: 0;
   }
 
   .modal-error-text {
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 14px;
+    line-height: 22px;
   }
+`;
+
+const FooterButtonWrapper = styled.div`
+  flex-shrink: 0;
 `;
 
 const ModalProps = Type.Object({
@@ -129,7 +141,7 @@ export const Modal = implementRuntimeComponent({
       setVisible(false);
       mergeState({
         visible: false,
-      })
+      });
       callbackMap?.onClose?.();
     }, [callbackMap?.onClose]);
 
@@ -167,7 +179,7 @@ export const Modal = implementRuntimeComponent({
               ) : (
                 <span />
               )}
-              <div>
+              <FooterButtonWrapper>
                 {slotsElements.footer ? (
                   slotsElements.footer({})
                 ) : (
@@ -175,7 +187,7 @@ export const Modal = implementRuntimeComponent({
                     {t("dovetail.cancel")}
                   </kit.Button>
                 )}
-              </div>
+              </FooterButtonWrapper>
             </FooterWrapper>
           ) : null
         }

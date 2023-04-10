@@ -66,11 +66,6 @@ const WrapperStyle = css`
     border-left: 0px;
   }
 
-  .dovetail-ant-table-cell-fix-right,
-  .dovetail-ant-table-cell-fix-right.cell__action_ {
-    right: -2px !important;
-  }
-
   .dovetail-ant-table
     .dovetail-ant-table-tbody
     .dovetail-ant-table-row.active-row
@@ -263,7 +258,8 @@ const KubectlGetTableProps = Type.Object({
   }),
   customData: Type.Any({
     title: "Custom Data",
-    description: "The function to set custom data. ({ record, index })=> Record<string, any>",
+    description:
+      "The function to set custom data. ({ record, index })=> Record<string, any>",
     category: PRESET_PROPERTY_CATEGORY.Data,
   }),
   columns: Type.Array(ColumnSpec, {
@@ -468,6 +464,23 @@ export const KubectlGetTable = implementRuntimeComponent({
     );
 
     const kubeSdk = useMemo(() => new KubeSdk({ basePath }), [basePath]);
+    const finalResponse = useMemo(() => {
+      const items: UnstructuredList["items"] =
+        customData && typeof customData === "function"
+          ? response.data.items.map((record, index) => ({
+              ...record,
+              customData: customData({ record, index }),
+            }))
+          : response.data.items;
+
+      return {
+        ...response,
+        data: {
+          ...response.data,
+          items,
+        },
+      };
+    }, [response, customData]);
 
     const onSelectChange = useCallback(
       (newSelectedRowKeys, newSelectedRows) => {
@@ -520,31 +533,14 @@ export const KubectlGetTable = implementRuntimeComponent({
       },
       [callbackMap, mergeState]
     );
-    const onResponse = useCallback(
-      (response: Response) => {
-        const items: UnstructuredList["items"] =
-          customData && typeof customData === "function"
-            ? response.data.items.map((record, index) => ({
-                ...record,
-                customData: customData({ record, index }),
-              }))
-            : response.data.items;
-
-        setResponse({
-          ...response,
-          data: {
-            ...response.data,
-            items,
-          },
-        });
-      },
-      [customData]
-    );
+    const onResponse = useCallback((response: Response) => {
+      setResponse(response);
+    }, []);
 
     useEffect(() => {
       subscribeMethods({
         setSelectedRows({ keys }) {
-          const rows = response.data.items.filter((row) =>
+          const rows = finalResponse.data.items.filter((row) =>
             keys.includes(`${row.metadata.namespace}/${row.metadata.name}`)
           );
 
@@ -562,8 +558,8 @@ export const KubectlGetTable = implementRuntimeComponent({
             await kubeSdk.deleteYaml(
               items.map((item) => ({
                 ...item,
-                kind: response.data.kind.replace(/List$/g, ""),
-                apiVersion: response.data.apiVersion,
+                kind: finalResponse.data.kind.replace(/List$/g, ""),
+                apiVersion: finalResponse.data.apiVersion,
               }))
             );
             callbackMap?.onDeleteSuccess?.();
@@ -578,35 +574,35 @@ export const KubectlGetTable = implementRuntimeComponent({
       subscribeMethods,
       mergeState,
       callbackMap,
-      response,
+      finalResponse,
       selectedKeys,
       setSelectedKeys,
       kubeSdk,
     ]);
     useEffect(() => {
       mergeState({
-        items: response.data.items,
-        loading: response.loading,
-        error: response.error,
+        items: finalResponse.data.items,
+        loading: finalResponse.loading,
+        error: finalResponse.error,
       });
-    }, [response, mergeState]);
+    }, [finalResponse, mergeState]);
     useEffect(() => {
       mergeState({
-        activeItem: response.data.items.find(
+        activeItem: finalResponse.data.items.find(
           (item) =>
             `${item.metadata.namespace}/${item.metadata.name}` === activeKey
         ),
       });
-    }, [activeKey, response, mergeState]);
+    }, [activeKey, finalResponse, mergeState]);
     useEffect(() => {
       mergeState({
-        selectedItems: response.data.items.filter((item) =>
+        selectedItems: finalResponse.data.items.filter((item) =>
           selectedKeys.includes(
             `${item.metadata.namespace}/${item.metadata.name}`
           )
         ),
       });
-    }, [selectedKeys, response, mergeState]);
+    }, [selectedKeys, finalResponse, mergeState]);
     useEffect(() => {
       mergeState({
         currentPage: 1,
@@ -626,7 +622,7 @@ export const KubectlGetTable = implementRuntimeComponent({
       >
         <BaseKubectlGetTable
           tableKey={component.id}
-          response={response}
+          response={finalResponse}
           basePath={basePath}
           watchWsBasePath={watchWsBasePath}
           resource={resource}
