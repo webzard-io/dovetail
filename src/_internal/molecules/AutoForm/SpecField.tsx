@@ -307,10 +307,10 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   let { widgetOptions = {} } = props;
   const [widgetErrors, setWidgetErrors] = useState([]);
   const { title } = spec;
-  const label = title ?? "";
   const transformedField = field ? transformFuncProps(field, { index }) : field;
   const transformedItem = item ? transformFuncProps(item, { index }) : item;
   const fieldOrItem = transformedField || transformedItem;
+  const label = transformedField?.label || title || "";
   let isDisplayLabel =
     transformedField?.type === "layout"
       ? transformedField.indent
@@ -321,6 +321,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       ? `${props.superiorKey}${transformedField?.key ? "-" : ""}`
       : ""
   }${transformedField?.key || ""}`;
+  const finalError = error || fieldOrItem?.error;
 
   if (isEmpty(spec) || transformedField?.condition === false) {
     return null;
@@ -435,7 +436,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
         displayLabel={isDisplayLabel}
         displayDescription={displayDescription}
         spec={spec}
-        error={typeof error === "string" ? error : ""}
+        error={typeof finalError === "string" ? finalError : ""}
         widgetErrors={widgetErrors}
         testId={`${path}-${transformedField?.key || ""}`}
       >

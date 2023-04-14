@@ -8,7 +8,15 @@ export type Field = {
     validatorType?: string;
   })[];
   fields?: Field[];
-  subItem?: Pick<Field, "widget" | "widgetOptions" | "componentId" | "rules" | "disabledValidation"> & {
+  subItem?: Pick<
+    Field,
+    | "widget"
+    | "widgetOptions"
+    | "componentId"
+    | "error"
+    | "rules"
+    | "disabledValidation"
+  > & {
     type?: undefined;
   };
   path: string;

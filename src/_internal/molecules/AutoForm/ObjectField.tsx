@@ -33,7 +33,7 @@ export function resolveSubFields(props: WidgetProps) {
           specsArray[Number(schemaIndex)]?.[subPath.join(".")].spec || {};
       }
 
-      return (
+      return subSpec ? (
         <SpecField
           {...props}
           error={
@@ -45,10 +45,7 @@ export function resolveSubFields(props: WidgetProps) {
           widget={subField.widget}
           widgetOptions={subField.widgetOptions}
           key={subField.path}
-          spec={{
-            ...subSpec,
-            title: subField.label,
-          }}
+          spec={subSpec}
           path={path.concat(isLayout ? subField.path : `.${subField.path}`)}
           level={level + 1}
           value={get(value, subField.path)}
@@ -62,7 +59,7 @@ export function resolveSubFields(props: WidgetProps) {
             }
           }}
         />
-      );
+      ) : null;
     });
   } else {
     // show all properties
