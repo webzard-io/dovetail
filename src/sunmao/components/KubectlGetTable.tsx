@@ -521,6 +521,14 @@ export const KubectlGetTable = implementRuntimeComponent({
         mergeState({
           currentPage,
         });
+
+        if (elementRef?.current) {
+          const tableBody = elementRef.current.querySelector('.dovetail-ant-table-body');
+
+          if (tableBody) {
+            tableBody.scrollTop = 0;
+          }
+        }
       },
       [callbackMap, mergeState]
     );
