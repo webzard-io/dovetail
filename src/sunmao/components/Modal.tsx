@@ -57,6 +57,7 @@ const ModalProps = Type.Object({
   showFooter: Type.Boolean(),
   footerError: Type.String(),
   size: StringUnion(["small", "medium"]),
+  isChildModal: Type.Boolean(),
 });
 
 const ModalState = Type.Object({
@@ -110,6 +111,7 @@ export const Modal = implementRuntimeComponent({
     showFooter,
     footerError,
     size,
+    isChildModal,
     mergeState,
   }) => {
     const kit = useContext(KitContext);
@@ -155,6 +157,9 @@ export const Modal = implementRuntimeComponent({
         `}
         visible={visible}
         maskClosable={maskClosable}
+        maskStyle={{
+          background: isChildModal ? 'rgba(16, 26, 41, 0.6)' : undefined
+        }}
         width={width}
         getContainer={() =>
           document.getElementById(DIALOG_CONTAINER_ID) || document.body
