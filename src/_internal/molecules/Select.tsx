@@ -59,6 +59,10 @@ const DisabledMessage = styled.div`
 const ExtractWrapper = styled.div`
   display: flex;
   margin-top: 6px;
+
+  &:empty {
+    display: none;
+  }
 `;
 
 export const OptionsSpec = Type.Object({
@@ -133,6 +137,9 @@ const Select = (props: Props) => {
       dropdownMatchSelectWidth={dropdownMatchSelectWidth}
     >
       {options.map((option, idx) => {
+        const isShowDisabledMessage = option.disabled && option.disabledMessage;
+        const isShowTip = option.tip;
+
         return (
           <AntdSelect.Option
             key={idx}
@@ -148,13 +155,11 @@ const Select = (props: Props) => {
               ))}
             </OptionWrapper>
             <ExtractWrapper>
-              {option.disabled && option.disabledMessage ? (
-                <>
-                  <DisabledMessage>{option.disabledMessage}</DisabledMessage>
-                  <Splitor>·</Splitor>
-                </>
+              {isShowDisabledMessage ? (
+                <DisabledMessage>{option.disabledMessage}</DisabledMessage>
               ) : null}
-              {option.tip ? <OptionTip>{option.tip}</OptionTip> : null}
+              {isShowDisabledMessage && isShowTip ? <Splitor>·</Splitor> : null}
+              {isShowTip ? <OptionTip>{option.tip}</OptionTip> : null}
             </ExtractWrapper>
           </AntdSelect.Option>
         );
