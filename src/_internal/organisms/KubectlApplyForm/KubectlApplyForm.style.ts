@@ -52,7 +52,8 @@ export const WizardBodyStyle = css`
     flex-direction: column;
     align-content: flex-start;
     flex-grow: 0;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
     flex-basis: 58%;
     margin-bottom: 40px;
 
