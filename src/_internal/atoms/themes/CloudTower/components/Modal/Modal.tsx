@@ -15,6 +15,7 @@ type ModalProps = {
   children?: React.ReactNode;
   getContainer: string | (() => HTMLElement);
   size?: 'small' | 'medium';
+  maskStyle?: React.CSSProperties;
 };
 
 const Modal = React.forwardRef<HTMLDivElement, ModalProps>((props, ref) => {
@@ -30,6 +31,7 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>((props, ref) => {
     title,
     size = 'medium',
     footer = null,
+    maskStyle,
   } = props;
   return (
     <AntdModal
@@ -44,6 +46,7 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>((props, ref) => {
       onCancel={() => {
         onClose?.();
       }}
+      maskStyle={maskStyle}
       visible={visible}
       afterClose={afterClose}
       footer={footer}

@@ -115,6 +115,7 @@ export type ModalProps = {
   footer?: React.ReactNode;
   getContainer: string | (() => HTMLElement);
   size?: "small" | "medium";
+  maskStyle?: React.CSSProperties;
 } & RefAndChildren;
 
 export type CodeEditorProps = {

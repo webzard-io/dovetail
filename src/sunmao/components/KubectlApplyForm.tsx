@@ -621,6 +621,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
 
             mergeState({
               loading: false,
+              error
             });
             callbackMap?.onApplyFail?.();
           }
