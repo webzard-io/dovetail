@@ -559,8 +559,12 @@ export class KubeSdk {
       let exist = true;
       try {
         await this.read(spec);
-      } catch (e) {
-        exist = false;
+      } catch (e: any) {
+        if (e.response?.status === 404) {
+          exist = false;
+        } else {
+          throw e;
+        }
       }
 
       try {
