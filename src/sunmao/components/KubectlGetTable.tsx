@@ -24,6 +24,7 @@ import { generateSlotChildren } from "../utils/slot";
 import { css, cx } from "@emotion/css";
 import { get } from "lodash";
 import { KitContext } from "../../_internal/atoms/kit-context";
+import semver from 'semver';
 
 type Response = {
   data: UnstructuredList;
@@ -468,9 +469,9 @@ export const KubectlGetTable = implementRuntimeComponent({
       const items: UnstructuredList["items"] =
         customData && typeof customData === "function"
           ? response.data.items.map((record, index) => ({
-              ...record,
-              customData: customData({ record, index }),
-            }))
+            ...record,
+            customData: customData({ record, index }),
+          }))
           : response.data.items;
 
       return {
@@ -684,8 +685,8 @@ export const KubectlGetTable = implementRuntimeComponent({
               col.sortType === "none"
                 ? undefined
                 : col.sortType === "server"
-                ? true
-                : (
+                  ? true
+                  : (
                     a: UnstructuredList["items"][0],
                     b: UnstructuredList["items"][0]
                   ) => {
@@ -697,6 +698,8 @@ export const KubectlGetTable = implementRuntimeComponent({
                       typeof valueB === "number"
                     ) {
                       return valueA - valueB;
+                    } else if (semver.valid(valueA) && semver.valid(valueB)) {
+                      return valueA === valueB ? 0 : (semver.lt(valueA, valueB) ? -1 : 1);
                     }
 
                     return String(valueA).localeCompare(String(valueB));

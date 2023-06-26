@@ -33,6 +33,7 @@ export default defineConfig({
       external: [
         "react",
         "react-dom",
+        "semver",
         "@sunmao-ui/core",
         "@sunmao-ui/runtime",
         "@sunmao-ui/editor-sdk",
