@@ -78,12 +78,14 @@ dependencies:
   classnames: 2.3.1
   dayjs: 1.11.2
   framer-motion: 3.10.6_sfoxds7t5ydpegc3knd667wn6m
+  i18next: 21.9.1
   js-yaml: 4.1.0
   kubernetes-types: 1.21.0-beta.1
   ky: 0.30.0
   lodash: 4.17.21
   monaco-editor: 0.33.0
   rc-util: 5.25.2_sfoxds7t5ydpegc3knd667wn6m
+  react-i18next: 11.18.4_rdmihw2jyyapgc7wcovkb4m2lu
   react-use: 17.4.0_sfoxds7t5ydpegc3knd667wn6m
 
 devDependencies:
@@ -114,13 +116,11 @@ devDependencies:
   eslint-plugin-promise: 6.1.1_eslint@8.28.0
   eslint-plugin-react: 7.31.11_eslint@8.28.0
   eslint-plugin-react-hooks: 4.6.0_eslint@8.28.0
-  i18next: 21.9.1
   less: 3.13.1
   mobx: 6.6.1
   mobx-react-lite: 3.4.0_vuaia3cr2ucdrk3q4mauc2kfvi
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
-  react-i18next: 11.18.4_rdmihw2jyyapgc7wcovkb4m2lu
   sass: 1.52.1
   typescript: 4.7.2
   vite: 3.0.5_less@3.13.1+sass@1.52.1
@@ -5700,7 +5700,7 @@ packages:
     resolution: {integrity: sha512-KknJ50kTInJ7qIScF3jeaFRpMpE8/lfiTdzf/twXyPBLAGrLRTmkz3AdTnKeh40X8k9L2fdYwEp/42WGXIRGcg==}
     dependencies:
       void-elements: 3.1.0
-    dev: true
+    dev: false
 
   /http-cache-semantics/4.1.0:
     resolution: {integrity: sha512-carPklcUh7ROWRK7Cv27RPtdhYhUsela/ue5/jKzjegVvXDqM2ILE9Q2BGn9JZJh1g87cp56su/FgQSzcWS8cQ==}
@@ -5747,7 +5747,7 @@ packages:
     resolution: {integrity: sha512-ITbDrAjbRR73spZAiu6+ex5WNlHRr1mY+acDi2ioTHuUiviJqSz269Le1xHAf0QaQ6GgIHResUhQNcxGwa/PhA==}
     dependencies:
       '@babel/runtime': 7.18.3
-    dev: true
+    dev: false
 
   /iconv-lite/0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
@@ -7509,7 +7509,7 @@ packages:
       i18next: 21.9.1
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
-    dev: true
+    dev: false
 
   /react-icons/3.11.0_react@17.0.2:
     resolution: {integrity: sha512-JRgiI/vdF6uyBgyZhVyYJUZAop95Sy4XDe/jmT3R/bKliFWpO/uZBwvSjWEdxwzec7SYbEPNPck0Kff2tUGM2Q==}
@@ -8638,7 +8638,6 @@ packages:
   /void-elements/3.1.0:
     resolution: {integrity: sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==}
     engines: {node: '>=0.10.0'}
-    dev: true
 
   /warning/4.0.3:
     resolution: {integrity: sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==}

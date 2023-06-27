@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import { ConfigProvider } from "antd";
+import { I18nextProvider } from "react-i18next";
 import { KitContext, CloudTowerKit } from "../../_internal/atoms/kit-context";
+import i18n from "../../i18n";
 
 const RootState = Type.Object({
   theme: Type.String(),
@@ -44,7 +46,9 @@ export const Root = implementRuntimeComponent({
   return (
     <ConfigProvider prefixCls="dovetail-ant">
       <KitContext.Provider value={CloudTowerKit}>
-        <>{slotsElements.root ? slotsElements.root?.({}) : null}</>
+        <I18nextProvider i18n={i18n}>
+          <>{slotsElements.root ? slotsElements.root?.({}) : null}</>
+        </I18nextProvider>
       </KitContext.Provider>
     </ConfigProvider>
   );
