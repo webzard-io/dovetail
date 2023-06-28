@@ -595,6 +595,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
 
               mergeState({
                 loading: true,
+                error: null,
               });
 
               await sdk.applyYaml(appliedValues);
@@ -612,17 +613,21 @@ export const KubectlApplyForm = implementRuntimeComponent({
                 .then((result: unknown) => {
                   mergeState({
                     error: {
-                      ...error,
+                      ...(error || {}),
                       responseJsonBody: result,
                     },
                   });
                 });
+            } else {
+              mergeState({
+                error
+              });
             }
 
             mergeState({
               loading: false,
-              error
-            });
+            })
+
             callbackMap?.onApplyFail?.();
           }
         },
