@@ -14,27 +14,15 @@ import { cloneDeep } from "lodash";
 import registry from "../../services/Registry";
 import { StringUnion } from "@sunmao-ui/runtime";
 import { set } from "lodash";
+import { COMMON_ARRAY_OPTIONS } from './ArrayItems';
 
 const AddedButtonStyle = css``;
 
 export const OptionsSpec = Type.Object({
+  ...COMMON_ARRAY_OPTIONS,
   title: Type.Optional(
     Type.String({
       title: "Title",
-    })
-  ),
-  removable: Type.Optional(Type.Boolean({ title: "Removable" })),
-  addable: Type.Optional(Type.Boolean({ title: "Addable" })),
-  addedButtonText: Type.Optional(Type.String({ title: "Added button text" })),
-  addedButtonIcon: Type.Optional(Type.String({ title: "Added button icon" })),
-  maxLength: Type.Optional(
-    Type.Number({
-      title: "Max length",
-    })
-  ),
-  minLength: Type.Optional(
-    Type.Number({
-      title: "Min Length",
     })
   ),
   collapsible: Type.Optional(
@@ -70,6 +58,7 @@ const ArrayGroups = (props: Props) => {
       minLength: undefined,
       icon: "",
       collapsible: false,
+      useFirstAsDefaultValue: false,
     },
     onChange,
   } = props;
@@ -155,7 +144,7 @@ const ArrayGroups = (props: Props) => {
         );
       })}
       {widgetOptions.addable !== false &&
-      (value || []).length < (widgetOptions?.maxLength || Number.MAX_SAFE_INTEGER) ? (
+        (value || []).length < (widgetOptions?.maxLength || Number.MAX_SAFE_INTEGER) ? (
         <div>
           {widgetOptions.addedButtonIcon ? (
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>
@@ -167,8 +156,8 @@ const ArrayGroups = (props: Props) => {
             size="small"
             onClick={() => {
               const defaultValue =
-                props.field?.defaultValue?.[0] ??
-                generateFromSchema(itemSpec as JSONSchema7);
+                widgetOptions.useFirstAsDefaultValue ? props.field?.defaultValue?.[0] ??
+                  generateFromSchema(itemSpec as JSONSchema7) : generateFromSchema(itemSpec as JSONSchema7);
 
               onChange(
                 value.concat(

@@ -33,12 +33,11 @@ const CloseButtonStyle = css`
 `;
 const AddedButtonStyle = css``;
 
-export const OptionsSpec = Type.Object({
+export const COMMON_ARRAY_OPTIONS = {
   removable: Type.Optional(Type.Boolean({ title: "Removable" })),
   addable: Type.Optional(Type.Boolean({ title: "Addable" })),
   addedButtonText: Type.Optional(Type.String({ title: "Added button text" })),
   addedButtonIcon: Type.Optional(Type.String({ title: "Added button icon" })),
-  helper: Type.Optional(Type.String({ title: "Helper" })),
   maxLength: Type.Optional(
     Type.Number({
       title: "Max length",
@@ -49,6 +48,15 @@ export const OptionsSpec = Type.Object({
       title: "Min Length",
     })
   ),
+  useFirstAsDefaultValue: Type.Optional(Type.Boolean({
+    title: 'Use first as default value',
+    description: 'Is use the value of first item as the default value when adding the new item?'
+  }))
+}
+
+export const OptionsSpec = Type.Object({
+  ...COMMON_ARRAY_OPTIONS,
+  helper: Type.Optional(Type.String({ title: "Helper" })),
 });
 
 type Props = WidgetProps<any, Static<typeof OptionsSpec>>;
@@ -71,6 +79,7 @@ const ArrayItems = (props: Props) => {
       addedButtonIcon: "",
       maxLength: undefined,
       minLength: 0,
+      useFirstAsDefaultValue: false,
     },
     onChange,
   } = props;
@@ -182,7 +191,7 @@ const ArrayItems = (props: Props) => {
             size="small"
             onClick={() => {
               const defaultValue =
-                props.field?.defaultValue?.[0] ?? generateFromSchema(itemSpec);
+                widgetOptions.useFirstAsDefaultValue ? props.field?.defaultValue?.[0] ?? generateFromSchema(itemSpec) : generateFromSchema(itemSpec);
 
               onChange(
                 value.concat(
