@@ -143,6 +143,11 @@ const UiConfigFieldSpecProperties = {
     conditions: FIELD_CONDITIONS,
     category: VALIDATION_CATEGORY,
   }),
+  isHideError: Type.Boolean({
+    title: 'Hide Error',
+    conditions: FIELD_CONDITIONS,
+    category: VALIDATION_CATEGORY,
+  }),
   col: Type.Number({
     title: "Col",
     conditions: FIELD_CONDITIONS,
