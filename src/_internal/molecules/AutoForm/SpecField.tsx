@@ -175,7 +175,7 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
         }),
       [fieldOrItem, spec]
     );
-    const finalError = error || errors?.[0] || widgetErrors[0] || "";
+    const displayError = field?.isHideError ? "" : error || errors?.[0] || widgetErrors[0] || "";
 
     const validate = useCallback(
       (callback?: (messages: string[]) => void) => {
@@ -237,8 +237,8 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
             ""
           )
         }
-        validateStatus={finalError ? "error" : ""}
-        help={finalError}
+        validateStatus={displayError ? "error" : ""}
+        help={displayError}
         extra={description && displayDescription ? description : ""}
       >
         <div data-test-id={testId}>{children}</div>

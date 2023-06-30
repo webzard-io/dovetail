@@ -28,6 +28,7 @@ export type Field = {
   helperText: string;
   sectionTitle: string;
   error: string | string[] | Record<string, string>;
+  isHideError?: boolean;
   condition?: boolean;
   widget?: string;
   layoutWidget?: string;
