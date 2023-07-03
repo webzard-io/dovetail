@@ -34,11 +34,11 @@ type CustomizeColumnType = {
 };
 
 export type LocalStorage = {
-  'table-customize-column': Record<string, CustomizeColumnType[]>;
+  'dovetail-table-customize-column': Record<string, CustomizeColumnType[]>;
 };
 
 const localStorageVersions: Record<keyof LocalStorage, number> = {
-  'table-customize-column': 11,
+  'dovetail-table-customize-column': 1,
 };
 
 export default function useLocalStorage<K extends keyof LocalStorage>(

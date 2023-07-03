@@ -14,7 +14,7 @@ export const useCustomizeColumn = (
   key: string,
   defaultFieldsValue: T | (() => T)
 ): [T, (obj: T | ((val: T) => T)) => void, (_key?: string) => void] => {
-  const [storage, setStorage] = useLocalStorage('table-customize-column', {});
+  const [storage, setStorage] = useLocalStorage('dovetail-table-customize-column', {});
   const keyRef = useRef(key);
   keyRef.current = key;
 
