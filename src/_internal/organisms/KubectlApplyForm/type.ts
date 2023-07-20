@@ -45,6 +45,7 @@ export type Field = {
     icon?: string;
     hidden?: boolean;
   };
+  enableSwitchEditor?: boolean;
 };
 
 export type FormItemData = (Field | Record<string, unknown>) & {

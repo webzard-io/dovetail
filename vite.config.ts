@@ -2,7 +2,6 @@ import * as path from "path";
 import * as fs from "fs";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { getThemeVariables } from "antd/dist/theme";
 import vitePluginImp from "vite-plugin-imp";
 import sunmaoFsVitePlugin from "./tools/sunmao-fs-vite-plugin";
 import linariaVitePlugin from "./tools/linaria-vite-plugin";
@@ -38,6 +37,8 @@ export default defineConfig({
         "@sunmao-ui/runtime",
         "@sunmao-ui/editor-sdk",
         "chakra-react-select",
+        "monaco-editor",
+        "monaco-yaml"
       ],
     },
   },

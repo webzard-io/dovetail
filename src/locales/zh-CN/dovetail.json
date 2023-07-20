@@ -75,5 +75,13 @@
   "delete": "删除",
   "action": "操作",
   "add": "添加",
-  "retry_when_access_data_failed": "获取数据时遇到问题，请重试"
+  "retry_when_access_data_failed": "获取数据时遇到问题，请重试",
+  "copy": "复制",
+  "reset_arguments": "重置",
+  "view_changes": "查看改动",
+  "back_to_edit": "编辑",
+  "configure_file": "配置内容",
+  "yaml_format_wrong": "K8s 集群配置内容不是有效的 yaml 格式。",
+  "yaml_value_wrong": "K8s 集群配置内容中存在不合法的值。",
+  "edit_yaml": "编辑 YAML"
 }

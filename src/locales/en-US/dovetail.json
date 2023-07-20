@@ -75,5 +75,12 @@
   "delete": "Delete",
   "action": "Action",
   "add": "Add",
-  "retry_when_access_data_failed": "There was a problem when getting data, please try again"
+  "retry_when_access_data_failed": "There was a problem when getting data, please try again",
+  "copy": "Copy",
+  "reset_arguments": "Reset",
+  "view_changes": "Show Diff",
+  "back_to_edit": "Edit",
+  "configure_file": "Configuration",
+  "yaml_format_wrong": "K8s cluster configuration is in an invalid YAML format.",
+  "yaml_value_wrong": "K8s cluster configuration has invalid values."
 }

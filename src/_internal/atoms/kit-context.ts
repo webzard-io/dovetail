@@ -7,6 +7,7 @@ import { InputNumberProps as AntdInputNumberProps } from "antd/lib/input-number/
 import { SelectProps as AntdSelectProps } from "antd/lib/select/index";
 import { SwitchProps as AntdSwitchProps } from "antd/lib/switch/index";
 import { TooltipProps as AntdTooltipProps } from "antd/lib/tooltip";
+import { SpaceProps as AntdSpaceProps } from "antd/lib/space";
 export { CloudTowerKit };
 
 type RefAndChildren = {
@@ -300,6 +301,7 @@ export interface Kit {
   Select: React.FC<SelectProps>;
   Switch: React.FC<SwitchProps>;
   Tooltip: React.FC<TooltipProps>;
+  Space: React.FC<AntdSpaceProps>;
 }
 
 export const createKitContext = (kit: Kit) => {
