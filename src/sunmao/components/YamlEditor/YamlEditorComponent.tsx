@@ -69,6 +69,7 @@ export type Props = Partial<Static<typeof PropsSchema>> & {
   onChange?: (value: string) => void;
   onValidate?: (valid: boolean, schemaValid: boolean) => void;
   onEditorCreate?: (editor: monaco.editor.ICodeEditor)=> void;
+  onBlur?: ()=> void;
 }
 
 export type Handle = {
@@ -112,6 +113,10 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
     },
     [props.onValidate]
   );
+
+  const getInstance = useCallback((ins: monaco.editor.IStandaloneCodeEditor): void => {
+    editorInstance.current = ins;
+  }, []);
 
   return (
     <div
@@ -212,13 +217,12 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
         ) : (
           <Suspense fallback={<pre className={PlainCodeStyle}>{value}</pre>}>
             <MonacoYamlEditor
-              getInstance={ins => {
-                editorInstance.current = ins;
-              }}
+              getInstance={getInstance}
               defaultValue={defaultValue}
               onChange={onChange}
               onValidate={onValidate}
               onEditorCreate={props.onEditorCreate}
+              onBlur={props.onBlur}
               schema={schema}
             />
           </Suspense>

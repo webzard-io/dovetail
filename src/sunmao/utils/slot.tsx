@@ -4,6 +4,7 @@ import {
   UIServices,
   formatSlotKey,
   SlotsElements,
+  ImplWrapperProps,
 } from "@sunmao-ui/runtime";
 import type {
   RuntimeApplication,
@@ -23,6 +24,7 @@ type Props = {
   slotKey: string;
   slotsElements: SlotsElements<any>;
   fallback?: React.ReactNode;
+  childrenMap: ImplWrapperProps["childrenMap"];
 };
 
 type Options = {
@@ -40,6 +42,7 @@ export const generateSlotChildren = (
     slot,
     slotKey,
     fallback,
+    childrenMap,
   }: Props,
   { generateId, generateProps }: Options
 ) => {
@@ -77,7 +80,7 @@ export const generateSlotChildren = (
             app={app}
             allComponents={allComponents}
             services={services}
-            childrenMap={{}}
+            childrenMap={childrenMap || {}}
             isInModule
             slotContext={{
               renderSet,

@@ -3,6 +3,7 @@ import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import set from "lodash/set";
+import useMergeState from "../hooks/useMergeState";
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
 import pick from "lodash/pick";
@@ -413,6 +414,7 @@ const KubectlApplyFormProps = Type.Object({
 
 const KubectlApplyFormState = Type.Object({
   value: Type.Any(),
+  defaultValue: Type.Any(),
   displayValue: Type.Any(),
   latestChangedKey: Type.String(),
   latestChangedPath: Type.String(),
@@ -498,21 +500,39 @@ export const KubectlApplyForm = implementRuntimeComponent({
     customStyle,
     callbackMap,
     elementRef,
+    childrenMap,
     mergeState,
     subscribeMethods,
   }) => {
     const [step, setStep] = useState(0);
-    const [values, setValues] = useState<any[]>(() => {
+    const {
+      value: values,
+      mergeValue: mergeValues,
+      valueRef: valuesRef,
+      setValue: setValues
+    } = useMergeState<any[]>(() => {
       const initValues = (formConfig.schemas || []).map((s, idx) => {
         return formConfig.defaultValues?.[idx];
       });
 
       mergeState({ value: initValues });
       return initValues;
+    }, (mergedValues) => {
+      mergeState({
+        value: mergedValues,
+      });
     });
-    const [displayValues, setDisplayValues] = useState<Record<string, any>>({});
+    const { 
+      value: displayValues, 
+      mergeValue: mergeDisplayValues, 
+      valueRef: displayValuesRef,
+      setValue: setDisplayValues
+    } = useMergeState<Record<string, any>>({}, (mergedDisplayValues) => {
+      mergeState({
+        displayValue: mergedDisplayValues,
+      });
+    });
     const ref = useRef<KubectlApplyFormRef>(null);
-    const updatedDisplayValuesRef = useRef<Record<string, any>>({});
 
     const changeStep = useCallback(
       (newStep) => {
@@ -523,6 +543,79 @@ export const KubectlApplyForm = implementRuntimeComponent({
       },
       [mergeState]
     );
+    const onChange = useCallback((
+      newValues: any,
+      displayValues: Record<string, any>,
+      key?: string,
+      dataPath?: string
+    ) => {
+      setValues(newValues);
+      setDisplayValues(displayValues);
+      mergeState({
+        value: newValues,
+        displayValue: displayValues,
+        latestChangedKey: key,
+        latestChangedPath: dataPath,
+      });
+      callbackMap?.onChange?.();
+    }, [callbackMap, mergeState, setDisplayValues, setValues]);
+    const onDisplayValuesChange = useCallback((displayValues: Record<string, any>) => {
+      mergeDisplayValues(displayValues);
+    }, [mergeDisplayValues]);
+    const getSlot = useCallback((field: FormItemData, fallback, slotKey) => {
+      return (
+        generateSlotChildren(
+          {
+            app,
+            component,
+            allComponents,
+            services,
+            slotsElements,
+            slot: "field",
+            slotKey,
+            fallback,
+            childrenMap,
+          },
+          {
+            generateId(child) {
+              return field.index !== undefined
+                ? `${child.id}_${field.index}`
+                : child.id;
+            },
+            generateProps() {
+              return (field as Static<typeof UiConfigFieldSpec>) || {};
+            },
+          }
+        ) || fallback
+      );
+    }, [allComponents, app, childrenMap, component, services, slotsElements]);
+    const getHelperSlot = useCallback((field: FormItemData, fallback, slotKey) => {
+      return (
+        generateSlotChildren(
+          {
+            app,
+            component,
+            allComponents,
+            services,
+            slotsElements,
+            slot: "helper",
+            slotKey,
+            fallback,
+            childrenMap,
+          },
+          {
+            generateId(child) {
+              return field.index !== undefined
+                ? `${child.id}_${field.index}`
+                : child.id;
+            },
+            generateProps() {
+              return (field as Static<typeof UiConfigFieldSpec>) || {};
+            },
+          }
+        ) || fallback
+      );
+    }, [allComponents, app, childrenMap, component, services, slotsElements]);
 
     useEffect(() => {
       subscribeMethods({
@@ -531,30 +624,22 @@ export const KubectlApplyForm = implementRuntimeComponent({
             fieldValue && typeof fieldValue === "object"
               ? cloneDeep(fieldValue)
               : fieldValue;
-          const newValues = set(values, fieldPath, finalFieldValue);
-          updatedDisplayValuesRef.current = {
-            ...updatedDisplayValuesRef.current,
+          const newValues = immutableSet(valuesRef.current, fieldPath, finalFieldValue) as any[];
+          const newDisplayValues = {
+            ...displayValuesRef.current,
+            [fieldPath]: displayValue,
+          };
+
+          mergeValues(newValues);
+          mergeDisplayValues(newDisplayValues);
+        },
+        setDisplayValue({ fieldPath, displayValue }) {
+          const newDisplayValues = {
             ...displayValues,
             [fieldPath]: displayValue,
           };
 
-          mergeState({
-            value: newValues,
-            displayValue: updatedDisplayValuesRef.current,
-          });
-          setValues([...newValues]);
-          setDisplayValues(updatedDisplayValuesRef.current);
-        },
-        setDisplayValue({ fieldPath, displayValue }) {
-          updatedDisplayValuesRef.current = {
-            ...updatedDisplayValuesRef.current,
-            ...displayValues,
-            [fieldPath]: displayValue,
-          };
-          mergeState({
-            displayValue: updatedDisplayValuesRef.current,
-          });
-          setDisplayValues(updatedDisplayValuesRef.current);
+          mergeDisplayValues(newDisplayValues);
         },
         nextStep({ disabled }) {
           let result: Record<string, string[]> = {};
@@ -654,14 +739,16 @@ export const KubectlApplyForm = implementRuntimeComponent({
       basePath,
       subscribeMethods,
       mergeState,
+      mergeValues,
+      mergeDisplayValues,
       changeStep,
       formConfig.schemas,
+      displayValuesRef,
+      valuesRef,
     ]);
     useEffect(() => {
-      if (isEqual(updatedDisplayValuesRef.current, displayValues)) {
-        updatedDisplayValuesRef.current = {};
-      }
-    }, [displayValues]);
+      mergeState({ defaultValue: formConfig.defaultValues });
+    }, [formConfig.defaultValues, mergeState]);
 
     if (ref.current && elementRef) {
       elementRef.current = ref.current.getElementRef().current;
@@ -682,91 +769,13 @@ export const KubectlApplyForm = implementRuntimeComponent({
         step={step}
         setStep={changeStep}
         defaultValues={formConfig.defaultValues}
-        onChange={(
-          newValues: any,
-          displayValues: Record<string, any>,
-          key?: string,
-          dataPath?: string
-        ) => {
-          updatedDisplayValuesRef.current = {
-            ...updatedDisplayValuesRef.current,
-            ...displayValues,
-          };
-          setValues(newValues);
-          setDisplayValues(updatedDisplayValuesRef.current);
-          mergeState({
-            value: newValues,
-            displayValue: updatedDisplayValuesRef.current,
-            latestChangedKey: key,
-            latestChangedPath: dataPath,
-          });
-          callbackMap?.onChange?.();
-        }}
-        onDisplayValuesChange={(displayValues: Record<string, any>) => {
-          updatedDisplayValuesRef.current = {
-            ...updatedDisplayValuesRef.current,
-            ...displayValues,
-          };
-          setDisplayValues(updatedDisplayValuesRef.current);
-          mergeState({
-            displayValue: updatedDisplayValuesRef.current,
-          });
-        }}
+        onChange={onChange}
+        onDisplayValuesChange={onDisplayValuesChange}
         onNextStep={callbackMap?.onNextStep}
         onSubmit={callbackMap?.onSubmit}
         onCancel={callbackMap?.onCancel}
-        getSlot={(field: FormItemData, fallback, slotKey) => {
-          return (
-            generateSlotChildren(
-              {
-                app,
-                component,
-                allComponents,
-                services,
-                slotsElements,
-                slot: "field",
-                slotKey,
-                fallback,
-              },
-              {
-                generateId(child) {
-                  return field.index !== undefined
-                    ? `${child.id}_${field.index}`
-                    : child.id;
-                },
-                generateProps() {
-                  return (field as Static<typeof UiConfigFieldSpec>) || {};
-                },
-              }
-            ) || fallback
-          );
-        }}
-        getHelperSlot={(field: FormItemData, fallback, slotKey) => {
-          return (
-            generateSlotChildren(
-              {
-                app,
-                component,
-                allComponents,
-                services,
-                slotsElements,
-                slot: "helper",
-                slotKey,
-                fallback,
-              },
-              {
-                generateId(child) {
-                  return field.index !== undefined
-                    ? `${child.id}_${field.index}`
-                    : child.id;
-                },
-                generateProps() {
-                  return (field as Static<typeof UiConfigFieldSpec>) || {};
-                },
-              }
-            ) || fallback
-          );
-        }}
+        getSlot={getSlot}
+        getHelperSlot={getHelperSlot}
       />
     );
   }
