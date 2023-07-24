@@ -108,6 +108,10 @@ const UiConfigFieldSpecProperties = {
     title: "Section title",
     category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
+  enableSwitchEditor: Type.Boolean({
+    title: "Enable switch to editor",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+  }),
   isDisplayLabel: Type.Boolean({
     title: "Is display label",
     conditions: FIELD_CONDITIONS,
@@ -144,7 +148,7 @@ const UiConfigFieldSpecProperties = {
     category: VALIDATION_CATEGORY,
   }),
   isHideError: Type.Boolean({
-    title: 'Hide Error',
+    title: "Hide Error",
     conditions: FIELD_CONDITIONS,
     category: VALIDATION_CATEGORY,
   }),
@@ -201,7 +205,7 @@ const UiConfigFieldSpecProperties = {
       title: "Summary list config",
       category: SUMMARY_CATEGORY,
     }
-  ),
+  )
 };
 const UiConfigFieldSpec = Type.Object(
   {

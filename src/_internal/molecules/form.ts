@@ -12,6 +12,9 @@ import K8sSelect, { OptionsSpec as K8sSelectOptionsSpec } from "./K8sSelect";
 import K8sLabelGroup, {
   OptionsSpec as K8sLabelGroupOptionsSpec,
 } from "./K8sLabelGroup";
+import Editor, {
+  OptionsSpec as EditorOptionSpec
+} from "./Editor";
 
 export const FORM_WIDGETS_MAP = {
   input: Input,
@@ -24,6 +27,7 @@ export const FORM_WIDGETS_MAP = {
   card: Card,
   arrayCards: ArrayCards,
   group: Group,
+  editor: Editor,
 };
 export const FORM_WIDGET_OPTIONS_MAP = {
   input: InputOptionsSpec,
@@ -36,4 +40,5 @@ export const FORM_WIDGET_OPTIONS_MAP = {
   card: CardOptionsSpec,
   arrayCards: ArrayCardsOptionsSpec,
   group: GroupOptionsSpec,
+  editor: EditorOptionSpec,
 };

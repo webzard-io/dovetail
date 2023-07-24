@@ -13,7 +13,7 @@ import TabMenu from "./components/TabMenu";
 import Checkbox from "./components/Checkbox/Checkbox";
 import Input from "./components/Input/Input";
 import InputNumber from "./components/InputNumber/InputNumber";
-import { Dropdown } from "antd";
+import { Dropdown, Space } from "antd";
 import Pagination from "./components/Pagination/Pagination";
 import Select from "./components/Select/Select";
 import Switch from "./components/Switch/Switch";
@@ -56,4 +56,5 @@ export const kit: Kit = {
   Select,
   Switch,
   Tooltip,
+  Space,
 };

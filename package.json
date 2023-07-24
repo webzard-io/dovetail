@@ -1,6 +1,6 @@
 {
   "name": "@dovetail-ui/ui",
-  "version": "0.3.25",
+  "version": "0.3.26",
   "files": [
     "dist"
   ],
@@ -12,11 +12,13 @@
     "build": "vite build",
     "postbuild": "sed -i -e 's/\"useInsertionEffect\"/\"useInsertion\"+\"Effect\"/g' ./dist/index.js",
     "typings": "tsc --emitDeclarationOnly",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint src --ext .ts,.tsx"
   },
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@chakra-ui/react": "^1.7.1",
+    "@cloudtower/icons-react": "^0.24.23",
     "@emotion/css": "^11.7.1",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.7.1",
@@ -40,6 +42,7 @@
     "lodash": "^4.17.21",
     "mitt": "^3.0.0",
     "monaco-editor": "^0.33.0",
+    "monaco-yaml": "^4.0.4",
     "rc-util": "^5.25.2",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
@@ -85,11 +88,15 @@
     "vite-tsconfig-paths": "^3.4.1"
   },
   "peerDependencies": {
+    "@cloudtower/eagle": "^0.24.23",
+    "@cloudtower/icons-react": "^0.24.23",
     "@sunmao-ui/core": "^0.10.3",
     "@sunmao-ui/editor": "^0.10.4",
     "@sunmao-ui/editor-sdk": "^0.10.4",
     "@sunmao-ui/runtime": "^0.10.4",
     "@sunmao-ui/shared": "^0.10.3",
+    "monaco-editor": "^0.33.0",
+    "monaco-yaml": "^4.0.4",
     "react": "^17.0.0",
     "react-dom": "^17.0.0"
   }
