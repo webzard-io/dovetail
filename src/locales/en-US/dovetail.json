@@ -82,5 +82,6 @@
   "back_to_edit": "Edit",
   "configure_file": "Configuration",
   "yaml_format_wrong": "K8s cluster configuration is in an invalid YAML format.",
-  "yaml_value_wrong": "K8s cluster configuration has invalid values."
+  "yaml_value_wrong": "K8s cluster configuration has invalid values.",
+  "edit_yaml": "Edit YAML"
 }
