@@ -231,10 +231,19 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       {transformedField?.sectionTitle && (
         <div className={FieldSection}>
           <span className="section-title-text">{transformedField?.sectionTitle}</span>
-          {transformedField.enableSwitchEditor && value instanceof Object ? (
+          {transformedField.isDisplaySwitchEditor && value instanceof Object ? (
             <span>
               <span className={cx(Typo.Label.l4_regular, EditYAMLTextStyle)}>{i18n.t("dovetail.edit_yaml")}</span>
-              <kit.Switch checked={isEnableEditor} onChange={onEnableEditorChange}></kit.Switch>
+              <kit.Tooltip title={transformedField.editorSwitchTooltip}>
+                <span>
+                  <kit.Switch
+                    disabled={!!transformedField.isDisabledSwitchEditor}
+                    checked={isEnableEditor}
+                    onChange={onEnableEditorChange}
+                    size="small"
+                  ></kit.Switch>
+                </span>
+              </kit.Tooltip>
             </span>
           ) : null}
         </div>
@@ -279,13 +288,16 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
             widgetErrors={widgetErrors}
             testId={`${path}-${transformedField?.key || ""}`}
           >
-            {slot?.(
-              { path, ...(transformedField || {}), itemKey, index },
-              FieldComponent,
-              `filed_${path}`
-            ) || FieldComponent}
+            <kit.Tooltip title={fieldOrItem?.tooltip} placement="topLeft">
+              <span>
+                {slot?.(
+                  { path, ...(transformedField || {}), itemKey, index },
+                  FieldComponent,
+                  `filed_${path}`
+                ) || FieldComponent}
+              </span>
+            </kit.Tooltip>
           </FormItem>
-
         )
       }
     </Col>

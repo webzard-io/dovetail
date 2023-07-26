@@ -28,6 +28,7 @@ const VALIDATION_CATEGORY = "Validation";
 const WIDGET_CATEGORY = "Widget";
 const SUMMARY_CATEGORY = "Summary List";
 const STATUS_CATEGORY = "Status";
+const EDITOR_CATEGORY = "Editor";
 const FIELD_CONDITIONS = [
   {
     or: [
@@ -109,9 +110,21 @@ const UiConfigFieldSpecProperties = {
     title: "Section title",
     category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
-  enableSwitchEditor: Type.Boolean({
-    title: "Enable switch to editor",
+  tooltip: Type.String({
+    title: "Tooltip",
     category: PRESET_PROPERTY_CATEGORY.Basic,
+  }),
+  isDisplaySwitchEditor: Type.Boolean({
+    title: "Enable switch to editor",
+    category: EDITOR_CATEGORY,
+  }),
+  isDisabledSwitchEditor: Type.Boolean({
+    title: "Disable switch",
+    category: EDITOR_CATEGORY,
+  }),
+  editorSwitchTooltip: Type.String({
+    title: "The tooltip of editor switch",
+    category: EDITOR_CATEGORY,
   }),
   isDisplayLabel: Type.Boolean({
     title: "Is display label",
@@ -373,6 +386,10 @@ export const UiConfigSpec = Type.Object({
 });
 
 const KubectlApplyFormProps = Type.Object({
+  strategy: StringUnion(
+    ["application/merge-patch+json", "application/apply-patch+yaml"],
+    { category: PRESET_PROPERTY_CATEGORY.Basic }
+  ),
   basePath: Type.String({
     title: "Base path",
     category: PRESET_PROPERTY_CATEGORY.Basic,
@@ -487,6 +504,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
   },
 })(
   ({
+    strategy,
     basePath,
     formConfig,
     error,
@@ -522,9 +540,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
         value: mergedValues,
       });
     });
-    const { 
-      value: displayValues, 
-      mergeValue: mergeDisplayValues, 
+    const {
+      value: displayValues,
+      mergeValue: mergeDisplayValues,
       valueRef: displayValuesRef,
       setValue: setDisplayValues
     } = useMergeState<Record<string, any>>({}, (mergedDisplayValues) => {
@@ -692,7 +710,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
                 error: null,
               });
 
-              await sdk.applyYaml(appliedValues);
+              await sdk.applyYaml(appliedValues, strategy);
 
               mergeState({
                 loading: false,
@@ -745,6 +763,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
       formConfig.schemas,
       displayValuesRef,
       valuesRef,
+      strategy,
     ]);
     useEffect(() => {
       mergeState({ defaultValue: formConfig.defaultValues });

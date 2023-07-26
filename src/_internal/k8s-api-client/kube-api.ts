@@ -540,7 +540,7 @@ export class KubeSdk {
     this.basePath = basePath;
   }
 
-  public async applyYaml(specs: Unstructured[]) {
+  public async applyYaml(specs: Unstructured[], strategy?: string) {
     const validSpecs = specs.filter((s) => s && s.kind && s.metadata);
     const changed: Unstructured[] = [];
     const created: Unstructured[] = [];
@@ -556,6 +556,11 @@ export class KubeSdk {
         "kubectl.kubernetes.io/last-applied-configuration"
       ] = JSON.stringify(spec);
 
+      if (strategy === "application/apply-patch+yaml") {
+        delete spec.metadata.managedFields;
+        delete (spec as any).metadata.resourceVersion;
+      }
+
       let exist = true;
       try {
         await this.read(spec);
@@ -569,7 +574,7 @@ export class KubeSdk {
 
       try {
         const response = exist
-          ? await this.patch(spec, "application/merge-patch+json")
+          ? await this.patch(spec, strategy || "application/merge-patch+json")
           : await this.create(spec);
 
         if (exist) {
@@ -662,6 +667,13 @@ export class KubeSdk {
         },
         retry: 0,
         json: spec,
+        searchParams:
+          strategy === "application/apply-patch+yaml"
+            ? {
+                fieldManager: "sks",
+                force: true,
+              }
+            : undefined,
       })
       .json();
 

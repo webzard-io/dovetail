@@ -41,7 +41,7 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
       return !editorErrors.length;
     },
   });
-  const filedErrors: string[] = useMemo(()=> {
+  const filedErrors: string[] = useMemo(() => {
     function getFieldError(error?: Field["error"]): string[] {
       if (error instanceof Array) {
         return error || [];
@@ -52,7 +52,14 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
       }
     }
 
-    return ([] as string[]).concat(getFieldError(field?.error)).concat(field?.fields?.map((subField) => getFieldError(subField?.error)).flat() || [])
+    return ([] as string[])
+      .concat(getFieldError(field?.error))
+      .concat(
+        field?.fields?.map((subField) =>
+          getFieldError(subField?.error)
+        )?.flat() || []
+      )
+      .filter(error=> error);
   }, [field]);
   const finalErrors = useMemo(() => {
     return isShowError ? [...new Set([...editorErrors, ...errors, ...filedErrors])] : [];
