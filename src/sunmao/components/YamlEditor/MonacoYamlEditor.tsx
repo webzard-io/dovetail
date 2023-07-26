@@ -9,6 +9,7 @@ import YamlWorker from "./yaml.worker?worker";
 const uri = monaco.Uri.parse("monaco-yaml.yaml");
 
 type Props = {
+  id?: string;
   defaultValue: string;
   onChange: (val: string) => void;
   onValidate: (valid: boolean, schemaValid: boolean) => void;
@@ -35,7 +36,8 @@ if (!import.meta.env.PROD) {
 const MonacoYamlEditor: React.FC<Props> = props => {
   const ref = useRef<HTMLDivElement>(null);
   const instanceRef = useRef<{ editor: monaco.editor.IStandaloneCodeEditor | null }>({ editor: null });
-  const { defaultValue, onChange, onValidate, getInstance, onEditorCreate, onBlur, schema } = props;
+  const { defaultValue, id, onChange, onValidate, getInstance, onEditorCreate, onBlur, schema } = props;
+  const uri = id ? monaco.Uri.parse(`${id}.yaml`) : undefined;
 
   useEffect(() => {
     const schemas = schema
@@ -44,7 +46,7 @@ const MonacoYamlEditor: React.FC<Props> = props => {
           // Id of the first schema
           uri: "http://foo.com/foo-schema.json",
           // Associate with our model
-          fileMatch: [String(uri)],
+          fileMatch: uri ? [String(uri)] : [],
           schema,
         },
       ]
@@ -59,7 +61,7 @@ const MonacoYamlEditor: React.FC<Props> = props => {
       schemas,
     });
 
-    const model = monaco.editor.createModel(defaultValue, "yaml");
+    const model = monaco.editor.createModel(defaultValue, "yaml", uri);
     const editor = monaco.editor.create(ref.current!, {
       automaticLayout: true,
       scrollBeyondLastLine: false,
@@ -76,7 +78,7 @@ const MonacoYamlEditor: React.FC<Props> = props => {
       editor.dispose();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultValue, schema]);
+  }, [defaultValue, schema, id]);
 
   useEffect(() => {
     const editor = instanceRef.current.editor;
@@ -97,7 +99,7 @@ const MonacoYamlEditor: React.FC<Props> = props => {
 
     if (editor) {
       const stop = monaco.editor.onDidChangeMarkers((uri) => {
-        if (uri.toString() === editor?.getModel()?.uri.toString()) {
+        if (uri.toString() === instanceRef.current.editor?.getModel()?.uri.toString()) {
           const marks = monaco.editor.getModelMarkers({ owner: "yaml" });
           const yamlMarks = marks.filter(m => m.source === "YAML");
           const schemaMarks = marks.filter(m => m.source !== "YAML");

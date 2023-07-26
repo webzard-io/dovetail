@@ -69,6 +69,7 @@ function Editor(props: EditorProps) {
   return (<YamlEditorComponent
     ref={ref}
     {...props.widgetOptions}
+    id={itemKey}
     defaultValue={yaml.dump(field?.defaultValue || "")}
     schema={spec}
     errorMsgs={isShowErrors ? editorErrors : []}

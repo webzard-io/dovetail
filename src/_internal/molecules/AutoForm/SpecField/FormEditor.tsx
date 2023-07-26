@@ -139,6 +139,7 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
   return (
     <YamlEditorComponent
       ref={editorRef}
+      id={itemKey}
       defaultValue={defaultEditorValue}
       schema={spec}
       errorMsgs={finalErrors}
