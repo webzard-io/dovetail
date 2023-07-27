@@ -1,18 +1,16 @@
 import { useTranslation } from "react-i18next";
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import { WidgetProps } from "./AutoForm/widget";
-import { StringUnion } from "@sunmao-ui/shared";
 import { Type, Static } from "@sinclair/typebox";
 import { YamlEditorComponent, Handle as EditorHandle } from "../../sunmao/components/YamlEditor/YamlEditorComponent";
 import yaml from "js-yaml";
-import { debounce } from "lodash";
 
 export const OptionsSpec = Type.Object({
   title: Type.String(),
   isDefaultCollapsed: Type.Boolean(),
 });
 
-export type EditorProps = WidgetProps<Record<string, unknown>, Static<typeof OptionsSpec>>;
+export type EditorProps = WidgetProps<Record<string, unknown> | string, Static<typeof OptionsSpec>>;
 
 function Editor(props: EditorProps) {
   const i18n = useTranslation();
@@ -41,13 +39,14 @@ function Editor(props: EditorProps) {
   const onValidateEvent = useCallback(()=> {
     setIsShowErrors(!!editorErrors.length);
   }, [editorErrors]);
-  const onChangeDebounced = debounce(useCallback((newEditorValue)=> {
+  const onBlur = useCallback(()=> {
     if (!editorErrors.length) {
-      const newValue = typeof value === "string" ? newEditorValue : yaml.load(newEditorValue) as Record<string, unknown>;
-  
+      const editorValue = ref.current?.getEditorValue() || "";
+      const newValue = typeof value === "string" ? editorValue : yaml.load(editorValue) as Record<string, unknown>;
+      
       onChange(newValue, displayValues, itemKey, field?.path);
     }
-  }, [value, displayValues, itemKey, field?.path, editorErrors, onChange]), 300);
+  }, [displayValues, editorErrors, itemKey, field?.path, value, onChange])
   const changeValue = useCallback(()=> {
     const currentEditorValue = typeof value === "string" ? value : yaml.dump(value);
 
@@ -55,9 +54,9 @@ function Editor(props: EditorProps) {
     ref.current?.setValue(currentEditorValue);
   }, [value]);
 
-  // useEffect(() => {
-  //   changeValue();
-  // }, [changeValue]);
+  useEffect(() => {
+    changeValue();
+  }, [changeValue]);
 
   useEffect(() => {
     services.event.on("validate", onValidateEvent);
@@ -70,12 +69,13 @@ function Editor(props: EditorProps) {
   return (<YamlEditorComponent
     ref={ref}
     {...props.widgetOptions}
+    id={itemKey}
     defaultValue={yaml.dump(field?.defaultValue || "")}
     schema={spec}
     errorMsgs={isShowErrors ? editorErrors : []}
-    onChange={onChangeDebounced}
     onValidate={onEditorValidate}
     onEditorCreate={changeValue}
+    onBlur={onBlur}
   />)
 }
 

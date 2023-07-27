@@ -10,7 +10,7 @@ import { JSONSchema7 } from "json-schema";
 import { immutableSet } from "../../../sunmao/utils/object";
 
 export function resolveSubFields(props: WidgetProps) {
-  const { specsArray, field, spec, value, path, level, error, onChange } =
+  const { specsArray, field, spec, value, path, level, error, widgetOptions, onChange } =
     props;
   const fields: Field[] = field?.fields || [];
   const properties = Object.keys(spec.properties || {});
@@ -43,7 +43,7 @@ export function resolveSubFields(props: WidgetProps) {
           }
           field={subField}
           widget={subField.widget}
-          widgetOptions={subField.widgetOptions}
+          widgetOptions={{ disabled: widgetOptions?.disabled, ...subField.widgetOptions}}
           key={subField.path}
           spec={subSpec}
           path={path.concat(isLayout ? subField.path : `.${subField.path}`)}
@@ -82,7 +82,7 @@ export function resolveSubFields(props: WidgetProps) {
           path={path.concat(`.${name}`)}
           level={level + 1}
           value={value?.[name]}
-          widgetOptions={{}}
+          widgetOptions={{ disabled: widgetOptions?.disabled }}
           onChange={(newValue, key, dataPath) => {
             onChange(
               {

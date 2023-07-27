@@ -24,7 +24,7 @@ import { generateSlotChildren } from "../utils/slot";
 import { css, cx } from "@emotion/css";
 import { get } from "lodash";
 import { KitContext } from "../../_internal/atoms/kit-context";
-import semver from 'semver';
+import semver from "semver";
 
 type Response = {
   data: UnstructuredList;
@@ -441,6 +441,7 @@ export const KubectlGetTable = implementRuntimeComponent({
     allComponents,
     services,
     component,
+    childrenMap,
     mergeState,
     subscribeMethods,
   }) => {
@@ -524,7 +525,7 @@ export const KubectlGetTable = implementRuntimeComponent({
         });
 
         if (elementRef?.current) {
-          const tableBody = elementRef.current.querySelector('.dovetail-ant-table-body');
+          const tableBody = elementRef.current.querySelector(".dovetail-ant-table-body");
 
           if (tableBody) {
             tableBody.scrollTop = 0;
@@ -665,6 +666,7 @@ export const KubectlGetTable = implementRuntimeComponent({
                       slot: "cell",
                       slotKey: slotKey || "",
                       fallback,
+                      childrenMap,
                     },
                     {
                       generateId: (child) => {

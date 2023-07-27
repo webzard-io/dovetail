@@ -2,16 +2,19 @@ import * as monaco from "monaco-editor";
 import React, { useEffect, useRef } from "react";
 
 type Props = {
+  id?: string;
   origin: string;
   modified: string;
 };
 
 const MonacoYamlDiffEditor: React.FC<Props> = props => {
   const ref = useRef<HTMLDivElement>(null)
-  const { origin, modified } = props;
+  const { origin, modified, id } = props;
   useEffect(() => {
-    const originalModel = monaco.editor.createModel(origin, "yaml");
-    const modifiedModel = monaco.editor.createModel(modified, "yaml");
+    const originalUri = id ? monaco.Uri.parse(`${id}_original.yaml`) : undefined;
+    const modifiedUri = id ? monaco.Uri.parse(`${id}_modified.yaml`) : undefined;
+    const originalModel = monaco.editor.createModel(origin, "yaml", originalUri);
+    const modifiedModel = monaco.editor.createModel(modified, "yaml", modifiedUri);
 
     const diffEditor = monaco.editor.createDiffEditor(ref.current!, {
       renderSideBySide: true,

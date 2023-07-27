@@ -12,6 +12,7 @@ const SelectProps = Type.Object({
       value: Type.Any(),
     })
   ),
+  disabled: Type.Boolean(),
 });
 
 const SelectState = Type.Object({
@@ -61,6 +62,7 @@ export const Select = implementRuntimeComponent({
     elementRef,
     options,
     defaultValue,
+    disabled,
     mergeState,
     subscribeMethods,
   }) => {
@@ -91,6 +93,7 @@ export const Select = implementRuntimeComponent({
           });
           callbackMap?.onChange?.();
         }}
+        disabled={disabled}
         showSearch
         optionFilterProp="children"
       >

@@ -148,6 +148,7 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
       if (isMounted) {
         validate();
       }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value]);
 
     useEffect(() => {

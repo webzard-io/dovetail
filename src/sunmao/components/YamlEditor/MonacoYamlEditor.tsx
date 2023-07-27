@@ -9,10 +9,12 @@ import YamlWorker from "./yaml.worker?worker";
 const uri = monaco.Uri.parse("monaco-yaml.yaml");
 
 type Props = {
+  id?: string;
   defaultValue: string;
   onChange: (val: string) => void;
   onValidate: (valid: boolean, schemaValid: boolean) => void;
   onEditorCreate?: (editor: monaco.editor.ICodeEditor) => void;
+  onBlur?: () => void;
   getInstance: (ins: monaco.editor.IStandaloneCodeEditor) => void;
   schema?: JSONSchema4;
 };
@@ -34,10 +36,32 @@ if (!import.meta.env.PROD) {
 const MonacoYamlEditor: React.FC<Props> = props => {
   const ref = useRef<HTMLDivElement>(null);
   const instanceRef = useRef<{ editor: monaco.editor.IStandaloneCodeEditor | null }>({ editor: null });
-  const { defaultValue, onChange, onValidate, getInstance, onEditorCreate, schema } = props;
+  const { defaultValue, id, onChange, onValidate, getInstance, onEditorCreate, onBlur, schema } = props;
+  const uri = id ? monaco.Uri.parse(`${id}.yaml`) : undefined;
 
   useEffect(() => {
-    const model = monaco.editor.createModel(defaultValue, "yaml");
+    const schemas = schema
+      ? [
+        {
+          // Id of the first schema
+          uri: "http://foo.com/foo-schema.json",
+          // Associate with our model
+          fileMatch: uri ? [String(uri)] : [],
+          schema,
+        },
+      ]
+      : [];
+    // config monaco yaml
+    setDiagnosticsOptions({
+      enableSchemaRequest: true,
+      hover: true,
+      completion: true,
+      validate: true,
+      format: true,
+      schemas,
+    });
+
+    const model = monaco.editor.createModel(defaultValue, "yaml", uri);
     const editor = monaco.editor.create(ref.current!, {
       automaticLayout: true,
       scrollBeyondLastLine: false,
@@ -53,56 +77,59 @@ const MonacoYamlEditor: React.FC<Props> = props => {
       model.dispose();
       editor.dispose();
     }
-  }, [defaultValue])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValue, schema, id]);
 
   useEffect(() => {
-    const stops: monaco.IDisposable[] = [];
-    const schemas = schema
-      ? [
-        {
-          // Id of the first schema
-          uri: "http://foo.com/foo-schema.json",
-          // Associate with our model
-          fileMatch: [String(uri)],
-          schema,
-        },
-      ]
-      : [];
-    // config monaco yaml
-    setDiagnosticsOptions({
-      enableSchemaRequest: true,
-      hover: true,
-      completion: true,
-      validate: true,
-      format: true,
-      schemas,
-    });
-
     const editor = instanceRef.current.editor;
 
     if (editor) {
-      stops.push(
-        editor.onDidChangeModelContent(() => {
-          onChange(editor.getValue());
-        })
-      );
+      const stop = editor.onDidChangeModelContent(() => {
+        onChange(editor.getValue());
+      });
 
-      stops.push(
-        monaco.editor.onDidChangeMarkers(() => {
+      return () => {
+        stop.dispose();
+      }
+    }
+  }, [onChange]);
+
+  useEffect(() => {
+    const editor = instanceRef.current.editor;
+
+    if (editor) {
+      const stop = monaco.editor.onDidChangeMarkers((uri) => {
+        if (uri.toString() === instanceRef.current.editor?.getModel()?.uri.toString()) {
           const marks = monaco.editor.getModelMarkers({ owner: "yaml" });
           const yamlMarks = marks.filter(m => m.source === "YAML");
           const schemaMarks = marks.filter(m => m.source !== "YAML");
           const yamlValid = yamlMarks.length === 0;
           const schemaValid = schemaMarks.length === 0;
+          
           onValidate(yamlValid, schemaValid);
-        })
-      );
+        }
+      })
+
+      return () => {
+        stop.dispose();
+      };
     }
 
-    return () => {
-      stops.forEach(stop => stop.dispose());
-    };
-  }, [onChange, onValidate, schema]);
+  }, [onValidate]);
+
+  useEffect(() => {
+    const editor = instanceRef.current.editor;
+
+    if (editor) {
+      const stop = editor.onDidBlurEditorWidget(() => {
+        onBlur?.();
+      });
+
+      return () => {
+        stop.dispose();
+      };
+    }
+  }, [onBlur]);
 
   return (
     <div

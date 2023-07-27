@@ -64,11 +64,13 @@ spec:
 
 export type Props = Partial<Static<typeof PropsSchema>> & {
   eleRef?: React.MutableRefObject<HTMLDivElement>;
+  id?: string;
   className?: string;
   isDefaultCollapsed?: boolean;
   onChange?: (value: string) => void;
   onValidate?: (valid: boolean, schemaValid: boolean) => void;
   onEditorCreate?: (editor: monaco.editor.ICodeEditor)=> void;
+  onBlur?: ()=> void;
 }
 
 export type Handle = {
@@ -112,6 +114,18 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
     },
     [props.onValidate]
   );
+
+  const onEditorCreate = useCallback((editor: monaco.editor.ICodeEditor)=> {
+    if (editor.getValue() !== value) {
+      editorInstance.current?.getModel()?.setValue(value);
+    }
+    
+    props.onEditorCreate?.(editor);
+  }, [value, props.onEditorCreate]);
+
+  const getInstance = useCallback((ins: monaco.editor.IStandaloneCodeEditor): void => {
+    editorInstance.current = ins;
+  }, []);
 
   return (
     <div
@@ -205,6 +219,7 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
         {isDiff ? (
           <Suspense fallback={<pre className={PlainCodeStyle}>{value}</pre>}>
             <MonacoYamlDiffEditor
+              id={props.id}
               origin={defaultValue}
               modified={value}
             />
@@ -212,13 +227,13 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
         ) : (
           <Suspense fallback={<pre className={PlainCodeStyle}>{value}</pre>}>
             <MonacoYamlEditor
-              getInstance={ins => {
-                editorInstance.current = ins;
-              }}
+              id={props.id}
+              getInstance={getInstance}
               defaultValue={defaultValue}
               onChange={onChange}
               onValidate={onValidate}
-              onEditorCreate={props.onEditorCreate}
+              onEditorCreate={onEditorCreate}
+              onBlur={props.onBlur}
               schema={schema}
             />
           </Suspense>
@@ -258,6 +273,7 @@ export default implementRuntimeComponent({
     defaultValue,
     errorMsgs = [],
     schema,
+    component,
     mergeState,
     subscribeMethods,
     callbackMap,
@@ -302,6 +318,7 @@ export default implementRuntimeComponent({
 
     return <YamlEditorComponent
       ref={ref}
+      id={component.id}
       eleRef={elementRef}
       className={ecss(customStyle?.content)}
       defaultValue={defaultValue}

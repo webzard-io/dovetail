@@ -16,6 +16,7 @@ export type Field = {
     | "error"
     | "rules"
     | "disabledValidation"
+    | "tooltip"
   > & {
     type?: undefined;
   };
@@ -27,6 +28,7 @@ export type Field = {
   labelWidth?: number;
   helperText: string;
   sectionTitle: string;
+  tooltip?: string;
   error: string | string[] | Record<string, string>;
   isHideError?: boolean;
   condition?: boolean;
@@ -45,7 +47,9 @@ export type Field = {
     icon?: string;
     hidden?: boolean;
   };
-  enableSwitchEditor?: boolean;
+  isDisplaySwitchEditor?: boolean;
+  isDisabledSwitchEditor?: boolean;
+  editorSwitchTooltip?: string;
 };
 
 export type FormItemData = (Field | Record<string, unknown>) & {

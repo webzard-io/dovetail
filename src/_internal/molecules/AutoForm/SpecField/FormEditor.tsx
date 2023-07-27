@@ -1,10 +1,11 @@
-import React, { useState, useMemo, useRef, useCallback, useImperativeHandle } from "react";
+import React, { useState, useMemo, useRef, useCallback, useImperativeHandle, useEffect } from "react";
 import { YamlEditorComponent, Handle as YamlEditorComponentHandle } from "../../../../sunmao/components/YamlEditor/YamlEditorComponent";
 import yaml from "js-yaml";
 import useValidate, { UseValidateProps } from "./useValidate";
 import { useTranslation } from "react-i18next";
 import { WidgetProps } from "../widget";
-import { debounce } from "lodash";
+import { debounce, isEqual } from "lodash";
+import { Field } from "../../../organisms/KubectlApplyForm/type";
 
 export type FormEditorProps = UseValidateProps & Pick<WidgetProps, "onChange" | "displayValues">;
 
@@ -13,18 +14,19 @@ export type FormEditorHandle = {
 }
 
 const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function FormEditor(props: FormEditorProps, ref) {
-  const { value, spec, itemKey, displayValues, field, onChange } = props;
+  const { value, spec, itemKey, displayValues, field, item, onChange } = props;
+  const fieldOrItem = field || item;
   const { t } = useTranslation();
   const editorRef = useRef<YamlEditorComponentHandle>(null);
-  const [editorValue, setEditorValue] = useState(yaml.dump(value));
   const [errors, setErrors] = useState<string[]>([]);
   const [editorErrors, setEditorErrors] = useState<string[]>([]);
   const [isShowError, setIsShowError] = useState<boolean>(false);
+  const [objectValue, setObjectValue] = useState(props.field?.defaultValue || {});
   const validateValue = useValidate({
     ...props,
     isValidateSubFields: true,
     getValue() {
-      return yaml.load(editorValue);
+      return yaml.load(editorRef.current?.getEditorValue() || "");
     },
     onValidate(errors) {
       setIsShowError(!!errors.length);
@@ -39,19 +41,42 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
       return !editorErrors.length;
     },
   });
+  const filedErrors: string[] = useMemo(() => {
+    function getFieldError(error?: Field["error"]): string[] {
+      if (error instanceof Array) {
+        return error || [];
+      } else if (error instanceof Object) {
+        return Object.values(error);
+      } else {
+        return error ? [error] : [];
+      }
+    }
+
+    return ([] as string[])
+      .concat(getFieldError(field?.error))
+      .concat(
+        field?.fields?.map((subField) =>
+          getFieldError(subField?.error)
+        )?.flat() || []
+      )
+      .filter(error=> error);
+  }, [field]);
+  const finalErrors = useMemo(() => {
+    return isShowError ? [...new Set([...editorErrors, ...errors, ...filedErrors])] : [];
+  }, [isShowError, editorErrors, errors, filedErrors]);
   const defaultEditorValue = useMemo(() => yaml.dump(props.field?.defaultValue || {}), [props.field?.defaultValue]);
 
   const validate = useCallback((callback: (errorMsgs: string[], newValue: unknown) => void) => {
-    if (editorErrors.length) {
+    if (editorErrors.length || filedErrors.length) {
       setIsShowError(true);
-      callback(editorErrors, value);
+      callback([...editorErrors, ...filedErrors], value);
     } else {
       validateValue((errorsMsgs, newValue) => {
         setErrors(errorsMsgs);
-        callback([...editorErrors, ...errorsMsgs], newValue);
+        callback([...editorErrors, ...errorsMsgs, ...filedErrors], newValue);
       });
     }
-  }, [validateValue, editorErrors, value]);
+  }, [validateValue, editorErrors, filedErrors, value]);
   const onEditorValidate = useCallback((isValid, isSchemaValid) => {
     const errorMsgs: string[] = [];
 
@@ -65,20 +90,24 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
 
     setEditorErrors(errorMsgs);
   }, [t]);
-  const onChangeDebounced = debounce(useCallback((newVal) => {
-    if (!(editorErrors.length || errors.length)&& newVal !== editorValue) {
-      onChange(yaml.load(newVal), displayValues, itemKey, field?.path);
+  const emitChange = useCallback(() => {
+    if (!editorErrors.length) {
+      const result = yaml.load(editorRef.current?.getEditorValue() || "") as Record<string, unknown>;
+
+      setObjectValue(result);
+      onChange(result, displayValues, itemKey, field?.path);
     }
-  }, [onChange, displayValues, itemKey, field?.path, editorErrors, errors, editorValue]));
-  const onEditorValueChange = useCallback((newVal: string) => {
-    setEditorValue(newVal);
-    onChangeDebounced(newVal);
-  }, [onChangeDebounced]);
-  const changeValue = useCallback(()=> {
+  }, [onChange, displayValues, itemKey, field?.path, editorErrors])
+  const debouncedEmitChange = debounce(useCallback(() => {
+    emitChange();
+  }, [emitChange]), 200);
+  const onBlur = useCallback(() => {
+    emitChange();
+  }, [emitChange])
+  const changeValue = useCallback(() => {
     const currentEditorValue = yaml.dump(value);
 
     if (currentEditorValue !== editorRef.current?.getEditorValue()) {
-      setEditorValue(currentEditorValue);
       editorRef.current?.setEditorValue(currentEditorValue);
       editorRef.current?.setValue(currentEditorValue);
     }
@@ -90,19 +119,34 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
     }
   });
 
-  // useEffect(() => {
-  //   changeValue();
-  // }, [changeValue]);
+  useEffect(() => {
+    if (!isEqual(value, objectValue)) {
+      setObjectValue(value);
+      changeValue();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+  useEffect(() => {
+    if (!editorErrors.length && errors.length) {
+      validate((errorMsgs) => {
+        setErrors(errorMsgs);
+      });
+    }
+    // only trigger validate when value of field changed
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fieldOrItem, value]);
 
   return (
     <YamlEditorComponent
       ref={editorRef}
+      id={itemKey}
       defaultValue={defaultEditorValue}
       schema={spec}
-      errorMsgs={isShowError ? [...editorErrors, ...errors] : []}
-      onChange={onEditorValueChange}
+      errorMsgs={finalErrors}
+      onChange={emitChange}
       onValidate={onEditorValidate}
       onEditorCreate={changeValue}
+      onBlur={onBlur}
     />
   )
 });
