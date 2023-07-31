@@ -29,12 +29,12 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
       return yaml.load(editorRef.current?.getEditorValue() || "");
     },
     onValidate(errors) {
-      setIsShowError(!!errors.length);
+      setIsShowError(!![...errors, ...filedErrors, ...editorErrors].length);
       setErrors(errors);
     },
     beforeValidateEvent(result) {
-      if (editorErrors.length) {
-        result[itemKey] = editorErrors;
+      if (editorErrors.length || filedErrors.length) {
+        result[itemKey] = [...editorErrors, ...filedErrors];
         setIsShowError(true);
       }
 
@@ -142,6 +142,7 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
       id={itemKey}
       defaultValue={defaultEditorValue}
       schema={spec}
+      height={field?.editorHeight}
       errorMsgs={finalErrors}
       onChange={emitChange}
       onValidate={onEditorValidate}

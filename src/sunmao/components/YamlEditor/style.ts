@@ -4,7 +4,7 @@ import { css } from "@linaria/core";
 
 export const ToolBarStyle = css`
   width: 100%;
-  padding: 14px 12px;
+  padding: 12px;
   border-bottom: 1px solid rgba(211, 218, 235, 0.6);
   background: rgba(225, 230, 241, 0.6);
   border-top-left-radius: 8px;
@@ -30,6 +30,7 @@ export const WrapperStyle = css`
   width: 100%;
   border: 1px solid rgba(211, 218, 235, 0.6);
   border-radius: 8px;
+  overflow: auto;
 
   &[data-is-error='true'] {
     border-color: #F0483E;
@@ -67,12 +68,18 @@ export const IconStyle = css`
   }
 `;
 
+export const DisabledIconStyle = css`
+  fill: rgba(#2C3852, 0.6);
+  cursor: not-allowed;
+`;
+
 export const PlainCodeStyle = css`
   font-family: Menlo, Monaco, 'Courier New', monospace;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
   padding-left: 62px;
+  overflow: auto;
 `;
 
 export const ErrorMsgStyle = css`

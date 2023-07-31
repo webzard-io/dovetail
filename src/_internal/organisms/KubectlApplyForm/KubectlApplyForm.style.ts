@@ -84,6 +84,14 @@ export const WizardBodyStyle = css`
         width: auto;
       }
     }
+
+    .section-title-text { 
+      color: #00122E;
+      font-family: Inter;
+      font-size: 12px;
+      font-style: normal;
+      line-height: 18px;
+    }
   }
 
   .dovetail-ant-steps-vertical .dovetail-ant-steps-item {

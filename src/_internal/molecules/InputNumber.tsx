@@ -3,6 +3,7 @@ import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
 import { KitContext } from "../atoms/kit-context";
 import { css } from "@linaria/core";
+import { transformStorageUnit, StorageUnit, STORAGE_UNITS } from "../../sunmao/utils/storage";
 
 const InputNumberStyle = css`
   .dovetail-ant-input.dovetail-ant-input:not([disabled]) {
@@ -33,7 +34,15 @@ const InputNumber = (props: Props) => {
   const kit = useContext(KitContext);
   const unit = props.widgetOptions?.unit;
   const transformValue = useCallback((value: string)=> {
-    return unit ? value.replace(unit, "") : value
+    if (unit) {
+      const isStorageUnit = STORAGE_UNITS.includes(unit);
+
+      if (isStorageUnit) {
+        return transformStorageUnit(value, unit as StorageUnit).replace(unit, "")
+      }
+    }
+
+    return value;
   }, [unit]);
   const [stringValue, setStringValue] = useState(transformValue(props.value + ""));
 

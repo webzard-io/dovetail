@@ -50,6 +50,7 @@ export type Field = {
   isDisplaySwitchEditor?: boolean;
   isDisabledSwitchEditor?: boolean;
   editorSwitchTooltip?: string;
+  editorHeight?: string;
 };
 
 export type FormItemData = (Field | Record<string, unknown>) & {

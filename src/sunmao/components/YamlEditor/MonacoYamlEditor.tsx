@@ -11,6 +11,7 @@ const uri = monaco.Uri.parse("monaco-yaml.yaml");
 type Props = {
   id?: string;
   defaultValue: string;
+  height?: string;
   onChange: (val: string) => void;
   onValidate: (valid: boolean, schemaValid: boolean) => void;
   onEditorCreate?: (editor: monaco.editor.ICodeEditor) => void;
@@ -33,31 +34,33 @@ if (!import.meta.env.PROD) {
   };
 }
 
+const schemaMap = new Map();
+
 const MonacoYamlEditor: React.FC<Props> = props => {
   const ref = useRef<HTMLDivElement>(null);
   const instanceRef = useRef<{ editor: monaco.editor.IStandaloneCodeEditor | null }>({ editor: null });
-  const { defaultValue, id, onChange, onValidate, getInstance, onEditorCreate, onBlur, schema } = props;
+  const { defaultValue, id, height, onChange, onValidate, getInstance, onEditorCreate, onBlur, schema } = props;
   const uri = id ? monaco.Uri.parse(`${id}.yaml`) : undefined;
 
   useEffect(() => {
-    const schemas = schema
-      ? [
-        {
-          // Id of the first schema
-          uri: "http://foo.com/foo-schema.json",
-          // Associate with our model
-          fileMatch: uri ? [String(uri)] : [],
-          schema,
-        },
-      ]
-      : [];
+    if (schema) {
+      schemaMap.set(id, {
+        // Id of the first schema
+        uri: String(uri),
+        // Associate with our model
+        fileMatch: uri ? [String(uri)] : [],
+        schema,
+      });
+    }
+    const schemas = [...schemaMap.values()];
     // config monaco yaml
     setDiagnosticsOptions({
-      enableSchemaRequest: true,
+      enableSchemaRequest: false,
       hover: true,
       completion: true,
       validate: true,
       format: true,
+      isKubernetes: true,
       schemas,
     });
 
@@ -66,6 +69,10 @@ const MonacoYamlEditor: React.FC<Props> = props => {
       automaticLayout: true,
       scrollBeyondLastLine: false,
       model,
+      scrollbar: {
+        handleMouseWheel: false,
+      },
+      tabSize: 2,
     });
 
     instanceRef.current.editor = editor;
@@ -74,11 +81,12 @@ const MonacoYamlEditor: React.FC<Props> = props => {
 
     return () => {
       instanceRef.current.editor = null;
+      schemaMap.delete(id);
       model.dispose();
       editor.dispose();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultValue, schema, id]);
+  }, [defaultValue, schema, id, getInstance]);
 
   useEffect(() => {
     const editor = instanceRef.current.editor;
@@ -92,20 +100,22 @@ const MonacoYamlEditor: React.FC<Props> = props => {
         stop.dispose();
       }
     }
-  }, [onChange]);
+  }, [onChange, instanceRef.current.editor]);
 
   useEffect(() => {
     const editor = instanceRef.current.editor;
 
     if (editor) {
       const stop = monaco.editor.onDidChangeMarkers((uri) => {
-        if (uri.toString() === instanceRef.current.editor?.getModel()?.uri.toString()) {
-          const marks = monaco.editor.getModelMarkers({ owner: "yaml" });
+        const currentEditorUri = instanceRef.current.editor?.getModel()?.uri;
+
+        if (uri.toString() === currentEditorUri?.toString()) {
+          const marks = monaco.editor.getModelMarkers({ owner: "yaml", resource: currentEditorUri  });
           const yamlMarks = marks.filter(m => m.source === "YAML");
           const schemaMarks = marks.filter(m => m.source !== "YAML");
           const yamlValid = yamlMarks.length === 0;
           const schemaValid = schemaMarks.length === 0;
-          
+
           onValidate(yamlValid, schemaValid);
         }
       })
@@ -115,7 +125,7 @@ const MonacoYamlEditor: React.FC<Props> = props => {
       };
     }
 
-  }, [onValidate]);
+  }, [onValidate, instanceRef.current.editor]);
 
   useEffect(() => {
     const editor = instanceRef.current.editor;
@@ -129,14 +139,40 @@ const MonacoYamlEditor: React.FC<Props> = props => {
         stop.dispose();
       };
     }
-  }, [onBlur]);
+  }, [onBlur, instanceRef.current.editor]);
+
+  useEffect(() => {
+    const editor = instanceRef.current.editor;
+    const stops: monaco.IDisposable[] = [];
+
+    if (editor) {
+      stops.push(editor.onDidFocusEditorWidget(() => {
+        editor.updateOptions({
+          scrollbar: {
+            handleMouseWheel: true,
+          }
+        })
+      }));
+      stops.push(editor.onDidBlurEditorWidget(() => {
+        editor.updateOptions({
+          scrollbar: {
+            handleMouseWheel: false,
+          }
+        })
+      }));
+    }
+
+    return () => {
+      stops.forEach(stop => stop.dispose());
+    }
+  }, [instanceRef.current.editor])
 
   return (
     <div
       ref={ref}
       style={{
         width: "100%",
-        height: "500px",
+        height: height || "500px",
       }}
     />
   );
