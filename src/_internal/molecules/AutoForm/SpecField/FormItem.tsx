@@ -14,7 +14,7 @@ type TemplateProps = {
   itemKey: string;
   value?: any;
   services: Services;
-  label?: string;
+  label?: React.ReactNode;
   layout?: "horizontal" | "vertical";
   error?: string;
   widgetErrors: string[];

@@ -50,6 +50,7 @@ import {
 } from "./type";
 import { transformFields } from "./utils";
 import mitt from "mitt";
+import { immutableSet } from "../../../sunmao/utils/object";
 
 export const CUSTOM_SCHEMA_KIND = "x-dovetail-custom-kind";
 
@@ -81,6 +82,8 @@ export type KubectlApplyFormProps = {
   };
   submitting?: boolean;
   step: number;
+  enabledEditorMap: Record<string, boolean>;
+  setEnabledEditorMap: (newMap: Record<string, boolean>)=> void;
   setStep: (step: number) => void;
   getSlot?: (
     field: FormItemData,
@@ -88,6 +91,11 @@ export type KubectlApplyFormProps = {
     slotKey: string
   ) => React.ReactNode;
   getHelperSlot?: (
+    field: FormItemData,
+    fallback: React.ReactNode,
+    slotKey: string
+  ) => React.ReactNode;
+  getLabelSlot?: (
     field: FormItemData,
     fallback: React.ReactNode,
     slotKey: string
@@ -121,8 +129,11 @@ const KubectlApplyForm = React.forwardRef<
       errorDetail,
       submitting,
       step,
+      enabledEditorMap,
+      setEnabledEditorMap,
       getSlot,
       getHelperSlot,
+      getLabelSlot,
       setStep,
       onChange,
       onDisplayValuesChange,
@@ -179,16 +190,16 @@ const KubectlApplyForm = React.forwardRef<
           displayValues={displayValues}
           slot={getSlot}
           helperSlot={getHelperSlot}
+          labelSlot={getLabelSlot}
+          enabledEditorMap={enabledEditorMap}
+          setEnabledEditorMap={setEnabledEditorMap}
           onChange={(
             newValue: unknown,
             displayValue: Record<string, unknown>,
             key?: string,
             dataPath?: string
           ) => {
-            const valuesSlice: unknown[] = [...values];
-
-            set(valuesSlice, isLayout ? dataPath || "" : f.dataPath, newValue);
-            onChange(valuesSlice, displayValue, key, dataPath);
+            onChange(immutableSet(values, isLayout ? dataPath || "" : f.dataPath, newValue) as unknown[], displayValue, key, dataPath);
           }}
           onDisplayValuesChange={(displayValues: Record<string, unknown>) => {
             onDisplayValuesChange(displayValues);

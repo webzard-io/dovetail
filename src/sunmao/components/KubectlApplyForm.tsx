@@ -1,7 +1,7 @@
 import { Type, Static } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import set from "lodash/set";
 import useMergeState from "../hooks/useMergeState";
 import cloneDeep from "lodash/cloneDeep";
@@ -125,6 +125,11 @@ const UiConfigFieldSpecProperties = {
   editorSwitchTooltip: Type.String({
     title: "The tooltip of editor switch",
     category: EDITOR_CATEGORY,
+  }),
+  editorHeight: Type.String({
+    title: "The height of editor",
+    category: EDITOR_CATEGORY,
+    defaultValue: "500px",
   }),
   isDisplayLabel: Type.Boolean({
     title: "Is display label",
@@ -438,6 +443,7 @@ const KubectlApplyFormState = Type.Object({
   step: Type.Number(),
   loading: Type.Boolean(),
   error: Type.Any(),
+  enabledEditorMap: Type.Record(Type.String(), Type.Boolean()),
 });
 
 export const KubectlApplyForm = implementRuntimeComponent({
@@ -491,6 +497,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
       helper: {
         slotProps: UiConfigFieldSpec,
       },
+      label: {
+        slotProps: UiConfigFieldSpec,
+      }
     },
     styleSlots: ["content"],
     events: [
@@ -523,6 +532,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
     subscribeMethods,
   }) => {
     const [step, setStep] = useState(0);
+    const enabledEditorMapRef = useRef<Record<string, boolean>>({});
     const {
       value: values,
       mergeValue: mergeValues,
@@ -535,23 +545,53 @@ export const KubectlApplyForm = implementRuntimeComponent({
 
       mergeState({ value: initValues });
       return initValues;
-    }, (mergedValues) => {
-      mergeState({
-        value: mergedValues,
-      });
     });
     const {
       value: displayValues,
       mergeValue: mergeDisplayValues,
       valueRef: displayValuesRef,
       setValue: setDisplayValues
-    } = useMergeState<Record<string, any>>({}, (mergedDisplayValues) => {
-      mergeState({
-        displayValue: mergedDisplayValues,
-      });
-    });
+    } = useMergeState<Record<string, any>>({});
     const ref = useRef<KubectlApplyFormRef>(null);
+    const slotContext = useMemo(()=> ({
+      app,
+      component,
+      allComponents,
+      services,
+      slotsElements,
+      childrenMap,
+    }), [app, component, allComponents, services, slotsElements, childrenMap]);
 
+    const generateSlot = useCallback((slot: string)=> {
+      return (field: FormItemData, fallback: React.ReactNode, slotKey: string) => {
+        return (
+          generateSlotChildren(
+            {
+              ...slotContext,
+              slot,
+              slotKey,
+              fallback,
+            },
+            {
+              generateId(child) {
+                return field.index !== undefined
+                  ? `${child.id}_${field.index}`
+                  : child.id;
+              },
+              generateProps() {
+                return (field as Static<typeof UiConfigFieldSpec>) || {};
+              },
+            }
+          ) || fallback
+        );
+      };
+    }, [slotContext]);
+    const setEnabledEditorMap = useCallback((newMap: Record<string, boolean>) => {
+      enabledEditorMapRef.current = newMap;
+      mergeState({
+        enabledEditorMap: enabledEditorMapRef.current,
+      });
+    }, [mergeState]);
     const changeStep = useCallback(
       (newStep) => {
         mergeState({
@@ -570,70 +610,22 @@ export const KubectlApplyForm = implementRuntimeComponent({
       setValues(newValues);
       setDisplayValues(displayValues);
       mergeState({
-        value: newValues,
-        displayValue: displayValues,
+        value: valuesRef.current,
+        displayValue: displayValuesRef.current,
         latestChangedKey: key,
         latestChangedPath: dataPath,
       });
       callbackMap?.onChange?.();
-    }, [callbackMap, mergeState, setDisplayValues, setValues]);
+    }, [callbackMap, mergeState, setDisplayValues, setValues, valuesRef, displayValuesRef]);
     const onDisplayValuesChange = useCallback((displayValues: Record<string, any>) => {
       mergeDisplayValues(displayValues);
-    }, [mergeDisplayValues]);
-    const getSlot = useCallback((field: FormItemData, fallback, slotKey) => {
-      return (
-        generateSlotChildren(
-          {
-            app,
-            component,
-            allComponents,
-            services,
-            slotsElements,
-            slot: "field",
-            slotKey,
-            fallback,
-            childrenMap,
-          },
-          {
-            generateId(child) {
-              return field.index !== undefined
-                ? `${child.id}_${field.index}`
-                : child.id;
-            },
-            generateProps() {
-              return (field as Static<typeof UiConfigFieldSpec>) || {};
-            },
-          }
-        ) || fallback
-      );
-    }, [allComponents, app, childrenMap, component, services, slotsElements]);
-    const getHelperSlot = useCallback((field: FormItemData, fallback, slotKey) => {
-      return (
-        generateSlotChildren(
-          {
-            app,
-            component,
-            allComponents,
-            services,
-            slotsElements,
-            slot: "helper",
-            slotKey,
-            fallback,
-            childrenMap,
-          },
-          {
-            generateId(child) {
-              return field.index !== undefined
-                ? `${child.id}_${field.index}`
-                : child.id;
-            },
-            generateProps() {
-              return (field as Static<typeof UiConfigFieldSpec>) || {};
-            },
-          }
-        ) || fallback
-      );
-    }, [allComponents, app, childrenMap, component, services, slotsElements]);
+      mergeState({
+        displayValue: displayValuesRef.current,
+      })
+    }, [mergeDisplayValues, mergeState, displayValuesRef]);
+    const getSlot = useCallback(generateSlot("field"), [slotContext]);
+    const getHelperSlot = useCallback(generateSlot("helper"), [slotContext]);
+    const getLabelSlot = useCallback(generateSlot("label"), [slotContext]);
 
     useEffect(() => {
       subscribeMethods({
@@ -650,6 +642,10 @@ export const KubectlApplyForm = implementRuntimeComponent({
 
           mergeValues(newValues);
           mergeDisplayValues(newDisplayValues);
+          mergeState({
+            value: valuesRef.current,
+            displayValue: displayValuesRef.current,
+          })
         },
         setDisplayValue({ fieldPath, displayValue }) {
           const newDisplayValues = {
@@ -658,6 +654,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
           };
 
           mergeDisplayValues(newDisplayValues);
+          mergeState({
+            displayValue: displayValuesRef.current,
+          })
         },
         nextStep({ disabled }) {
           let result: Record<string, string[]> = {};
@@ -690,7 +689,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
               const sdk = new KubeSdk({
                 basePath,
               });
-              let transformedValues = values;
+              let transformedValues = valuesRef.current;
 
               Object.keys(transformMap || {}).forEach((path) => {
                 const transformedValue = transformMap[path];
@@ -788,6 +787,8 @@ export const KubectlApplyForm = implementRuntimeComponent({
         step={step}
         setStep={changeStep}
         defaultValues={formConfig.defaultValues}
+        enabledEditorMap={enabledEditorMapRef.current}
+        setEnabledEditorMap={setEnabledEditorMap}
         onChange={onChange}
         onDisplayValuesChange={onDisplayValuesChange}
         onNextStep={callbackMap?.onNextStep}
@@ -795,6 +796,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
         onCancel={callbackMap?.onCancel}
         getSlot={getSlot}
         getHelperSlot={getHelperSlot}
+        getLabelSlot={getLabelSlot}
       />
     );
   }

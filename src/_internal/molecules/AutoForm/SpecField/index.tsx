@@ -45,6 +45,14 @@ const EditYAMLTextStyle = css`
   margin-right: 16px;
 `;
 
+const SectionTitleStyle = css`
+  font-weight: 700;
+`;
+
+const SwitchEditorTitleStyle = css`
+  font-weight: 400;
+`;
+
 function shouldDisplayDescription(spec: JSONSchema7): boolean {
   if (spec.type === "object") {
     return false;
@@ -97,8 +105,11 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     superiorKey: subKey,
     error,
     index,
+    enabledEditorMap,
+    setEnabledEditorMap,
     slot,
     helperSlot,
+    labelSlot,
     onChange,
     onDisplayValuesChange,
   } = props;
@@ -107,35 +118,44 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   const editorRef = useRef<FormEditorHandle>(null);
   const kit = useContext(KitContext);
   const [widgetErrors, setWidgetErrors] = useState([]);
-  const [isEnableEditor, setIsEnableEditor] = useState(false);
   const { title } = spec;
   const transformedField = field ? transformFuncProps(field, { index }) : field;
   const transformedItem = item ? transformFuncProps(item, { index }) : item;
   const fieldOrItem = transformedField || transformedItem;
   const label = transformedField?.label || title || "";
   let isDisplayLabel =
-    transformedField?.type === "layout"
-      ? transformedField.indent
-      : transformedField?.isDisplayLabel;
+  transformedField?.type === "layout"
+  ? transformedField.indent
+  : transformedField?.isDisplayLabel;
   const displayDescription = shouldDisplayDescription(spec);
   const itemKey = `${props.superiorKey
     ? `${props.superiorKey}${transformedField?.key ? "-" : ""}`
     : ""
-    }${transformedField?.key || ""}`;
+  }${transformedField?.key || ""}`;
   const finalError = error || fieldOrItem?.error;
+  const [isEnableEditor, setIsEnableEditor] = useState(enabledEditorMap[itemKey] ??  false);
+  
 
   const onEnableEditorChange = useCallback((enabled) => {
     if (!enabled) {
       editorRef.current?.validate((errors, newVal) => {
         if (!errors.length) {
           setIsEnableEditor(enabled);
+          setEnabledEditorMap({
+            ...enabledEditorMap,
+            [itemKey]: enabled,
+          });
           onChange(newVal, displayValues, transformedField?.key, transformedField?.path);
         }
       })
     } else {
+      setEnabledEditorMap({
+        ...enabledEditorMap,
+        [itemKey]: enabled,
+      });
       setIsEnableEditor(enabled);
     }
-  }, [displayValues, onChange, transformedField?.key, transformedField?.path]);
+  }, [displayValues, onChange, transformedField?.key, transformedField?.path, enabledEditorMap, setEnabledEditorMap, itemKey]);
 
   if (isEmpty(spec) || transformedField?.condition === false) {
     return null;
@@ -216,8 +236,14 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       onDisplayValuesChange={onDisplayValuesChange}
       slot={slot}
       helperSlot={helperSlot}
+      labelSlot={labelSlot}
+      enabledEditorMap={enabledEditorMap}
+      setEnabledEditorMap={setEnabledEditorMap}
     />
   );
+
+  const isDisplayEditorSwitch = transformedField?.isDisplaySwitchEditor;
+  const slotProps = { path, ...(transformedField || {}), itemKey, index };
 
   return (
     <Col
@@ -230,8 +256,8 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     >
       {transformedField?.sectionTitle && (
         <div className={FieldSection}>
-          <span className="section-title-text">{transformedField?.sectionTitle}</span>
-          {transformedField.isDisplaySwitchEditor && value instanceof Object ? (
+          <span className={cx("section-title-text", isDisplayEditorSwitch ? SwitchEditorTitleStyle : SectionTitleStyle)}>{transformedField?.sectionTitle}</span>
+          {isDisplayEditorSwitch ? (
             <span>
               <span className={cx(Typo.Label.l4_regular, EditYAMLTextStyle)}>{i18n.t("dovetail.edit_yaml")}</span>
               <kit.Tooltip title={transformedField.editorSwitchTooltip}>
@@ -271,11 +297,11 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
             item={transformedItem}
             itemKey={itemKey}
             value={value}
-            label={label}
+            label={labelSlot?.(slotProps, label, `label_${path}`) || label}
             layout={transformedField?.layout}
             description={
               helperSlot?.(
-                { path, ...(transformedField || {}), index },
+                slotProps,
                 transformedField?.helperText || "",
                 `helper_${path}`
               ) || transformedField?.helperText
@@ -291,7 +317,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
             <kit.Tooltip title={fieldOrItem?.tooltip} placement="topLeft">
               <span>
                 {slot?.(
-                  { path, ...(transformedField || {}), itemKey, index },
+                  slotProps,
                   FieldComponent,
                   `filed_${path}`
                 ) || FieldComponent}

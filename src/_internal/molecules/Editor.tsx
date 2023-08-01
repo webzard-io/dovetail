@@ -1,12 +1,14 @@
 import { useTranslation } from "react-i18next";
-import React, { useCallback, useState, useEffect, useRef } from "react";
+import React, { useCallback, useState, useEffect, useRef, useMemo } from "react";
 import { WidgetProps } from "./AutoForm/widget";
 import { Type, Static } from "@sinclair/typebox";
 import { YamlEditorComponent, Handle as EditorHandle } from "../../sunmao/components/YamlEditor/YamlEditorComponent";
+import { Events } from "../organisms/KubectlApplyForm/type";
 import yaml from "js-yaml";
 
 export const OptionsSpec = Type.Object({
   title: Type.String(),
+  height: Type.String(),
   isDefaultCollapsed: Type.Boolean(),
 });
 
@@ -18,8 +20,17 @@ function Editor(props: EditorProps) {
   const ref = useRef<EditorHandle>(null);
   const [editorErrors, setEditorErrors] = useState<string[]>([]);
   const [isShowErrors, setIsShowErrors] = useState<boolean>(false);
+  const schema = useMemo(()=> ["object", "array"].includes(spec.type as string) ? spec : undefined, [spec]);
+  const defaultValue = useMemo(
+    () => {
+      if (field?.defaultValue === undefined) return "";
 
-  const onEditorValidate = useCallback((isValid: boolean, isSchemaValid: boolean)=> {
+      return typeof field?.defaultValue === "string" ? field?.defaultValue || "" : yaml.dump(field?.defaultValue || {});
+    },
+    [field?.defaultValue]
+  );
+
+  const onEditorValidate = useCallback((isValid: boolean, isSchemaValid: boolean) => {
     const currentEditorErrors: string[] = [];
 
     if (!isValid) {
@@ -27,7 +38,7 @@ function Editor(props: EditorProps) {
     }
 
     if (!isSchemaValid) {
-      currentEditorErrors.push("dovetail.yaml_value_wrong")
+      currentEditorErrors.push(i18n.t("dovetail.yaml_value_wrong"))
     }
 
     if (!currentEditorErrors.length) {
@@ -36,18 +47,19 @@ function Editor(props: EditorProps) {
 
     setEditorErrors(currentEditorErrors);
   }, [i18n]);
-  const onValidateEvent = useCallback(()=> {
+  const onValidateEvent = useCallback(({ result }: Events["validate"]) => {
+    result[itemKey] = editorErrors;
     setIsShowErrors(!!editorErrors.length);
-  }, [editorErrors]);
-  const onBlur = useCallback(()=> {
+  }, [editorErrors, itemKey]);
+  const onBlur = useCallback(() => {
     if (!editorErrors.length) {
       const editorValue = ref.current?.getEditorValue() || "";
       const newValue = typeof value === "string" ? editorValue : yaml.load(editorValue) as Record<string, unknown>;
-      
+
       onChange(newValue, displayValues, itemKey, field?.path);
     }
   }, [displayValues, editorErrors, itemKey, field?.path, value, onChange])
-  const changeValue = useCallback(()=> {
+  const changeValue = useCallback(() => {
     const currentEditorValue = typeof value === "string" ? value : yaml.dump(value);
 
     ref.current?.setEditorValue(currentEditorValue);
@@ -70,8 +82,8 @@ function Editor(props: EditorProps) {
     ref={ref}
     {...props.widgetOptions}
     id={itemKey}
-    defaultValue={yaml.dump(field?.defaultValue || "")}
-    schema={spec}
+    defaultValue={defaultValue}
+    schema={schema}
     errorMsgs={isShowErrors ? editorErrors : []}
     onValidate={onEditorValidate}
     onEditorCreate={changeValue}

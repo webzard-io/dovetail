@@ -37,6 +37,7 @@ import {
 
 const PropsSchema = Type.Object({
   title: Type.String(),
+  height: Type.String(),
   defaultValue: Type.String(),
   errorMsgs: Type.Array(Type.String()),
   schema: Type.Optional(Type.Record(Type.String(), Type.Any())),
@@ -66,11 +67,12 @@ export type Props = Partial<Static<typeof PropsSchema>> & {
   eleRef?: React.MutableRefObject<HTMLDivElement>;
   id?: string;
   className?: string;
+  height?: string;
   isDefaultCollapsed?: boolean;
   onChange?: (value: string) => void;
   onValidate?: (valid: boolean, schemaValid: boolean) => void;
-  onEditorCreate?: (editor: monaco.editor.ICodeEditor)=> void;
-  onBlur?: ()=> void;
+  onEditorCreate?: (editor: monaco.editor.ICodeEditor) => void;
+  onBlur?: () => void;
 }
 
 export type Handle = {
@@ -80,7 +82,7 @@ export type Handle = {
 }
 
 export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditorComponent(props, ref) {
-  const { title, isDefaultCollapsed, defaultValue = "", errorMsgs = [], schema, eleRef, className } = props;
+  const { title, isDefaultCollapsed, defaultValue = "", height, errorMsgs = [], schema, eleRef, className } = props;
   const kit = useContext(KitContext);
   const { t } = useTranslation();
   const [isCollapsed, setIsCollapsed] = useState(isDefaultCollapsed);
@@ -115,11 +117,11 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
     [props.onValidate]
   );
 
-  const onEditorCreate = useCallback((editor: monaco.editor.ICodeEditor)=> {
+  const onEditorCreate = useCallback((editor: monaco.editor.ICodeEditor) => {
     if (editor.getValue() !== value) {
       editorInstance.current?.getModel()?.setValue(value);
     }
-    
+
     props.onEditorCreate?.(editor);
   }, [value, props.onEditorCreate]);
 
@@ -149,38 +151,36 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
           <kit.Space size={14}>
             {isDiff ? undefined : (
               <>
-                <kit.Tooltip title={t("dovetail.copy")}>
+                <kit.Tooltip title={isCollapsed ? "" : t("dovetail.copy")}>
                   <ClipboardCopy16GradientGrayIcon
                     data-disabled={isCollapsed}
                     className={IconStyle}
                     width={16}
                     height={16}
-                    onClick={() => copyToClipboard(value)}
+                    onClick={() => isCollapsed ? undefined : copyToClipboard(value)}
                   />
                 </kit.Tooltip>
                 <Seperator />
-                <kit.Tooltip title={t("dovetail.reset_arguments")}>
+                <kit.Tooltip title={isCollapsed ? "" : t("dovetail.reset_arguments")}>
                   <Retry16GradientGrayIcon
                     data-disabled={isCollapsed}
                     className={IconStyle}
                     width={16}
                     height={16}
-                    onClick={() => {
-                      editorInstance.current?.setValue(defaultValue);
-                    }}
+                    onClick={() => isCollapsed ? undefined : editorInstance.current?.setValue(defaultValue)}
                   />
                 </kit.Tooltip>
                 <Seperator />
               </>
             )}
-            <kit.Tooltip title={isDiff ? t("dovetail.back_to_edit") : t("dovetail.view_changes")}>
+            <kit.Tooltip title={isCollapsed ? "" : (isDiff ? t("dovetail.back_to_edit") : t("dovetail.view_changes"))}>
               {isDiff ? (
                 <EditPen16Icon
                   data-disabled={isCollapsed}
                   className={IconStyle}
                   width={16}
                   height={16}
-                  onClick={() => setIsDiff(false)}
+                  onClick={() => isCollapsed ? undefined : setIsDiff(false)}
                 />
               ) : (
                 <Showdiff16Icon
@@ -188,7 +188,7 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
                   className={IconStyle}
                   width={16}
                   height={16}
-                  onClick={() => setIsDiff(true)}
+                  onClick={() => isCollapsed ? undefined : setIsDiff(true)}
                 />
               )}
             </kit.Tooltip>
@@ -212,8 +212,8 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
         style={{
           display: isCollapsed ? "none" : "block",
           width: "100%",
-          height: "500px",
-          overflow: "auto",
+          height: height || "500px",
+          zIndex: 1
         }}
       >
         {isDiff ? (
@@ -222,6 +222,7 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
               id={props.id}
               origin={defaultValue}
               modified={value}
+              height={height}
             />
           </Suspense>
         ) : (
@@ -230,6 +231,7 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
               id={props.id}
               getInstance={getInstance}
               defaultValue={defaultValue}
+              height={height}
               onChange={onChange}
               onValidate={onValidate}
               onEditorCreate={onEditorCreate}
@@ -252,6 +254,7 @@ export default implementRuntimeComponent({
     exampleProperties: {
       defaultValue: initCode,
       errorMsgs: [],
+      height: "500px",
     },
     exampleSize: [1, 1],
   },
@@ -273,6 +276,7 @@ export default implementRuntimeComponent({
     defaultValue,
     errorMsgs = [],
     schema,
+    height,
     component,
     mergeState,
     subscribeMethods,
@@ -320,6 +324,7 @@ export default implementRuntimeComponent({
       ref={ref}
       id={component.id}
       eleRef={elementRef}
+      height={height}
       className={ecss(customStyle?.content)}
       defaultValue={defaultValue}
       errorMsgs={errorMsgs}

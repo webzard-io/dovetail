@@ -32,6 +32,8 @@ export type WidgetProps<
   error?: string | string[] | Record<string, string>;
   value: Value;
   displayValues: Record<string, unknown>;
+  enabledEditorMap: Record<string, boolean>;
+  setEnabledEditorMap: (newMap: Record<string, boolean>)=> void;
   onChange: (
     newValue: Value,
     displayValues: Record<string, unknown>,
@@ -41,6 +43,7 @@ export type WidgetProps<
   onDisplayValuesChange: (displayValues: Record<string, unknown>) => void;
   slot?: SlotFunction;
   helperSlot?: SlotFunction;
+  labelSlot?: SlotFunction;
   setWidgetErrors: (errors: string[])=> void;
   specsArray: Record<string, { spec: JSONSchema7 }>[];
 };
