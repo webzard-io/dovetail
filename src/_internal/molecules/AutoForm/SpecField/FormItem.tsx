@@ -92,8 +92,18 @@ const FormItemStyle = css`
     }
   
     &.dovetail-ant-form-item-has-error .ant-select-selector,
-    &.dovetail-ant-form-item-has-error .ant-input {
+    &.dovetail-ant-form-item-has-error .dovetail-ant-select-selector,
+    &.dovetail-ant-form-item-has-error .ant-input,
+    &.dovetail-ant-form-item-has-error .dovetail-ant-input {
       border-color: #f0483e !important;
+
+      &:hover {
+        box-shadow: 0px 0px 0px 4px rgba(255, 74, 74, 0.16) !important;
+      }
+
+      &:focus-within {
+        box-shadow: 0px 0px 0px 4px rgba(255, 74, 74, 0.16) !important;
+      }
     }
   `;
 
@@ -161,7 +171,7 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
 
     return (
       <Form.Item
-        className={FormItemStyle}
+        className={cx(FormItemStyle, itemKey)}
         labelAlign="left"
         label={
           displayLabel ? (

@@ -10,6 +10,10 @@ export const ToolBarStyle = css`
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 
+  &.collapsed {
+    border-bottom: 0;
+  }
+
   & svg {
     margin: auto;
   }
@@ -21,6 +25,7 @@ export const ToolBarStyle = css`
 export const ToolBarHeaderStyle = css`
   display: flex;
   width: 100%;
+  height: 20px;
   justify-content: space-between;
 `;
 export const ErrorIconStyle = css`
@@ -53,18 +58,13 @@ export const IconStyle = css`
   cursor: pointer;
   margin: auto 0;
 
-  &:hover > path {
-    fill: rgba(0, 136, 255, 1);
-    fill-opacity: 1;
+  &.arrow-down svg {
+    transform: rotate(90deg);
   }
 
   &[data-disabled='true'] {
     cursor: not-allowed;
-
-    & > path {
-      fill: rgba(0, 21, 64, 0.3);
-      fill-opacity: 1;
-    }
+    opacity: .5;
   }
 `;
 

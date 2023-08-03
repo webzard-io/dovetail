@@ -1,11 +1,17 @@
 import { KitContext } from "../../../_internal/atoms/kit-context";
+import { Icon } from "@cloudtower/eagle";
 import {
   ClipboardCopy16GradientGrayIcon,
+  ClipboardCopy16GradientBlueIcon,
   HierarchyTriangleRight16GrayIcon,
+  HierarchyTriangleRight16BlueIcon,
   Retry16GradientGrayIcon,
+  Retry16GradientBlueIcon,
   XmarkFailedSeriousWarningFill16RedIcon,
-  EditPen16Icon,
-  Showdiff16Icon,
+  EditPen16GradientGrayIcon,
+  EditPen16GradientBlueIcon,
+  Showdiff16GradientGrayIcon,
+  Showdiff16GradientBlueIcon
 } from "@cloudtower/icons-react";
 import { Type, Static } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
@@ -89,6 +95,8 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
   const [isDiff, setIsDiff] = useState(false);
   const [value, setValue] = useState(defaultValue);
   const editorInstance = useRef<monaco.editor.IStandaloneCodeEditor>();
+  const [copyTooltip, setCopyTooltip] = useState(t("dovetail.copy"));
+  const [resetTooltip, setResetTooltip] = useState(t("dovetail.reset_arguments"));
 
   useImperativeHandle(ref, () => {
     return {
@@ -135,39 +143,71 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
       data-is-error={!!errorMsgs.length}
       ref={eleRef}
     >
-      <kit.Space className={ToolBarStyle} direction="vertical" size={0}>
+      <kit.Space className={cx(ToolBarStyle, isCollapsed ? "collapsed" : "")} direction="vertical" size={0}>
         <kit.Space className={ToolBarHeaderStyle} align="baseline">
           <kit.Space size={8}>
-            <HierarchyTriangleRight16GrayIcon
-              fill={"red"}
-              className={IconStyle}
-              width={16}
-              height={16}
+            <Icon
+              src={HierarchyTriangleRight16GrayIcon}
+              hoverSrc={HierarchyTriangleRight16BlueIcon}
+              className={cx(IconStyle, isCollapsed ? "" : "arrow-down")}
+              iconWidth={16}
+              iconHeight={16}
               onClick={() => setIsCollapsed(!isCollapsed)}
-              style={{ transform: `rotate(${isCollapsed ? 0 : 90}deg)` }}
             />
             <div className={TitleStyle}>{title || t("dovetail.configure_file")}</div>
           </kit.Space>
           <kit.Space size={14}>
             {isDiff ? undefined : (
               <>
-                <kit.Tooltip title={isCollapsed ? "" : t("dovetail.copy")}>
-                  <ClipboardCopy16GradientGrayIcon
+                <kit.Tooltip
+                  title={isCollapsed ? "" : copyTooltip}
+                  onVisibleChange={(visible) => {
+                    if (!visible) {
+                      setTimeout(() => {
+                        setCopyTooltip(t("dovetail.copy"));
+                      }, 80);
+                    }
+                  }}
+                >
+                  <Icon
                     data-disabled={isCollapsed}
+                    src={ClipboardCopy16GradientGrayIcon}
+                    hoverSrc={isCollapsed ? undefined : ClipboardCopy16GradientBlueIcon}
                     className={IconStyle}
-                    width={16}
-                    height={16}
-                    onClick={() => isCollapsed ? undefined : copyToClipboard(value)}
+                    iconWidth={16}
+                    iconHeight={16}
+                    onClick={() => {
+                      if (!isCollapsed) {
+                        copyToClipboard(value);
+                        setCopyTooltip(t("dovetail.copied"));
+                      }
+                    }}
                   />
                 </kit.Tooltip>
                 <Seperator />
-                <kit.Tooltip title={isCollapsed ? "" : t("dovetail.reset_arguments")}>
-                  <Retry16GradientGrayIcon
+                <kit.Tooltip
+                  title={isCollapsed ? "" : resetTooltip}
+                  onVisibleChange={(visible) => {
+                    if (!visible) {
+                      setTimeout(() => {
+                        setResetTooltip(t("dovetail.reset_arguments"));
+                      }, 80);
+                    }
+                  }}
+                >
+                  <Icon
                     data-disabled={isCollapsed}
+                    src={Retry16GradientGrayIcon}
+                    hoverSrc={isCollapsed ? undefined : Retry16GradientBlueIcon}
                     className={IconStyle}
-                    width={16}
-                    height={16}
-                    onClick={() => isCollapsed ? undefined : editorInstance.current?.setValue(defaultValue)}
+                    iconWidth={16}
+                    iconHeight={16}
+                    onClick={() => {
+                      if (!isCollapsed) {
+                        editorInstance.current?.setValue(defaultValue);
+                        setResetTooltip(t("dovetail.already_reset"));
+                      }
+                    }}
                   />
                 </kit.Tooltip>
                 <Seperator />
@@ -175,19 +215,23 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
             )}
             <kit.Tooltip title={isCollapsed ? "" : (isDiff ? t("dovetail.back_to_edit") : t("dovetail.view_changes"))}>
               {isDiff ? (
-                <EditPen16Icon
+                <Icon
                   data-disabled={isCollapsed}
+                  src={EditPen16GradientGrayIcon}
+                  hoverSrc={isCollapsed ? undefined : EditPen16GradientBlueIcon}
                   className={IconStyle}
-                  width={16}
-                  height={16}
+                  iconWidth={16}
+                  iconHeight={16}
                   onClick={() => isCollapsed ? undefined : setIsDiff(false)}
                 />
               ) : (
-                <Showdiff16Icon
+                <Icon
                   data-disabled={isCollapsed}
+                  src={Showdiff16GradientGrayIcon}
+                  hoverSrc={isCollapsed ? undefined : Showdiff16GradientBlueIcon}
                   className={IconStyle}
-                  width={16}
-                  height={16}
+                  iconWidth={16}
+                  iconHeight={16}
                   onClick={() => isCollapsed ? undefined : setIsDiff(true)}
                 />
               )}

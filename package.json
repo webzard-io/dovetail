@@ -18,7 +18,8 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@chakra-ui/react": "^1.7.1",
-    "@cloudtower/icons-react": "^0.24.23",
+    "@cloudtower/eagle": "^0.25.13",
+    "@cloudtower/icons-react": "^0.25.13",
     "@emotion/css": "^11.7.1",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.7.1",
@@ -88,8 +89,8 @@
     "vite-tsconfig-paths": "^3.4.1"
   },
   "peerDependencies": {
-    "@cloudtower/eagle": "^0.24.23",
-    "@cloudtower/icons-react": "^0.24.23",
+    "@cloudtower/eagle": "^0.25.13",
+    "@cloudtower/icons-react": "^0.25.13",
     "@sunmao-ui/core": "^0.10.3",
     "@sunmao-ui/editor": "^0.10.4",
     "@sunmao-ui/editor-sdk": "^0.10.4",

@@ -280,6 +280,10 @@ export const UiConfigSpec = Type.Object({
     title: "Title",
     category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
+  titleGap: Type.String({
+    title: "Title gap",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+  }),
   layout: Type.Object(
     {
       type: StringUnion(["simple", "tabs", "wizard"], {
@@ -640,7 +644,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
             [fieldPath]: displayValue,
           };
 
-          mergeValues(newValues);
+          setValues(newValues);
           mergeDisplayValues(newDisplayValues);
           mergeState({
             value: valuesRef.current,

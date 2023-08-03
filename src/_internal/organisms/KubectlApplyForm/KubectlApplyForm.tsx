@@ -68,6 +68,7 @@ export type KubectlApplyFormProps = {
     isDisplaySummary?: boolean;
     isDisplayFooter?: boolean;
     title?: string;
+    titleGap?: string;
     layout: Layout;
     confirmText: string;
     cancelText: string;
@@ -83,7 +84,7 @@ export type KubectlApplyFormProps = {
   submitting?: boolean;
   step: number;
   enabledEditorMap: Record<string, boolean>;
-  setEnabledEditorMap: (newMap: Record<string, boolean>)=> void;
+  setEnabledEditorMap: (newMap: Record<string, boolean>) => void;
   setStep: (step: number) => void;
   getSlot?: (
     field: FormItemData,
@@ -223,15 +224,15 @@ const KubectlApplyForm = React.forwardRef<
                 {errorDetail.title}
               </div>
               {errorDetail.errors.map((errorInfo, index) => (
-                <div className={Typo.Label.l4_regular} key={errorInfo}>{`${
-                  errorDetail.errors.length > 1 ? `${index + 1}.` : ""
-                } ${errorInfo}`}</div>
+                <div className={Typo.Label.l4_regular} key={errorInfo}>{`${errorDetail.errors.length > 1 ? `${index + 1}.` : ""
+                  } ${errorInfo}`}</div>
               ))}
             </>
           }
           showIcon
         ></Alert>
       ) : null;
+    const titleGap = `margin-bottom: ${uiConfig.titleGap || "40px"};`;
 
     function renderFields() {
       const { layout, cancelText, confirmText } = uiConfig;
@@ -242,7 +243,7 @@ const KubectlApplyForm = React.forwardRef<
               <div className={cx(WizardBodyWrapperStyle, "body-wrapper")}>
                 <div className={cx(dCss`width: 100%;`, WizardBodyStyle)}>
                   <div className="left"></div>
-                  <Row gutter={[24, 16]} className="middle">
+                  <Row gutter={[24, 16]} className={cx("middle", dCss`${titleGap}`)}>
                     <div className="middle-form-wrapper">
                       {transformFields(layout.fields, values, defaultValues).map(
                         (f) => {
@@ -369,7 +370,7 @@ const KubectlApplyForm = React.forwardRef<
                       ))}
                     </Steps>
                   </div>
-                  <Row gutter={[24, 16]} className="middle">
+                  <Row gutter={[24, 16]} className={cx("middle", dCss`${titleGap}`)}>
                     <div className="middle-form-wrapper">
                       {transformFields(
                         layout.steps[step].fields,
@@ -482,7 +483,7 @@ const KubectlApplyForm = React.forwardRef<
             )}
           >
             <div className="left"></div>
-            <div className={cx("middle", dCss`margin-bottom: 40px`)}>
+            <div className={cx("middle", dCss`${titleGap}`)}>
               <div className={Typo.Display.d1_bold_title}>{title}</div>
             </div>
             <div className="right"></div>

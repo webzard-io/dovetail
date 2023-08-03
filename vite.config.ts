@@ -38,7 +38,8 @@ export default defineConfig({
         "@sunmao-ui/editor-sdk",
         "chakra-react-select",
         "monaco-editor",
-        "monaco-yaml"
+        "monaco-yaml",
+        "@cloudtower/eagle"
       ],
     },
   },
