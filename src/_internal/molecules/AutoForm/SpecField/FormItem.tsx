@@ -90,20 +90,38 @@ const FormItemStyle = css`
         display: none;
       }
     }
+
+    .dovetail-ant-form-item-control {
+      .ant-input-affix-wrapper,
+      .dovetail-ant-input-affix-wrapper {
+        .ant-input:hover,
+        .ant-input:focus-within,
+        .dovetail-ant-input:hover, 
+        .dovetail-ant-input:focus-within {
+          box-shadow: unset !important;
+        }
+      }
+    }
+
   
-    &.dovetail-ant-form-item-has-error .ant-select-selector,
-    &.dovetail-ant-form-item-has-error .dovetail-ant-select-selector,
-    &.dovetail-ant-form-item-has-error .ant-input,
-    &.dovetail-ant-form-item-has-error .dovetail-ant-input {
-      border-color: #f0483e !important;
-
-      &:hover {
-        box-shadow: 0px 0px 0px 4px rgba(255, 74, 74, 0.16) !important;
+    &.dovetail-ant-form-item-has-error {
+      .ant-select-selector,
+      .dovetail-ant-select-selector,
+      .ant-input,
+      .dovetail-ant-input,
+      .ant-input-affix-wrapper,
+      .dovetail-ant-input-affix-wrapper {
+        border-color: #f0483e !important;
+  
+        &:hover {
+          box-shadow: 0px 0px 0px 4px rgba(255, 74, 74, 0.16) !important;
+        }
+  
+        &:focus-within {
+          box-shadow: 0px 0px 0px 4px rgba(255, 74, 74, 0.16) !important;
+        }
       }
 
-      &:focus-within {
-        box-shadow: 0px 0px 0px 4px rgba(255, 74, 74, 0.16) !important;
-      }
     }
   `;
 
@@ -158,7 +176,7 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
       if (isMounted) {
         validate();
       }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value]);
 
     useEffect(() => {
@@ -171,7 +189,7 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
 
     return (
       <Form.Item
-        className={cx(FormItemStyle, itemKey)}
+        className={cx(FormItemStyle, itemKey, "kaf-form-item")}
         labelAlign="left"
         label={
           displayLabel ? (
