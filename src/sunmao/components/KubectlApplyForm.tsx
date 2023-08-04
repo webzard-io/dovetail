@@ -395,10 +395,6 @@ export const UiConfigSpec = Type.Object({
 });
 
 const KubectlApplyFormProps = Type.Object({
-  strategy: StringUnion(
-    ["application/merge-patch+json", "application/apply-patch+yaml"],
-    { category: PRESET_PROPERTY_CATEGORY.Basic }
-  ),
   basePath: Type.String({
     title: "Base path",
     category: PRESET_PROPERTY_CATEGORY.Basic,
@@ -490,7 +486,15 @@ export const KubectlApplyForm = implementRuntimeComponent({
       }),
       apply: Type.Object({
         disabled: Type.Boolean(),
+        strategy: StringUnion(
+          ["application/merge-patch+json", "application/apply-patch+yaml", "application/json-patch+json"],
+          { category: PRESET_PROPERTY_CATEGORY.Basic }
+        ),
         transformMap: Type.Record(Type.String(), Type.Any()),
+        replacePaths: Type.Array(
+          Type.Array(Type.String()),
+          { conditions: [{ key: "strategy", value: "application/json-patch+json" }] }
+        ),
       }),
       clearError: Type.Object({}),
     },
@@ -517,7 +521,6 @@ export const KubectlApplyForm = implementRuntimeComponent({
   },
 })(
   ({
-    strategy,
     basePath,
     formConfig,
     error,
@@ -557,7 +560,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
       setValue: setDisplayValues
     } = useMergeState<Record<string, any>>({});
     const ref = useRef<KubectlApplyFormRef>(null);
-    const slotContext = useMemo(()=> ({
+    const slotContext = useMemo(() => ({
       app,
       component,
       allComponents,
@@ -566,7 +569,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
       childrenMap,
     }), [app, component, allComponents, services, slotsElements, childrenMap]);
 
-    const generateSlot = useCallback((slot: string)=> {
+    const generateSlot = useCallback((slot: string) => {
       return (field: FormItemData, fallback: React.ReactNode, slotKey: string) => {
         return (
           generateSlotChildren(
@@ -676,7 +679,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
             changeStep(step + 1);
           }
         },
-        async apply({ disabled, transformMap }) {
+        async apply({ disabled, transformMap, strategy, replacePaths }) {
           try {
             let result: Record<string, string[]> = {};
 
@@ -713,7 +716,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
                 error: null,
               });
 
-              await sdk.applyYaml(appliedValues, strategy);
+              await sdk.applyYaml(appliedValues, strategy, replacePaths);
 
               mergeState({
                 loading: false,
@@ -766,7 +769,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
       formConfig.schemas,
       displayValuesRef,
       valuesRef,
-      strategy,
+      setValues,
     ]);
     useEffect(() => {
       mergeState({ defaultValue: formConfig.defaultValues });

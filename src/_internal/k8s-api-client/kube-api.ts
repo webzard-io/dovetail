@@ -9,6 +9,7 @@ import type {
 } from "kubernetes-types/meta/v1";
 import { informerLog } from "../utils/log";
 import mitt from "mitt";
+import { get } from "lodash";
 
 export type UnstructuredList = {
   apiVersion: string;
@@ -540,13 +541,15 @@ export class KubeSdk {
     this.basePath = basePath;
   }
 
-  public async applyYaml(specs: Unstructured[], strategy?: string) {
+  public async applyYaml(specs: Unstructured[], strategy?: string, replacePaths?: string[][]) {
     const validSpecs = specs.filter((s) => s && s.kind && s.metadata);
     const changed: Unstructured[] = [];
     const created: Unstructured[] = [];
     const updated: Unstructured[] = [];
 
-    for (const spec of validSpecs) {
+    for (const index in validSpecs) {
+      const spec = validSpecs[index];
+
       spec.metadata = spec.metadata || {};
       spec.metadata.annotations = spec.metadata.annotations || {};
       delete spec.metadata.annotations[
@@ -574,7 +577,11 @@ export class KubeSdk {
 
       try {
         const response = exist
-          ? await this.patch(spec, strategy || "application/merge-patch+json")
+          ? await this.patch(
+            spec,
+            strategy || "application/merge-patch+json",
+            replacePaths?.[index]
+          )
           : await this.create(spec);
 
         if (exist) {
@@ -658,21 +665,26 @@ export class KubeSdk {
     return res;
   }
 
-  private async patch(spec: K8sObject, strategy: string) {
+  private async patch(spec: K8sObject, strategy: string, replacePaths?: string[]) {
     const url = await this.specUriPath(spec, "patch");
+    const json = strategy === "application/json-patch+json" ? (replacePaths || []).map(path => ({
+      op: "replace",
+      path: "/" + path.split(".").join("/"),
+      value: get(spec, path)
+    })) : spec;
     const res = await ky
       .patch(url, {
         headers: {
           "Content-Type": strategy,
         },
         retry: 0,
-        json: spec,
+        json,
         searchParams:
           strategy === "application/apply-patch+yaml"
             ? {
-                fieldManager: "sks",
-                force: true,
-              }
+              fieldManager: "sks",
+              force: true,
+            }
             : undefined,
       })
       .json();
