@@ -139,11 +139,11 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
 
   return (
     <div
-      className={cx(WrapperStyle, className)}
+      className={cx(WrapperStyle, className, isCollapsed ? "collapsed" : "")}
       data-is-error={!!errorMsgs.length}
       ref={eleRef}
     >
-      <kit.Space className={cx(ToolBarStyle, isCollapsed ? "collapsed" : "")} direction="vertical" size={0}>
+      <kit.Space className={cx(ToolBarStyle)} direction="vertical" size={0}>
         <kit.Space className={ToolBarHeaderStyle} align="baseline">
           <kit.Space size={8}>
             <Icon

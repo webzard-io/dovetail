@@ -171,7 +171,7 @@ export const WizardFooterStyle = css`
   .footer-content {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin: 0 auto;
     max-width: 1120px;
     width: 100%;
@@ -197,7 +197,7 @@ export const WizardFooterStyle = css`
 
     .wizard-footer-left {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       .anticon-exclamation-circle {
         color: $red-60;
         margin-right: 5px;
@@ -205,6 +205,7 @@ export const WizardFooterStyle = css`
       .wizard-error {
         display: flex;
         align-items: flex-start;
+        margin-top: 5px;
         margin-right: 12px;
         font-size: 13px;
         color: $red-60;
@@ -227,6 +228,7 @@ export const WizardFooterStyle = css`
         cursor: pointer;
         margin-right: 16px;
         flex-shrink: 0;
+        line-height: 32px;
       }
     }
 

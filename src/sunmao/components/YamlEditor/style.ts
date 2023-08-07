@@ -4,15 +4,14 @@ import { css } from "@linaria/core";
 
 export const ToolBarStyle = css`
   width: 100%;
-  padding: 12px;
+  padding: 11px;
+  border-top: 1px solid rgba(211, 218, 235, 0.6);
   border-bottom: 1px solid rgba(211, 218, 235, 0.6);
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
   background: rgba(225, 230, 241, 0.6);
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
-
-  &.collapsed {
-    border-bottom: 0;
-  }
 
   & svg {
     margin: auto;
@@ -34,8 +33,13 @@ export const ErrorIconStyle = css`
 export const WrapperStyle = css`
   width: 100%;
   border: 1px solid rgba(211, 218, 235, 0.6);
+  border-top: 0;
   border-radius: 8px;
   overflow: auto;
+
+  &.collapsed {
+    border-bottom: 0;
+  }
 
   &[data-is-error='true'] {
     border-color: #F0483E;
