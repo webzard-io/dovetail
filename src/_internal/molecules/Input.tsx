@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import { Input as AntdInput } from "antd";
 import { StringUnion } from "@sunmao-ui/shared";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";

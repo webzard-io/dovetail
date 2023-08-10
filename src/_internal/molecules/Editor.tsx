@@ -51,19 +51,22 @@ function Editor(props: EditorProps) {
     result[itemKey] = editorErrors;
     setIsShowErrors(!!editorErrors.length);
   }, [editorErrors, itemKey]);
-  const onBlur = useCallback(() => {
+  const emitChange = useCallback(()=> {
     if (!editorErrors.length) {
       const editorValue = ref.current?.getEditorValue() || "";
       const newValue = typeof value === "string" ? editorValue : yaml.load(editorValue) as Record<string, unknown>;
 
       onChange(newValue, displayValues, itemKey, field?.path);
     }
-  }, [displayValues, editorErrors, itemKey, field?.path, value, onChange])
+  }, [displayValues, editorErrors, itemKey, field?.path, value, onChange]);
   const changeValue = useCallback(() => {
-    const currentEditorValue = typeof value === "string" ? value : yaml.dump(value);
+    const newEditorValue = typeof value === "string" ? value : yaml.dump(value);
+    
+    if (newEditorValue !== ref.current?.getEditorValue()) {
+      ref.current?.setEditorValue(newEditorValue);
+      ref.current?.setValue(newEditorValue);
+    }
 
-    ref.current?.setEditorValue(currentEditorValue);
-    ref.current?.setValue(currentEditorValue);
   }, [value]);
 
   useEffect(() => {
@@ -87,7 +90,8 @@ function Editor(props: EditorProps) {
     errorMsgs={isShowErrors ? editorErrors : []}
     onValidate={onEditorValidate}
     onEditorCreate={changeValue}
-    onBlur={onBlur}
+    onChange={emitChange}
+    onBlur={emitChange}
   />)
 }
 

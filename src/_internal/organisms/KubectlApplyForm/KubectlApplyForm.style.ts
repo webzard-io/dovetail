@@ -55,7 +55,6 @@ export const WizardBodyStyle = css`
     flex-shrink: 1;
     min-width: 0;
     flex-basis: 58%;
-    margin-bottom: 40px;
 
     .middle-form-wrapper {
       flex: 1;
