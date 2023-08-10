@@ -107,16 +107,21 @@ const MonacoYamlEditor: React.FC<Props> = props => {
 
     if (editor) {
       const stop = monaco.editor.onDidChangeMarkers((uri) => {
-        const currentEditorUri = instanceRef.current.editor?.getModel()?.uri;
+        const model = instanceRef.current.editor?.getModel();
+        const currentEditorUri = model?.uri;
 
-        if (uri.toString() === currentEditorUri?.toString()) {
-          const marks = monaco.editor.getModelMarkers({ owner: "yaml", resource: currentEditorUri  });
+        if (model && uri.toString() === currentEditorUri?.toString()) {
+          const marks = monaco.editor.getModelMarkers({ owner: "yaml", resource: currentEditorUri });
           const yamlMarks = marks.filter(m => m.source === "YAML");
           const schemaMarks = marks.filter(m => m.source !== "YAML");
           const yamlValid = yamlMarks.length === 0;
           const schemaValid = schemaMarks.length === 0;
 
           onValidate(yamlValid, schemaValid);
+
+          if (marks.some(mark=> mark.source?.includes("yaml-schema"))) {
+            monaco.editor.setModelMarkers(model, "yaml", marks.map(mark=> ({ ...mark, source: "", resource: {} })));
+          }
         }
       })
 
