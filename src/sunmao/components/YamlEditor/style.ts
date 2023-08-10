@@ -91,3 +91,18 @@ export const ErrorMsgStyle = css`
 export const ErrorWrapperStyle = css`
   margin-top: 8px;
 `;
+
+export const YamlEditorStyle = css`
+  .monaco-editor {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+
+    .margin {
+      border-bottom-left-radius: 8px;
+    }
+
+    .monaco-scrollable-element {
+      border-bottom-right-radius: 8px;
+    }
+  }
+`;
