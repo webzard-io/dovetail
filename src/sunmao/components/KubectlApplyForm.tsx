@@ -131,6 +131,16 @@ const UiConfigFieldSpecProperties = {
     category: EDITOR_CATEGORY,
     defaultValue: "500px",
   }),
+  editorFormatError: Type.String({
+    title: "Editor format error",
+    category: EDITOR_CATEGORY,
+    defaultValue: "",
+  }),
+  editorSchemaError: Type.String({
+    title: "Editor schema error",
+    category: EDITOR_CATEGORY,
+    defaultValue: "",
+  }),
   isDisplayLabel: Type.Boolean({
     title: "Is display label",
     conditions: FIELD_CONDITIONS,

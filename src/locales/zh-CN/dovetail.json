@@ -81,8 +81,8 @@
   "view_changes": "查看改动",
   "back_to_edit": "编辑",
   "configure_file": "配置内容",
-  "yaml_format_wrong": "K8s 集群配置内容不是有效的 yaml 格式。",
-  "yaml_value_wrong": "K8s 集群配置内容中存在不合法的值。",
+  "yaml_format_wrong": "配置内容不是有效的 yaml 格式。",
+  "yaml_value_wrong": "配置内容中存在不合法的值。",
   "edit_yaml": "编辑 YAML",
   "copied": "已复制",
   "already_reset": "已重置"
