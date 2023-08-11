@@ -148,7 +148,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
           () => {
             return tableProps.columns.map((column) => ({
               key: column.key,
-              width: column.width || 200,
+              width: column.width,
               display: column.isDefaultDisplay ?? true,
             }));
           },

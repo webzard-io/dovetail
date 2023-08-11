@@ -4,7 +4,7 @@ import { css } from "@linaria/core";
 
 export const ToolBarStyle = css`
   width: 100%;
-  padding: 12px;
+  padding: 11px;
   border-bottom: 1px solid rgba(211, 218, 235, 0.6);
   background: rgba(225, 230, 241, 0.6);
   border-top-left-radius: 8px;
@@ -35,7 +35,6 @@ export const WrapperStyle = css`
   width: 100%;
   border: 1px solid rgba(211, 218, 235, 0.6);
   border-radius: 8px;
-  overflow: auto;
 
   &[data-is-error='true'] {
     border-color: #F0483E;

@@ -20,12 +20,30 @@ const GroupWrapperStyle = css`
     border: 1px solid #e4e9f2;
     border-radius: 8px;
     margin-bottom: 16px;
+    background: transparent;
+
+    & > .dovetail-ant-collapse-item.dovetail-ant-collapse-no-arrow > .dovetail-ant-collapse-header {
+      padding: 0;
+    }
   }
 
-  &.dovetail-ant-collapse
-    > .dovetail-ant-collapse-item.dovetail-ant-collapse-no-arrow
-    > .dovetail-ant-collapse-header {
-    padding: 0;
+  .dovetail-ant-collapse-item-active .group-header {
+    border-radius: 8px 8px 0 0;
+  }
+
+  .group-header {
+    height: 44px;
+    line-height: 44px;
+    padding: 0 12px;
+    background: rgba(225, 230, 241, 0.6);
+    display: flex;
+    justify-content: space-between;
+    border-radius: 8px;
+    transition: border-radius .5s ease;
+  
+    &:hover {
+      background: rgba(0, 136, 255, 0.10);
+    }
   }
 
   &.dovetail-ant-collapse > .dovetail-ant-collapse-item:last-child,
@@ -49,7 +67,7 @@ const GroupWrapperStyle = css`
 
   .arrow-icon {
     transition: transform 0.28s ease;
-    transform: rotate(-180deg);
+    transform: rotate(-90deg);
     margin-right: 8px;
   }
 
@@ -66,12 +84,7 @@ const GroupWrapperStyle = css`
   }
 `;
 const GroupHeader = styled.div`
-  height: 44px;
-  line-height: 44px;
-  padding: 0 12px;
-  background: rgba(225, 230, 241, 0.6);
-  display: flex;
-  justify-content: space-between;
+
 `;
 const GroupTitleWrapper = styled.h5`
   color: rgba(44, 56, 82, 0.6);
@@ -87,6 +100,7 @@ const GroupIcon = styled.span`
 `;
 const GroupTitle = styled.span`
   vertical-align: top;
+  color: #00122E;
 `;
 const GroupBodyStyle = css`
   padding-bottom: 0;
@@ -126,16 +140,17 @@ const Group = (props: GroupProps) => {
       <Panel
         key="panel"
         header={
-          <GroupHeader>
+          <GroupHeader className="group-header">
             <GroupTitleWrapper className={Typo.Label.l2_regular}>
               {widgetOptions?.collapsible ? (
                 <Icon
                   className="arrow-icon"
                   type="1-caret-triangle-down-16"
+                  hoverType="1-caret-triangle-down-large-16-blue"
                 ></Icon>
               ) : null}
               {icon ? <GroupIcon>{icon}</GroupIcon> : null}
-              <GroupTitle>
+              <GroupTitle className={Typo.Label.l2_bold}>
                 {widgetOptions?.title || last(path.split("."))}
               </GroupTitle>
             </GroupTitleWrapper>

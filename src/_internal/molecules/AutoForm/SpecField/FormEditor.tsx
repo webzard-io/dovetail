@@ -81,11 +81,11 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
     const errorMsgs: string[] = [];
 
     if (!isValid) {
-      errorMsgs.push(t("dovetail.yaml_format_wrong"));
+      errorMsgs.push(field?.editorFormatError || t("dovetail.yaml_format_wrong"));
     }
 
     if (!isSchemaValid) {
-      errorMsgs.push(t("dovetail.yaml_value_wrong"));
+      errorMsgs.push(field?.editorSchemaError || t("dovetail.yaml_value_wrong"));
     }
 
     setEditorErrors(errorMsgs);

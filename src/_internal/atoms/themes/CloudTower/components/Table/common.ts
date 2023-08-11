@@ -142,6 +142,7 @@ export const useTransformScrollAndColumns = <T>(tableProps: {
     stickyHeader,
     scroll,
   } = tableProps;
+  let finalColumns = columns;
   const defaultScroll = useRef<
     | "autoHeight"
     | "auto"
@@ -202,16 +203,19 @@ export const useTransformScrollAndColumns = <T>(tableProps: {
 
   const height =
     sizes.wrapper.height - sizes.pagination.height - sizes.thead.height;
-  const totalWidth = useMemo(() => {
-    const _columns = columns as (T & { width?: number })[];
-    let width = _columns.reduce<number>((prev, cur) => {
+  const { totalWidth, hasAdaptive } = useMemo(() => {
+    let hasAdaptive = false;
+    const _columns = finalColumns as (T & { width?: number })[];
+    const width = _columns.reduce<number>((prev, cur) => {
+      if (!cur.width) hasAdaptive = true;
+
       return prev + (cur.width || 0);
     }, 0);
-    if (width >= scrollBarSize) {
-      width -= scrollBarSize;
-    }
-    return rowSelection ? width + 50 : width;
-  }, [columns, rowSelection, scrollBarSize]);
+
+    const totalWidth = rowSelection ? width + 50 : width;
+
+    return { totalWidth, hasAdaptive };
+  }, [finalColumns, rowSelection]);
 
   // computed scroll config when wrapper size and scroll changed
   useEffect(() => {
@@ -223,8 +227,8 @@ export const useTransformScrollAndColumns = <T>(tableProps: {
     const y = stickyHeader
       ? "max-content"
       : sizes.tbody.height > height
-      ? height
-      : undefined;
+        ? height
+        : undefined;
     if (typeof defaultScroll.current === "object") {
       if (!isNil(defaultScroll.current.x)) {
         setScrollConfig({
@@ -266,25 +270,30 @@ export const useTransformScrollAndColumns = <T>(tableProps: {
     data,
   ]);
 
-  if (totalWidth < sizes.wrapper.width) {
+  if (totalWidth < sizes.wrapper.width - scrollBarSize && !hasAdaptive) {
     if (
-      (columns as unknown as { key: string }[]).find(
+      (finalColumns as unknown as { key: string }[]).find(
         (item) => item.key === "_action_"
       )
     ) {
-      (columns as (T | typeof BLANK_COLUMN)[]).splice(
-        columns.length - 1,
+      (finalColumns as (T | typeof BLANK_COLUMN)[]).splice(
+        finalColumns.length - 1,
         0,
         BLANK_COLUMN
       );
     } else {
-      (columns as (T | typeof BLANK_COLUMN)[]).splice(
-        columns.length,
+      (finalColumns as (T | typeof BLANK_COLUMN)[]).splice(
+        finalColumns.length,
         0,
         BLANK_COLUMN
       );
     }
+  } else {
+    finalColumns = finalColumns.map(col=> ({
+      ...col,
+      width: (col as (T & { width?: number })).width || 200
+    }))
   }
 
-  return [scrollConfig, columns];
+  return [scrollConfig, finalColumns];
 };

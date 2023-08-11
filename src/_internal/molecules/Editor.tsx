@@ -5,11 +5,14 @@ import { Type, Static } from "@sinclair/typebox";
 import { YamlEditorComponent, Handle as EditorHandle } from "../../sunmao/components/YamlEditor/YamlEditorComponent";
 import { Events } from "../organisms/KubectlApplyForm/type";
 import yaml from "js-yaml";
+import { isEqual } from "lodash";
 
 export const OptionsSpec = Type.Object({
   title: Type.String(),
   height: Type.String(),
   isDefaultCollapsed: Type.Boolean(),
+  formatError: Type.String(),
+  schemaError: Type.String(),
 });
 
 export type EditorProps = WidgetProps<Record<string, unknown> | string, Static<typeof OptionsSpec>>;
@@ -34,11 +37,11 @@ function Editor(props: EditorProps) {
     const currentEditorErrors: string[] = [];
 
     if (!isValid) {
-      currentEditorErrors.push(i18n.t("dovetail.yaml_format_wrong"));
+      currentEditorErrors.push(props.widgetOptions?.formatError || i18n.t("dovetail.yaml_format_wrong"));
     }
 
     if (!isSchemaValid) {
-      currentEditorErrors.push(i18n.t("dovetail.yaml_value_wrong"))
+      currentEditorErrors.push(props.widgetOptions?.schemaError || i18n.t("dovetail.yaml_value_wrong"))
     }
 
     if (!currentEditorErrors.length) {
@@ -60,13 +63,22 @@ function Editor(props: EditorProps) {
     }
   }, [displayValues, editorErrors, itemKey, field?.path, value, onChange]);
   const changeValue = useCallback(() => {
-    const newEditorValue = typeof value === "string" ? value : yaml.dump(value);
-    
-    if (newEditorValue !== ref.current?.getEditorValue()) {
-      ref.current?.setEditorValue(newEditorValue);
-      ref.current?.setValue(newEditorValue);
-    }
 
+    if (typeof value === "string") {
+      if (value !== ref.current?.getEditorValue()) {
+        ref.current?.setEditorValue(value);
+        ref.current?.setValue(value);
+      }
+    } else {
+      const valueFromEditor = yaml.load(ref.current?.getEditorValue() || "");
+
+      if (!isEqual(value, valueFromEditor)) {
+        const newEditorValue = typeof value === "string" ? value : yaml.dump(value);
+
+        ref.current?.setEditorValue(newEditorValue);
+        ref.current?.setValue(newEditorValue);
+      }
+    }
   }, [value]);
 
   useEffect(() => {
