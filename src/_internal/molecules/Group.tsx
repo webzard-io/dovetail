@@ -7,7 +7,7 @@ import { KitContext } from "../atoms/kit-context";
 import { CloseOutlined } from "@ant-design/icons";
 import { Row, Collapse } from "antd";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
-import { css } from "@emotion/css";
+import { css, cx } from "@emotion/css";
 import Icon from "../atoms/themes/CloudTower/components/Icon/Icon";
 import registry from "../../services/Registry";
 import { StringUnion } from "@sunmao-ui/runtime";
@@ -19,7 +19,6 @@ const GroupWrapperStyle = css`
   &.dovetail-ant-collapse {
     border: 1px solid #e4e9f2;
     border-radius: 8px;
-    margin-bottom: 16px;
     background: transparent;
 
     & > .dovetail-ant-collapse-item.dovetail-ant-collapse-no-arrow > .dovetail-ant-collapse-header {
@@ -127,16 +126,19 @@ type GroupProps = WidgetProps<
   Record<string, any>,
   Static<typeof OptionsSpec>
 > & {
+  className?: string;
   onRemove?: () => void;
 };
 
 const Group = (props: GroupProps) => {
-  const { path, widgetOptions, onRemove } = props;
+  const { path, widgetOptions, className, onRemove } = props;
   const kit = useContext(KitContext);
   const icon = registry.icons.get(widgetOptions?.icon as any);
 
   return (
-    <Collapse className={GroupWrapperStyle} defaultActiveKey={["panel"]}>
+    <Collapse
+      className={cx(GroupWrapperStyle, className)}
+      defaultActiveKey={["panel"]}>
       <Panel
         key="panel"
         header={

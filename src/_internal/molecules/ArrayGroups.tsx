@@ -14,8 +14,13 @@ import { cloneDeep } from "lodash";
 import registry from "../../services/Registry";
 import { StringUnion } from "@sunmao-ui/runtime";
 import { set } from "lodash";
-import { COMMON_ARRAY_OPTIONS } from './ArrayItems';
+import { COMMON_ARRAY_OPTIONS } from "./ArrayItems";
 
+const GroupStyle = css`
+  &.dovetail-ant-collapse {
+    margin-bottom: 16px;
+  }
+`;
 const AddedButtonStyle = css``;
 
 export const OptionsSpec = Type.Object({
@@ -108,6 +113,7 @@ const ArrayGroups = (props: Props) => {
         return (
           <Group
             {...props}
+            className={GroupStyle}
             key={itemIndex}
             value={itemValue}
             spec={itemSpec as JSONSchema7}

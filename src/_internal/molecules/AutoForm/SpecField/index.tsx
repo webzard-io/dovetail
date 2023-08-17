@@ -2,7 +2,6 @@ import React, { useState, useCallback, useContext, useRef } from "react";
 import isEmpty from "lodash/isEmpty";
 // TODO: use kit context when I have time:)
 import { Col } from "antd";
-import { css, cx } from "@linaria/core";
 import { JSONSchema7 } from "json-schema";
 import { WidgetProps } from "../widget";
 import UnsupportedField from "../UnsupportedField";
@@ -24,34 +23,7 @@ import { KitContext } from "../../../atoms/kit-context";
 import FormItem from "./FormItem";
 import FormEditor, { FormEditorHandle } from "./FormEditor";
 import { useTranslation } from "react-i18next";
-import { Typo } from "../../../atoms/themes/CloudTower/styles/typo.style";
-
-export const FieldSection = css`
-    padding-bottom: 6px;
-    border-bottom: 1px solid rgba(213, 219, 227, 0.6);
-    margin-bottom: 16px;
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-  
-    .title {
-      font-weight: 700;
-      color: #2d3a56;
-    }
-  `;
-
-const EditYAMLTextStyle = css`
-  color: rgba(44, 56, 82, 0.60);
-  margin-right: 16px;
-`;
-
-const SectionTitleStyle = css`
-  font-weight: 700;
-`;
-
-const SwitchEditorTitleStyle = css`
-  font-weight: 400;
-`;
+import SectionTitle from "./SectionTitle";
 
 function shouldDisplayDescription(spec: JSONSchema7): boolean {
   if (spec.type === "object") {
@@ -124,17 +96,17 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   const fieldOrItem = transformedField || transformedItem;
   const label = transformedField?.label || title || "";
   let isDisplayLabel =
-  transformedField?.type === "layout"
-  ? transformedField.indent
-  : transformedField?.isDisplayLabel;
+    transformedField?.type === "layout"
+      ? transformedField.indent
+      : transformedField?.isDisplayLabel;
   const displayDescription = shouldDisplayDescription(spec);
   const itemKey = `${props.superiorKey
     ? `${props.superiorKey}${transformedField?.key ? "-" : ""}`
     : ""
-  }${transformedField?.key || ""}`;
+    }${transformedField?.key || ""}`;
   const finalError = error || fieldOrItem?.error;
-  const [isEnableEditor, setIsEnableEditor] = useState(enabledEditorMap[itemKey] ??  false);
-  
+  const [isEnableEditor, setIsEnableEditor] = useState(enabledEditorMap[itemKey] ?? false);
+
 
   const onEnableEditorChange = useCallback((enabled) => {
     if (!enabled) {
@@ -255,24 +227,14 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
       }}
     >
       {transformedField?.sectionTitle && (
-        <div className={FieldSection}>
-          <span className={cx("section-title-text", isDisplayEditorSwitch ? SwitchEditorTitleStyle : SectionTitleStyle)}>{transformedField?.sectionTitle}</span>
-          {isDisplayEditorSwitch ? (
-            <span>
-              <span className={cx(Typo.Label.l4_regular, EditYAMLTextStyle)}>{i18n.t("dovetail.edit_yaml")}</span>
-              <kit.Tooltip title={transformedField.editorSwitchTooltip}>
-                <span>
-                  <kit.Switch
-                    disabled={!!transformedField.isDisabledSwitchEditor}
-                    checked={isEnableEditor}
-                    onChange={onEnableEditorChange}
-                    size="small"
-                  ></kit.Switch>
-                </span>
-              </kit.Tooltip>
-            </span>
-          ) : null}
-        </div>
+        <SectionTitle
+          isDisplayEditorSwitch={!!isDisplayEditorSwitch}
+          sectionTitle={transformedField?.sectionTitle}
+          editorSwitchTooltip={transformedField.editorSwitchTooltip}
+          isDisabledSwitchEditor={!!transformedField.isDisabledSwitchEditor}
+          isEnableEditor={isEnableEditor}
+          onEnableEditorChange={onEnableEditorChange}
+        />
       )}
       {
         isEnableEditor ? (
