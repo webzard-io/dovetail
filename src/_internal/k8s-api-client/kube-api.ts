@@ -57,6 +57,7 @@ type KubeApiListOptions = {
 
 type KubeApiListWatchOptions<T> = KubeApiListOptions & {
   onResponse?: (response: T) => void;
+  onWatchUpdate?: (response: T) => void;
 };
 
 type KubeApiLinkRef = {
@@ -209,6 +210,7 @@ export class KubeApi<T extends UnstructuredList> {
     namespace,
     query,
     onResponse,
+    onWatchUpdate,
   }: KubeApiListWatchOptions<T> = {}): Promise<StopWatchHandler> {
     const url = this.getUrl({ namespace });
     const watchUrl = this.watchWsBasePath
@@ -222,7 +224,7 @@ export class KubeApi<T extends UnstructuredList> {
     const stop = this.watch(
       watchUrl,
       response,
-      onResponse,
+      onWatchUpdate,
       this.listWatch.bind(this, {
         namespace,
         query,
@@ -238,7 +240,7 @@ export class KubeApi<T extends UnstructuredList> {
   private async watch(
     url: string,
     response: T,
-    onResponse: KubeApiListWatchOptions<T>["onResponse"],
+    onWatchUpdate: KubeApiListWatchOptions<T>["onResponse"],
     // let listwatch know it needs retry
     retry: () => Promise<StopWatchHandler>
   ): Promise<StopWatchHandler> {
@@ -295,7 +297,7 @@ export class KubeApi<T extends UnstructuredList> {
           break;
         default:
       }
-      onResponse?.({
+      onWatchUpdate?.({
         ...response,
         items,
       });

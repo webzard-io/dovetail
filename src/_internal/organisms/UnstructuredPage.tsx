@@ -76,17 +76,19 @@ const UnstructuredPage = React.forwardRef<
         namespace,
       },
     });
+    const onResponseAndWatchUpdate = (res: UnstructuredList) => {
+      setResponse(() => ({
+        loading: false,
+        error: null,
+        data: res.items[0] || null,
+      }));
+    };
     setResponse((prev) => ({ ...prev, loading: true }));
     const stopP = api
       .listWatch({
         query: fieldSelector ? { fieldSelector } : {},
-        onResponse: (res) => {
-          setResponse(() => ({
-            loading: false,
-            error: null,
-            data: res.items[0] || null,
-          }));
-        },
+        onResponse: onResponseAndWatchUpdate,
+        onWatchUpdate: onResponseAndWatchUpdate
       })
       .catch((err) => {
         setResponse(() => ({ loading: false, error: err, data: null }));

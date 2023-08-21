@@ -95,24 +95,27 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
           namespace,
         },
       });
+      const onResponseAndWatchUpdate = (res: UnstructuredList) => {
+        setResponse(() => ({
+          loading: false,
+          error: null,
+          data: {
+            ...res,
+            items: res.items.sort(
+              (a, b) =>
+                new Date(b.metadata.creationTimestamp as string).getTime() -
+                new Date(a.metadata.creationTimestamp as string).getTime()
+            ),
+          },
+        }));
+      };
+
       setResponse((prev) => ({ ...prev, loading: true }));
       return api
         .listWatch({
           query: query || {},
-          onResponse: (res) => {
-            setResponse(() => ({
-              loading: false,
-              error: null,
-              data: {
-                ...res,
-                items: res.items.sort(
-                  (a, b) =>
-                    new Date(b.metadata.creationTimestamp as string).getTime() -
-                    new Date(a.metadata.creationTimestamp as string).getTime()
-                ),
-              },
-            }));
-          },
+          onResponse: onResponseAndWatchUpdate,
+          onWatchUpdate: onResponseAndWatchUpdate
         })
         .catch((err) => {
           setResponse(() => ({ loading: false, error: err, data: emptyData }));

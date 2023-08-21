@@ -89,7 +89,10 @@ type KubectlGetTableProps = {
   };
   wrapper: React.MutableRefObject<any>;
   loading?: boolean;
+  onFetchStart?: (res: any) => void;
   onResponse?: (res: any) => void;
+  onWatchUpdate?: (res: any) => void;
+  onError?: (res: any) => void;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
 } & Omit<TableProps, "data" | "rowKey" | "columns">;
@@ -114,7 +117,10 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       defaultSize,
       response,
       wrapper,
+      onFetchStart,
       onResponse,
+      onWatchUpdate,
+      onError,
       onPageChange,
       onPageSizeChange,
       ...tableProps
@@ -303,28 +309,33 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
         stop.current = null;
       }
 
-      onResponse?.({ ...response, loading: true });
+      const createResponseCallback = (callback?: (data: unknown)=> void) => {
+        return (res: UnstructuredList)=> {
+          callback?.({
+            loading: false,
+            error: null,
+            data: {
+              ...res,
+              items: res.items.sort(
+                (a, b) =>
+                  new Date(b.metadata.creationTimestamp as string).getTime() -
+                  new Date(a.metadata.creationTimestamp as string).getTime()
+              ),
+            },
+          });
+        }
+      }
+
+      onFetchStart?.({ ...response, loading: true });
 
       const stopP = api
         .listWatch({
           query: query || {},
-          onResponse: (res) => {
-            onResponse?.({
-              loading: false,
-              error: null,
-              data: {
-                ...res,
-                items: res.items.sort(
-                  (a, b) =>
-                    new Date(b.metadata.creationTimestamp as string).getTime() -
-                    new Date(a.metadata.creationTimestamp as string).getTime()
-                ),
-              },
-            });
-          },
+          onResponse: createResponseCallback(onResponse),
+          onWatchUpdate: createResponseCallback(onWatchUpdate),
         })
         .catch((err) => {
-          onResponse?.({ loading: false, error: err, data: emptyData });
+          onError?.({ loading: false, error: err, data: emptyData });
         });
 
       stop.current = () => {
@@ -333,7 +344,8 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       };
 
       return stop.current;
-    }, [api, namespace, query]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [api, namespace, query, onError, onResponse, onFetchStart, onWatchUpdate]);
     const rowKey = useCallback((row: UnstructuredList["items"][0]) => `${row.metadata.namespace}/${row.metadata.name}`, []);
 
     useEffect(() => {
@@ -342,7 +354,8 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       return () => {
         stop();
       };
-    }, [fetch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [api, namespace, query]);
 
     if (response.loading && response.data.items.length === 0 || tableProps.loading) {
       return <TableLoading></TableLoading>;

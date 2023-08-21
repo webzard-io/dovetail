@@ -231,6 +231,19 @@ const KubectlGetDetail = React.forwardRef<
         namespace,
       },
     });
+    const onResponseAndWatchUpdate = (res: UnstructuredList) => {
+      setResponse(() => ({
+        loading: false,
+        error: null,
+        data: res.items[0]
+          ? {
+              ...res.items[0],
+              kind: res.kind.replace(/List$/g, ""),
+              apiVersion: res.apiVersion,
+            }
+          : null,
+      }));
+    };
 
     setResponse((prev) => ({ ...prev, loading: true }));
 
@@ -244,24 +257,13 @@ const KubectlGetDetail = React.forwardRef<
             )
           ),
         },
-        onResponse: (res) => {
-          setResponse(() => ({
-            loading: false,
-            error: null,
-            data: res.items[0]
-              ? {
-                  ...res.items[0],
-                  kind: res.kind.replace(/List$/g, ""),
-                  apiVersion: res.apiVersion,
-                }
-              : null,
-          }));
-        },
+        onResponse: onResponseAndWatchUpdate,
+        onWatchUpdate: onResponseAndWatchUpdate,
       })
       .catch((err) => {
         setResponse(() => ({ loading: false, error: err, data: null }));
       });
-  }, [basePath, watchWsBasePath, apiBase, namespace, resource, name]);
+  }, [basePath, watchWsBasePath, apiBase, namespace, resource, name, query]);
 
   useEffect(() => {
     onResponse?.(response);

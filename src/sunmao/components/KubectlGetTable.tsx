@@ -553,9 +553,9 @@ export const KubectlGetTable = implementRuntimeComponent({
       },
       [callbackMap, mergeState]
     );
-    const onResponse = throttle(useCallback((response: Response) => {
+    const onWatchUpdate = useCallback(throttle((response: Response) => {
       setResponse(response);
-    }, []), throttleWait || 0);
+    }, throttleWait || 0), [throttleWait]);
 
     useEffect(() => {
       subscribeMethods({
@@ -742,7 +742,10 @@ export const KubectlGetTable = implementRuntimeComponent({
           selectedKeys={selectedKeys}
           wrapper={elementRef!}
           loading={loading}
-          onResponse={onResponse}
+          onResponse={setResponse}
+          onWatchUpdate={onWatchUpdate}
+          onError={setResponse}
+          onFetchStart={setResponse}
           onSelect={enableRowSelection ? onSelectChange : undefined}
           onActive={onActive}
           onSorterChange={onSorterChange}
