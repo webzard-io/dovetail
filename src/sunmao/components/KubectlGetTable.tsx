@@ -555,7 +555,7 @@ export const KubectlGetTable = implementRuntimeComponent({
     );
     const onResponse = throttle(useCallback((response: Response) => {
       setResponse(response);
-    }, []), throttleWait || 0);
+    }, []), response.loading ? 0 : throttleWait || 0);
 
     useEffect(() => {
       subscribeMethods({
