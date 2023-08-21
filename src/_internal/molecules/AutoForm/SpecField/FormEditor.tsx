@@ -89,7 +89,7 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
     }
 
     setEditorErrors(errorMsgs);
-  }, [t]);
+  }, [t, field?.editorFormatError, field?.editorSchemaError]);
   const emitChange = useCallback(() => {
     if (!editorErrors.length) {
       const result = yaml.load(editorRef.current?.getEditorValue() || "") as Record<string, unknown>;
@@ -132,9 +132,8 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
         setErrors(errorMsgs);
       });
     }
-    // only trigger validate when value of field changed
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fieldOrItem, value]);
+  }, [fieldOrItem, value, editorErrors.length]);
 
   return (
     <YamlEditorComponent
