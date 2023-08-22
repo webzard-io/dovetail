@@ -22,7 +22,7 @@ import BaseKubectlGetTable, {
 import { renderWidget } from "../utils/widget";
 import { generateSlotChildren } from "../utils/slot";
 import { css, cx } from "@emotion/css";
-import { get } from "lodash";
+import { get, throttle } from "lodash";
 import { KitContext } from "../../_internal/atoms/kit-context";
 import semver from "semver";
 
@@ -299,6 +299,14 @@ const KubectlGetTableProps = Type.Object({
     category: PRESET_PROPERTY_CATEGORY.Behavior,
     title: "Enable row selection",
   }),
+  loading: Type.Boolean({
+    category: PRESET_PROPERTY_CATEGORY.Behavior,
+    title: "Loading"
+  }),
+  throttleWait: Type.Number({
+    category: PRESET_PROPERTY_CATEGORY.Behavior,
+    title: "Throttle wait"
+  }),
   scroll: Type.Object(
     {
       x: Type.String({ title: "X" }),
@@ -442,6 +450,8 @@ export const KubectlGetTable = implementRuntimeComponent({
     services,
     component,
     childrenMap,
+    throttleWait,
+    loading,
     mergeState,
     subscribeMethods,
   }) => {
@@ -543,9 +553,9 @@ export const KubectlGetTable = implementRuntimeComponent({
       },
       [callbackMap, mergeState]
     );
-    const onResponse = useCallback((response: Response) => {
+    const onWatchUpdate = useCallback(throttle((response: Response) => {
       setResponse(response);
-    }, []);
+    }, throttleWait || 0), [throttleWait]);
 
     useEffect(() => {
       subscribeMethods({
@@ -620,6 +630,86 @@ export const KubectlGetTable = implementRuntimeComponent({
       });
     }, []);
 
+    const finalColumns = useMemo(()=> columns.map((col, colIndex) => ({
+      ...col,
+      fixed: col.fixed === "none" ? undefined : col.fixed,
+      dataIndex: typeof col.dataIndex === "string"
+        ? col.dataIndex.split(".")
+        : col.dataIndex,
+      render: (value: any, record: any, index: number) => {
+        return renderWidget(
+          { ...col, path: col.dataIndex },
+          {
+            value: value,
+            renderedValue: value ?? "-",
+            record,
+            index,
+          },
+          (slotProps: any, fallback: any, slotKey?: string) => generateSlotChildren(
+            {
+              app,
+              services,
+              component,
+              allComponents,
+              slotsElements,
+              slot: "cell",
+              slotKey: slotKey || "",
+              fallback,
+              childrenMap,
+            },
+            {
+              generateId: (child) => {
+                return `${child.id}_${index}`;
+              },
+              generateProps() {
+                return slotProps;
+              },
+            }
+          ),
+          `column_${colIndex}_${index}`
+        );
+      },
+      sortOrder: columnSortOrder[col.key],
+      sortDirections: col.sortType === "none" ? null : ["", "ascend", "descend"],
+      sorter: col.sortType === "none"
+        ? undefined
+        : col.sortType === "server"
+          ? true
+          : (
+            a: UnstructuredList["items"][0],
+            b: UnstructuredList["items"][0]
+          ) => {
+            const valueA = get(a, col.sortBy || col.dataIndex);
+            const valueB = get(b, col.sortBy || col.dataIndex);
+
+            if (typeof valueA === "number" &&
+              typeof valueB === "number") {
+              return valueA - valueB;
+            } else if (semver.valid(valueA) && semver.valid(valueB)) {
+              return valueA === valueB ? 0 : (semver.lt(valueA, valueB) ? -1 : 1);
+            }
+
+            return String(valueA).localeCompare(String(valueB));
+          },
+      filters: col.filters?.length ? col.filters : undefined,
+      onFilter(value: string, record: UnstructuredList["items"][0]) {
+        const compare = col.filters.find(
+          (filter) => filter.value === value
+        )?.compare;
+        const cellValue = get(record, col.dataIndex);
+
+        switch (compare) {
+          case "equal": {
+            return cellValue === value;
+          }
+          case "includes": {
+            return cellValue.includes(value);
+          }
+        }
+
+        return true;
+      },
+    })), [allComponents, app, childrenMap, columnSortOrder, columns, component, services, slotsElements]);
     return (
       <div
         ref={elementRef}
@@ -639,92 +729,7 @@ export const KubectlGetTable = implementRuntimeComponent({
           namespace={namespace}
           apiBase={apiBase}
           query={query}
-          columns={columns.map((col, colIndex) => ({
-            ...col,
-            fixed: col.fixed === "none" ? undefined : col.fixed,
-            dataIndex:
-              typeof col.dataIndex === "string"
-                ? col.dataIndex.split(".")
-                : col.dataIndex,
-            render: (value: any, record: any, index: number) => {
-              return renderWidget(
-                { ...col, path: col.dataIndex },
-                {
-                  value: value,
-                  renderedValue: value ?? "-",
-                  record,
-                  index,
-                },
-                (slotProps: any, fallback: any, slotKey?: string) =>
-                  generateSlotChildren(
-                    {
-                      app,
-                      services,
-                      component,
-                      allComponents,
-                      slotsElements,
-                      slot: "cell",
-                      slotKey: slotKey || "",
-                      fallback,
-                      childrenMap,
-                    },
-                    {
-                      generateId: (child) => {
-                        return `${child.id}_${index}`;
-                      },
-                      generateProps() {
-                        return slotProps;
-                      },
-                    }
-                  ),
-                `column_${colIndex}_${index}`
-              );
-            },
-            sortOrder: columnSortOrder[col.key],
-            sortDirections:
-              col.sortType === "none" ? null : ["", "ascend", "descend"],
-            sorter:
-              col.sortType === "none"
-                ? undefined
-                : col.sortType === "server"
-                  ? true
-                  : (
-                    a: UnstructuredList["items"][0],
-                    b: UnstructuredList["items"][0]
-                  ) => {
-                    const valueA = get(a, col.sortBy || col.dataIndex);
-                    const valueB = get(b, col.sortBy || col.dataIndex);
-
-                    if (
-                      typeof valueA === "number" &&
-                      typeof valueB === "number"
-                    ) {
-                      return valueA - valueB;
-                    } else if (semver.valid(valueA) && semver.valid(valueB)) {
-                      return valueA === valueB ? 0 : (semver.lt(valueA, valueB) ? -1 : 1);
-                    }
-
-                    return String(valueA).localeCompare(String(valueB));
-                  },
-            filters: col.filters?.length ? col.filters : undefined,
-            onFilter(value: string, record: UnstructuredList["items"][0]) {
-              const compare = col.filters.find(
-                (filter) => filter.value === value
-              )?.compare;
-              const cellValue = get(record, col.dataIndex);
-
-              switch (compare) {
-                case "equal": {
-                  return cellValue === value;
-                }
-                case "includes": {
-                  return cellValue.includes(value);
-                }
-              }
-
-              return true;
-            },
-          }))}
+          columns={finalColumns}
           customizable={customizable}
           customizableKey={customizableKey}
           activeKey={activeKey}
@@ -736,7 +741,11 @@ export const KubectlGetTable = implementRuntimeComponent({
           resizable={resizable}
           selectedKeys={selectedKeys}
           wrapper={elementRef!}
-          onResponse={onResponse}
+          loading={loading}
+          onResponse={setResponse}
+          onWatchUpdate={onWatchUpdate}
+          onError={setResponse}
+          onFetchStart={setResponse}
           onSelect={enableRowSelection ? onSelectChange : undefined}
           onActive={onActive}
           onSorterChange={onSorterChange}

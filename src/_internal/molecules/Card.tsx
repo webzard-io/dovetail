@@ -13,7 +13,6 @@ const CardWrapper = styled.div`
   background: rgba(237, 241, 250, 0.6);
   border: 1px solid rgba(211, 218, 235, 0.6);
   border-radius: 8px;
-  margin-bottom: 16px;
 `;
 const CardHeader = styled.div`
   display: flex;
@@ -40,15 +39,16 @@ export const OptionsSpec = Type.Object({
 });
 
 type Props = WidgetProps<any, Static<typeof OptionsSpec>> & {
+  className?: string;
   onRemove?: () => void;
 };
 
 const Card = (props: Props) => {
   const kit = useContext(KitContext);
-  const { widgetOptions, onRemove } = props;
+  const { widgetOptions, className, onRemove } = props;
 
   return (
-    <CardWrapper>
+    <CardWrapper className={className}>
       {widgetOptions?.title || onRemove ? (
         <CardHeader>
           <CardTitle className={Typo.Label.l2_regular}>

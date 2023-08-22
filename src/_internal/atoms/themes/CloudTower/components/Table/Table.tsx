@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo, useEffect } from "react";
+import React, { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import { Table as BaseTable } from "antd";
 import type {
   TableProps as AntdTableProps,
@@ -126,7 +126,7 @@ const useTableBodyHasScrollBar = (
 };
 
 const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
-  (props, ref) => {
+  function Table(props, ref) {
     const {
       loading = false,
       data,
@@ -154,10 +154,53 @@ const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
       error = error.message;
     }
 
-    const getKey = (record: any) => {
+    const getKey = useCallback((record: any) => {
       return typeof rowKey === "string" ? record[rowKey] : rowKey?.(record);
-    };
+    }, [rowKey]);
 
+    const finalColumns = useMemo(()=> columns.map((column) => column.sorter
+    ? {
+      ...column,
+      title: (
+        <ColumnTitle
+          title={column.title}
+          sortOrder={column.sortOrder} />
+      ),
+    }
+    : column
+  ), [columns]);
+    const onRow = useCallback((record: any, index) => ({
+      onClick: (evt: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        onRowClick?.(record, index!, evt);
+        const key = getKey(record);
+        onActive?.(key, record);
+      },
+    }), [getKey, onActive, onRowClick]);
+    const onChange = useCallback((_, __, sorter) => {
+      if (!(sorter instanceof Array)) {
+        orderRef.current =
+          sorter.order ||
+          (orderRef.current === "ascend" ? "descend" : "ascend");
+        onSorterChange?.(orderRef.current, sorter.columnKey);
+      }
+    }, [onSorterChange]);
+    const rowClassName = useCallback((r) => {
+      return getKey(r) === activeKey ? "active-row" : "";
+    }, [activeKey, getKey]);
+    const tableLoading = useMemo(()=> ({
+      spinning: loading,
+      indicator: initLoading ? <TableLoading /> : <Loading />,
+    }), [initLoading, loading]);
+    const rowSelection = useMemo(()=> onSelect && ({
+      type: "checkbox" as const,
+      selectedRowKeys: selectedKeys,
+      onChange(keys: unknown, rows: unknown[]) {
+        onSelect(keys as string[], rows);
+      },
+    }), [onSelect, selectedKeys]);
+    const locale = useMemo(()=> ({
+      emptyText: error || <>{loading ? "" : empty}</>,
+    }), [empty, error, loading]);
     return (
       <div
         ref={ref}
@@ -171,60 +214,20 @@ const Table = React.forwardRef<HTMLDivElement, TableProps<{ id: string }>>(
             onSelect && "has-selection"
           )}
           bordered={bordered}
-          loading={{
-            spinning: loading,
-            indicator: initLoading ? <TableLoading /> : <Loading />,
-          }}
-          locale={{
-            emptyText: error || <>{loading ? "" : empty}</>,
-          }}
+          loading={tableLoading}
+          locale={locale}
           dataSource={data || []}
           pagination={pagination || false}
-          columns={columns.map((column) =>
-            column.sorter
-              ? {
-                  ...column,
-                  title: (
-                    <ColumnTitle
-                      title={column.title}
-                      sortOrder={column.sortOrder}
-                    />
-                  ),
-                }
-              : column
-          )}
+          columns={finalColumns}
           components={components}
           rowKey={rowKey || "id"}
           tableLayout={data?.length ? tableLayout : "auto"}
           size="small"
-          onChange={(_, __, sorter) => {
-            if (!(sorter instanceof Array)) {
-              orderRef.current =
-                sorter.order ||
-                (orderRef.current === "ascend" ? "descend" : "ascend");
-              onSorterChange?.(orderRef.current, sorter.columnKey);
-            }
-          }}
-          onRow={(record: any, index) => ({
-            onClick: (evt) => {
-              onRowClick?.(record, index!, evt);
-              const key = getKey(record);
-              onActive?.(key, record);
-            },
-          })}
-          rowClassName={(r) => {
-            return getKey(r) === activeKey ? "active-row" : "";
-          }}
+          onChange={onChange}
+          onRow={onRow}
+          rowClassName={rowClassName}
           scroll={scroll}
-          rowSelection={
-            onSelect && {
-              type: "checkbox",
-              selectedRowKeys: selectedKeys,
-              onChange(keys, rows) {
-                onSelect(keys as string[], rows);
-              },
-            }
-          }
+          rowSelection={rowSelection}
           showSorterTooltip={false}
         />
       </div>

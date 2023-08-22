@@ -67,6 +67,7 @@ const FormItemStyle = css`
       white-space: pre-wrap;
   
       label:after {
+        display: none;
         content: "";
         margin: 0;
       }
@@ -195,7 +196,7 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
           displayLabel ? (
             <span
               style={{ width: labelWidth || `${108}px` }}
-              className={cx(Typo.Label.l3_regular_title, FormItemLabelStyle)}
+              className={cx(Typo.Label.l3_regular_title, FormItemLabelStyle, "form-item-label")}
             >
               {label}
             </span>

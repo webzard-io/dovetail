@@ -6,6 +6,7 @@ import { YamlEditorComponent, Handle as EditorHandle } from "../../sunmao/compon
 import { Events } from "../organisms/KubectlApplyForm/type";
 import yaml from "js-yaml";
 import { isEqual } from "lodash";
+import SectionTitle from "../molecules/AutoForm/SpecField/SectionTitle";
 
 export const OptionsSpec = Type.Object({
   title: Type.String(),
@@ -13,6 +14,7 @@ export const OptionsSpec = Type.Object({
   isDefaultCollapsed: Type.Boolean(),
   formatError: Type.String(),
   schemaError: Type.String(),
+  sectionTitle: Type.String(),
 });
 
 export type EditorProps = WidgetProps<Record<string, unknown> | string, Static<typeof OptionsSpec>>;
@@ -23,7 +25,7 @@ function Editor(props: EditorProps) {
   const ref = useRef<EditorHandle>(null);
   const [editorErrors, setEditorErrors] = useState<string[]>([]);
   const [isShowErrors, setIsShowErrors] = useState<boolean>(false);
-  const schema = useMemo(()=> ["object", "array"].includes(spec.type as string) ? spec : undefined, [spec]);
+  const schema = useMemo(() => ["object", "array"].includes(spec.type as string) ? spec : undefined, [spec]);
   const defaultValue = useMemo(
     () => {
       if (field?.defaultValue === undefined) return "";
@@ -54,7 +56,7 @@ function Editor(props: EditorProps) {
     result[itemKey] = editorErrors;
     setIsShowErrors(!!editorErrors.length);
   }, [editorErrors, itemKey]);
-  const emitChange = useCallback(()=> {
+  const emitChange = useCallback(() => {
     if (!editorErrors.length) {
       const editorValue = ref.current?.getEditorValue() || "";
       const newValue = typeof value === "string" ? editorValue : yaml.load(editorValue) as Record<string, unknown>;
@@ -93,18 +95,26 @@ function Editor(props: EditorProps) {
     };
   }, [services.event, onValidateEvent]);
 
-  return (<YamlEditorComponent
-    ref={ref}
-    {...props.widgetOptions}
-    id={itemKey}
-    defaultValue={defaultValue}
-    schema={schema}
-    errorMsgs={isShowErrors ? editorErrors : []}
-    onValidate={onEditorValidate}
-    onEditorCreate={changeValue}
-    onChange={emitChange}
-    onBlur={emitChange}
-  />)
+  return (<>
+    {props.widgetOptions?.sectionTitle && <SectionTitle
+      sectionTitle={props.widgetOptions?.sectionTitle}
+      isDisplayEditorSwitch
+      isEnableEditor
+      isDisabledSwitchEditor
+    />}
+    <YamlEditorComponent
+      ref={ref}
+      {...props.widgetOptions}
+      id={itemKey}
+      defaultValue={defaultValue}
+      schema={schema}
+      errorMsgs={isShowErrors ? editorErrors : []}
+      onValidate={onEditorValidate}
+      onEditorCreate={changeValue}
+      onChange={emitChange}
+      onBlur={emitChange}
+    />
+  </>)
 }
 
 export default Editor;

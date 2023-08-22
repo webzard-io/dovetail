@@ -5,6 +5,7 @@ import * as monaco from "monaco-editor";
 import { setDiagnosticsOptions } from "monaco-yaml";
 import React, { useEffect, useRef } from "react";
 import YamlWorker from "./yaml.worker?worker";
+import { YamlEditorStyle } from "./style";
 
 const uri = monaco.Uri.parse("monaco-yaml.yaml");
 
@@ -175,6 +176,7 @@ const MonacoYamlEditor: React.FC<Props> = props => {
   return (
     <div
       ref={ref}
+      className={YamlEditorStyle}
       style={{
         width: "100%",
         height: height || "500px",

@@ -10,7 +10,7 @@ import React, {
   useState,
   useEffect,
 } from "react";
-import { KubeApi } from "../../_internal/k8s-api-client/kube-api";
+import { KubeApi, UnstructuredList } from "../../_internal/k8s-api-client/kube-api";
 
 export const K8sNamespaceSelect = implementRuntimeComponent({
   version: "kui/v1",
@@ -67,15 +67,17 @@ export const K8sNamespaceSelect = implementRuntimeComponent({
   );
 
   useEffect(() => {
+    const onResponseAndWatchUpdate = (value: UnstructuredList)=> {
+      setOptions(
+        value.items.map((namespace) => ({
+          label: namespace.metadata.name || "",
+          value: namespace.metadata.name || "",
+        }))
+      );
+    };
     api.listWatch({
-      onResponse(value) {
-        setOptions(
-          value.items.map((namespace) => ({
-            label: namespace.metadata.name || "",
-            value: namespace.metadata.name || "",
-          }))
-        );
-      },
+      onResponse: onResponseAndWatchUpdate,
+      onWatchUpdate: onResponseAndWatchUpdate,
     });
   }, [api]);
 

@@ -12,6 +12,9 @@ import { JSONSchema7 } from "json-schema";
 import { useTranslation } from "react-i18next";
 import { cloneDeep, set } from "lodash";
 
+const CardStyle = css`
+  margin-bottom: 16px;
+`;
 const AddedButtonStyle = css``;
 
 export const OptionsSpec = Type.Object({
@@ -104,6 +107,7 @@ const ArrayCards = (props: Props) => {
         return (
           <Card
             {...props}
+            className={CardStyle}
             key={itemIndex}
             value={itemValue}
             spec={itemSpec as JSONSchema7}

@@ -154,7 +154,7 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
               iconHeight={16}
               onClick={() => setIsCollapsed(!isCollapsed)}
             />
-            <div className={TitleStyle}>{title || t("dovetail.configure_file")}</div>
+            <div className={cx(TitleStyle, "yaml-editor-title")}>{title || t("dovetail.configure_file")}</div>
           </kit.Space>
           <kit.Space size={14}>
             {isDiff ? undefined : (

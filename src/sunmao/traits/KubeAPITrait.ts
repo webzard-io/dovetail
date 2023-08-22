@@ -189,6 +189,31 @@ export default implementRuntimeTrait({
       // reset last retry's times and timer
       api.resetRetryState();
 
+      const onResponseAndWatchUpdate = (response: UnstructuredList) => {
+        mergeState({ loading: false, error: null, response });
+        if (!responseMap.has(componentId)) {
+          onResponse?.forEach((handler, index) => {
+            runEventHandler(
+              handler,
+              trait.properties.onResponse,
+              index,
+              services,
+              ""
+            )();
+          });
+        }
+        onDataUpdate?.forEach((handler, index) => {
+          runEventHandler(
+            handler,
+            trait.properties.onDataUpdate,
+            index,
+            services,
+            ""
+          )();
+        });
+        responseMap.set(componentId, response);
+      };
+
       const stopFn = await api
         .listWatch({
           query: {
@@ -199,30 +224,8 @@ export default implementRuntimeTrait({
               )
             ),
           },
-          onResponse: (response) => {
-            mergeState({ loading: false, error: null, response });
-            if (!responseMap.has(componentId)) {
-              onResponse?.forEach((handler, index) => {
-                runEventHandler(
-                  handler,
-                  trait.properties.onResponse,
-                  index,
-                  services,
-                  ""
-                )();
-              });
-            }
-            onDataUpdate?.forEach((handler, index) => {
-              runEventHandler(
-                handler,
-                trait.properties.onDataUpdate,
-                index,
-                services,
-                ""
-              )();
-            });
-            responseMap.set(componentId, response);
-          },
+          onResponse: onResponseAndWatchUpdate,
+          onWatchUpdate: onResponseAndWatchUpdate
         })
         .catch((err) => {
           mergeState({ loading: false, error: err, response: emptyData });
