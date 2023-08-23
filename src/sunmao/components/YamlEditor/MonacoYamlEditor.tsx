@@ -6,6 +6,7 @@ import { setDiagnosticsOptions } from "monaco-yaml";
 import React, { useEffect, useRef } from "react";
 import YamlWorker from "./yaml.worker?worker";
 import { YamlEditorStyle } from "./style";
+import ReactDOM from "react-dom";
 
 const uri = monaco.Uri.parse("monaco-yaml.yaml");
 
@@ -94,7 +95,9 @@ const MonacoYamlEditor: React.FC<Props> = props => {
 
     if (editor) {
       const stop = editor.onDidChangeModelContent(() => {
-        onChange(editor.getValue());
+        ReactDOM.unstable_batchedUpdates(()=> {
+          onChange(editor.getValue());
+        });
       });
 
       return () => {
@@ -138,7 +141,9 @@ const MonacoYamlEditor: React.FC<Props> = props => {
 
     if (editor) {
       const stop = editor.onDidBlurEditorWidget(() => {
-        onBlur?.();
+        ReactDOM.unstable_batchedUpdates(()=> {
+          onBlur?.();
+        });
       });
 
       return () => {

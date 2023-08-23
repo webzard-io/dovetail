@@ -31,7 +31,8 @@ const MonacoYamlDiffEditor: React.FC<Props> = props => {
 
     return () => {
       diffEditor.dispose();
-      monaco.editor.getModels().forEach(model => model.dispose());
+      originalModel.dispose();
+      modifiedModel.dispose();
     };
   }, [modified, origin, id]);
 
