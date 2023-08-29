@@ -142,7 +142,7 @@ export const Modal = implementRuntimeComponent({
       mergeState({
         visible: false,
       });
-      callbackMap?.onClose();
+      callbackMap?.onClose?.();
     }, [callbackMap?.onClose]);
 
     return (
