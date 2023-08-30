@@ -100,9 +100,9 @@ export default function useValidate(props: UseValidateProps) {
 
       if (shouldValidateValue) {
         validate((messages: string[]) => {
-          result[itemKey] = error
+          result[itemKey] = (result[itemKey] || []).concat(error
             ? messages.concat(error, widgetErrors)
-            : messages;
+            : messages);
         });
       }
     },
