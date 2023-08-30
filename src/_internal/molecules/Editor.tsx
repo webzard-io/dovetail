@@ -35,6 +35,17 @@ function Editor(props: EditorProps) {
     [field?.defaultValue]
   );
 
+  const emitChange = useCallback(() => {
+    const editorValue = ref.current?.getEditorValue() || "";
+    const newValue = typeof value === "string" ? editorValue : yaml.load(editorValue) as Record<string, unknown>;
+
+    onChange(newValue, displayValues, itemKey, field?.path);
+  }, [displayValues, itemKey, field?.path, value, onChange]);
+  const onChangeOrBlur = useCallback(() => {
+    if (!editorErrors.length) {
+      emitChange();
+    }
+  }, [emitChange, editorErrors.length]);
   const onEditorValidate = useCallback((isValid: boolean, isSchemaValid: boolean) => {
     const currentEditorErrors: string[] = [];
 
@@ -47,23 +58,18 @@ function Editor(props: EditorProps) {
     }
 
     if (!currentEditorErrors.length) {
+      if (editorErrors.length) {
+        emitChange();
+      }
       setIsShowErrors(false);
     }
 
     setEditorErrors(currentEditorErrors);
-  }, [i18n]);
+  }, [i18n, props.widgetOptions?.formatError, props.widgetOptions?.schemaError, editorErrors.length, emitChange]);
   const onValidateEvent = useCallback(({ result }: Events["validate"]) => {
-    result[itemKey] = editorErrors;
+    result[itemKey] = (result[itemKey] || []).concat(editorErrors);
     setIsShowErrors(!!editorErrors.length);
   }, [editorErrors, itemKey]);
-  const emitChange = useCallback(() => {
-    if (!editorErrors.length) {
-      const editorValue = ref.current?.getEditorValue() || "";
-      const newValue = typeof value === "string" ? editorValue : yaml.load(editorValue) as Record<string, unknown>;
-
-      onChange(newValue, displayValues, itemKey, field?.path);
-    }
-  }, [displayValues, editorErrors, itemKey, field?.path, value, onChange]);
   const changeValue = useCallback(() => {
 
     if (typeof value === "string") {
@@ -111,8 +117,8 @@ function Editor(props: EditorProps) {
       errorMsgs={isShowErrors ? editorErrors : []}
       onValidate={onEditorValidate}
       onEditorCreate={changeValue}
-      onChange={emitChange}
-      onBlur={emitChange}
+      onChange={onChangeOrBlur}
+      onBlur={onChangeOrBlur}
     />
   </>)
 }

@@ -229,6 +229,7 @@ export class KubeApi<T extends UnstructuredList> {
         namespace,
         query,
         onResponse,
+        onWatchUpdate,
       })
     );
 

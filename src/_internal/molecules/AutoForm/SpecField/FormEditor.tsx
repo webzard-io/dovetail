@@ -59,7 +59,7 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
           getFieldError(subField?.error)
         )?.flat() || []
       )
-      .filter(error=> error);
+      .filter(error => error);
   }, [field]);
   const finalErrors = useMemo(() => {
     return isShowError ? [...new Set([...editorErrors, ...errors, ...filedErrors])] : [];
@@ -77,6 +77,12 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
       });
     }
   }, [validateValue, editorErrors, filedErrors, value]);
+  const emitChange = useCallback(() => {
+    const result = yaml.load(editorRef.current?.getEditorValue() || "") as Record<string, unknown>;
+
+    setObjectValue(result);
+    onChange(result, displayValues, itemKey, field?.path);
+  }, [onChange, displayValues, itemKey, field?.path]);
   const onEditorValidate = useCallback((isValid, isSchemaValid) => {
     const errorMsgs: string[] = [];
 
@@ -88,22 +94,20 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
       errorMsgs.push(field?.editorSchemaError || t("dovetail.yaml_value_wrong"));
     }
 
-    setEditorErrors(errorMsgs);
-  }, [t, field?.editorFormatError, field?.editorSchemaError]);
-  const emitChange = useCallback(() => {
-    if (!editorErrors.length) {
-      const result = yaml.load(editorRef.current?.getEditorValue() || "") as Record<string, unknown>;
-
-      setObjectValue(result);
-      onChange(result, displayValues, itemKey, field?.path);
+    if (editorErrors.length && !errorMsgs.length) {
+      emitChange();
     }
-  }, [onChange, displayValues, itemKey, field?.path, editorErrors])
+
+    setEditorErrors(errorMsgs);
+  }, [t, field?.editorFormatError, field?.editorSchemaError, editorErrors.length, emitChange]);
   const debouncedEmitChange = debounce(useCallback(() => {
     emitChange();
   }, [emitChange]), 200);
-  const onBlur = useCallback(() => {
-    emitChange();
-  }, [emitChange])
+  const onChangeOrBlur = useCallback(() => {
+    if (!editorErrors.length) {
+      emitChange();
+    }
+  }, [emitChange, editorErrors.length])
   const changeValue = useCallback(() => {
     const currentEditorValue = yaml.dump(value);
 
@@ -143,10 +147,10 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
       schema={spec}
       height={field?.editorHeight}
       errorMsgs={finalErrors}
-      onChange={emitChange}
+      onChange={onChangeOrBlur}
       onValidate={onEditorValidate}
       onEditorCreate={changeValue}
-      onBlur={onBlur}
+      onBlur={onChangeOrBlur}
     />
   )
 });
