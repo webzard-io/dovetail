@@ -19,7 +19,7 @@ import {
   WizardStyle,
 } from "./KubectlApplyForm.style";
 import { cx, css as dCss } from "@emotion/css";
-import { Steps, Row, Alert, Form } from "antd";
+import { Steps, Row, Alert } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import SpecField from "../../molecules/AutoForm/SpecField";
 import Icon from "../../atoms/themes/CloudTower/components/Icon/Icon";
@@ -34,7 +34,7 @@ import {
   Tab,
   TabPanel,
 } from "@chakra-ui/react";
-import { KitContext } from "src/_internal/atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import { ButtonType } from "antd/lib/button";
 import SummaryList from "../../atoms/themes/CloudTower/components/SummaryList";
 import useSummary from "./useSummary";
@@ -149,7 +149,7 @@ const KubectlApplyForm = React.forwardRef<
     const specsArray = useMemo(() => {
       return schemas.map((s) => getFields(s));
     }, [schemas]);
-    const kit = useContext(KitContext);
+    const kit = useContext(kitContext);
     // wizard
     const { layout, title } = uiConfig;
     const [store, setStore] = useState<Store>({
@@ -281,15 +281,15 @@ const KubectlApplyForm = React.forwardRef<
                       ) : null}
                     </div>
                     <div className="wizard-footer-btn-group">
-                      <kit.Button
+                      <kit.button
                         type={"quiet" as unknown as ButtonType}
                         onClick={() => {
                           onCancel?.();
                         }}
                       >
                         {cancelText}
-                      </kit.Button>
-                      <kit.Button
+                      </kit.button>
+                      <kit.button
                         type="primary"
                         onClick={() => {
                           onSubmit?.(values);
@@ -297,7 +297,7 @@ const KubectlApplyForm = React.forwardRef<
                         loading={submitting}
                       >
                         {confirmText || "next"}
-                      </kit.Button>
+                      </kit.button>
                     </div>
                   </div>
                 </div>
@@ -420,15 +420,15 @@ const KubectlApplyForm = React.forwardRef<
                       ) : null}
                     </div>
                     <div className="wizard-footer-btn-group">
-                      <kit.Button
+                      <kit.button
                         type={"quiet" as unknown as ButtonType}
                         onClick={() => {
                           onCancel?.();
                         }}
                       >
                         {cancelText}
-                      </kit.Button>
-                      <kit.Button
+                      </kit.button>
+                      <kit.button
                         type="primary"
                         onClick={() => {
                           if (step === layout.steps.length - 1) {
@@ -440,7 +440,7 @@ const KubectlApplyForm = React.forwardRef<
                         loading={submitting}
                       >
                         {currentStep?.nextText || "next"}
-                      </kit.Button>
+                      </kit.button>
                     </div>
                   </div>
                 </div>

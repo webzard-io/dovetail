@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import { css } from "@emotion/css";
-import { KitContext, SidebarProps } from "../../_internal/atoms/kit-context";
+import Sidebar, { SidebarProps } from "../atoms/themes/CloudTower/components/Sidebar/Sidebar";
 import ObjectMeta from "../../_internal/molecules/ObjectMeta";
 import ObjectSpec from "../../_internal/molecules/ObjectSpec";
 import ObjectStatus from "../../_internal/molecules/ObjectStatus";
@@ -48,11 +48,9 @@ const CardWrapper = css`
 const UnstructuredSidebar = React.forwardRef<
   HTMLDivElement,
   UnstructuredSidebarProps
->(({ item, visible, toolbar, onVisibleChange, onClose, getContainer }, ref) => {
-  const kit = useContext(KitContext);
-
+>(function UnstructuredSidebar({ item, visible, toolbar, onVisibleChange, onClose, getContainer }, ref) {
   return (
-    <kit.Sidebar
+    <Sidebar
       visible={visible}
       onClose={() => {
         onVisibleChange(false);
@@ -81,7 +79,7 @@ const UnstructuredSidebar = React.forwardRef<
           <ObjectStatus item={item} />
         </div>
       </div>
-    </kit.Sidebar>
+    </Sidebar>
   );
 });
 

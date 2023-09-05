@@ -93,37 +93,37 @@ export const WizardBodyStyle = css`
     }
   }
 
-  .dovetail-ant-steps-vertical .dovetail-ant-steps-item {
+  .ant-steps-vertical .ant-steps-item {
     flex: initial;
   }
 
-  .dovetail-ant-steps-item + .dovetail-ant-steps-item {
+  .ant-steps-item + .ant-steps-item {
     margin-top: 4px;
   }
 
-  .dovetail-ant-steps-item-icon,
-  .dovetail-ant-steps-item-tail {
+  .ant-steps-item-icon,
+  .ant-steps-item-tail {
     display: none !important;
   }
 
-  .dovetail-ant-steps-item-container {
+  .ant-steps-item-container {
     padding: 0 15px;
     border-radius: 4px;
     height: 32px;
     display: flex;
     align-items: center;
 
-    .dovetail-ant-steps-item-content {
+    .ant-steps-item-content {
       min-height: auto;
       white-space: nowrap;
     }
   }
 
-  .dovetail-ant-steps-item-description {
+  .ant-steps-item-description {
     padding-bottom: 0px;
   }
 
-  .dovetail-ant-steps-item-title {
+  .ant-steps-item-title {
     font-size: 13px !important;
     line-height: 20px !important;
     .step-index {
@@ -134,30 +134,30 @@ export const WizardBodyStyle = css`
     }
   }
 
-  .dovetail-ant-steps-item-active {
-    .dovetail-ant-steps-item-container {
+  .ant-steps-item-active {
+    .ant-steps-item-container {
       background: rgba($blue-60, 0.1);
-      .dovetail-ant-steps-item-content .dovetail-ant-steps-item-title {
+      .ant-steps-item-content .ant-steps-item-title {
         color: $blue-80;
       }
     }
   }
 
-  .dovetail-ant-steps-item-finish {
-    .dovetail-ant-steps-item-container {
+  .ant-steps-item-finish {
+    .ant-steps-item-container {
       background: $gray-a60-1;
-      .dovetail-ant-steps-item-content .dovetail-ant-steps-item-title {
+      .ant-steps-item-content .ant-steps-item-title {
         color: $text-terdiary-light !important;
       }
     }
   }
 
-  .dovetail-ant-steps-item-disabled {
+  .ant-steps-item-disabled {
     cursor: not-allowed;
 
-    .dovetail-ant-steps-item-container {
+    .ant-steps-item-container {
       background: $gray-a60-1;
-      .dovetail-ant-steps-item-content .dovetail-ant-steps-item-title {
+      .ant-steps-item-content .ant-steps-item-title {
         color: $gray-80;
       }
     }

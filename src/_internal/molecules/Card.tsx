@@ -4,8 +4,7 @@ import { Type, Static } from "@sinclair/typebox";
 import styled from "@emotion/styled";
 import { css } from "@emotion/css";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
-import { Row } from "antd";
-import { KitContext } from "../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import { CloseOutlined } from "@ant-design/icons";
 import { resolveSubFields } from "./AutoForm/ObjectField";
 
@@ -44,7 +43,7 @@ type Props = WidgetProps<any, Static<typeof OptionsSpec>> & {
 };
 
 const Card = (props: Props) => {
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const { widgetOptions, className, onRemove } = props;
 
   return (
@@ -56,16 +55,16 @@ const Card = (props: Props) => {
           </CardTitle>
           {onRemove ? (
             <span>
-              <kit.Button size="small" type="text" onClick={onRemove}>
+              <kit.button size="small" type="text" onClick={onRemove}>
                 <CloseOutlined />
-              </kit.Button>
+              </kit.button>
             </span>
           ) : null}
         </CardHeader>
       ) : null}
-      <Row className={CardContentStyle} gutter={[24, 16]} style={{ margin: 0 }}>
+      <kit.row className={CardContentStyle} gutter={[24, 16]} style={{ margin: 0 }}>
         {resolveSubFields(props)}
-      </Row>
+      </kit.row>
     </CardWrapper>
   );
 };

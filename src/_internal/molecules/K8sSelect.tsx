@@ -1,7 +1,6 @@
-import { Select as AntdSelect } from "antd";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
-import { KitContext } from "../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import React, { useContext, useEffect, useState, useMemo } from "react";
 import {
   KubeApi,
@@ -40,7 +39,7 @@ export const OptionsSpec = Type.Object({
 type Props = WidgetProps<string | string[], Static<typeof OptionsSpec>>;
 
 const K8sSelect = (props: Props) => {
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const { value, displayValues, path, onChange, widgetOptions } = props;
   const {
     basePath,
@@ -85,39 +84,40 @@ const K8sSelect = (props: Props) => {
           value: get(item, valuePath || ""),
         }))
       );
-    })().catch(() => {});
+    })().catch(() => { });
   }, [api, fieldSelector, namespace, valuePath]);
 
   return (
-    <kit.Select
+    <kit.select
       disabled={disabled}
-      value={(value || "") as any}
-      onChange={(value, option) =>
-        onChange(
-          value,
-          {
-            ...displayValues,
-            [path]: option.label,
-          },
-          props.itemKey,
-          props.path
-        )
-      }
+      input={{
+        value: (value || "") as any,
+        onChange: (value, option: any) =>
+          onChange(
+            value,
+            {
+              ...displayValues,
+              [path]: option.label,
+            },
+            props.itemKey,
+            props.path
+          )
+      }}
       showSearch
       optionFilterProp="children"
     >
       {options.map((option, idx) => {
         return (
-          <AntdSelect.Option
-            key={idx}
+          <kit.option
+            key={`${idx}`}
             value={option.value || ""}
             label={option.value || ""}
           >
             {option.label}
-          </AntdSelect.Option>
+          </kit.option>
         );
       })}
-    </kit.Select>
+    </kit.select>
   );
 };
 

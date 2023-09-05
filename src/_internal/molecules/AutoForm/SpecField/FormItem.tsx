@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 // TODO: use kit context when I have time:)
-import { Form } from "antd";
 import { css, cx } from "@linaria/core";
 import { WidgetProps } from "../widget";
 import { Typo } from "../../../atoms/themes/CloudTower/styles/typo.style";
 import { Field, Services } from "../../../organisms/KubectlApplyForm/type";
 import useValidate from "./useValidate";
+import { useUIKit } from "@cloudtower/eagle";
 
 type TemplateProps = {
   id?: string;
@@ -40,9 +40,9 @@ const FormItemStyle = css`
       margin-bottom: 0;
     }
   
-    &.dovetail-ant-form-item
-      > .dovetail-ant-form-item-control
-      > .dovetail-ant-form-item-explain {
+    &.ant-form-item
+      > .ant-form-item-control
+      > .ant-form-item-explain {
       display: none;
       line-height: 18px;
       font-size: 12px;
@@ -51,13 +51,13 @@ const FormItemStyle = css`
       min-height: 18px;
     }
   
-    &.dovetail-ant-form-item-has-error {
-      & > .dovetail-ant-form-item-control > .dovetail-ant-form-item-explain {
+    &.ant-form-item-has-error {
+      & > .ant-form-item-control > .ant-form-item-explain {
         display: block;
       }
     }
   
-    .dovetail-ant-form-item-label {
+    .ant-form-item-label {
       padding: 0;
       font-family: "Inter";
       font-weight: 400;
@@ -73,12 +73,12 @@ const FormItemStyle = css`
       }
     }
   
-    .dovetail-ant-form-item-control {
+    .ant-form-item-control {
       flex: 1;
       min-width: 0;
     }
   
-    .dovetail-ant-form-item-extra {
+    .ant-form-item-extra {
       min-height: 18px;
       margin-top: 4px;
       color: rgba(44, 56, 82, 0.6);
@@ -92,26 +92,26 @@ const FormItemStyle = css`
       }
     }
 
-    .dovetail-ant-form-item-control {
+    .ant-form-item-control {
       .ant-input-affix-wrapper,
-      .dovetail-ant-input-affix-wrapper {
+      .ant-input-affix-wrapper {
         .ant-input:hover,
         .ant-input:focus-within,
-        .dovetail-ant-input:hover, 
-        .dovetail-ant-input:focus-within {
+        .ant-input:hover, 
+        .ant-input:focus-within {
           box-shadow: unset !important;
         }
       }
     }
 
   
-    &.dovetail-ant-form-item-has-error {
+    &.ant-form-item-has-error {
       .ant-select-selector,
-      .dovetail-ant-select-selector,
+      .ant-select-selector,
       .ant-input,
-      .dovetail-ant-input,
+      .ant-input,
       .ant-input-affix-wrapper,
-      .dovetail-ant-input-affix-wrapper {
+      .ant-input-affix-wrapper {
         border-color: #f0483e !important;
   
         &:hover {
@@ -171,6 +171,7 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
         setErrors(errors);
       },
     })
+    const kit = useUIKit();
     const displayError = field?.isHideError ? "" : error || errors?.[0] || widgetErrors[0] || "";
 
     useEffect(() => {
@@ -189,7 +190,7 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
     }
 
     return (
-      <Form.Item
+      <kit.form.Item
         className={cx(FormItemStyle, itemKey, "kaf-form-item")}
         labelAlign="left"
         label={
@@ -209,7 +210,7 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
         extra={description && displayDescription ? description : ""}
       >
         <div data-test-id={testId}>{children}</div>
-      </Form.Item>
+      </kit.form.Item>
     );
   }
 );

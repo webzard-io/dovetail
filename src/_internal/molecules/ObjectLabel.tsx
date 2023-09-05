@@ -1,6 +1,6 @@
 import React from "react";
-import { Tag } from "antd";
-import { Type, Static } from '@sinclair/typebox';
+import { Type, Static } from "@sinclair/typebox";
+import { useUIKit } from "@cloudtower/eagle";
 
 export const OptionsSpec = Type.Object({
   color: Type.Optional(Type.String()),
@@ -11,14 +11,15 @@ type Props = {
 } & Static<typeof OptionsSpec>
 
 const ObjectLabel = (props: Props) => {
+  const kit = useUIKit();
   const { color } = props;
   
   return (
     <>
       {props.value instanceof Array ? (
-        props.value.map((value) => <Tag key={value} color={color}>{value}</Tag>)
+        props.value.map((value) => <kit.tag key={value} color={color}>{value}</kit.tag>)
       ) : (
-        <Tag color={color}>{props.value}</Tag>
+        <kit.tag color={color}>{props.value}</kit.tag>
       )}
     </>
   );

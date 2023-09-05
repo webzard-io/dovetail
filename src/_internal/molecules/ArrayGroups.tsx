@@ -1,7 +1,8 @@
 import { WidgetProps } from "./AutoForm/widget";
 import Group from "./Group";
 import { Type, Static } from "@sinclair/typebox";
-import { KitContext } from "../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
+import { PlusAddCreateNew16BlueIcon, PlusAddCreateNew16GrayIcon, } from "@cloudtower/icons-react";
 import React, { useContext, useEffect, useCallback } from "react";
 import { css } from "@emotion/css";
 import Icon, {
@@ -17,7 +18,7 @@ import { set } from "lodash";
 import { COMMON_ARRAY_OPTIONS } from "./ArrayItems";
 
 const GroupStyle = css`
-  &.dovetail-ant-collapse {
+  &.ant-collapse {
     margin-bottom: 16px;
   }
 `;
@@ -44,7 +45,7 @@ type Props = WidgetProps<any[], Static<typeof OptionsSpec>>;
 
 const ArrayGroups = (props: Props) => {
   const { t } = useTranslation();
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const {
     services,
     field,
@@ -155,9 +156,9 @@ const ArrayGroups = (props: Props) => {
           {widgetOptions.addedButtonIcon ? (
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>
           ) : null}
-          <kit.Button
-            prefixIcon="1-plus-add-create-new-16-gray"
-            hoverPrefixIcon="1-plus-add-create-new-16-blue"
+          <kit.button
+            prefixIcon={<PlusAddCreateNew16GrayIcon/>}
+            hoverPrefixIcon={<PlusAddCreateNew16BlueIcon/>}
             className={AddedButtonStyle}
             size="small"
             onClick={() => {
@@ -176,7 +177,7 @@ const ArrayGroups = (props: Props) => {
             }}
           >
             {widgetOptions.addedButtonText || t("dovetail.add")}
-          </kit.Button>
+          </kit.button>
         </div>
       ) : null}
     </>

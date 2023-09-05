@@ -1,13 +1,29 @@
-import React, { useContext, useState, useRef } from "react";
-import { Modal as AntdModal } from "antd";
+import React, { useRef } from "react";
 import { CloseCircleFilled } from "@ant-design/icons";
-import { KitContext } from "../../../../kit-context";
+import { useUIKit } from "@cloudtower/eagle";
 import cs from "classnames";
 import { isNil } from "lodash";
 import { useTranslation } from "react-i18next";
 import { cx } from "@linaria/core";
-import { Modal2Props } from "../../../../kit-context";
+import { ModalProps as AntdModalProps } from "antd/lib/modal";
 
+export type ModalProps = AntdModalProps & {
+  /** Set is fullscreen to display modal */
+  fullscreen?: boolean;
+  /** Set loading type for ok button */
+  okLoading?: boolean;
+  /** Set disabled type for ok button */
+  okDisabled?: boolean;
+  /** Set error in footer */
+  footerError?: string | React.ReactNode | Error;
+  children?: React.ReactNode;
+  /** Display cancel button */
+  showCancel?: boolean;
+  /** Display ok button */
+  showOk?: boolean;
+  /** Set is a normal modal, width is 460px. If width is set it will fail */
+  normal?: boolean;
+};
 interface ModalErrorType {
   error: Error | string | React.ReactNode;
 }
@@ -34,9 +50,9 @@ export const ModalFooterError: React.FC<ModalFooterErrorType> = (props) => {
   );
 };
 
-const Modal: React.FC<Modal2Props> = (props) => {
+const Modal: React.FC<ModalProps> = (props) => {
   const { t } = useTranslation();
-  const kit = useContext(KitContext);
+  const kit = useUIKit();
 
   const {
     className,
@@ -59,8 +75,6 @@ const Modal: React.FC<Modal2Props> = (props) => {
     okLoading,
     okText = t("cluster.confirm"),
     cancelText = t("common.cancel"),
-    size,
-    showFooter,
     ...modalPropsArgs
   } = props;
   /* Set transition className */
@@ -81,9 +95,6 @@ const Modal: React.FC<Modal2Props> = (props) => {
 
     if (!fullscreen && normal) {
       setOfClassName.add("normal-modal");
-      if (size === "medium") {
-        setOfClassName.add("size-medium");
-      }
     }
 
     return cs.apply(undefined, [...setOfClassName]);
@@ -95,9 +106,6 @@ const Modal: React.FC<Modal2Props> = (props) => {
     } else if (width) {
       return width;
     } else {
-      if (size === "medium") {
-        return "720px";
-      }
       return normal ? 460 : "";
     }
   };
@@ -111,7 +119,7 @@ const Modal: React.FC<Modal2Props> = (props) => {
           </div>
           <div className="modal-footer-btn-group">
             {showCancel && (
-              <kit.Button
+              <kit.button
                 type="quiet"
                 onMouseDown={(e) => {
                   e.preventDefault();
@@ -125,10 +133,10 @@ const Modal: React.FC<Modal2Props> = (props) => {
                 loading={false}
               >
                 {cancelText}
-              </kit.Button>
+              </kit.button>
             )}
             {showOk && (
-              <kit.Button
+              <kit.button
                 onClick={(e) => {
                   onOk?.(e);
                   transitionClass.current = fullscreen ? "" : "modal-send";
@@ -138,7 +146,7 @@ const Modal: React.FC<Modal2Props> = (props) => {
                 loading={confirmLoading || okLoading}
               >
                 {okText}
-              </kit.Button>
+              </kit.button>
             )}
           </div>
         </>
@@ -149,7 +157,7 @@ const Modal: React.FC<Modal2Props> = (props) => {
   };
 
   return (
-    <AntdModal
+    <kit.antdModal
       destroyOnClose
       className={getClassName()}
       width={getWidth()}
@@ -167,11 +175,11 @@ const Modal: React.FC<Modal2Props> = (props) => {
         afterClose?.();
       }}
       footer={
-        showFooter ? <div className="footer-content">{getFooter()}</div> : null
+        <div className="footer-content">{getFooter()}</div>
       }
     >
       {children}
-    </AntdModal>
+    </kit.antdModal>
   );
 };
 

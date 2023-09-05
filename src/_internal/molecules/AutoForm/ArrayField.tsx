@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
-import SpecField from "./SpecField";
 import { WidgetProps } from "./widget";
-import { KitContext } from "../../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
+import { PlusAddCreateNew16GrayIcon, PlusAddCreateNew16BlueIcon } from "@cloudtower/icons-react";
 import { generateFromSchema } from "../../utils/schema";
 import ArrayGroups from "../ArrayGroups";
 import ArrayItems from "../ArrayItems";
@@ -34,7 +34,7 @@ const ArrayField: React.FC<WidgetProps> = (props) => {
 
 export const AddToArrayField: React.FC<WidgetProps> = (props) => {
   const { t } = useTranslation();
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const { displayValues, spec, value = [], onChange } = props;
   const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
 
@@ -44,9 +44,9 @@ export const AddToArrayField: React.FC<WidgetProps> = (props) => {
 
   return (
     <div>
-      <kit.Button
-        prefixIcon="1-plus-add-create-new-16-gray"
-        hoverPrefixIcon="1-plus-add-create-new-16-blue"
+      <kit.button
+        prefixIcon={<PlusAddCreateNew16GrayIcon/>}
+        hoverPrefixIcon={<PlusAddCreateNew16BlueIcon/>}
         size="small"
         onClick={() => {
           const defaultValue =
@@ -63,7 +63,7 @@ export const AddToArrayField: React.FC<WidgetProps> = (props) => {
         }}
       >
         {t("dovetail.add")}
-      </kit.Button>
+      </kit.button>
     </div>
   );
 };

@@ -1,17 +1,18 @@
-import { Input } from "antd";
+import { kitContext } from "@cloudtower/eagle";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
-import React from "react";
+import React, { useContext } from "react";
 
 export const OptionsSpec = Type.Object({});
 
 type Props = WidgetProps<string, Static<typeof OptionsSpec>>;
 
 const Textarea = (props: Props) => {
+  const kit = useContext(kitContext);
   const { value, onChange, displayValues } = props;
 
   return (
-    <Input.TextArea
+    <kit.textArea
       value={value}
       onChange={(event) =>
         onChange(

@@ -8,6 +8,7 @@ import linariaVitePlugin from "./tools/linaria-vite-plugin";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { getProxyConfig, applyK8sYamlPlugin } from "./tools/proxy-k8s";
 import monacoEditorPlugin from "vite-plugin-monaco-editor";
+import { visualizer } from 'rollup-plugin-visualizer'
 
 const globalSassPath = path.resolve(
   __dirname,
@@ -25,7 +26,7 @@ export default defineConfig({
         widgets: path.resolve(__dirname, "src/widgets.ts"),
       },
       name: "Kui",
-      fileName: (format, entryName) => `${entryName}.js`,
+      fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'mjs' : 'js'}`,
       formats: ["es", "cjs"],
     },
     rollupOptions: {
@@ -39,7 +40,8 @@ export default defineConfig({
         "chakra-react-select",
         "monaco-editor",
         "monaco-yaml",
-        "@cloudtower/eagle"
+        "@cloudtower/eagle",
+        "antd"
       ],
     },
   },
@@ -49,7 +51,7 @@ export default defineConfig({
     proxy: {
       "/proxy-k8s": getProxyConfig(),
       "/api": {
-        target: "http://10.255.5.44",
+        target: "http://10.255.4.115",
         ws: true,
       },
     },
@@ -84,20 +86,13 @@ export default defineConfig({
         },
       ],
     }),
-    vitePluginImp({
-      libList: [
-        {
-          libName: "antd",
-          style: (name) => `antd/es/${name}/style`,
-        },
-      ],
-    }),
     linariaVitePlugin({ preprocessor: "none", extension: ".scss" }),
     react(),
     applyK8sYamlPlugin(),
     monacoEditorPlugin({
       languageWorkers: ["json", "editorWorkerService"],
     }),
+    visualizer(),
   ],
   css: {
     preprocessorOptions: {
@@ -105,19 +100,6 @@ export default defineConfig({
         additionalData: `${globalSass}\r\n`,
       },
       less: {
-        modifyVars: {
-          "@ant-prefix": "dovetail-ant",
-          "@primary-color": "#0080FF",
-          "@link-color": "#0080FF",
-          "@text-color": "#06101F",
-          "@success-color": "#25C764",
-          "@error-color": "#f0483e",
-          "@border-radius-base": "3px",
-          "@screen-xs": "1279px",
-          "@screen-sm": "1536px",
-          "@screen-md": "2176px",
-          "@screen-lg": "2304px",
-        },
         javascriptEnabled: true,
       },
     },

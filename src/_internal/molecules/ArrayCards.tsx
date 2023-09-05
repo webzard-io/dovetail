@@ -1,7 +1,8 @@
 import { WidgetProps } from "./AutoForm/widget";
 import Card from "./Card";
 import { Type, Static } from "@sinclair/typebox";
-import { KitContext } from "../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
+import { PlusAddCreateNew16BlueIcon, PlusAddCreateNew16GrayIcon, } from "@cloudtower/icons-react";
 import React, { useContext, useCallback, useEffect, useMemo } from "react";
 import { css } from "@emotion/css";
 import Icon, {
@@ -41,7 +42,7 @@ type Props = WidgetProps<any[], Static<typeof OptionsSpec>>;
 
 const ArrayCards = (props: Props) => {
   const { t } = useTranslation();
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const {
     services,
     field,
@@ -149,9 +150,9 @@ const ArrayCards = (props: Props) => {
           {widgetOptions.addedButtonIcon ? (
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>
           ) : null}
-          <kit.Button
-            prefixIcon="1-plus-add-create-new-16-gray"
-            hoverPrefixIcon="1-plus-add-create-new-16-blue"
+          <kit.button
+            prefixIcon={<PlusAddCreateNew16GrayIcon/>}
+            hoverPrefixIcon={<PlusAddCreateNew16BlueIcon/>}
             className={AddedButtonStyle}
             size="small"
             onClick={() => {
@@ -170,7 +171,7 @@ const ArrayCards = (props: Props) => {
             }}
           >
             {widgetOptions.addedButtonText || t("dovetail.add")}
-          </kit.Button>
+          </kit.button>
         </div>
       ) : null}
     </>

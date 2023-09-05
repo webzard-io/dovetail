@@ -7,32 +7,14 @@ import { Type } from "@sinclair/typebox";
 import { PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
 import { css, cx } from "@emotion/css";
 import React, { useContext, useState, useCallback, useEffect } from "react";
-import { KitContext } from "../../_internal/atoms/kit-context";
+import { kitContext, ButtonProps } from "@cloudtower/eagle";
 import { useTranslation } from "react-i18next";
 import { styled } from "@linaria/react";
 import { Typo } from "../../_internal/atoms/themes/CloudTower/styles/typo.style";
 import Icon from "../../_internal/atoms/themes/CloudTower/components/Icon/Icon";
+import { CommonModalStyle } from "./Modal";
+import BaseModal from "src/_internal/atoms/themes/CloudTower/components/FullscreenModal/Modal";
 
-const ModalStyle = css`
-  .ant-modal-header {
-    border-radius: 16px !important;
-  }
-  .ant-modal-content {
-    border-radius: 16px !important;
-  }
-  .ant-modal-body {
-    padding: 0;
-    border-radius: 16px;
-  }
-  .ant-modal-footer {
-    display: none;
-  }
-
-  .ant-modal .ant-modal-close-x {
-    right: 20px;
-    top: 20px;
-  }
-`;
 const FooterWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -185,7 +167,7 @@ export const ConfirmModal = implementRuntimeComponent({
   }) => {
     const [visible, setVisible] = useState(defaultVisible);
     const { t } = useTranslation();
-    const kit = useContext(KitContext);
+    const kit = useContext(kitContext);
 
     const onCancel = useCallback(() => {
       setVisible(false);
@@ -194,16 +176,16 @@ export const ConfirmModal = implementRuntimeComponent({
 
     const footerButtons = (
       <div>
-        <kit.Button type="text" onClick={onCancel}>
+        <kit.button type="text" onClick={onCancel}>
           {t("dovetail.cancel")}
-        </kit.Button>
-        <kit.Button
-          type={confirmButtonType || "danger"}
+        </kit.button>
+        <kit.button
+          type={(confirmButtonType || "danger") as ButtonProps["type"]}
           loading={confirmButtonLoading}
           onClick={callbackMap?.onConfirm}
         >
           {confirmButtonText || t("dovetail.delete")}
-        </kit.Button>
+        </kit.button>
       </div>
     );
     const footer = (
@@ -249,21 +231,23 @@ export const ConfirmModal = implementRuntimeComponent({
     }, [subscribeMethods]);
 
     return (
-      <kit.Modal
-        ref={elementRef}
+      <BaseModal
         getContainer={() =>
           document.getElementById(DIALOG_CONTAINER_ID) || document.body
         }
         visible={visible}
-        className={cx(ModalStyle, css(customStyle?.content))}
+        className={cx(
+          CommonModalStyle,
+          `size-${size}`,
+          css(customStyle?.content))
+        }
         title={title}
         width={width}
         footer={footer}
-        size={size}
-        onClose={onCancel}
+        onCancel={onCancel}
       >
         {slotsElements.content?.({}, content) || content}
-      </kit.Modal>
+      </BaseModal>
     );
   }
 );

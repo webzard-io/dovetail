@@ -1,10 +1,10 @@
-import { useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import { cx, css } from "@linaria/core";
-import { styled } from '@linaria/react';
+import { styled } from "@linaria/react";
 import { useMeasure } from "react-use";
 import Icon from "../Icon/Icon";
 import { TableLoadingStyle } from "./Table.style";
-import { KitContext } from "../../../../kit-context";
+import { kitContext } from "@cloudtower/eagle";
 
 type SearchOperation = {
   pick?: string | string[];
@@ -35,7 +35,7 @@ export const TableLoading: React.FC = () => {
   const [ref, sizes] = useMeasure();
   useEffect(() => {
     const spinEl = document.querySelector(
-      ".dovetail-ant-table-wrapper .dovetail-ant-spin"
+      ".ant-table-wrapper .ant-spin"
     );
     if (spinEl) {
       ref(spinEl);
@@ -71,7 +71,7 @@ export const TablePagination = <T,>(props: {
   onChange?: (page?: number, size?: number) => void;
 }) => {
   const { count, skip, size, setQuery, onChange } = props;
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
 
   useEffect(() => {
     if (!count || skip < count) return;
@@ -84,7 +84,7 @@ export const TablePagination = <T,>(props: {
   }, [skip, count, setQuery, size]);
 
   return (
-    <kit.Pagination
+    <kit.pagination
       current={(skip || 0) / size + 1}
       count={count || 0}
       size={size}

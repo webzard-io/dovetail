@@ -1,11 +1,13 @@
 import React, { useContext, useState, useEffect, useCallback } from "react";
-import { KitContext } from "../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import { KubeApi, UnstructuredList } from "../k8s-api-client/kube-api";
 import styled from "@emotion/styled";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
 import ErrorContent from "../ErrorContent";
 import { useTranslation } from "react-i18next";
 import { css } from "@emotion/css";
+import Card from "../atoms/themes/CloudTower/components/Card";
+import InfoRow from "../atoms/themes/CloudTower/components/InfoRow";
 
 const LoadingWrapper = styled.div`
   padding: 24px;
@@ -31,7 +33,7 @@ const CardStyle = css`
     padding: 24px 32px;
   }
 
-  .dovetail-ant-btn {
+  .ant-btn {
     height: 18px;
   }
 `;
@@ -77,7 +79,7 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
     onClickItem,
   }) {
     const { t } = useTranslation();
-    const kit = useContext(KitContext);
+    const kit = useContext(kitContext);
     const [response, setResponse] = useState<Response>({
       data: emptyData,
       loading: false,
@@ -134,12 +136,12 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
     }, [response]);
 
     return (
-      <kit.Card className={CardStyle}>
+      <Card className={CardStyle}>
         {(function () {
           if (loading) {
             return (
               <LoadingWrapper>
-                <kit.Loading></kit.Loading>
+                <kit.loading></kit.loading>
               </LoadingWrapper>
             );
           }
@@ -156,19 +158,19 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
           if (data.items.length) {
             return data.items.map((item) => {
               return (
-                <kit.InfoRow
+                <InfoRow
                   key={item.metadata.name}
                   label={
-                    <kit.Button
+                    <kit.button
                       className={Typo.Label.l4_regular_title}
-                      size="sm"
+                      size="small"
                       type="link"
                       onClick={() => {
                         onClickItem?.(item);
                       }}
                     >
                       {item.metadata.name}
-                    </kit.Button>
+                    </kit.button>
                   }
                   content=""
                 />
@@ -182,7 +184,7 @@ const KubectlGetList = React.forwardRef<HTMLElement, KubectlGetListProps>(
             );
           }
         })()}
-      </kit.Card>
+      </Card>
     );
   }
 );

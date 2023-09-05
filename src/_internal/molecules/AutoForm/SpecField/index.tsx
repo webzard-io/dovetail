@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useContext, useRef } from "react";
 import isEmpty from "lodash/isEmpty";
 // TODO: use kit context when I have time:)
-import { Col } from "antd";
 import { JSONSchema7 } from "json-schema";
 import { WidgetProps } from "../widget";
 import UnsupportedField from "../UnsupportedField";
@@ -19,7 +18,7 @@ import {
 import AllFields from "../../AllFields";
 import { LAYOUT_WIDGETS_MAP } from "../../layout";
 import { Static } from "@sinclair/typebox";
-import { KitContext } from "../../../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import FormItem from "./FormItem";
 import FormEditor, { FormEditorHandle } from "./FormEditor";
 import { useTranslation } from "react-i18next";
@@ -88,7 +87,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   const { i18n } = useTranslation();
   let { widgetOptions = {} } = props;
   const editorRef = useRef<FormEditorHandle>(null);
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const [widgetErrors, setWidgetErrors] = useState([]);
   const { title } = spec;
   const transformedField = field ? transformFuncProps(field, { index }) : field;
@@ -218,7 +217,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   const slotProps = { path, ...(transformedField || {}), itemKey, index };
 
   return (
-    <Col
+    <kit.col
       span={transformedField?.col || 24}
       style={{
         boxShadow: transformedField?.splitLine
@@ -276,7 +275,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
             widgetErrors={widgetErrors}
             testId={`${path}-${transformedField?.key || ""}`}
           >
-            <kit.Tooltip title={fieldOrItem?.tooltip} placement="topLeft">
+            <kit.tooltip title={fieldOrItem?.tooltip} placement="topLeft">
               <span>
                 {slot?.(
                   slotProps,
@@ -284,11 +283,11 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
                   `filed_${path}`
                 ) || FieldComponent}
               </span>
-            </kit.Tooltip>
+            </kit.tooltip>
           </FormItem>
         )
       }
-    </Col>
+    </kit.col>
   );
 };
 

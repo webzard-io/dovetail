@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { styled } from "@linaria/react";
 import { cx } from "@linaria/core";
-import { KitContext } from "./atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import { useTranslation } from "react-i18next";
 import { Typo } from "./atoms/themes/CloudTower/styles/typo.style";
 
@@ -37,7 +37,7 @@ const WidgetErrorContent: React.FunctionComponent<WidgetErrorContentProps> = (
   props
 ) => {
   const { refetch } = props;
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const { t } = useTranslation();
 
   return (
@@ -47,7 +47,7 @@ const WidgetErrorContent: React.FunctionComponent<WidgetErrorContentProps> = (
           {props.errorText || t("dovetail.obtain_data_error")}
         </p>
         {refetch ? (
-          <kit.Button
+          <kit.button
             type="ordinary"
             onClick={(e) => {
               e.stopPropagation();
@@ -55,7 +55,7 @@ const WidgetErrorContent: React.FunctionComponent<WidgetErrorContentProps> = (
             }}
           >
             {t("dovetail.retry")}
-          </kit.Button>
+          </kit.button>
         ) : null}
       </ErrorContent>
     </ErrorWrapper>

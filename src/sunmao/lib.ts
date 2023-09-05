@@ -1,6 +1,7 @@
+import { KubectlApplyForm } from "./components/KubectlApplyForm";
 import { SunmaoLib, implementUtilMethod } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
-import { message } from "antd";
+import { antdKit } from "@cloudtower/eagle";
 import { StringUnion } from "./helper";
 import { Root } from "./components/Root";
 import { Button } from "./components/Button";
@@ -13,7 +14,6 @@ import { Modal as FullscreenModal } from "./components/FullscreenModal";
 import { Select } from "./components/Select";
 import { Icon } from "./components/Icon";
 import { CodeEditor } from "./components/CodeEditor";
-import { KubectlApplyForm } from "./components/KubectlApplyForm";
 import { KubectlGetDetail } from "./components/KubectlGetDetail";
 import { KubectlGetList } from "./components/KubectlGetList";
 import { ConfirmModal } from "./components/ConfirmModal";
@@ -69,7 +69,7 @@ export const libs: SunmaoLib[] = [
             parameters: Type.Object({}),
           },
         })((params) => {
-          message.destroy();
+          antdKit.message.destroy();
         }),
       () =>
         implementUtilMethod({
@@ -81,7 +81,7 @@ export const libs: SunmaoLib[] = [
             parameters: MessageParams,
           },
         })((params) => {
-          message[params.type](params.message, params.duration);
+          antdKit.message[params.type](params.message, params.duration);
         }),
       () =>
         implementUtilMethod({
@@ -98,16 +98,3 @@ export const libs: SunmaoLib[] = [
     ],
   },
 ];
-
-const yaml = import.meta.glob("./dependencies/yaml/*.yaml", {
-  as: "raw",
-});
-
-export const dependencies = {
-  yaml: Object.keys(yaml).reduce<Record<string, string>>((prev, cur) => {
-    prev[cur.replace("./dependencies/yaml/", "").replace(".yaml", "")] = yaml[
-      cur
-    ] as unknown as string;
-    return prev;
-  }, {}),
-};

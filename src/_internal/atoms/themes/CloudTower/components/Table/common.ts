@@ -4,10 +4,14 @@ import React, {
   useState,
   useRef,
   useMemo,
-  useContext,
 } from "react";
 import getScrollBarSize from "rc-util/lib/getScrollBarSize";
-import { KitContext } from "../../../../kit-context";
+import {
+  TABLE_WRAPPER_SELECTOR,
+  THEAD_SELECTOR,
+  TBODY_SELECTOR,
+  PAGINATION_SELECTOR
+} from "src/constants/table";
 import useElementsSize from "../../../../hooks/useElementsSize";
 import { isEqual, isNil } from "lodash";
 
@@ -127,9 +131,9 @@ export const useTransformScrollAndColumns = <T>(tableProps: {
   stickyHeader?: boolean;
   columns: T[];
   scroll?:
-    | "autoHeight"
-    | "auto"
-    | { x?: boolean | number | string; y?: boolean | number | string };
+  | "autoHeight"
+  | "auto"
+  | { x?: boolean | number | string; y?: boolean | number | string };
 }): [TableScrollConfig, T[]] => {
   const {
     tableKey,
@@ -152,7 +156,6 @@ export const useTransformScrollAndColumns = <T>(tableProps: {
   const [scrollConfig, setScrollConfig] = useState<TableScrollConfig>({});
   const [headerAndPaginationHeight, setHeaderAndPaginationHeight] =
     useState<number>(0);
-  const kit = useContext(KitContext);
   const scrollBarSize = useMemo(
     () => (defaultScroll.current ? getScrollBarSize() : 0),
     [defaultScroll.current]
@@ -177,22 +180,22 @@ export const useTransformScrollAndColumns = <T>(tableProps: {
 
       setHeaderAndPaginationHeight(
         (headerEl?.offsetHeight || 0) +
-          (paginationEl?.offsetHeight || 0) +
-          wrapper.current.getBoundingClientRect().top
+        (paginationEl?.offsetHeight || 0) +
+        wrapper.current.getBoundingClientRect().top
       );
     }
   }, [wrapper, data]);
 
   const wrapperClass = tableKey
-    ? `${kit.TABLE_WRAPPER_SELECTOR}.${tableKey}-table-wrapper`
-    : kit.TABLE_WRAPPER_SELECTOR;
+    ? `${TABLE_WRAPPER_SELECTOR}.${tableKey}-table-wrapper`
+    : TABLE_WRAPPER_SELECTOR;
 
   const sizes = useElementsSize(
     {
       wrapper: wrapperClass,
-      pagination: `${wrapperClass} ${kit.PAGINATION_SELECTOR}`,
-      thead: `${wrapperClass} ${kit.THEAD_SELECTOR}`,
-      tbody: `${wrapperClass} ${kit.TBODY_SELECTOR}`,
+      pagination: `${wrapperClass} ${PAGINATION_SELECTOR}`,
+      thead: `${wrapperClass} ${THEAD_SELECTOR}`,
+      tbody: `${wrapperClass} ${TBODY_SELECTOR}`,
     },
     {
       prevent: loading,
@@ -289,7 +292,7 @@ export const useTransformScrollAndColumns = <T>(tableProps: {
       );
     }
   } else {
-    finalColumns = finalColumns.map(col=> ({
+    finalColumns = finalColumns.map(col => ({
       ...col,
       width: (col as (T & { width?: number })).width || 200
     }))

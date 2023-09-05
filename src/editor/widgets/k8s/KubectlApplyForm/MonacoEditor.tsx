@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { css, cx } from "@emotion/css";
-import { CodeEditorProps } from "src/_internal/atoms/kit-context";
+import { CodeEditorProps } from "src/_internal/atoms/CodeEditor";
 
 import "monaco-editor/esm/vs/editor/editor.all.js";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";

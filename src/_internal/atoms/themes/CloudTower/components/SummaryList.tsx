@@ -28,7 +28,7 @@ const SummaryListTitle = styled.h3`
 `;
 
 const SummaryCollapseStyle = css`
-  & > .dovetail-ant-collapse-item > .dovetail-ant-collapse-header {
+  & > .ant-collapse-item > .ant-collapse-header {
     padding: 10px 12px 10px 12px;
     font-family: "Inter";
     font-style: normal;
@@ -38,23 +38,23 @@ const SummaryCollapseStyle = css`
     color: #00122e;
   }
 
-  & > .dovetail-ant-collapse-item-active > .dovetail-ant-collapse-header {
+  & > .ant-collapse-item-active > .ant-collapse-header {
     padding-bottom: 8px;
   }
 
   &
-    > .dovetail-ant-collapse-item
-    > .dovetail-ant-collapse-content
-    > .dovetail-ant-collapse-content-box {
+    > .ant-collapse-item
+    > .ant-collapse-content
+    > .ant-collapse-content-box {
     padding: 0 12px;
   }
 
-  & > .dovetail-ant-collapse-item {
+  & > .ant-collapse-item {
     padding-bottom: 0px;
     border-bottom: 1px solid rgba(225, 230, 241, 0.6);
   }
 
-  & > .dovetail-ant-collapse-item-active {
+  & > .ant-collapse-item-active {
     padding-bottom: 10px;
   }
 `;

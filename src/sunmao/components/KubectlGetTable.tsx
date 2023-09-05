@@ -3,11 +3,10 @@ import React, {
   useState,
   useMemo,
   useCallback,
-  useContext,
 } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { StringUnion, PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
-import { Type, Static } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import {
   UnstructuredList,
   KubeSdk,
@@ -23,8 +22,9 @@ import { renderWidget } from "../utils/widget";
 import { generateSlotChildren } from "../utils/slot";
 import { css, cx } from "@emotion/css";
 import { get, throttle } from "lodash";
-import { KitContext } from "../../_internal/atoms/kit-context";
+import { TABLE_WRAPPER_SELECTOR } from "../../constants/table";
 import semver from "semver";
+import { SortOrder, ColumnsType } from "antd/lib/table/interface";
 
 type Response = {
   data: UnstructuredList;
@@ -37,29 +37,29 @@ const WrapperStyle = css`
     border-top: 0;
   }
 
-  .dovetail-ant-table
-    .dovetail-ant-table-tbody
-    .dovetail-ant-table-row.active-row
+  .ant-table
+    .ant-table-tbody
+    .ant-table-row.active-row
     td:first-child {
     border: 2px solid rgb(206, 230, 255);
     border-right: 0px;
   }
 
-  .dovetail-ant-table
-    .dovetail-ant-table-tbody
-    .dovetail-ant-table-row.active-row
+  .ant-table
+    .ant-table-tbody
+    .ant-table-row.active-row
     td:last-child {
     border: 2px solid rgb(206, 230, 255);
     border-left: 0px;
   }
 
-  .dovetail-ant-table
-    .dovetail-ant-table-tbody
-    .dovetail-ant-table-row.active-row
+  .ant-table
+    .ant-table-tbody
+    .ant-table-row.active-row
     td,
-  .dovetail-ant-table
-    .dovetail-ant-table-tbody
-    .dovetail-ant-table-row:hover
+  .ant-table
+    .ant-table-tbody
+    .ant-table-row:hover
     + tr.active-row
     td {
     border: 2px solid rgb(206, 230, 255);
@@ -67,25 +67,25 @@ const WrapperStyle = css`
     border-left: 0px;
   }
 
-  .dovetail-ant-table
-    .dovetail-ant-table-tbody
-    .dovetail-ant-table-row.active-row
+  .ant-table
+    .ant-table-tbody
+    .ant-table-row.active-row
     td,
-  .dovetail-ant-table
-    .dovetail-ant-table-tbody
-    .dovetail-ant-table-row.active-row
-    td.dovetail-ant-table-cell-fix-right,
-  .dovetail-ant-table
-    .dovetail-ant-table-tbody
-    .dovetail-ant-table-row.active-row:hover
-    td.dovetail-ant-table-cell-fix-right {
+  .ant-table
+    .ant-table-tbody
+    .ant-table-row.active-row
+    td.ant-table-cell-fix-right,
+  .ant-table
+    .ant-table-tbody
+    .ant-table-row.active-row:hover
+    td.ant-table-cell-fix-right {
     background: rgb(229, 242, 255);
 
     &:hover {
       background: rgb(229, 242, 255);
     }
 
-    .dovetail-ant-table-cell-content {
+    .ant-table-cell-content {
       background: transparent;
     }
   }
@@ -455,7 +455,6 @@ export const KubectlGetTable = implementRuntimeComponent({
     mergeState,
     subscribeMethods,
   }) => {
-    const kit = useContext(KitContext);
     const [response, setResponse] = useState<Response>({
       data: emptyData,
       loading: false,
@@ -535,7 +534,7 @@ export const KubectlGetTable = implementRuntimeComponent({
         });
 
         if (elementRef?.current) {
-          const tableBody = elementRef.current.querySelector(".dovetail-ant-table-body");
+          const tableBody = elementRef.current.querySelector(".ant-table-body");
 
           if (tableBody) {
             tableBody.scrollTop = 0;
@@ -632,7 +631,7 @@ export const KubectlGetTable = implementRuntimeComponent({
 
     const finalColumns = useMemo(()=> columns.map((col, colIndex) => ({
       ...col,
-      fixed: col.fixed === "none" ? undefined : col.fixed,
+      fixed: col.fixed === "none" ? undefined : col.fixed as ColumnsType[0]["fixed"],
       dataIndex: typeof col.dataIndex === "string"
         ? col.dataIndex.split(".")
         : col.dataIndex,
@@ -670,7 +669,7 @@ export const KubectlGetTable = implementRuntimeComponent({
         );
       },
       sortOrder: columnSortOrder[col.key],
-      sortDirections: col.sortType === "none" ? null : ["", "ascend", "descend"],
+      sortDirections: col.sortType === "none" ? undefined : ["ascend", "descend"] as SortOrder[],
       sorter: col.sortType === "none"
         ? undefined
         : col.sortType === "server"
@@ -692,7 +691,7 @@ export const KubectlGetTable = implementRuntimeComponent({
             return String(valueA).localeCompare(String(valueB));
           },
       filters: col.filters?.length ? col.filters : undefined,
-      onFilter(value: string, record: UnstructuredList["items"][0]) {
+      onFilter(value: string | number | boolean, record: UnstructuredList["items"][0]) {
         const compare = col.filters.find(
           (filter) => filter.value === value
         )?.compare;
@@ -716,7 +715,7 @@ export const KubectlGetTable = implementRuntimeComponent({
         className={cx(
           WrapperStyle,
           css(customStyle?.content),
-          kit.TABLE_WRAPPER_SELECTOR.replace(".", ""),
+          TABLE_WRAPPER_SELECTOR.replace(".", ""),
           `${component.id}-table-wrapper`
         )}
       >

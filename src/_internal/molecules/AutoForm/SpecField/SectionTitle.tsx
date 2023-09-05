@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { css, cx } from "@linaria/core";
-import { KitContext } from "../../../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import { useTranslation } from "react-i18next";
 import { Typo } from "../../../atoms/themes/CloudTower/styles/typo.style";
 
@@ -49,7 +49,7 @@ function SectionTitle(props: SectionTitleProps) {
     onEnableEditorChange
   } = props;
   const { i18n } = useTranslation();
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
 
   return (
     <div className={cx(FieldSection, "field-section-title", isDisplayEditorSwitch ? "editor-switch-section-title" : null)}>
@@ -57,16 +57,16 @@ function SectionTitle(props: SectionTitleProps) {
       {isDisplayEditorSwitch ? (
         <span>
           <span className={cx(Typo.Label.l4_regular, EditYAMLTextStyle)}>{i18n.t("dovetail.edit_yaml")}</span>
-          <kit.Tooltip title={editorSwitchTooltip}>
+          <kit.tooltip title={editorSwitchTooltip}>
             <span>
-              <kit.Switch
+              <kit.switch
                 disabled={isDisabledSwitchEditor}
                 checked={isEnableEditor}
                 onChange={onEnableEditorChange}
                 size="small"
-              ></kit.Switch>
+              ></kit.switch>
             </span>
-          </kit.Tooltip>
+          </kit.tooltip>
         </span>
       ) : null}
     </div>

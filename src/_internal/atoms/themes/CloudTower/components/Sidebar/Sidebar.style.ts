@@ -1,16 +1,16 @@
 import { css } from "@linaria/core";
 
 export const Sidebar = css`
-  .dovetail-ant-drawer-content-wrapper {
+  .ant-drawer-content-wrapper {
     transition: none;
   }
 
-  &.dovetail-ant-drawer-open .dovetail-ant-drawer-content-wrapper {
+  &.ant-drawer-open .ant-drawer-content-wrapper {
     border-left: 1px solid $separators-opaque-light;
     box-shadow: none;
     transition: all 500ms cubic-bezier(0, 1, 0, 1);
   }
-  .dovetail-ant-drawer-body {
+  .ant-drawer-body {
     padding: 0;
     height: 100%;
     background: $backgrounds-light-grouped;
@@ -35,7 +35,7 @@ export const Sidebar = css`
     }
   }
   // override table style of the sidebar
-  .dovetail-ant-table {
+  .ant-table {
     background: $backgrounds-light-grouped;
     th {
       background: $backgrounds-light-grouped !important;
@@ -52,7 +52,7 @@ export const Sidebar = css`
         border-radius: 0 8px 8px 0 !important;
       }
     }
-    .dovetail-ant-table-row:hover td {
+    .ant-table-row:hover td {
       background: $fills-trans-secondary-light !important;
       border-bottom-color: $backgrounds-light-grouped !important;
     }

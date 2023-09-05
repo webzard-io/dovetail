@@ -2,8 +2,8 @@ import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
 import { resolveSubFields } from "./AutoForm/ObjectField";
 import React from "react";
-import { Row } from "antd";
 import { css } from "@emotion/css";
+import { useUIKit } from "@cloudtower/eagle";
 
 const GroupBodyStyle = css`
   padding-bottom: 0;
@@ -18,10 +18,12 @@ type DefaultLayoutProps = WidgetProps<
 >;
 
 const DefaultLayout = (props: DefaultLayoutProps) => {
+  const kit = useUIKit();
+
   return (
-    <Row className={GroupBodyStyle} gutter={[24, 16]} style={{ margin: "-8px -12px" }}>
+    <kit.row className={GroupBodyStyle} gutter={[24, 16]} style={{ margin: "-8px -12px" }}>
       {resolveSubFields(props)}
-    </Row>
+    </kit.row>
   );
 };
 

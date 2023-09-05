@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useCallback, useMemo } from "react";
-import { KitContext } from "../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
+import { PlusAddCreateNew16BlueIcon, PlusAddCreateNew16GrayIcon, } from "@cloudtower/icons-react";
 import { WidgetProps } from "./AutoForm/widget";
 import { Type, Static } from "@sinclair/typebox";
 import SpecField from "./AutoForm/SpecField";
@@ -27,7 +28,7 @@ const HelperText = styled.div`
   color: rgba(44, 56, 82, 0.6);
 `;
 const CloseButtonStyle = css`
-  &.dovetail-ant-btn.dovetail-ant-btn-sm {
+  &.ant-btn.ant-btn-sm {
     margin: 4px 0;
   }
 `;
@@ -49,8 +50,8 @@ export const COMMON_ARRAY_OPTIONS = {
     })
   ),
   useFirstAsDefaultValue: Type.Optional(Type.Boolean({
-    title: 'Use first as default value',
-    description: 'Is use the value of first item as the default value when adding the new item?'
+    title: "Use first as default value",
+    description: "Is use the value of first item as the default value when adding the new item?"
   }))
 }
 
@@ -86,7 +87,7 @@ const ArrayItems = (props: Props) => {
   const itemSpec = (
     Array.isArray(spec.items) ? spec.items[0] : spec.items
   ) as JSONSchema7;
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const errorInfo = props.field?.error || props.error;
   const removable = useMemo(
     () => value.length > (widgetOptions?.minLength || 0),
@@ -162,7 +163,7 @@ const ArrayItems = (props: Props) => {
             />
           </div>
           {value.length > (widgetOptions?.minLength || 0) ? (
-            <kit.Button
+            <kit.button
               className={CloseButtonStyle}
               size="small"
               type="text"
@@ -171,7 +172,7 @@ const ArrayItems = (props: Props) => {
               }}
             >
               <CloseOutlined />
-            </kit.Button>
+            </kit.button>
           ) : null}
         </Wrapper>
       ))}
@@ -184,9 +185,9 @@ const ArrayItems = (props: Props) => {
           {widgetOptions.addedButtonIcon ? (
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>
           ) : null}
-          <kit.Button
-            prefixIcon="1-plus-add-create-new-16-gray"
-            hoverPrefixIcon="1-plus-add-create-new-16-blue"
+          <kit.button
+            prefixIcon={<PlusAddCreateNew16GrayIcon/>}
+            hoverPrefixIcon={<PlusAddCreateNew16BlueIcon/>}
             className={AddedButtonStyle}
             size="small"
             onClick={() => {
@@ -204,7 +205,7 @@ const ArrayItems = (props: Props) => {
             }}
           >
             {widgetOptions.addedButtonText || t("dovetail.add")}
-          </kit.Button>
+          </kit.button>
         </div>
       ) : null}
     </>

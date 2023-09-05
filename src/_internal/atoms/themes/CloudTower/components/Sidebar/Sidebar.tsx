@@ -1,10 +1,10 @@
 import React from "react";
-import { Drawer } from "antd";
 import { cx } from "@linaria/core";
 import { Sidebar as SidebarStyle } from "./Sidebar.style";
 import { CloseCircleFilled } from "@ant-design/icons";
+import { useUIKit } from "@cloudtower/eagle";
 
-type SidebarProps = {
+export type SidebarProps = {
   className?: string;
   width?: number;
   visible?: boolean;
@@ -13,10 +13,11 @@ type SidebarProps = {
   children?: React.ReactNode;
 };
 
-const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>((props, ref) => {
+const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(function Sidebar(props, ref) {
+  const kit = useUIKit();
   const { className, width, visible, onClose, children, getContainer } = props;
   return (
-    <Drawer
+    <kit.antdDrawer
       className={cx(SidebarStyle, className)}
       visible={visible}
       width={width}
@@ -30,7 +31,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>((props, ref) => {
         {children}
         <CloseCircleFilled className="close-icon" onClick={onClose} />
       </div>
-    </Drawer>
+    </kit.antdDrawer>
   );
 });
 

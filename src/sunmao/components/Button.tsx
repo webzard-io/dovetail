@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import {
   implementRuntimeComponent,
   Text,
@@ -6,7 +6,8 @@ import {
 } from "@sunmao-ui/runtime";
 import { css } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
-import { buttonTypes, KitContext } from "../../_internal/atoms/kit-context";
+import { buttonTypes } from "src/constants/button";
+import { kitContext, ButtonProps as ButtonPropsType } from "@cloudtower/eagle";
 import { StringUnion } from "../helper";
 
 const ButtonProps = Type.Object({
@@ -61,7 +62,7 @@ export const Button = implementRuntimeComponent({
     disabled,
     text,
   }) => {
-    const kit = useContext(KitContext);
+    const kit = useContext(kitContext);
     const buttonRef = useRef<HTMLElement | null>(null);
     useEffect(() => {
       if (typeof elementRef === "object") {
@@ -76,9 +77,8 @@ export const Button = implementRuntimeComponent({
     }, []);
 
     return (
-      <kit.Button
-        type={type}
-        ref={elementRef}
+      <kit.button
+        type={type as ButtonPropsType["type"]}
         onClick={callbackMap?.onClick}
         className={css`
           ${customStyle?.button}
@@ -101,7 +101,7 @@ export const Button = implementRuntimeComponent({
             <Text value={text} />
           )}
         </>
-      </kit.Button>
+      </kit.button>
     );
   }
 );

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { css } from "@emotion/css";
-import { KitContext } from "../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import ObjectMeta from "../molecules/ObjectMeta";
 import ObjectSpec from "../molecules/ObjectSpec";
 import ObjectStatus from "../molecules/ObjectStatus";
@@ -56,7 +56,7 @@ const UnstructuredPage = React.forwardRef<
   { basePath, kind, apiBase, namespace, fieldSelector, onResponse },
   ref
 ) {
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const [response, setResponse] = useState<{
     data: Unstructured | null;
     loading: boolean;
@@ -103,7 +103,7 @@ const UnstructuredPage = React.forwardRef<
 
   const getContent = () => {
     if (loading) {
-      return <kit.Loading />;
+      return <kit.loading />;
     }
     if (error) {
       const errorStr = String(error);
