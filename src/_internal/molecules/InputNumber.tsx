@@ -1,12 +1,12 @@
 import React, { useCallback, useState, useContext, useEffect } from "react";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
-import { KitContext } from "../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import { css } from "@linaria/core";
 import { transformStorageUnit, StorageUnit, STORAGE_UNITS } from "../../sunmao/utils/storage";
 
 const InputNumberStyle = css`
-  .dovetail-ant-input.dovetail-ant-input:not([disabled]) {
+  .ant-input.ant-input:not([disabled]) {
     box-shadow: none;
     border: 0;
     
@@ -31,7 +31,7 @@ type Props = WidgetProps<number | string, Static<typeof OptionsSpec>>;
 
 const InputNumber = (props: Props) => {
   const { displayValues } = props;
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const unit = props.widgetOptions?.unit;
   const transformValue = useCallback((value: string)=> {
     if (unit) {
@@ -44,10 +44,10 @@ const InputNumber = (props: Props) => {
 
     return value;
   }, [unit]);
-  const [stringValue, setStringValue] = useState(transformValue(props.value + ""));
+  const [stringValue, setStringValue] = useState(Number(transformValue(props.value + "")));
 
   const onChange = useCallback(
-    (event, newValue) => {
+    (newValue) => {
       const transformedNewValue = unit ? newValue + unit : Number(newValue);
 
       props.onChange(
@@ -62,20 +62,26 @@ const InputNumber = (props: Props) => {
   );
 
   useEffect(() => {
-    setStringValue(transformValue(props.value + ""));
+    setStringValue(Number(transformValue(props.value + "")));
   }, [props.value, transformValue]);
 
   return (
-    <kit.Input
+    <kit.fields.Integer
       {...(props.widgetOptions || {})}
       suffix={props.widgetOptions?.suffix || unit}
       className={InputNumberStyle}
-      maximum={props.widgetOptions?.max}
-      minimum={props.widgetOptions?.min}
+      max={props.widgetOptions?.max}
+      min={props.widgetOptions?.min}
       type="int"
-      value={stringValue}
-      onChange={onChange}
-    ></kit.Input>
+      input={{
+        value: stringValue,
+        onChange,
+        name: "",
+        onFocus: ()=> {},
+        onBlur: ()=> {},
+      }}
+      meta={{}}
+    ></kit.fields.Integer>
   );
 };
 

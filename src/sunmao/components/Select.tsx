@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { css } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
-import { Select as BaseSelect } from "antd";
+import { useUIKit } from "@cloudtower/eagle";
 
 const SelectProps = Type.Object({
   defaultValue: Type.String(),
@@ -66,6 +66,7 @@ export const Select = implementRuntimeComponent({
     mergeState,
     subscribeMethods,
   }) => {
+    const kit = useUIKit();
     const [value, setValue] = useState<string>(defaultValue);
     useEffect(() => {
       mergeState({
@@ -79,19 +80,21 @@ export const Select = implementRuntimeComponent({
     }, [subscribeMethods]);
 
     return (
-      <BaseSelect
+      <kit.select
         // ref={elementRef}
         className={css`
           ${customStyle?.select}
         `}
-        value={value}
-        onChange={(newV: string, option) => {
-          setValue(newV);
-          mergeState({
-            value: newV,
-            selectedOption: option,
-          });
-          callbackMap?.onChange?.();
+        input={{
+          value,
+          onChange: (newV, option) => {
+            setValue(newV as string);
+            mergeState({
+              value: newV,
+              selectedOption: option,
+            });
+            callbackMap?.onChange?.();
+          }
         }}
         disabled={disabled}
         showSearch
@@ -99,12 +102,12 @@ export const Select = implementRuntimeComponent({
       >
         {options.map((o) => {
           return (
-            <BaseSelect.Option key={o.value} value={o.value}>
+            <kit.option key={o.value} value={o.value}>
               {o.text}
-            </BaseSelect.Option>
+            </kit.option>
           );
         })}
-      </BaseSelect>
+      </kit.select>
     );
   }
 );

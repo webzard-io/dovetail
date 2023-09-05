@@ -2,7 +2,6 @@ import React, {
   useContext,
   useEffect,
   useState,
-  useMemo,
   useCallback,
 } from "react";
 import compact from "lodash/compact";
@@ -11,13 +10,14 @@ import {
   Unstructured,
   UnstructuredList,
 } from "../../k8s-api-client/kube-api";
-import { KitContext } from "../../atoms/kit-context";
+import { kitContext, Typo } from "@cloudtower/eagle";
 import { get } from "lodash";
 import { css } from "@emotion/css";
 import styled from "@emotion/styled";
-import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
 import ErrorContent from "../../ErrorContent";
 import cs from "classnames";
+import Card from "../../atoms/themes/CloudTower/components/Card";
+import InfoRow from "../../atoms/themes/CloudTower/components/InfoRow";
 
 const RowStyle = css`
   .col-content {
@@ -96,7 +96,7 @@ const TabWrapper = styled.div`
     flex: 1;
     min-height: 0;
 
-    > .table-wrapper .dovetail-ant-table-header {
+    > .table-wrapper .ant-table-header {
       position: static;
     }
   }
@@ -209,7 +209,7 @@ const KubectlGetDetail = React.forwardRef<
     activeTab,
     setActiveTab,
   } = props;
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const [response, setResponse] = useState<DetailResponse>({
     data: null,
     loading: false,
@@ -291,12 +291,12 @@ const KubectlGetDetail = React.forwardRef<
               {section.title}
             </h2>
           ) : null}
-          <kit.Card className={CardStyle}>
+          <Card className={CardStyle}>
             {(function () {
               if (loading) {
                 return (
                   <LoadingWrapper>
-                    <kit.Loading />
+                    <kit.loading />
                   </LoadingWrapper>
                 );
               }
@@ -325,7 +325,7 @@ const KubectlGetDetail = React.forwardRef<
                         category,
                       };
                       return item.condition ? (
-                        <kit.InfoRow
+                        <InfoRow
                           key={(item.key || item.path || item.label) + index}
                           className={RowStyle}
                           label={
@@ -357,7 +357,7 @@ const KubectlGetDetail = React.forwardRef<
                 );
               });
             })()}
-          </kit.Card>
+          </Card>
         </div>
       );
 

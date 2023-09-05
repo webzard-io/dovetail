@@ -2,7 +2,7 @@ import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import { PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
 import { css } from "@emotion/css";
-import { KitContext } from "../../_internal/atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import React, {
   useContext,
   useMemo,
@@ -40,7 +40,7 @@ export const K8sNamespaceSelect = implementRuntimeComponent({
     events: [],
   },
 })(({ basePath, watchWsBasePath, placeholder, customStyle, mergeState }) => {
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const [options, setOptions] = useState<{ label: string; value: string }[]>(
     []
   );
@@ -82,11 +82,13 @@ export const K8sNamespaceSelect = implementRuntimeComponent({
   }, [api]);
 
   return (
-    <kit.Select
+    <kit.select
       options={options}
       placeholder={placeholder}
       className={css(customStyle?.content)}
-      onChange={onChange}
+      input={{
+        onChange
+      }}
       showSearch
     />
   );

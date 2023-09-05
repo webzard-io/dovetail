@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { Unstructured } from "../k8s-api-client/kube-api";
-import { KitContext } from "../atoms/kit-context";
 import TreeView from "./TreeView";
 
 const _ObjectSpec = React.forwardRef<
@@ -9,9 +8,8 @@ const _ObjectSpec = React.forwardRef<
     item?: Unstructured & { spec?: any } & Record<string, any>;
     className?: string;
   }
->((props, ref) => {
+>(function _ObjectSpec(props, ref) {
   const { className, item } = props;
-  const kit = useContext(KitContext);
   if (!item?.spec) {
     return null;
   }

@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { css } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
-import { KitContext } from "../../_internal/atoms/kit-context";
+import BaseCodeEditor from "../../_internal/atoms/CodeEditor";
 
 const CodeEditorProps = Type.Object({
   defaultValue: Type.String(),
@@ -37,9 +37,8 @@ export const CodeEditor = implementRuntimeComponent({
     events: [],
   },
 })(({ defaultValue, language, minimap, elementRef, customStyle }) => {
-  const kit = useContext(KitContext);
   return (
-    <kit.CodeEditor
+    <BaseCodeEditor
       ref={elementRef}
       defaultValue={defaultValue}
       language={language}

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { formatDuration } from "../utils/date";
 import { Unstructured } from "../k8s-api-client/kube-api";
-import { KitContext } from "../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import { Row } from "./style/Layout.style";
 
 function kvToArr(
@@ -17,9 +17,9 @@ const _ObjectMeta = React.forwardRef<
     className?: string;
     showName?: boolean;
   }
->((props, ref) => {
+>(function _ObjectMeta(props, ref) {
   const { className, item, showName } = props;
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   if (!item) {
     return null;
   }
@@ -73,9 +73,9 @@ const _ObjectMeta = React.forwardRef<
             <div className="value">
               {kvToArr(item.metadata.labels).map((label, idx) => {
                 return (
-                  <kit.Tag key={idx}>
+                  <kit.tag key={idx}>
                     {label.key}/{label.value}
-                  </kit.Tag>
+                  </kit.tag>
                 );
               })}
             </div>
@@ -87,9 +87,9 @@ const _ObjectMeta = React.forwardRef<
             <div className="value">
               {kvToArr(item.metadata.annotations).map((label, idx) => {
                 return (
-                  <kit.Tag key={idx}>
+                  <kit.tag key={idx}>
                     {label.key}/{label.value}
-                  </kit.Tag>
+                  </kit.tag>
                 );
               })}
             </div>
@@ -100,7 +100,7 @@ const _ObjectMeta = React.forwardRef<
             <label>Finalizers:</label>
             <div className="value">
               {item.metadata.finalizers.map((f, idx) => {
-                return <kit.Tag key={idx}>{f}</kit.Tag>;
+                return <kit.tag key={idx}>{f}</kit.tag>;
               })}
             </div>
           </div>

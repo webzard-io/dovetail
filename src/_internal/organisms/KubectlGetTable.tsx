@@ -6,14 +6,14 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { KitContext, TableProps } from "../atoms/kit-context";
+import { kitContext, TableProps, } from "@cloudtower/eagle";
 import { AuxiliaryLine } from "../atoms/themes/CloudTower/components/Table/TableWidgets";
 import CustomizeColumn from "../atoms/themes/CloudTower/components/Table/CustomizeColumn";
 import {
   useCustomizeColumn,
   type CustomizeColumnType,
 } from "../atoms/themes/CloudTower/components/Table/customize-column";
-import { KubeApi, UnstructuredList } from "../k8s-api-client/kube-api";
+import { KubeApi, UnstructuredList, Unstructured } from "../k8s-api-client/kube-api";
 import { styled } from "@linaria/react";
 import { css, cx } from "@linaria/core";
 import { TableLoading } from "../atoms/themes/CloudTower/components/Table/TableWidgets";
@@ -35,21 +35,21 @@ const TableContent = styled.div`
   overflow: hidden;
   position: relative;
 
-  .dovetail-ant-pagination {
+  .ant-pagination {
     display: none;
   }
 
-  .dovetail-ant-table-container {
+  .ant-table-container {
     display: flex;
     flex-direction: column;
     
-    .dovetail-ant-table-body {
+    .ant-table-body {
       flex: 1;
     }
   }
 `;
 const TooltipStyle = css`
-  .dovetail-ant-tooltip-inner {
+  .ant-tooltip-inner {
     background: rgba(23, 38, 64, 0.8);
     box-shadow: 0px 1px 4px rgba(29, 50, 108, 0.6);
     border-radius: 4px;
@@ -57,7 +57,7 @@ const TooltipStyle = css`
     min-height: 18px;
   }
 
-  .dovetail-ant-tooltip-arrow {
+  .ant-tooltip-arrow {
     display: none;
   }
 `;
@@ -65,7 +65,7 @@ const ColumnTitleStyle = css`
   border-bottom: 1px dashed #00122e;
 `;
 
-type Columns = (TableProps["columns"][0] & {
+type Columns = (TableProps<Unstructured & { id: string }>["columns"][0] & {
   titleTooltip?: string;
   isActionColumn?: boolean;
   canCustomizable?: boolean;
@@ -79,7 +79,7 @@ type KubectlGetTableProps = {
   resource: string;
   namespace: string;
   apiBase: string;
-  query: Record<string, any>;
+  query: Record<string, unknown>;
   defaultSize?: number;
   columns: Columns;
   response: {
@@ -87,15 +87,21 @@ type KubectlGetTableProps = {
     loading: boolean;
     error: null | Error;
   };
-  wrapper: React.MutableRefObject<any>;
+  wrapper: React.MutableRefObject<HTMLDivElement>;
   loading?: boolean;
+  customizable: boolean;
+  customizableKey: string;
+  activeKey?: string;
+  selectedKeys?: string[];
+  onSelect?: (keys: string[], records: any[]) => void;
+  onActive?: (key: string, record: any) => void;
   onFetchStart?: (res: any) => void;
   onResponse?: (res: any) => void;
   onWatchUpdate?: (res: any) => void;
   onError?: (res: any) => void;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
-} & Omit<TableProps, "data" | "rowKey" | "columns">;
+} & Omit<TableProps<Unstructured & { id: string; }>, "dataSource" | "rowKey" | "columns">;
 
 export const emptyData = {
   apiVersion: "",
@@ -117,6 +123,10 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       defaultSize,
       response,
       wrapper,
+      activeKey,
+      selectedKeys,
+      onSelect,
+      onActive,
       onFetchStart,
       onResponse,
       onWatchUpdate,
@@ -125,9 +135,8 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       onPageSizeChange,
       ...tableProps
     },
-    ref
   ) {
-    const kit = useContext(KitContext);
+    const kit = useContext(kitContext);
     const { t } = useTranslation();
     const auxiliaryLine = useRef(null);
     const cellPropsMap = useRef(new Map());
@@ -135,6 +144,25 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
     const [currentPage, setCurrentPage] = useState(1);
     const [currentSize, setCurrentSize] = useState(defaultSize ?? 10);
     const { data, loading, error } = response;
+
+    const rowKey = useCallback((row: UnstructuredList["items"][0]) => `${row.metadata.namespace}/${row.metadata.name}`, []);
+    const getRealRowKey = useCallback((record: any) => {
+      return typeof rowKey === "string" ? record[rowKey] : rowKey?.(record);
+    }, [rowKey]);
+    const rowClassName = useCallback((r) => {
+      return getRealRowKey(r) === activeKey ? "active-row" : "";
+    }, [activeKey, getRealRowKey]);
+    const rowSelection = useMemo(()=> onSelect && ({
+      type: "checkbox" as const,
+      selectedRowKeys: selectedKeys,
+      onChange(keys: unknown, rows: unknown[]) {
+        onSelect(keys as string[], rows);
+      },
+    }), [onSelect, selectedKeys]);
+    const onRowClick = useCallback((record: any, index) => {
+      const key = getRealRowKey(record);
+      onActive?.(key, record);
+    }, [getRealRowKey, onActive]);
 
     const api = useMemo(
       () =>
@@ -246,7 +274,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
             customizableColumnKeys={customizableColumnKeys}
           />
         ) : (
-          <kit.Tooltip
+          <kit.tooltip
             align={{ offset: [0, 6] }}
             overlayClassName={cx(TooltipStyle, Typo.Label.l4_regular)}
             title={column.titleTooltip}
@@ -255,7 +283,7 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
             <span className={column.titleTooltip ? ColumnTitleStyle : ""}>
               {column.title}
             </span>
-          </kit.Tooltip>
+          </kit.tooltip>
         ),
     })), [allColumnKeys, columnTitleMap, customizableColumnKeys, defaultCustomizeColumn, disabledColumnKeys, finalColumns, kit, tableProps.customizable]);
 
@@ -346,7 +374,6 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
       return stop.current;
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [api, namespace, query, onError, onResponse, onFetchStart, onWatchUpdate]);
-    const rowKey = useCallback((row: UnstructuredList["items"][0]) => `${row.metadata.namespace}/${row.metadata.name}`, []);
 
     useEffect(() => {
       const stop = fetch();
@@ -377,24 +404,26 @@ const KubectlGetTable = React.forwardRef<HTMLElement, KubectlGetTableProps>(
     }
 
     return (
-      <TableWrapper>
+      <TableWrapper className="dovetail-kubectl-get-table-wrapper">
         <TableContent>
-          <kit.Table
+          <kit.table
             {...tableProps}
             tableLayout="fixed"
+            rowClassName={rowClassName}
             components={components}
             columns={columns}
-            ref={ref}
-            data={data.items}
+            rowSelection={rowSelection}
+            dataSource={data.items as Array<Unstructured & { id: string }>}
             pagination={pagination}
             error={error}
             loading={loading}
             rowKey={rowKey}
             wrapper={wrapper}
+            onRowClick={onRowClick}
           />
           <AuxiliaryLine ref={auxiliaryLine}></AuxiliaryLine>
         </TableContent>
-        <kit.Pagination
+        <kit.pagination
           current={currentPage}
           size={currentSize}
           count={data.items.length}

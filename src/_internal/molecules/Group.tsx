@@ -3,9 +3,8 @@ import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
 import { resolveSubFields } from "./AutoForm/ObjectField";
 import styled from "@emotion/styled";
-import { KitContext } from "../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import { CloseOutlined } from "@ant-design/icons";
-import { Row, Collapse } from "antd";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
 import { css, cx } from "@emotion/css";
 import Icon from "../atoms/themes/CloudTower/components/Icon/Icon";
@@ -13,20 +12,18 @@ import registry from "../../services/Registry";
 import { StringUnion } from "@sunmao-ui/runtime";
 import { last } from "lodash";
 
-const { Panel } = Collapse;
-
 const GroupWrapperStyle = css`
-  &.dovetail-ant-collapse {
+  &.ant-collapse {
     border: 1px solid #e4e9f2;
     border-radius: 8px;
     background: transparent;
 
-    & > .dovetail-ant-collapse-item.dovetail-ant-collapse-no-arrow > .dovetail-ant-collapse-header {
+    & > .ant-collapse-item.ant-collapse-no-arrow > .ant-collapse-header {
       padding: 0;
     }
   }
 
-  .dovetail-ant-collapse-item-active .group-header {
+  .ant-collapse-item-active .group-header {
     border-radius: 8px 8px 0 0;
   }
 
@@ -45,22 +42,22 @@ const GroupWrapperStyle = css`
     }
   }
 
-  &.dovetail-ant-collapse > .dovetail-ant-collapse-item:last-child,
-  .dovetail-ant-collapse
-    > .dovetail-ant-collapse-item:last-child
-    > .dovetail-ant-collapse-header {
+  &.ant-collapse > .ant-collapse-item:last-child,
+  .ant-collapse
+    > .ant-collapse-item:last-child
+    > .ant-collapse-header {
     border-radius: 0 0 8px 8px;
   }
 
-  & .dovetail-ant-collapse-content > .dovetail-ant-collapse-content-box {
+  & .ant-collapse-content > .ant-collapse-content-box {
     padding: 0;
   }
 
-  &.dovetail-ant-collapse > .dovetail-ant-collapse-item {
+  &.ant-collapse > .ant-collapse-item {
     border-bottom: 0;
   }
 
-  & .dovetail-ant-collapse-item:last-child > .dovetail-ant-collapse-content {
+  & .ant-collapse-item:last-child > .ant-collapse-content {
     border-radius: 0 0 8px 8px;
   }
 
@@ -70,15 +67,15 @@ const GroupWrapperStyle = css`
     margin-right: 8px;
   }
 
-  & .dovetail-ant-collapse-item-active {
+  & .ant-collapse-item-active {
     .arrow-icon {
       transform: rotate(0);
     }
   }
 
-  &.dovetail-ant-collapse
-    .dovetail-ant-collapse-item-disabled
-    > .dovetail-ant-collapse-header {
+  &.ant-collapse
+    .ant-collapse-item-disabled
+    > .ant-collapse-header {
     cursor: unset;
   }
 `;
@@ -132,14 +129,14 @@ type GroupProps = WidgetProps<
 
 const Group = (props: GroupProps) => {
   const { path, widgetOptions, className, onRemove } = props;
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const icon = registry.icons.get(widgetOptions?.icon as any);
 
   return (
-    <Collapse
+    <kit.antdCollapse
       className={cx(GroupWrapperStyle, className)}
       defaultActiveKey={["panel"]}>
-      <Panel
+      <kit.antdCollapse.Panel
         key="panel"
         header={
           <GroupHeader className="group-header">
@@ -158,9 +155,9 @@ const Group = (props: GroupProps) => {
             </GroupTitleWrapper>
             {onRemove ? (
               <span>
-                <kit.Button size="small" type="text" onClick={onRemove}>
+                <kit.button size="small" type="text" onClick={onRemove}>
                   <CloseOutlined />
-                </kit.Button>
+                </kit.button>
               </span>
             ) : null}
           </GroupHeader>
@@ -168,11 +165,11 @@ const Group = (props: GroupProps) => {
         showArrow={false}
         disabled={!widgetOptions?.collapsible}
       >
-        <Row className={GroupBodyStyle} gutter={[24, 16]} style={{ margin: 0 }}>
+        <kit.row className={GroupBodyStyle} gutter={[24, 16]} style={{ margin: 0 }}>
           {resolveSubFields(props)}
-        </Row>
-      </Panel>
-    </Collapse>
+        </kit.row>
+      </kit.antdCollapse.Panel>
+    </kit.antdCollapse>
   );
 };
 

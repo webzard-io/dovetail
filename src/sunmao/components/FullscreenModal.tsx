@@ -1,13 +1,22 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   DIALOG_CONTAINER_ID,
   implementRuntimeComponent,
   StringUnion,
   PRESET_PROPERTY_CATEGORY,
 } from "@sunmao-ui/runtime";
-import { css } from "@emotion/css";
+import { css, cx } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
-import { KitContext } from "../../_internal/atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
+import BaseModal from "src/_internal/atoms/themes/CloudTower/components/FullscreenModal/Modal";
+
+const ModalStyle = css`
+  &.no-footer {
+    .ant-modal-footer {
+      display: none;
+    }
+  }
+`
 
 const ModalProps = Type.Object({
   width: Type.Number({
@@ -104,7 +113,7 @@ export const Modal = implementRuntimeComponent({
     zIndex,
     mergeState,
   }) => {
-    const kit = useContext(KitContext);
+    const kit = useContext(kitContext);
     const [visible, setVisible] = useState(defaultVisible || false);
     const buttonRef = useRef<HTMLElement | null>(null);
     useEffect(() => {
@@ -146,10 +155,13 @@ export const Modal = implementRuntimeComponent({
     }, [callbackMap?.onClose]);
 
     return (
-      <kit.FullscreenModal
-        className={css`
+      <BaseModal
+        className={cx(css`
           ${customStyle?.modal}
-        `}
+        `,
+          ModalStyle,
+          showFooter ? "" : "no-footer"
+        )}
         visible={visible}
         maskClosable={maskClosable}
         width={width}
@@ -162,8 +174,6 @@ export const Modal = implementRuntimeComponent({
         confirmLoading={confirmLoading}
         okText={confirmText}
         fullscreen={fullscreen}
-        size={size}
-        showFooter={showFooter}
         onCancel={onClose}
         onOk={callbackMap?.onConfirm}
         afterClose={callbackMap?.afterClose}
@@ -174,7 +184,7 @@ export const Modal = implementRuntimeComponent({
             ? slotsElements.content({})
             : "put content into modal"}
         </>
-      </kit.FullscreenModal>
+      </BaseModal>
     );
   }
 );

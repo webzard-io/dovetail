@@ -1,11 +1,10 @@
 import React, { useContext, useCallback, useState } from "react";
-import { KitContext } from "../atoms/kit-context";
-import { useTranslation } from "react-i18next";
+import { kitContext } from "@cloudtower/eagle";
 import { styled } from "@linaria/react";
 import { css, cx } from "@linaria/core";
 import _ from "lodash";
-import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
 import LabelTag from "./LabelTag";
+import { PlusAddCreateNew16BlueIcon, PlusAddCreateNew16SecondaryIcon } from "@cloudtower/icons-react";
 
 const LabelTabWrapper = styled.div`
   margin: 0 auto;
@@ -138,7 +137,7 @@ const LabelGroup = React.forwardRef<HTMLDivElement, LabelGroupProps>(
     },
     ref
   ) {
-    const kit = useContext(KitContext);
+    const kit = useContext(kitContext);
     const [editing, setEditing] = useState(false);
     const [editedKey, setEditedKey] = useState("");
     const [editedValue, setEditedValue] = useState("");
@@ -219,7 +218,7 @@ const LabelGroup = React.forwardRef<HTMLDivElement, LabelGroupProps>(
       >
         <LabelCardWrapper className="label-card-wrapper">
           {loading ? (
-            <kit.Loading />
+            <kit.loading />
           ) : (
             <div className="card-content">
               <div className="tags-wrapper">
@@ -243,30 +242,30 @@ const LabelGroup = React.forwardRef<HTMLDivElement, LabelGroupProps>(
                 })}
                 {editing ? (
                   <InputsWrapper>
-                    <kit.Input
+                    <kit.input
                       type="default"
                       value={editedKey}
                       size="small"
                       onChange={onEditedKeyChangeHandler}
                       onKeyUp={onInputKeyUp}
-                    ></kit.Input>
+                    ></kit.input>
                     :{" "}
-                    <kit.Input
+                    <kit.input
                       type="default"
                       value={editedValue}
                       size="small"
                       onChange={onEditedValueChangeHandler}
                       onKeyUp={onInputKeyUp}
-                    ></kit.Input>
+                    ></kit.input>
                   </InputsWrapper>
                 ) : null}
                 {editable && editing === false ? (
-                  <kit.Button
+                  <kit.button
                     className={TriggerStyle}
-                    prefixIcon="1-plus-add-create-new-16-secondary"
-                    hoverPrefixIcon="1-plus-add-create-new-16-blue"
+                    prefixIcon={<PlusAddCreateNew16SecondaryIcon/>}
+                    hoverPrefixIcon={<PlusAddCreateNew16BlueIcon/>}
                     onClick={onClickAdd}
-                  ></kit.Button>
+                  ></kit.button>
                 ) : null}
               </div>
             </div>

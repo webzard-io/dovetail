@@ -1,8 +1,7 @@
-import React from 'react';
-import { css, cx } from '@linaria/core';
-import { arrayMove } from './common';
-import { TableProps } from './Table';
-import { useCustomizeColumn, CustomizeColumnType } from './customize-column';
+import React from "react";
+import { css, cx } from "@linaria/core";
+import { arrayMove } from "./common";
+import { useCustomizeColumn, CustomizeColumnType } from "./customize-column";
 
 const thCss = css`
   background: white;
@@ -35,7 +34,19 @@ interface HeaderCellProps {
   index: number;
   sortable: boolean;
   className: string;
-  components: TableProps<{ id: string }>['components'];
+  components: {
+    table?: (props: any) => any;
+    header?: {
+      wrapper?: (props: any) => any;
+      row?: (props: any) => any;
+      cell?: (props: any) => any;
+    };
+    body?: {
+      wrapper?: (props: any) => any;
+      row?: (props: any) => any;
+      cell?: (props: any) => any;
+    };
+  };
   children?: React.ReactNode;
   auxiliaryLine: React.RefObject<HTMLDivElement>;
   wrapper: React.RefObject<HTMLDivElement>;
@@ -54,11 +65,7 @@ type DragEvent = React.DragEvent<HTMLTableHeaderCellElement>;
 
 let dragColumnIndex = 0;
 
-interface HeaderCellComponent {
-  (props: HeaderCellProps): React.ReactElement | null;
-}
-
-const HeaderCell: HeaderCellComponent = props => {
+function HeaderCell(props: HeaderCellProps) {
   const {
     draggable,
     resizable,
@@ -73,7 +80,7 @@ const HeaderCell: HeaderCellComponent = props => {
     onMouseLeave,
     ...restProps
   } = props;
-  const Th = components?.header?.cell || 'th';
+  const Th = components?.header?.cell || "th";
   const line = auxiliaryLine.current!;
 
   const [customizeColumn, setCustomizeColumn] = useCustomizeColumn(
@@ -81,8 +88,8 @@ const HeaderCell: HeaderCellComponent = props => {
   );
 
   if (
-    className.includes('ant-tablezhichenasd-selection-column') ||
-    typeof index !== 'number'
+    className.includes("ant-tablezhichenasd-selection-column") ||
+    typeof index !== "number"
   ) {
     return <Th {...restProps} className={className} />;
   }
@@ -98,7 +105,7 @@ const HeaderCell: HeaderCellComponent = props => {
         onDragStart: (event: DragEvent) => {
           const isWidthDraging =
             line.style.transform &&
-            line.style.transform !== 'translateX(-9999px)';
+            line.style.transform !== "translateX(-9999px)";
 
           if (isWidthDraging) {
             event.preventDefault();
@@ -110,32 +117,32 @@ const HeaderCell: HeaderCellComponent = props => {
           if (dragColumnIndex === index || !sortable) return;
           const klass =
             dragColumnIndex > index
-              ? 'on-dragenter-left'
-              : 'on-dragenter-right';
+              ? "on-dragenter-left"
+              : "on-dragenter-right";
 
-          const th = (event.target as HTMLElement).closest('th')!;
+          const th = (event.target as HTMLElement).closest("th")!;
           const classList = th.classList;
           classList.contains(klass) || classList.add(klass);
         },
         onDragLeave: (event: DragEvent) => {
           if (dragColumnIndex === index) return;
-          const th = (event.target as HTMLElement).closest('th')!;
+          const th = (event.target as HTMLElement).closest("th")!;
           if (!th.contains(event.relatedTarget as HTMLElement)) {
-            th.classList.remove('on-dragenter-left', 'on-dragenter-right');
+            th.classList.remove("on-dragenter-left", "on-dragenter-right");
           }
         },
         onDragOver: (event: DragEvent) => event.preventDefault(),
         onDrop: (event: DragEvent) => {
           if (dragColumnIndex === index) return;
           if (!sortable) {
-            console.warn('fixed column not involved in sorting');
+            console.warn("fixed column not involved in sorting");
             return;
           }
           setCustomizeColumn(val => {
             return arrayMove(val, dragColumnIndex, index);
           });
-          const th = (event.target as HTMLElement).closest('th')!;
-          th.classList.remove('on-dragenter-left', 'on-dragenter-right');
+          const th = (event.target as HTMLElement).closest("th")!;
+          th.classList.remove("on-dragenter-left", "on-dragenter-right");
         },
       }
     : {
@@ -145,9 +152,9 @@ const HeaderCell: HeaderCellComponent = props => {
           const target = event.target as HTMLElement;
           // need to allow children draggable if explicit draggable attribute true
           if (
-            'draggable' in target &&
+            "draggable" in target &&
             target.draggable &&
-            target.getAttribute('draggable') === 'true'
+            target.getAttribute("draggable") === "true"
           ) {
             return;
           }
@@ -163,15 +170,15 @@ const HeaderCell: HeaderCellComponent = props => {
   );
 
   const handleMousedown = ($event: React.MouseEvent) => {
-    document.documentElement.classList.add('disable-select');
+    document.documentElement.classList.add("disable-select");
     const tableOffsetY = wrapper.current!.getBoundingClientRect().left;
-    wrapper.current?.classList.add('dragging');
+    wrapper.current?.classList.add("dragging");
     const startMouseLeft = $event.clientX;
     let dragDistance = 0;
     line.style.transform = `translateX(${startMouseLeft - tableOffsetY}px)`;
 
     const table =
-      wrapper.current?.querySelector('.ant-table-scroll') || wrapper.current;
+      wrapper.current?.querySelector(".ant-table-scroll") || wrapper.current;
 
     const columnWidth = table
       ?.querySelector(`.cell_${customizeColumn[index].key}`)
@@ -198,15 +205,15 @@ const HeaderCell: HeaderCellComponent = props => {
         return val;
       });
 
-      line.style.transform = 'translateX(-9999px)';
-      document.documentElement.classList.remove('disable-select');
-      wrapper.current?.classList.remove('dragging');
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      line.style.transform = "translateX(-9999px)";
+      document.documentElement.classList.remove("disable-select");
+      wrapper.current?.classList.remove("dragging");
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
 
   const resizableChildren = resizable &&
@@ -225,13 +232,13 @@ const HeaderCell: HeaderCellComponent = props => {
       onMouseEnter={e => {
         onMouseEnter?.(e);
         wrapper.current?.querySelectorAll(`td.cell_${key}`).forEach(item => {
-          item.classList.add('header-hover');
+          item.classList.add("header-hover");
         });
       }}
       onMouseLeave={e => {
         onMouseLeave?.(e);
         wrapper.current?.querySelectorAll(`td.cell_${key}`).forEach(item => {
-          item.classList.remove('header-hover');
+          item.classList.remove("header-hover");
         });
       }}
       className={cx(
@@ -244,6 +251,6 @@ const HeaderCell: HeaderCellComponent = props => {
       {resizableChildren}
     </Th>
   );
-};
+}
 
 export default HeaderCell;

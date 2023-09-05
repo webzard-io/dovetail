@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { StringUnion } from "@sunmao-ui/shared";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
-import { KitContext } from "../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import { useContext, useEffect, useState } from "react";
 
 export const OptionsSpec = Type.Object({
@@ -18,7 +18,7 @@ type Props = WidgetProps<string, Static<typeof OptionsSpec>>;
 const Input = (props: Props) => {
   const { displayValues } = props;
   const [input, setInput] = useState("");
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const onChange = useCallback(
     (e) => {
       setInput(e.target.value);
@@ -32,13 +32,13 @@ const Input = (props: Props) => {
   }, [props.value]);
 
   return (
-    <kit.Input
+    <kit.input
       {...props.widgetOptions}
       type={props.widgetOptions?.type || "input"}
       onChange={onChange}
       value={input}
       autoComplete={props.widgetOptions?.autoComplete}
-    ></kit.Input>
+    ></kit.input>
   );
 };
 

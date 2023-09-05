@@ -1,15 +1,14 @@
 import React, { useContext, DragEvent } from "react";
-import { Checkbox } from "antd";
 import { css } from "@linaria/core";
 import { styled } from "@linaria/react";
-import { KitContext } from "../../../../kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import { useCustomizeColumn, CustomizeColumnType } from "./customize-column";
 import { arrayMove } from "./common";
 import Icon from "../Icon/Icon";
 import { useTranslation } from "react-i18next";
 
 const DropdownWrapper = css`
-  &.dovetail-ant-dropdown {
+  &.ant-dropdown {
     background: $white;
     border: 1px solid #dfe4eb;
     box-shadow: 0px 8px 16px rgba(129, 138, 153, 0.18),
@@ -21,7 +20,7 @@ const DropdownWrapper = css`
       width: 0px;
       background: transparent;
     }
-    .dovetail-ant-checkbox-wrapper {
+    .ant-checkbox-wrapper {
       margin-right: 20px;
     }
   }
@@ -65,14 +64,14 @@ const CheckboxStyle = css`
       bottom: 0;
     }
 
-    .dovetail-ant-checkbox-wrapper {
+    .ant-checkbox-wrapper {
       padding: 6px 0px 6px 12px;
       flex: 1;
 
-      .dovetail-ant-checkbox + span {
+      .ant-checkbox + span {
         color: $gray-80;
       }
-      &.dovetail-ant-checkbox-wrapper-disabled .dovetail-ant-checkbox + span {
+      &.ant-checkbox-wrapper-disabled .ant-checkbox + span {
         opacity: 0.4;
       }
     }
@@ -153,7 +152,7 @@ let dragColumnIndex = 0;
 
 const DropdownOverlay: React.FC<CustomizeColumnProps> = (props) => {
   const { t } = useTranslation();
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const {
     defaultCustomizeColumn,
     allColumnKeys,
@@ -231,8 +230,8 @@ const DropdownOverlay: React.FC<CustomizeColumnProps> = (props) => {
 
   return (
     <>
-      <Title>{t('dovetail.custom_column')}</Title>
-      <Checkbox.Group
+      <Title>{t("dovetail.custom_column")}</Title>
+      <kit.checkboxGroup
         className={CheckboxStyle}
         defaultValue={customizeColumn
           .filter((item) => item.display)
@@ -248,7 +247,7 @@ const DropdownOverlay: React.FC<CustomizeColumnProps> = (props) => {
                 key={column.key}
                 {...dragProps(column, index)}
               >
-                <kit.Checkbox
+                <kit.checkbox
                   value={column.key}
                   disabled={column.disable}
                   onChange={(event) => {
@@ -268,7 +267,7 @@ const DropdownOverlay: React.FC<CustomizeColumnProps> = (props) => {
                   }}
                 >
                   {column.title}
-                </kit.Checkbox>
+                </kit.checkbox>
                 {!column.disable && (
                   // TODO: wait icon
                   <div className="point-group">
@@ -281,16 +280,16 @@ const DropdownOverlay: React.FC<CustomizeColumnProps> = (props) => {
             )
           );
         })}
-      </Checkbox.Group>
+      </kit.checkboxGroup>
     </>
   );
 };
 
 const CustomizeColumn: React.FC<CustomizeColumnProps> = (props) => {
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
 
   return (
-    <kit.Dropdown
+    <kit.dropdown
       data-test-id={props["data-test-id"]}
       overlayClassName={DropdownWrapper}
       overlay={<DropdownOverlay {...props} />}
@@ -303,7 +302,7 @@ const CustomizeColumn: React.FC<CustomizeColumnProps> = (props) => {
         alt="setting"
         aria-label="setting"
       />
-    </kit.Dropdown>
+    </kit.dropdown>
   );
 };
 

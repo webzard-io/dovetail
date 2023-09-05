@@ -18,7 +18,7 @@ export const ToolBarStyle = css`
     margin: auto;
   }
 
-  & > .dovetail-ant-space-item {
+  & > .ant-space-item {
     line-height: 16px;
   }
 `;

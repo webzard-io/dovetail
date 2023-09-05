@@ -1,4 +1,4 @@
-import { libs, dependencies } from "./sunmao/lib";
+import { libs } from "./sunmao/lib";
 import registerSunmaoApp from "./SunmaoApp";
 import lcm from "./sunmao/lcm.json";
 import fiddle from "./sunmao/fiddle.json";
@@ -8,6 +8,9 @@ import deployment from "./sunmao/deployment.json";
 import validation from "./sunmao/validation.json";
 import type { Schema } from "./types";
 import "./i18n";
+import "antd/dist/antd.css";
+import "@cloudtower/eagle/dist/style.css";
+
 
 function App() {
   const search = new URLSearchParams(location.search);
@@ -23,7 +26,6 @@ function App() {
   )[search.get("app") || "fiddle"];
   const Page = registerSunmaoApp(schema, {
     libs,
-    dependencies,
   });
 
   return <Page />;

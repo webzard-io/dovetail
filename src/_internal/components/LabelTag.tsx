@@ -1,8 +1,7 @@
 import { cx, css } from "@linaria/core";
-import React, { useState, useMemo, useContext, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
-import { KitContext } from "../atoms/kit-context";
 import Icon from "../atoms/themes/CloudTower/components/Icon/Icon";
 
 const SYSTEM_LABEL_PREFIX = "system.cloudtower/";
@@ -55,7 +54,6 @@ const LabelTag: React.FC<{
   remove?: () => void;
 }> = ({ label, showEllipsis = true, remove }) => {
   const { t } = useTranslation();
-  const kit = useContext(KitContext);
   const tagRef = useRef<HTMLDivElement>(null);
   const tagWidthRef = useRef<number>(0);
   const [ellipsis, setEllipsis] = useState(false);

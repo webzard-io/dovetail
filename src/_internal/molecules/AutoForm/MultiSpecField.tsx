@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { Radio } from "antd";
 import SpecField from "./SpecField";
 import { WidgetProps } from "./widget";
+import { useUIKit } from "@cloudtower/eagle";
 
 const _Field: React.FC<
   Omit<WidgetProps, "spec"> & {
     specs: NonNullable<WidgetProps["spec"]["anyOf"]>;
   }
 > = (props) => {
+  const kit = useUIKit();
   const { specs, value, level, path, onChange } = props;
   const [specIdx, setSpecIdx] = useState(0);
   const subSpec: WidgetProps["spec"] | boolean = specs[specIdx];
@@ -18,14 +19,14 @@ const _Field: React.FC<
 
   return (
     <div>
-      <Radio.Group
+      <kit.radioGroup
         value={specIdx}
         onChange={(evt) => setSpecIdx(parseInt(evt.target.value))}
         options={specs.map((s, idx) => ({
           label: typeof s === "boolean" ? "" : s.type,
           value: idx,
         }))}
-      ></Radio.Group>
+      ></kit.radioGroup>
       <SpecField
         {...props}
         spec={subSpec}

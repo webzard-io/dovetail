@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { getValue } from './utils';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { getValue } from "./utils";
 
 type SerializableBasic = null | undefined | string | number | boolean;
 type SerializableArray = Serializable[];
@@ -20,7 +20,7 @@ export const dispatchStorageEvent = <T extends Serializable>(
   value: T
 ) => {
   const storageEvent: CustomStorageEvent<Serializable> = new Event(
-    'storageChange'
+    "storageChange"
   );
   storageEvent.key = key;
   storageEvent.value = value;
@@ -34,11 +34,11 @@ type CustomizeColumnType = {
 };
 
 export type LocalStorage = {
-  'dovetail-table-customize-column': Record<string, CustomizeColumnType[]>;
+  "dovetail-table-customize-column": Record<string, CustomizeColumnType[]>;
 };
 
 const localStorageVersions: Record<keyof LocalStorage, number> = {
-  'dovetail-table-customize-column': 1,
+  "dovetail-table-customize-column": 1,
 };
 
 export default function useLocalStorage<K extends keyof LocalStorage>(
@@ -95,8 +95,8 @@ export default function useLocalStorage<K extends keyof LocalStorage>(
         const newValue = JSON.parse(e.newValue).value;
         dispatchStorageEvent(e.key, newValue);
       } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('json parse failed', error);
+        if (process.env.NODE_ENV === "development") {
+          console.error("json parse failed", error);
         }
       }
     } else {
@@ -105,11 +105,11 @@ export default function useLocalStorage<K extends keyof LocalStorage>(
   }, []);
 
   useEffect(() => {
-    document.addEventListener('storageChange', onStorageChange);
-    window.addEventListener('storage', storageListener);
+    document.addEventListener("storageChange", onStorageChange);
+    window.addEventListener("storage", storageListener);
     return () => {
-      document.removeEventListener('storageChange', onStorageChange);
-      window.removeEventListener('storage', storageListener);
+      document.removeEventListener("storageChange", onStorageChange);
+      window.removeEventListener("storage", storageListener);
     };
   }, [onStorageChange, storageListener]);
 

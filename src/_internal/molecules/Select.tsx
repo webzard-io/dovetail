@@ -1,16 +1,15 @@
-import { Select as AntdSelect } from "antd";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
-import { KitContext } from "../atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import React, { useContext, useEffect } from "react";
 import { css } from "@linaria/core";
 import { styled } from "@linaria/react";
 
 const OptionStyle = css`
-  &.dovetail-ant-select-item-option-disabled {
+  &.ant-select-item-option-disabled {
     color: unset;
 
-    .dovetail-ant-select-item-option-content {
+    .ant-select-item-option-content {
       opacity: 0.5;
     }
   }
@@ -21,7 +20,7 @@ const OptionWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
 
-  .dovetail-ant-tag {
+  .ant-tag {
     border: 0;
   }
 `;
@@ -88,7 +87,7 @@ export const OptionsSpec = Type.Object({
 type Props = WidgetProps<string | string[], Static<typeof OptionsSpec>>;
 
 const Select = (props: Props) => {
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const {
     value,
     onChange,
@@ -117,32 +116,33 @@ const Select = (props: Props) => {
   }, []);
 
   return (
-    <kit.Select
+    <kit.select
       disabled={disabled}
-      value={(value || "") as any}
-      onChange={(value, option) =>
-        onChange(
-          value,
-          {
-            ...displayValues,
-            [path]: option.label,
-          },
-          props.itemKey,
-          props.path
-        )
-      }
+      input={{
+        value: (value || ""),
+        onChange: (value, option: any) =>
+          onChange(
+            value,
+            {
+              ...displayValues,
+              [path]: option.label,
+            },
+            props.itemKey,
+            props.path
+          )
+      }}
       showSearch
       optionLabelProp="label"
       optionFilterProp="children"
       dropdownMatchSelectWidth={dropdownMatchSelectWidth}
     >
-      {options.map((option, idx) => {
+      {options.map((option) => {
         const isShowDisabledMessage = option.disabled && option.disabledMessage;
         const isShowTip = option.tip;
 
         return (
-          <AntdSelect.Option
-            key={idx}
+          <kit.option
+            key={option.value}
             value={option.value}
             label={option.label}
             disabled={option.disabled}
@@ -151,7 +151,7 @@ const Select = (props: Props) => {
             <OptionWrapper>
               <span>{option.label}</span>
               {(option.tags || []).map((tag) => (
-                <kit.Tag color={tag.color}>{tag.name}</kit.Tag>
+                <kit.tag key={tag.name} color={tag.color}>{tag.name}</kit.tag>
               ))}
             </OptionWrapper>
             <ExtractWrapper>
@@ -161,10 +161,10 @@ const Select = (props: Props) => {
               {isShowDisabledMessage && isShowTip ? <Splitor>·</Splitor> : null}
               {isShowTip ? <OptionTip>{option.tip}</OptionTip> : null}
             </ExtractWrapper>
-          </AntdSelect.Option>
+          </kit.option>
         );
       })}
-    </kit.Select>
+    </kit.select>
   );
 };
 

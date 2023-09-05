@@ -10,14 +10,113 @@ import {
   implementRuntimeComponent,
   StringUnion,
 } from "@sunmao-ui/runtime";
-import { css as ecss } from "@emotion/css";
+import { css as ecss, cx as ecx } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
-import { KitContext } from "../../_internal/atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import { useTranslation } from "react-i18next";
 import { styled } from "@linaria/react";
 import { cx } from "@linaria/core";
 import Icon from "../../_internal/atoms/themes/CloudTower/components/Icon/Icon";
 import { Typo } from "../../_internal/atoms/themes/CloudTower/styles/typo.style";
+import BaseModal from "src/_internal/atoms/themes/CloudTower/components/FullscreenModal/Modal";
+
+export const CommonModalStyle = ecss`
+&.ant-modal {
+  .ant-modal-header {
+    padding: 24px 56px 20px 24px;
+    border-bottom: none;
+  }
+
+  .ant-modal-title {
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 600;
+  }
+
+  .ant-modal-body {
+    overflow-y: auto;
+    max-height: calc(60vh - #{$footer-height});
+    min-height: 88px;
+    padding: 12px 24px 24px;
+  }
+
+  .ant-modal-footer {
+    padding: 16px 24px;
+    border-top: none;
+    box-shadow: inset 0px 1px 0px rgba(235, 239, 245, 0.6);
+  }
+}
+
+&.ant-modal.size-small {
+  //top: 40px;
+  min-height: 356px;
+
+  .ant-modal-content {
+    border-radius: 16px;
+
+    .ant-modal-close-x {
+      right: 40px;
+    }
+  }
+
+  .ant-modal-header {
+    border-radius: 16px 16px 0 0;
+    padding: 40px 40px 8px;
+    border-bottom: none;
+  }
+
+  .ant-modal-title {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 600;
+  }
+
+  .ant-modal-body {
+    overflow-y: auto;
+    padding: 24px 40px 32px;
+    max-height: calc(100vh - 80px - 80px - 96px);
+  }
+
+  .ant-modal-footer {
+    padding: 32px 40px;
+    border-top: none;
+    box-shadow: inset 0px 1px 0px rgba(235, 239, 245, 0.6);
+  }
+}
+
+&.ant-modal.size-medium {
+  //top: 40px;
+  min-height: 356px;
+
+  .ant-modal-content {
+    border-radius: 16px;
+  }
+
+  .ant-modal-header {
+    border-radius: 16px 16px 0 0;
+    padding: 40px 60px 8px;
+    border-bottom: none;
+  }
+
+  .ant-modal-title {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 600;
+  }
+
+  .ant-modal-body {
+    overflow-y: auto;
+    padding: 24px 60px 32px;
+    max-height: calc(100vh - 80px - 80px - 96px);
+  }
+
+  .ant-modal-footer {
+    padding: 32px 60px;
+    border-top: none;
+    box-shadow: inset 0px 1px 0px rgba(235, 239, 245, 0.6);
+  }
+}
+`;
 
 const FooterWrapper = styled.div`
   width: 100%;
@@ -69,12 +168,10 @@ export const Modal = implementRuntimeComponent({
   metadata: {
     name: "modal",
     displayName: "Modal",
-    isDraggable: true,
-    isResizable: true,
     exampleProperties: {
       title: "Header",
+      size: "small"
     },
-    exampleSize: [4, 8],
     annotations: {
       category: "Display",
     },
@@ -114,15 +211,10 @@ export const Modal = implementRuntimeComponent({
     isChildModal,
     mergeState,
   }) => {
-    const kit = useContext(KitContext);
+    const kit = useContext(kitContext);
     const { t } = useTranslation();
     const [visible, setVisible] = useState(defaultVisible || false);
-    const buttonRef = useRef<HTMLElement | null>(null);
     useEffect(() => {
-      if (typeof elementRef === "object") {
-        buttonRef.current = elementRef?.current;
-      }
-
       subscribeMethods({
         open() {
           setVisible(true);
@@ -145,27 +237,29 @@ export const Modal = implementRuntimeComponent({
         visible: false,
       });
       callbackMap?.onClose?.();
-    }, [callbackMap?.onClose]);
+    }, [callbackMap?.onClose, mergeState]);
 
     return (
-      <kit.Modal
-        ref={elementRef}
-        onClose={onClose}
+      <BaseModal
+        onCancel={onClose}
         afterClose={callbackMap?.afterClose}
-        className={ecss`
+        className={ecx(
+          CommonModalStyle,
+          `size-${size}`,
+          ecss`
           ${customStyle?.modal}
-        `}
+        `
+        )}
         visible={visible}
         maskClosable={maskClosable}
         maskStyle={{
-          background: isChildModal ? 'rgba(16, 26, 41, 0.6)' : undefined
+          background: isChildModal ? "rgba(16, 26, 41, 0.6)" : undefined
         }}
         width={width}
         getContainer={() =>
           document.getElementById(DIALOG_CONTAINER_ID) || document.body
         }
         title={title}
-        size={size}
         footer={
           showFooter ? (
             <FooterWrapper>
@@ -188,9 +282,9 @@ export const Modal = implementRuntimeComponent({
                 {slotsElements.footer ? (
                   slotsElements.footer({})
                 ) : (
-                  <kit.Button type="text" onClick={onClose}>
+                  <kit.button type="text" onClick={onClose}>
                     {t("dovetail.cancel")}
-                  </kit.Button>
+                  </kit.button>
                 )}
               </FooterButtonWrapper>
             </FooterWrapper>
@@ -202,7 +296,7 @@ export const Modal = implementRuntimeComponent({
             ? slotsElements.content({})
             : "put content into modal"}
         </>
-      </kit.Modal>
+      </BaseModal>
     );
   }
 );

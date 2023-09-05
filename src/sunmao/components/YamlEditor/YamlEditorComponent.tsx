@@ -1,4 +1,4 @@
-import { KitContext } from "../../../_internal/atoms/kit-context";
+import { kitContext } from "@cloudtower/eagle";
 import { Icon } from "@cloudtower/eagle";
 import {
   ClipboardCopy16GradientGrayIcon,
@@ -89,7 +89,7 @@ export type Handle = {
 
 export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditorComponent(props, ref) {
   const { title, isDefaultCollapsed, defaultValue = "", height, errorMsgs = [], schema, eleRef, className } = props;
-  const kit = useContext(KitContext);
+  const kit = useContext(kitContext);
   const { t } = useTranslation();
   const [isCollapsed, setIsCollapsed] = useState(isDefaultCollapsed);
   const [isDiff, setIsDiff] = useState(false);
@@ -143,9 +143,9 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
       data-is-error={!!errorMsgs.length}
       ref={eleRef}
     >
-      <kit.Space className={cx(ToolBarStyle, isCollapsed ? "collapsed" : "")} direction="vertical" size={0}>
-        <kit.Space className={ToolBarHeaderStyle} align="baseline">
-          <kit.Space size={8}>
+      <kit.space className={cx(ToolBarStyle, isCollapsed ? "collapsed" : "")} direction="vertical" size={0}>
+        <kit.space className={ToolBarHeaderStyle} align="baseline">
+          <kit.space size={8}>
             <Icon
               src={HierarchyTriangleRight16GrayIcon}
               hoverSrc={HierarchyTriangleRight16BlueIcon}
@@ -155,11 +155,11 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
               onClick={() => setIsCollapsed(!isCollapsed)}
             />
             <div className={cx(TitleStyle, "yaml-editor-title")}>{title || t("dovetail.configure_file")}</div>
-          </kit.Space>
-          <kit.Space size={14}>
+          </kit.space>
+          <kit.space size={14}>
             {isDiff ? undefined : (
               <>
-                <kit.Tooltip
+                <kit.tooltip
                   title={isCollapsed ? "" : copyTooltip}
                   onVisibleChange={(visible) => {
                     if (!visible) {
@@ -183,9 +183,9 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
                       }
                     }}
                   />
-                </kit.Tooltip>
+                </kit.tooltip>
                 <Seperator />
-                <kit.Tooltip
+                <kit.tooltip
                   title={isCollapsed ? "" : resetTooltip}
                   onVisibleChange={(visible) => {
                     if (!visible) {
@@ -209,11 +209,11 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
                       }
                     }}
                   />
-                </kit.Tooltip>
+                </kit.tooltip>
                 <Seperator />
               </>
             )}
-            <kit.Tooltip title={isCollapsed ? "" : (isDiff ? t("dovetail.back_to_edit") : t("dovetail.view_changes"))}>
+            <kit.tooltip title={isCollapsed ? "" : (isDiff ? t("dovetail.back_to_edit") : t("dovetail.view_changes"))}>
               {isDiff ? (
                 <Icon
                   data-disabled={isCollapsed}
@@ -235,11 +235,11 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
                   onClick={() => isCollapsed ? undefined : setIsDiff(true)}
                 />
               )}
-            </kit.Tooltip>
-          </kit.Space>
-        </kit.Space>
+            </kit.tooltip>
+          </kit.space>
+        </kit.space>
         {errorMsgs.length ? (
-          <kit.Space className={ErrorWrapperStyle} size={8} align="start">
+          <kit.space className={ErrorWrapperStyle} size={8} align="start">
             <XmarkFailedSeriousWarningFill16RedIcon className={ErrorIconStyle} />
             <div>
               {errorMsgs.map((errorMsg, index) => (
@@ -249,9 +249,9 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
                 </div>
               ))}
             </div>
-          </kit.Space>
+          </kit.space>
         ) : undefined}
-      </kit.Space>
+      </kit.space>
       <div
         style={{
           display: isCollapsed ? "none" : "block",
