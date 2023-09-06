@@ -555,12 +555,6 @@ export class KubeSdk {
 
       spec.metadata = spec.metadata || {};
       spec.metadata.annotations = spec.metadata.annotations || {};
-      delete spec.metadata.annotations[
-        "kubectl.kubernetes.io/last-applied-configuration"
-      ];
-      spec.metadata.annotations[
-        "kubectl.kubernetes.io/last-applied-configuration"
-      ] = JSON.stringify(spec);
 
       if (strategy === "application/apply-patch+yaml") {
         delete spec.metadata.managedFields;
@@ -594,9 +588,7 @@ export class KubeSdk {
         }
         changed.push(response as Unstructured);
       } catch (error) {
-        delete spec.metadata.annotations[
-          "kubectl.kubernetes.io/last-applied-configuration"
-        ];
+
         throw error;
       }
     }
