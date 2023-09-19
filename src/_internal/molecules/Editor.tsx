@@ -15,6 +15,7 @@ export const OptionsSpec = Type.Object({
   formatError: Type.String(),
   schemaError: Type.String(),
   sectionTitle: Type.String(),
+  readOnly: Type.Boolean(),
 });
 
 export type EditorProps = WidgetProps<Record<string, unknown> | string, Static<typeof OptionsSpec>>;
