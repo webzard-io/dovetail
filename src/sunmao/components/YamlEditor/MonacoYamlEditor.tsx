@@ -20,6 +20,7 @@ type Props = {
   onBlur?: () => void;
   getInstance: (ins: monaco.editor.IStandaloneCodeEditor) => void;
   schema?: JSONSchema4;
+  readOnly?: boolean;
 };
 
 if (!import.meta.env.PROD) {
@@ -41,7 +42,7 @@ const schemaMap = new Map();
 const MonacoYamlEditor: React.FC<Props> = props => {
   const ref = useRef<HTMLDivElement>(null);
   const instanceRef = useRef<{ editor: monaco.editor.IStandaloneCodeEditor | null }>({ editor: null });
-  const { defaultValue, id, height, onChange, onValidate, getInstance, onEditorCreate, onBlur, schema } = props;
+  const { defaultValue, id, height, readOnly, onChange, onValidate, getInstance, onEditorCreate, onBlur, schema } = props;
   const uri = id ? monaco.Uri.parse(`${id}.yaml`) : undefined;
 
   useEffect(() => {
@@ -75,6 +76,7 @@ const MonacoYamlEditor: React.FC<Props> = props => {
         handleMouseWheel: false,
       },
       tabSize: 2,
+      readOnly: readOnly,
     });
 
     instanceRef.current.editor = editor;
@@ -88,7 +90,7 @@ const MonacoYamlEditor: React.FC<Props> = props => {
       editor.dispose();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultValue, schema, id, getInstance]);
+  }, [defaultValue, schema, id, readOnly, getInstance]);
 
   useEffect(() => {
     const editor = instanceRef.current.editor;

@@ -75,6 +75,7 @@ export type Props = Partial<Static<typeof PropsSchema>> & {
   className?: string;
   height?: string;
   isDefaultCollapsed?: boolean;
+  readOnly?: boolean;
   onChange?: (value: string) => void;
   onValidate?: (valid: boolean, schemaValid: boolean) => void;
   onEditorCreate?: (editor: monaco.editor.ICodeEditor) => void;
@@ -88,7 +89,7 @@ export type Handle = {
 }
 
 export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditorComponent(props, ref) {
-  const { title, isDefaultCollapsed, defaultValue = "", height, errorMsgs = [], schema, eleRef, className } = props;
+  const { title, isDefaultCollapsed, defaultValue = "", height, readOnly, errorMsgs = [], schema, eleRef, className } = props;
   const kit = useContext(KitContext);
   const { t } = useTranslation();
   const [isCollapsed, setIsCollapsed] = useState(isDefaultCollapsed);
@@ -281,6 +282,7 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
               onEditorCreate={onEditorCreate}
               onBlur={props.onBlur}
               schema={schema}
+              readOnly={readOnly}
             />
           </Suspense>
         )}

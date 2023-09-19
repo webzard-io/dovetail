@@ -49,8 +49,11 @@ export const COMMON_ARRAY_OPTIONS = {
     })
   ),
   useFirstAsDefaultValue: Type.Optional(Type.Boolean({
-    title: 'Use first as default value',
-    description: 'Is use the value of first item as the default value when adding the new item?'
+    title: "Use first as default value",
+    description: "Is use the value of first item as the default value when adding the new item?"
+  })),
+  disabled: Type.Optional(Type.Boolean({
+    title: "Disabled"
   }))
 }
 
@@ -148,7 +151,10 @@ const ArrayItems = (props: Props) => {
               }}
               path={path.concat(`.${itemIndex}`)}
               level={level + 1}
-              widgetOptions={field?.subItem?.widgetOptions || {}}
+              widgetOptions={
+                { disabled: widgetOptions?.disabled, ...(field?.subItem?.widgetOptions || {}) } || 
+                { disabled: widgetOptions?.disabled }
+              }
               onChange={(
                 newItemValue: any,
                 newDisplayValues: Record<string, any>,
@@ -161,7 +167,7 @@ const ArrayItems = (props: Props) => {
               }}
             />
           </div>
-          {value.length > (widgetOptions?.minLength || 0) ? (
+          {value.length > (widgetOptions?.minLength || 0) && !widgetOptions.disabled ? (
             <kit.Button
               className={CloseButtonStyle}
               size="small"
@@ -178,8 +184,8 @@ const ArrayItems = (props: Props) => {
       {widgetOptions.helper && value.length ? (
         <HelperText>{widgetOptions.helper}</HelperText>
       ) : null}
-      {widgetOptions.addable !== false &&
-      value.length < (widgetOptions.maxLength || Number.MAX_SAFE_INTEGER) ? (
+      {widgetOptions.addable !== false && !widgetOptions?.disabled &&
+        value.length < (widgetOptions.maxLength || Number.MAX_SAFE_INTEGER) ? (
         <div style={{ marginTop: widgetOptions.helper ? 0 : "16px" }}>
           {widgetOptions.addedButtonIcon ? (
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>
