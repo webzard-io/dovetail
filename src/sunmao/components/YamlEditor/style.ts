@@ -106,3 +106,13 @@ export const YamlEditorStyle = css`
     }
   }
 `;
+
+export const YamlDiffEditorStyle = css`
+  .monaco-editor.original-in-monaco-diff-editor {
+    border-bottom-left-radius: 8px;
+  
+    .overflow-guard {
+      border-bottom-left-radius: 8px;
+    }
+  }
+`;
