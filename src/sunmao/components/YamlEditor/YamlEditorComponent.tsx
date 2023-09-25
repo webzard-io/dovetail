@@ -106,7 +106,7 @@ export const YamlEditorComponent = forwardRef<Handle, Props>(function YamlEditor
         editorInstance.current?.getModel()?.setValue(value);
       },
       getEditorValue: () => {
-        return editorInstance.current?.getValue() || "";
+        return editorInstance.current?.getValue() || value || "";
       }
     };
   });

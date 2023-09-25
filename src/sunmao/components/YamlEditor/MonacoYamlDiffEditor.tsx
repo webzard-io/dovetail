@@ -1,5 +1,6 @@
 import * as monaco from "monaco-editor";
 import React, { useEffect, useRef } from "react";
+import { YamlDiffEditorStyle } from "./style";
 
 type Props = {
   id?: string;
@@ -39,6 +40,7 @@ const MonacoYamlDiffEditor: React.FC<Props> = props => {
   return (
     <div
       ref={ref}
+      className={YamlDiffEditorStyle}
       style={{
         width: "100%",
         height: height || "500px",

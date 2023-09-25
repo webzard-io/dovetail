@@ -158,7 +158,14 @@ const Group = (props: GroupProps) => {
             </GroupTitleWrapper>
             {onRemove ? (
               <span>
-                <kit.Button size="small" type="text" onClick={onRemove}>
+                <kit.Button
+                  size="small"
+                  type="text"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemove();
+                  }}
+                >
                   <CloseOutlined />
                 </kit.Button>
               </span>
