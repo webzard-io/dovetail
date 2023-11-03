@@ -3,7 +3,7 @@ import Group from "./Group";
 import { Type, Static } from "@sinclair/typebox";
 import { KitContext } from "../atoms/kit-context";
 import React, { useContext, useEffect, useCallback } from "react";
-import { css } from "@emotion/css";
+import { css, cx } from "@emotion/css";
 import Icon, {
   IconTypes,
 } from "../atoms/themes/CloudTower/components/Icon/Icon";
@@ -15,6 +15,7 @@ import registry from "../../services/Registry";
 import { StringUnion } from "@sunmao-ui/runtime";
 import { set } from "lodash";
 import { COMMON_ARRAY_OPTIONS } from "./ArrayItems";
+import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
 
 const GroupStyle = css`
   &.dovetail-ant-collapse {
@@ -22,6 +23,12 @@ const GroupStyle = css`
   }
 `;
 const AddedButtonStyle = css``;
+const OrderStyle = css`
+  display: inline-block;
+  width: 20px;
+  margin-right: 8px;
+  color: rgba(44, 56, 82, 0.60);
+`
 
 export const OptionsSpec = Type.Object({
   ...COMMON_ARRAY_OPTIONS,
@@ -38,6 +45,12 @@ export const OptionsSpec = Type.Object({
   icon: Type.Optional(
     StringUnion([...registry.icons.keys()], { title: "Icon" })
   ),
+  orderPosition: Type.Optional(
+    StringUnion(["after", "before"]),
+  ),
+  itemKey: Type.Optional(
+    Type.String()
+  )
 });
 
 type Props = WidgetProps<any[], Static<typeof OptionsSpec>>;
@@ -64,6 +77,8 @@ const ArrayGroups = (props: Props) => {
       icon: "",
       collapsible: false,
       useFirstAsDefaultValue: false,
+      orderPosition: "after",
+      itemKey: ""
     },
     onChange,
   } = props;
@@ -114,7 +129,7 @@ const ArrayGroups = (props: Props) => {
           <Group
             {...props}
             className={GroupStyle}
-            key={itemIndex}
+            key={widgetOptions.itemKey ? itemValue[widgetOptions.itemKey] || itemIndex : itemIndex}
             value={itemValue}
             spec={itemSpec as JSONSchema7}
             superiorKey={`${props.field?.key}-${itemIndex}`}
@@ -123,7 +138,12 @@ const ArrayGroups = (props: Props) => {
             widgetOptions={{
               ...widgetOptions,
               title: widgetOptions?.title
-                ? `${widgetOptions?.title} ${itemIndex + 1}`
+                ? widgetOptions.orderPosition === "before" ? (
+                  <>
+                    <span className={cx(OrderStyle, Typo.Label.l3_bold)}>{itemIndex + 1}</span>
+                    <span>{widgetOptions.title}</span>
+                  </>
+                ) : `${widgetOptions?.title} ${itemIndex + 1}`
                 : "",
               collapsible: widgetOptions.collapsible,
               icon: widgetOptions.icon,
