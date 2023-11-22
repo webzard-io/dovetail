@@ -454,6 +454,7 @@ const KubectlApplyFormState = Type.Object({
   loading: Type.Boolean(),
   error: Type.Any(),
   enabledEditorMap: Type.Record(Type.String(), Type.Boolean()),
+  isValid: Type.Boolean(),
 });
 
 export const KubectlApplyForm = implementRuntimeComponent({
@@ -507,6 +508,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
         ),
       }),
       clearError: Type.Object({}),
+      validateForm: Type.Object({}),
     },
     slots: {
       field: {
@@ -675,12 +677,27 @@ export const KubectlApplyForm = implementRuntimeComponent({
             displayValue: displayValuesRef.current,
           })
         },
+        validateForm() {
+          let result: Record<string, string[]> = {};
+
+          if (ref.current) {
+            result = ref.current.validate();
+          }
+
+          mergeState({
+            isValid: Object.values(result).every(error=> !error),
+          });
+        },
         nextStep({ disabled }) {
           let result: Record<string, string[]> = {};
 
           if (ref.current) {
             result = ref.current.validate();
           }
+
+          mergeState({
+            isValid: Object.values(result).every(error=> !error),
+          });
 
           if (
             Object.values(result).every((messages) => messages.length === 0) &&
@@ -696,6 +713,10 @@ export const KubectlApplyForm = implementRuntimeComponent({
             if (ref.current) {
               result = ref.current.validate();
             }
+
+            mergeState({
+              isValid: Object.values(result).every(error=> !error),
+            });
 
             if (
               Object.values(result).every(
