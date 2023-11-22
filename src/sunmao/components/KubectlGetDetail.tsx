@@ -75,6 +75,9 @@ const SectionSpec = Type.Object({
   title: Type.String({
     title: "Title",
   }),
+  collapsible: Type.Boolean({
+    title: "Collapsible"
+  }),
   info: Type.Record(
     Type.String(),
     Type.Array(InfoSpec, {
