@@ -18,7 +18,7 @@ import styled from "@emotion/styled";
 import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
 import ErrorContent from "../../ErrorContent";
 import { Icon, useUIKit } from "@cloudtower/eagle";
-import { ArrowChevronUp16BlueIcon, ArrowChevronDown16BlueIcon } from "@cloudtower/icons-react";
+import { ArrowChevronUp16BoldBlueIcon, ArrowChevronDown16BoldBlueIcon } from "@cloudtower/icons-react";
 import cs from "classnames";
 
 const RowStyle = css`
@@ -105,6 +105,9 @@ const TabWrapper = styled.div`
 `;
 const SectionStyle = css`
   &:not(:last-of-type) {
+    &.section-collapsed {
+      margin-bottom: 8px;
+    }
     margin-bottom: 24px;
   }
 `;
@@ -218,7 +221,7 @@ function DetailSection(props: DetailSectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div key={section.title} className={SectionStyle}>
+    <div key={section.title} className={cx(SectionStyle, isCollapsed && "section-collapsed")}>
       {section.title ? (
         <div className={SectionHeaderStyle}>
           <div
@@ -230,8 +233,8 @@ function DetailSection(props: DetailSectionProps) {
             section.collapsible ? (
               <UIKit.button type="text" size="small" onClick={() => setIsCollapsed(!isCollapsed)}>
                 {isCollapsed ?
-                  <ArrowChevronUp16BlueIcon /> :
-                  <ArrowChevronDown16BlueIcon />
+                  <ArrowChevronDown16BoldBlueIcon /> :
+                  <ArrowChevronUp16BoldBlueIcon />
                 }
               </UIKit.button>
             ) : null
