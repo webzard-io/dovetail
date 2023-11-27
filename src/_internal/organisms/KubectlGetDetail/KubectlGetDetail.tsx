@@ -13,10 +13,12 @@ import {
 } from "../../k8s-api-client/kube-api";
 import { KitContext } from "../../atoms/kit-context";
 import { get } from "lodash";
-import { css } from "@emotion/css";
+import { css, cx } from "@emotion/css";
 import styled from "@emotion/styled";
 import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
 import ErrorContent from "../../ErrorContent";
+import { Icon, useUIKit } from "@cloudtower/eagle";
+import { ArrowChevronUp16BlueIcon, ArrowChevronDown16BlueIcon } from "@cloudtower/icons-react";
 import cs from "classnames";
 
 const RowStyle = css`
@@ -101,6 +103,20 @@ const TabWrapper = styled.div`
     }
   }
 `;
+const SectionStyle = css`
+  &:not(:last-of-type) {
+    margin-bottom: 24px;
+  }
+`;
+const SectionHeaderStyle = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 32px;
+`;
+const SectionTitleStyle = css`
+  color: rgba(44, 56, 82, 0.60);
+`;
 
 type DetailResponse = {
   data: Unstructured | null;
@@ -132,6 +148,7 @@ export type Info = Record<string, Item[]>;
 export type Section = {
   title: string;
   info: Info;
+  collapsible?: boolean;
 };
 
 export type Tab = {
@@ -185,112 +202,44 @@ type KubectlGetDetailProps = {
   setActiveTab: (key: string) => void;
 };
 
-const KubectlGetDetail = React.forwardRef<
-  HTMLDivElement,
-  KubectlGetDetailProps
->(function KubectlGetDetail(props, ref) {
-  const {
-    className,
-    basePath,
-    watchWsBasePath,
-    apiBase,
-    namespace,
-    resource,
-    name,
-    query,
-    layout,
-    errorText,
-    renderTab,
-    renderSection,
-    renderKey,
-    renderValue,
-    renderAction,
-    onResponse,
-    activeTab,
-    setActiveTab,
-  } = props;
+type DetailSectionProps = Pick<KubectlGetDetailProps, "errorText" | "renderAction" | "renderValue" | "renderKey"> & {
+  section: Section;
+  loading?: boolean;
+  error?: Error | null;
+  data: Unstructured | null;
+  context?: { tab: string; tabIndex: number };
+  fetch: () => Promise<unknown>;
+}
+
+function DetailSection(props: DetailSectionProps) {
+  const { section, loading, error, errorText, data, context, fetch, renderAction, renderKey, renderValue } = props;
+  const UIKit = useUIKit();
   const kit = useContext(KitContext);
-  const [response, setResponse] = useState<DetailResponse>({
-    data: null,
-    loading: false,
-    error: null,
-  });
-  const { data, loading, error } = response;
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const onTabChange = (key: string) => {
-    setActiveTab(key);
-    props.onTabChange?.(key);
-  };
-  const fetch = useCallback(() => {
-    const api = new KubeApi<UnstructuredList>({
-      basePath: basePath,
-      watchWsBasePath,
-      objectConstructor: {
-        resourceBasePath: apiBase,
-        resource,
-        namespace,
-      },
-    });
-    const onResponseAndWatchUpdate = (res: UnstructuredList) => {
-      setResponse(() => ({
-        loading: false,
-        error: null,
-        data: res.items[0]
-          ? {
-              ...res.items[0],
-              kind: res.kind.replace(/List$/g, ""),
-              apiVersion: res.apiVersion,
-            }
-          : null,
-      }));
-    };
-
-    setResponse((prev) => ({ ...prev, loading: true }));
-
-    return api
-      .listWatch({
-        query: {
-          ...(query || {}),
-          fieldSelector: compact(
-            (name ? [`metadata.name=${name}`] : []).concat(
-              query?.fieldSelector || []
-            )
-          ),
-        },
-        onResponse: onResponseAndWatchUpdate,
-        onWatchUpdate: onResponseAndWatchUpdate,
-      })
-      .catch((err) => {
-        setResponse(() => ({ loading: false, error: err, data: null }));
-      });
-  }, [basePath, watchWsBasePath, apiBase, namespace, resource, name, query]);
-
-  useEffect(() => {
-    onResponse?.(response);
-  }, [response]);
-  useEffect(() => {
-    const stopP = fetch();
-
-    return () => {
-      stopP.then((stop) => stop?.());
-    };
-  }, [fetch]);
-
-  const renderSections = (
-    sections: Section[],
-    context?: { tab: string; tabIndex: number }
-  ) => {
-    return sections.map((section) => {
-      const sectionFallback = (
-        <div key={section.title}>
-          {section.title ? (
-            <h2
-              className={Typo.Heading.h2_bold_title}
-              style={{ marginBottom: "16px" }}
-            >
-              {section.title}
-            </h2>
-          ) : null}
+  return (
+    <div key={section.title} className={SectionStyle}>
+      {section.title ? (
+        <div className={SectionHeaderStyle}>
+          <div
+            className={cx(Typo.Heading.h1_bold_title, SectionTitleStyle)}
+          >
+            {section.title}
+          </div>
+          {
+            section.collapsible ? (
+              <UIKit.button type="text" size="small" onClick={() => setIsCollapsed(!isCollapsed)}>
+                {isCollapsed ?
+                  <ArrowChevronUp16BlueIcon /> :
+                  <ArrowChevronDown16BlueIcon />
+                }
+              </UIKit.button>
+            ) : null
+          }
+        </div>
+      ) : null}
+      {
+        isCollapsed ? null : (
           <kit.Card className={CardStyle}>
             {(function () {
               if (loading) {
@@ -358,7 +307,121 @@ const KubectlGetDetail = React.forwardRef<
               });
             })()}
           </kit.Card>
-        </div>
+        )
+      }
+    </div>
+  )
+}
+
+const KubectlGetDetail = React.forwardRef<
+  HTMLDivElement,
+  KubectlGetDetailProps
+>(function KubectlGetDetail(props, ref) {
+  const {
+    className,
+    basePath,
+    watchWsBasePath,
+    apiBase,
+    namespace,
+    resource,
+    name,
+    query,
+    layout,
+    errorText,
+    renderTab,
+    renderSection,
+    renderKey,
+    renderValue,
+    renderAction,
+    onResponse,
+    activeTab,
+    setActiveTab,
+  } = props;
+  const [response, setResponse] = useState<DetailResponse>({
+    data: null,
+    loading: false,
+    error: null,
+  });
+  const { data, loading, error } = response;
+
+  const onTabChange = (key: string) => {
+    setActiveTab(key);
+    props.onTabChange?.(key);
+  };
+  const fetch = useCallback(() => {
+    const api = new KubeApi<UnstructuredList>({
+      basePath: basePath,
+      watchWsBasePath,
+      objectConstructor: {
+        resourceBasePath: apiBase,
+        resource,
+        namespace,
+      },
+    });
+    const onResponseAndWatchUpdate = (res: UnstructuredList) => {
+      setResponse(() => ({
+        loading: false,
+        error: null,
+        data: res.items[0]
+          ? {
+            ...res.items[0],
+            kind: res.kind.replace(/List$/g, ""),
+            apiVersion: res.apiVersion,
+          }
+          : null,
+      }));
+    };
+
+    setResponse((prev) => ({ ...prev, loading: true }));
+
+    return api
+      .listWatch({
+        query: {
+          ...(query || {}),
+          fieldSelector: compact(
+            (name ? [`metadata.name=${name}`] : []).concat(
+              query?.fieldSelector || []
+            )
+          ),
+        },
+        onResponse: onResponseAndWatchUpdate,
+        onWatchUpdate: onResponseAndWatchUpdate,
+      })
+      .catch((err) => {
+        setResponse(() => ({ loading: false, error: err, data: null }));
+      });
+  }, [basePath, watchWsBasePath, apiBase, namespace, resource, name, query]);
+
+  useEffect(() => {
+    onResponse?.(response);
+  }, [response]);
+  useEffect(() => {
+    const stopP = fetch();
+
+    return () => {
+      stopP.then((stop) => stop?.());
+    };
+  }, [fetch]);
+
+  const renderSections = (
+    sections: Section[],
+    context?: { tab: string; tabIndex: number }
+  ) => {
+    return sections.map((section, index) => {
+      const sectionFallback = (
+        <DetailSection
+          key={section.title || index}
+          section={section}
+          loading={loading}
+          error={error}
+          errorText={errorText}
+          context={context}
+          data={data}
+          fetch={fetch}
+          renderAction={renderAction}
+          renderKey={renderKey}
+          renderValue={renderValue}
+        />
       );
 
       return (

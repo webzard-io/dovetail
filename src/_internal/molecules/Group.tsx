@@ -108,7 +108,7 @@ const GroupBodyStyle = css`
 
 export const OptionsSpec = Type.Object({
   title: Type.Optional(
-    Type.String({
+    Type.Any({
       title: "Title",
     })
   ),

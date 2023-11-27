@@ -44,7 +44,7 @@ export function resolveSubFields(props: WidgetProps) {
           field={subField}
           widget={subField.widget}
           widgetOptions={{ disabled: widgetOptions?.disabled, ...subField.widgetOptions}}
-          key={subField.path}
+          key={subField.key || subField.path}
           spec={subSpec}
           path={path.concat(isLayout ? subField.path : `.${subField.path}`)}
           level={level + 1}

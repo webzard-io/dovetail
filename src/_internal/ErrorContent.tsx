@@ -48,6 +48,7 @@ const WidgetErrorContent: React.FunctionComponent<WidgetErrorContentProps> = (
         </p>
         {refetch ? (
           <kit.Button
+            size="small"
             type="ordinary"
             onClick={(e) => {
               e.stopPropagation();
