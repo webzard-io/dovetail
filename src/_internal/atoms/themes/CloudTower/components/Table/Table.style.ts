@@ -294,6 +294,7 @@ export const TableStyle = css`
           white-space: nowrap;
           text-overflow: ellipsis;
           > span {
+            flex: 1 1;
             overflow: hidden;
             text-overflow: ellipsis;
           }

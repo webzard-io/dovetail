@@ -32,6 +32,13 @@ type Response = {
   error: null | Error;
 };
 
+const EMPTY_VALUES = [
+  undefined,
+  null,
+  "",
+  "-"
+];
+
 const WrapperStyle = css`
   &.table-wrapper.sunmao-cloudtower-table {
     border-top: 0;
@@ -89,6 +96,9 @@ const WrapperStyle = css`
       background: transparent;
     }
   }
+`;
+const EmptyTextStyle = css`
+  color: rgba(0, 21, 64, 0.30);
 `;
 
 const WIDGET_CATEGORY = "Widget";
@@ -630,7 +640,7 @@ export const KubectlGetTable = implementRuntimeComponent({
       });
     }, []);
 
-    const finalColumns = useMemo(()=> columns.map((col, colIndex) => ({
+    const finalColumns = useMemo(() => columns.map((col, colIndex) => ({
       ...col,
       fixed: col.fixed === "none" ? undefined : col.fixed,
       dataIndex: typeof col.dataIndex === "string"
@@ -641,7 +651,11 @@ export const KubectlGetTable = implementRuntimeComponent({
           { ...col, path: col.dataIndex },
           {
             value: value,
-            renderedValue: value ?? "-",
+            renderedValue: <span
+              className={EMPTY_VALUES.includes(value) ? EmptyTextStyle : ""}
+            >
+              {EMPTY_VALUES.includes(value) ? "-" : value}
+            </span>,
             record,
             index,
           },
