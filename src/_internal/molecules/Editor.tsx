@@ -105,9 +105,7 @@ function Editor(props: EditorProps) {
   return (<>
     {props.widgetOptions?.sectionTitle && <SectionTitle
       sectionTitle={props.widgetOptions?.sectionTitle}
-      isDisplayEditorSwitch
-      isEnableEditor
-      isDisabledSwitchEditor
+      className="editor-switch-section-title"
     />}
     <YamlEditorComponent
       ref={ref}

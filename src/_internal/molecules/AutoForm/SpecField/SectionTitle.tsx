@@ -31,12 +31,13 @@ const EditYAMLTextStyle = css`
 `;
 
 type SectionTitleProps = {
-  isDisplayEditorSwitch: boolean;
+  isDisplayEditorSwitch?: boolean;
   sectionTitle?: string;
   editorSwitchTooltip?: string;
   isEnableEditor?: boolean;
   isDisabledSwitchEditor?: boolean;
   onEnableEditorChange?: (checked: boolean) => void;
+  className?: string;
 }
 
 function SectionTitle(props: SectionTitleProps) {
@@ -46,13 +47,14 @@ function SectionTitle(props: SectionTitleProps) {
     editorSwitchTooltip,
     isEnableEditor,
     isDisabledSwitchEditor,
-    onEnableEditorChange
+    className,
+    onEnableEditorChange,
   } = props;
   const { i18n } = useTranslation();
   const kit = useContext(KitContext);
 
   return (
-    <div className={cx(FieldSection, "field-section-title", isDisplayEditorSwitch ? "editor-switch-section-title" : null)}>
+    <div className={cx(FieldSection, "field-section-title", isDisplayEditorSwitch ? "editor-switch-section-title" : null, className)}>
       <span className={cx("section-title-text")}>{sectionTitle}</span>
       {isDisplayEditorSwitch ? (
         <span>
