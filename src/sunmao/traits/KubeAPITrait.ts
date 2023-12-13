@@ -137,7 +137,6 @@ export default implementRuntimeTrait({
     ],
   },
 })(() => {
-  const responseMap = new Map();
   const stopMap = new Map();
   const timeMap = new Map();
   const countUpdateMap = new Map();
@@ -189,19 +188,22 @@ export default implementRuntimeTrait({
       // reset last retry's times and timer
       api.resetRetryState();
 
-      const onResponseAndWatchUpdate = (response: UnstructuredList) => {
+      const onListResponse = (response: UnstructuredList) => {
         mergeState({ loading: false, error: null, response });
-        if (!responseMap.has(componentId)) {
-          onResponse?.forEach((handler, index) => {
-            runEventHandler(
-              handler,
-              trait.properties.onResponse,
-              index,
-              services,
-              ""
-            )();
-          });
-        }
+        
+        onResponse?.forEach((handler, index) => {
+          runEventHandler(
+            handler,
+            trait.properties.onResponse,
+            index,
+            services,
+            ""
+          )();
+        });
+      };
+      const onListWatchUpdate = (response: UnstructuredList) => {
+        mergeState({ loading: false, error: null, response });
+        
         onDataUpdate?.forEach((handler, index) => {
           runEventHandler(
             handler,
@@ -211,7 +213,6 @@ export default implementRuntimeTrait({
             ""
           )();
         });
-        responseMap.set(componentId, response);
       };
 
       const stopFn = await api
@@ -224,8 +225,8 @@ export default implementRuntimeTrait({
               )
             ),
           },
-          onResponse: onResponseAndWatchUpdate,
-          onWatchUpdate: onResponseAndWatchUpdate
+          onResponse: onListResponse,
+          onWatchUpdate: onListWatchUpdate
         })
         .catch((err) => {
           mergeState({ loading: false, error: err, response: emptyData });
@@ -321,7 +322,6 @@ export default implementRuntimeTrait({
         ],
         componentDidUnmount: [
           () => {
-            responseMap.delete(componentId);
             stop();
           },
         ],
