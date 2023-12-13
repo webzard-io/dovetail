@@ -18,7 +18,7 @@ import {
   FORM_WIDGET_OPTIONS_MAP,
 } from "../../_internal/molecules/form";
 import { LAYOUT_WIDGETS_MAP } from "../../_internal/molecules/layout";
-import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
+import { KubeSdk, KubernetesApplyAction } from "../../_internal/k8s-api-client/kube-api";
 import { generateSlotChildren } from "../utils/slot";
 import { immutableSet } from "../utils/object";
 import registry from "../../services/Registry";
@@ -506,6 +506,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
           Type.Array(Type.String()),
           { conditions: [{ key: "strategy", value: "application/json-patch+json" }] }
         ),
+        actions: Type.Array(StringUnion(["create", "patch"])),
       }),
       clearError: Type.Object({}),
       validateForm: Type.Object({}),
@@ -685,7 +686,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
           }
 
           mergeState({
-            isValid: Object.values(result).every(error=> !error),
+            isValid: Object.values(result).every(error => !error),
           });
         },
         nextStep({ disabled }) {
@@ -696,7 +697,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
           }
 
           mergeState({
-            isValid: Object.values(result).every(error=> !error),
+            isValid: Object.values(result).every(error => !error),
           });
 
           if (
@@ -706,7 +707,13 @@ export const KubectlApplyForm = implementRuntimeComponent({
             changeStep(step + 1);
           }
         },
-        async apply({ disabled, transformMap, strategy, replacePaths }) {
+        async apply({
+          disabled,
+          transformMap,
+          strategy,
+          replacePaths,
+          actions
+        }) {
           try {
             let result: Record<string, string[]> = {};
 
@@ -715,7 +722,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
             }
 
             mergeState({
-              isValid: Object.values(result).every(error=> !error),
+              isValid: Object.values(result).every(error => !error),
             });
 
             if (
@@ -747,7 +754,12 @@ export const KubectlApplyForm = implementRuntimeComponent({
                 error: null,
               });
 
-              await sdk.applyYaml(appliedValues, strategy, replacePaths);
+              await sdk.applyYaml(
+                appliedValues,
+                strategy,
+                replacePaths,
+                actions
+              );
 
               mergeState({
                 loading: false,
