@@ -2,11 +2,8 @@ import { Type, Static } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
 import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import set from "lodash/set";
 import useMergeState from "../hooks/useMergeState";
-import cloneDeep from "lodash/cloneDeep";
-import isEqual from "lodash/isEqual";
-import pick from "lodash/pick";
+import { cloneDeep, pick } from "lodash";
 import _KubectlApplyForm, {
   CUSTOM_SCHEMA_KIND,
   KubectlApplyFormRef,
@@ -18,7 +15,7 @@ import {
   FORM_WIDGET_OPTIONS_MAP,
 } from "../../_internal/molecules/form";
 import { LAYOUT_WIDGETS_MAP } from "../../_internal/molecules/layout";
-import { KubeSdk, KubernetesApplyAction } from "../../_internal/k8s-api-client/kube-api";
+import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 import { generateSlotChildren } from "../utils/slot";
 import { immutableSet } from "../utils/object";
 import registry from "../../services/Registry";
@@ -488,6 +485,13 @@ export const KubectlApplyForm = implementRuntimeComponent({
         value: Type.Any(),
         displayValue: Type.Any(),
       }),
+      setFields: Type.Object({
+        fields: Type.Array(Type.Object({
+          fieldPath: Type.String(),
+          value: Type.Any(),
+          displayValue: Type.Any(),
+        }))
+      }),
       setDisplayValue: Type.Object({
         fieldPath: Type.String(),
         displayValue: Type.Any(),
@@ -666,6 +670,42 @@ export const KubectlApplyForm = implementRuntimeComponent({
             value: valuesRef.current,
             displayValue: displayValuesRef.current,
           })
+        },
+        setFields({ fields }) {
+          const {
+            values: newValues,
+            displayValues: newDisplayValues
+          } = fields.reduce((result: {
+            values: any[];
+            displayValues: Record<string, any>;
+          }, { fieldPath, value: fieldValue, displayValue }) => {
+            const { values, displayValues } = result;
+            const finalFieldValue =
+              fieldValue && typeof fieldValue === "object"
+                ? cloneDeep(fieldValue)
+                : fieldValue;
+
+            const newValues = immutableSet(values, fieldPath, finalFieldValue) as any[];
+            const newDisplayValues = {
+              ...displayValues,
+              [fieldPath]: displayValue,
+            };
+
+            return {
+              values: newValues,
+              displayValues: newDisplayValues
+            };
+          }, {
+            values: valuesRef.current,
+            displayValues: displayValuesRef.current
+          });
+
+          setValues(newValues);
+          mergeDisplayValues(newDisplayValues);
+          mergeState({
+            value: newValues,
+            displayValue: displayValues,
+          });
         },
         setDisplayValue({ fieldPath, displayValue }) {
           const newDisplayValues = {
