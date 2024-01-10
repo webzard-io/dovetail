@@ -2,11 +2,8 @@ import { Type, Static } from "@sinclair/typebox";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
 import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import set from "lodash/set";
 import useMergeState from "../hooks/useMergeState";
-import cloneDeep from "lodash/cloneDeep";
-import isEqual from "lodash/isEqual";
-import pick from "lodash/pick";
+import { cloneDeep, pick } from "lodash";
 import _KubectlApplyForm, {
   CUSTOM_SCHEMA_KIND,
   KubectlApplyFormRef,
@@ -488,6 +485,13 @@ export const KubectlApplyForm = implementRuntimeComponent({
         value: Type.Any(),
         displayValue: Type.Any(),
       }),
+      setFields: Type.Object({
+        fields: Type.Array(Type.Object({
+          fieldPath: Type.String(),
+          value: Type.Any(),
+          displayValue: Type.Any(),
+        }))
+      }),
       setDisplayValue: Type.Object({
         fieldPath: Type.String(),
         displayValue: Type.Any(),
@@ -506,6 +510,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
           Type.Array(Type.String()),
           { conditions: [{ key: "strategy", value: "application/json-patch+json" }] }
         ),
+        actions: Type.Array(StringUnion(["create", "patch"])),
       }),
       clearError: Type.Object({}),
       validateForm: Type.Object({}),
@@ -666,6 +671,42 @@ export const KubectlApplyForm = implementRuntimeComponent({
             displayValue: displayValuesRef.current,
           })
         },
+        setFields({ fields }) {
+          const {
+            values: newValues,
+            displayValues: newDisplayValues
+          } = fields.reduce((result: {
+            values: any[];
+            displayValues: Record<string, any>;
+          }, { fieldPath, value: fieldValue, displayValue }) => {
+            const { values, displayValues } = result;
+            const finalFieldValue =
+              fieldValue && typeof fieldValue === "object"
+                ? cloneDeep(fieldValue)
+                : fieldValue;
+
+            const newValues = immutableSet(values, fieldPath, finalFieldValue) as any[];
+            const newDisplayValues = {
+              ...displayValues,
+              [fieldPath]: displayValue,
+            };
+
+            return {
+              values: newValues,
+              displayValues: newDisplayValues
+            };
+          }, {
+            values: valuesRef.current,
+            displayValues: displayValuesRef.current
+          });
+
+          setValues(newValues);
+          mergeDisplayValues(newDisplayValues);
+          mergeState({
+            value: newValues,
+            displayValue: displayValues,
+          });
+        },
         setDisplayValue({ fieldPath, displayValue }) {
           const newDisplayValues = {
             ...displayValues,
@@ -685,7 +726,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
           }
 
           mergeState({
-            isValid: Object.values(result).every(error=> !error),
+            isValid: Object.values(result).every(error => !error),
           });
         },
         nextStep({ disabled }) {
@@ -696,7 +737,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
           }
 
           mergeState({
-            isValid: Object.values(result).every(error=> !error),
+            isValid: Object.values(result).every(error => !error),
           });
 
           if (
@@ -706,7 +747,13 @@ export const KubectlApplyForm = implementRuntimeComponent({
             changeStep(step + 1);
           }
         },
-        async apply({ disabled, transformMap, strategy, replacePaths }) {
+        async apply({
+          disabled,
+          transformMap,
+          strategy,
+          replacePaths,
+          actions
+        }) {
           try {
             let result: Record<string, string[]> = {};
 
@@ -715,7 +762,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
             }
 
             mergeState({
-              isValid: Object.values(result).every(error=> !error),
+              isValid: Object.values(result).every(error => !error),
             });
 
             if (
@@ -747,7 +794,12 @@ export const KubectlApplyForm = implementRuntimeComponent({
                 error: null,
               });
 
-              await sdk.applyYaml(appliedValues, strategy, replacePaths);
+              await sdk.applyYaml(
+                appliedValues,
+                strategy,
+                replacePaths,
+                actions
+              );
 
               mergeState({
                 loading: false,

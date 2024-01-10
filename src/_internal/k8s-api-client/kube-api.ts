@@ -527,6 +527,8 @@ type KubernetesApiAction =
   | "list"
   | "replace";
 
+export type KubernetesApplyAction = "create" | "patch";
+
 const apiVersionResourceCache: Record<string, APIResourceList> = {};
 
 type OperationOptions = {
@@ -544,7 +546,7 @@ export class KubeSdk {
     this.basePath = basePath;
   }
 
-  public async applyYaml(specs: Unstructured[], strategy?: string, replacePaths?: string[][]) {
+  public async applyYaml(specs: Unstructured[], strategy?: string, replacePaths?: string[][], actions: KubernetesApplyAction[] = []) {
     const validSpecs = specs.filter((s) => s && s.kind && s.metadata);
     const changed: Unstructured[] = [];
     const created: Unstructured[] = [];
@@ -561,19 +563,27 @@ export class KubeSdk {
         delete (spec as any).metadata.resourceVersion;
       }
 
-      let exist = true;
-      try {
-        await this.read(spec);
-      } catch (e: any) {
-        if (e.response?.status === 404) {
-          exist = false;
-        } else {
-          throw e;
+      let action: KubernetesApplyAction = actions[index];
+
+      if (!action) {
+        action = "patch";
+        
+        try {
+          await this.read(spec);
+        } catch (e: any) {
+          if (e.response?.status === 404) {
+            action = "create";
+          } else {
+            throw e;
+          }
         }
       }
 
+
       try {
-        const response = exist
+        const isPatch = action === "patch";
+
+        const response = isPatch
           ? await this.patch(
             spec,
             strategy || "application/merge-patch+json",
@@ -581,7 +591,7 @@ export class KubeSdk {
           )
           : await this.create(spec);
 
-        if (exist) {
+        if (isPatch) {
           updated.push(response as Unstructured);
         } else {
           created.push(response as Unstructured);
