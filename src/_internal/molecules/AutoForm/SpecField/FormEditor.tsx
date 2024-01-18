@@ -64,7 +64,7 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
   const finalErrors = useMemo(() => {
     return isShowError ? [...new Set([...editorErrors, ...errors, ...filedErrors])] : [];
   }, [isShowError, editorErrors, errors, filedErrors]);
-  const defaultEditorValue = useMemo(() => yaml.dump(props.field?.defaultValue || {}), [props.field?.defaultValue]);
+  const defaultEditorValue = useMemo(() => yaml.dump(props.field?.defaultValue || {}, { lineWidth: Number.MAX_SAFE_INTEGER }), [props.field?.defaultValue]);
 
   const validate = useCallback((callback: (errorMsgs: string[], newValue: unknown) => void) => {
     if (editorErrors.length || filedErrors.length) {
@@ -109,7 +109,7 @@ const FormEditor = React.forwardRef<FormEditorHandle, FormEditorProps>(function 
     }
   }, [emitChange, editorErrors.length])
   const changeValue = useCallback(() => {
-    const currentEditorValue = yaml.dump(value);
+    const currentEditorValue = yaml.dump(value, { lineWidth: Number.MAX_SAFE_INTEGER });
 
     if (currentEditorValue !== editorRef.current?.getEditorValue()) {
       editorRef.current?.setEditorValue(currentEditorValue);

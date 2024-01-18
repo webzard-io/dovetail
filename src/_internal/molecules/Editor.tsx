@@ -31,7 +31,7 @@ function Editor(props: EditorProps) {
     () => {
       if (field?.defaultValue === undefined) return "";
 
-      return typeof field?.defaultValue === "string" ? field?.defaultValue || "" : yaml.dump(field?.defaultValue || {});
+      return typeof field?.defaultValue === "string" ? field?.defaultValue || "" : yaml.dump(field?.defaultValue || {}, { lineWidth: Number.MAX_SAFE_INTEGER });
     },
     [field?.defaultValue]
   );
@@ -82,7 +82,7 @@ function Editor(props: EditorProps) {
       const valueFromEditor = yaml.load(ref.current?.getEditorValue() || "");
 
       if (!isEqual(value, valueFromEditor)) {
-        const newEditorValue = typeof value === "string" ? value : yaml.dump(value);
+        const newEditorValue = typeof value === "string" ? value : yaml.dump(value, { lineWidth: Number.MAX_SAFE_INTEGER });
 
         ref.current?.setEditorValue(newEditorValue);
         ref.current?.setValue(newEditorValue);
