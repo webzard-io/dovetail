@@ -549,8 +549,6 @@ export class KubeSdk {
   public async applyYaml(specs: Unstructured[], strategy?: string, replacePaths?: string[][], actions: KubernetesApplyAction[] = []) {
     const validSpecs = specs.filter((s) => s && s.kind && s.metadata);
     const changed: Unstructured[] = [];
-    const created: Unstructured[] = [];
-    const updated: Unstructured[] = [];
 
     for (const index in validSpecs) {
       const spec = validSpecs[index];
@@ -592,31 +590,23 @@ export class KubeSdk {
           : await this.create(spec);
 
         if (isPatch) {
-          updated.push(response as Unstructured);
+          event.emit("change", {
+            type: "MODIFIED",
+            basePath: this.basePath,
+            items: [response as Unstructured],
+          });
         } else {
-          created.push(response as Unstructured);
+          event.emit("change", {
+            type: "ADDED",
+            basePath: this.basePath,
+            items: [response as Unstructured],
+          });
         }
         changed.push(response as Unstructured);
       } catch (error) {
 
         throw error;
       }
-    }
-
-    if (created.length) {
-      event.emit("change", {
-        type: "ADDED",
-        basePath: this.basePath,
-        items: created,
-      });
-    }
-
-    if (updated.length) {
-      event.emit("change", {
-        type: "MODIFIED",
-        basePath: this.basePath,
-        items: updated,
-      });
     }
 
     return changed;
