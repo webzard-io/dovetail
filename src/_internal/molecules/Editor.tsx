@@ -1,12 +1,9 @@
-import { useTranslation } from "react-i18next";
-import React, { useCallback, useState, useEffect, useRef, useMemo } from "react";
+import React, { useMemo } from "react";
 import { WidgetProps } from "./AutoForm/widget";
 import { Type, Static } from "@sinclair/typebox";
-import { YamlEditorComponent, Handle as EditorHandle } from "../../sunmao/components/YamlEditor/YamlEditorComponent";
-import { Events } from "../organisms/KubectlApplyForm/type";
-import yaml from "js-yaml";
-import { isEqual } from "lodash";
+import { YamlEditorComponent } from "../../sunmao/components/YamlEditor/YamlEditorComponent";
 import SectionTitle from "../molecules/AutoForm/SpecField/SectionTitle";
+import useEditor from "../hooks/useEditor";
 
 export const OptionsSpec = Type.Object({
   title: Type.String(),
@@ -21,86 +18,19 @@ export const OptionsSpec = Type.Object({
 export type EditorProps = WidgetProps<Record<string, unknown> | string, Static<typeof OptionsSpec>>;
 
 function Editor(props: EditorProps) {
-  const i18n = useTranslation();
-  const { spec, field, value, services, displayValues, itemKey, onChange } = props;
-  const ref = useRef<EditorHandle>(null);
-  const [editorErrors, setEditorErrors] = useState<string[]>([]);
-  const [isShowErrors, setIsShowErrors] = useState<boolean>(false);
+  const { spec, error, itemKey } = props;
+  const {
+    ref,
+    finalErrors,
+    defaultValue,
+    changeValue,
+    onChangeOrBlur,
+    onEditorValidate,
+  } = useEditor({
+    ...props,
+    error: typeof error === "string" ? error : "",
+  });
   const schema = useMemo(() => ["object", "array"].includes(spec.type as string) ? spec : undefined, [spec]);
-  const defaultValue = useMemo(
-    () => {
-      if (field?.defaultValue === undefined) return "";
-
-      return typeof field?.defaultValue === "string" ? field?.defaultValue || "" : yaml.dump(field?.defaultValue || {}, { lineWidth: Number.MAX_SAFE_INTEGER });
-    },
-    [field?.defaultValue]
-  );
-
-  const emitChange = useCallback(() => {
-    const editorValue = ref.current?.getEditorValue() || "";
-    const newValue = typeof value === "string" ? editorValue : yaml.load(editorValue) as Record<string, unknown>;
-
-    onChange(newValue, displayValues, itemKey, field?.path);
-  }, [displayValues, itemKey, field?.path, value, onChange]);
-  const onChangeOrBlur = useCallback(() => {
-    if (!editorErrors.length) {
-      emitChange();
-    }
-  }, [emitChange, editorErrors.length]);
-  const onEditorValidate = useCallback((isValid: boolean, isSchemaValid: boolean) => {
-    const currentEditorErrors: string[] = [];
-
-    if (!isValid) {
-      currentEditorErrors.push(props.widgetOptions?.formatError || i18n.t("dovetail.yaml_format_wrong"));
-    }
-
-    if (!isSchemaValid) {
-      currentEditorErrors.push(props.widgetOptions?.schemaError || i18n.t("dovetail.yaml_value_wrong"))
-    }
-
-    if (!currentEditorErrors.length) {
-      if (editorErrors.length) {
-        emitChange();
-      }
-      setIsShowErrors(false);
-    }
-
-    setEditorErrors(currentEditorErrors);
-  }, [i18n, props.widgetOptions?.formatError, props.widgetOptions?.schemaError, editorErrors.length, emitChange]);
-  const onValidateEvent = useCallback(({ result }: Events["validate"]) => {
-    result[itemKey] = (result[itemKey] || []).concat(editorErrors);
-    setIsShowErrors(!!editorErrors.length);
-  }, [editorErrors, itemKey]);
-  const changeValue = useCallback(() => {
-
-    if (typeof value === "string") {
-      if (value !== ref.current?.getEditorValue()) {
-        ref.current?.setEditorValue(value);
-        ref.current?.setValue(value);
-      }
-    } else {
-      const valueFromEditor = yaml.load(ref.current?.getEditorValue() || "");
-
-      if (!isEqual(value, valueFromEditor)) {
-        const newEditorValue = typeof value === "string" ? value : yaml.dump(value, { lineWidth: Number.MAX_SAFE_INTEGER });
-
-        ref.current?.setEditorValue(newEditorValue);
-        ref.current?.setValue(newEditorValue);
-      }
-    }
-  }, [value]);
-
-  useEffect(() => {
-    changeValue();
-  }, [changeValue]);
-
-  useEffect(() => {
-    services.event.on("validate", onValidateEvent);
-
-    return () => {
-      services.event.off("validate", onValidateEvent);
-    };
-  }, [services.event, onValidateEvent]);
 
   return (<>
     {props.widgetOptions?.sectionTitle && <SectionTitle
@@ -113,7 +43,7 @@ function Editor(props: EditorProps) {
       id={itemKey}
       defaultValue={defaultValue}
       schema={schema}
-      errorMsgs={isShowErrors ? editorErrors : []}
+      errorMsgs={finalErrors}
       onValidate={onEditorValidate}
       onEditorCreate={changeValue}
       onChange={onChangeOrBlur}
