@@ -47,16 +47,21 @@ const InputNumber = (props: Props) => {
   const [stringValue, setStringValue] = useState(transformValue(props.value + ""));
 
   const onChange = useCallback(
-    (event, newValue) => {
-      const transformedNewValue = unit ? newValue + unit : Number(newValue);
+    (event, newValue, newStringValue) => {
+      const newNumberValue = Number(newValue);
+      const transformedNewValue = unit ? newValue + unit : newNumberValue;
 
-      props.onChange(
-        transformedNewValue,
-        displayValues,
-        props.itemKey,
-        props.path
-      );
-      setStringValue(newValue);
+      // it should only change when the number is safe
+      if (newNumberValue < Number.MAX_SAFE_INTEGER && newNumberValue > Number.MIN_SAFE_INTEGER) {
+        props.onChange(
+          transformedNewValue,
+          displayValues,
+          props.itemKey,
+          props.path
+        );
+      }
+
+      setStringValue(newStringValue);
     },
     [setStringValue, props, displayValues, unit]
   );

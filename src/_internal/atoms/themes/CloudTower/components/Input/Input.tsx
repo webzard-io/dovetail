@@ -199,7 +199,8 @@ type InputProps = Omit<AntdInputProps, "onChange"> & {
   type: AntdInputProps["type"] | "int";
   onChange?: (
     event: React.ChangeEvent<HTMLInputElement>,
-    value: string | number | undefined
+    value: string | number | undefined,
+    rawValue: string,
   ) => void;
 };
 
@@ -223,7 +224,9 @@ const Input: React.FC<InputProps> = ({
       if (props.type === "int") {
         onIntChange(e);
       } else {
-        props.onChange?.(e, e.target.value);
+        const stringValue = e.target.value;
+
+        props.onChange?.(e, stringValue, stringValue);
       }
     },
     [onIntChange, props.type, props.onChange]

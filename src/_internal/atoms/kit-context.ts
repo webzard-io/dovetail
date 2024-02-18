@@ -250,7 +250,8 @@ export type InputProps = Omit<AntdInputProps, "onChange"> & {
   type: AntdInputProps["type"] | "int" | "float";
   onChange?: (
     event: React.ChangeEvent<HTMLInputElement>,
-    value: string | number | undefined
+    value: string | number | undefined,
+    rawValue: string,
   ) => void;
 };
 
