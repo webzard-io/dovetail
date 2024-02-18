@@ -17,7 +17,7 @@ export type UseValidateProps = {
   services: Services;
   layout?: "horizontal" | "vertical";
   error?: string;
-  widgetErrors: string[];
+  widgetErrors?: string[];
   onValidate?: (errors: string[]) => void;
   isValidateSubFields?: boolean;
   beforeValidateEvent?: (result: Record<string, string[]>) => boolean;
@@ -33,7 +33,7 @@ export default function useValidate(props: UseValidateProps) {
     itemKey,
     services,
     error,
-    widgetErrors,
+    widgetErrors = [],
     isValidateSubFields,
     onValidate: onValidateFn,
     beforeValidateEvent
