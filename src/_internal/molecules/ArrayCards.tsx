@@ -125,8 +125,8 @@ const ArrayCards = (props: Props) => {
             onRemove={
               removable
                 ? () => {
-                    remove(itemIndex);
-                  }
+                  remove(itemIndex);
+                }
                 : undefined
             }
             onChange={(
@@ -144,7 +144,7 @@ const ArrayCards = (props: Props) => {
         );
       })}
       {widgetOptions.addable !== false &&
-      value.length < (widgetOptions?.maxLength || Number.MAX_SAFE_INTEGER) ? (
+        value.length < (widgetOptions?.maxLength || Number.MAX_SAFE_INTEGER) ? (
         <div>
           {widgetOptions.addedButtonIcon ? (
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>
@@ -153,7 +153,7 @@ const ArrayCards = (props: Props) => {
             prefixIcon="1-plus-add-create-new-16-gray"
             hoverPrefixIcon="1-plus-add-create-new-16-blue"
             className={AddedButtonStyle}
-            size="small"
+            size="middle"
             onClick={() => {
               const defaultValue =
                 props.field?.defaultValue?.[0] ??

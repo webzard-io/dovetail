@@ -179,7 +179,7 @@ const ArrayGroups = (props: Props) => {
             prefixIcon="1-plus-add-create-new-16-gray"
             hoverPrefixIcon="1-plus-add-create-new-16-blue"
             className={AddedButtonStyle}
-            size="small"
+            size="middle"
             onClick={() => {
               const defaultValue =
                 widgetOptions.useFirstAsDefaultValue ? props.field?.defaultValue?.[0] ??
