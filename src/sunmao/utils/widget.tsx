@@ -2,6 +2,7 @@ import { DISPLAY_WIDGETS_MAP } from "../../_internal/molecules/display";
 import ObjectAge from "../../_internal/molecules/ObjectAge";
 import ObjectLabel from "../../_internal/molecules/ObjectLabel";
 import React from "react";
+import { omit } from "lodash";
 
 export type Field = {
   path: string;
@@ -16,7 +17,7 @@ export type Field = {
 
 export function renderWidget(
   field: Field,
-  data: { value: any; renderedValue?: any; [props: string]: any },
+  data: { value: any; renderedValue?: any;[props: string]: any },
   slot?: (
     props: any,
     fallback?: React.ReactNode,
@@ -59,5 +60,5 @@ export function renderWidget(
     }
   }
 
-  return slot?.({ ...data, ...restField }, node, slotKey) || node;
+  return slot?.({ ...omit(data, "renderedValue"), ...restField }, node, slotKey) || node;
 }
