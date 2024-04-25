@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useContext, useRef } from "react";
 import isEmpty from "lodash/isEmpty";
+import { Typo } from "../../../atoms/themes/CloudTower/styles/typo.style";
 // TODO: use kit context when I have time:)
 import { Col } from "antd";
 import { JSONSchema7 } from "json-schema";
@@ -278,11 +279,14 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
           >
             <kit.Tooltip title={fieldOrItem?.tooltip} placement="topLeft">
               <span>
-                {slot?.(
-                  slotProps,
-                  FieldComponent,
-                  `filed_${path}`
-                ) || FieldComponent}
+                {fieldOrItem?.readonly ? <span className={Typo.Label.l2_regular} style={{ color: "#00122E" }}>{fieldOrItem.readonlyText || value}</span> : null}
+                <span style={{ display: fieldOrItem?.readonly ? "none" : "inline" }}>
+                  {(slot?.(
+                    slotProps,
+                    FieldComponent,
+                    `filed_${path}`
+                  ) || FieldComponent)}
+                </span>
               </span>
             </kit.Tooltip>
           </FormItem>
