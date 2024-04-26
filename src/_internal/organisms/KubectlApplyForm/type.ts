@@ -17,6 +17,8 @@ export type Field = {
     | "rules"
     | "disabledValidation"
     | "tooltip"
+    | "readonly"
+    | "readonlyText"
   > & {
     type?: undefined;
   };
@@ -53,6 +55,8 @@ export type Field = {
   editorHeight?: string;
   editorFormatError?: string;
   editorSchemaError?: string;
+  readonly?: boolean;
+  readonlyText?: string;
 };
 
 export type FormItemData = (Field | Record<string, unknown>) & {
@@ -63,26 +67,26 @@ export type TransformedField = Field & { dataPath: string; value: any };
 
 export type Layout =
   | {
-      type: "simple";
+    type: "simple";
+    fields: Field[];
+  }
+  | {
+    type: "tabs";
+    tabs: {
+      title: string;
       fields: Field[];
-    }
+    }[];
+  }
   | {
-      type: "tabs";
-      tabs: {
-        title: string;
-        fields: Field[];
-      }[];
-    }
-  | {
-      type: "wizard";
-      steps: {
-        title: string;
-        fields: Field[];
-        disabled?: boolean;
-        prevText?: string;
-        nextText?: string;
-      }[];
-    };
+    type: "wizard";
+    steps: {
+      title: string;
+      fields: Field[];
+      disabled?: boolean;
+      prevText?: string;
+      nextText?: string;
+    }[];
+  };
 
 export type Events = {
   remove: {

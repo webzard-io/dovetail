@@ -152,7 +152,7 @@ const ArrayItems = (props: Props) => {
               path={path.concat(`.${itemIndex}`)}
               level={level + 1}
               widgetOptions={
-                { disabled: widgetOptions?.disabled, ...(field?.subItem?.widgetOptions || {}) } || 
+                { disabled: widgetOptions?.disabled, ...(field?.subItem?.widgetOptions || {}) } ||
                 { disabled: widgetOptions?.disabled }
               }
               onChange={(
@@ -184,8 +184,7 @@ const ArrayItems = (props: Props) => {
       {widgetOptions.helper && value.length ? (
         <HelperText>{widgetOptions.helper}</HelperText>
       ) : null}
-      {widgetOptions.addable !== false && !widgetOptions?.disabled &&
-        value.length < (widgetOptions.maxLength || Number.MAX_SAFE_INTEGER) ? (
+      {widgetOptions.addable !== false && !widgetOptions?.disabled ? (
         <div style={{ marginTop: widgetOptions.helper ? 0 : "16px" }}>
           {widgetOptions.addedButtonIcon ? (
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>
@@ -195,6 +194,7 @@ const ArrayItems = (props: Props) => {
             hoverPrefixIcon="1-plus-add-create-new-16-blue"
             className={AddedButtonStyle}
             size="small"
+            disabled={value.length >= (widgetOptions.maxLength || Number.MAX_SAFE_INTEGER)}
             onClick={() => {
               const defaultValue =
                 widgetOptions.useFirstAsDefaultValue ? props.field?.defaultValue?.[0] ?? generateFromSchema(itemSpec) : generateFromSchema(itemSpec);

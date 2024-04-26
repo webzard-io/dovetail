@@ -98,6 +98,16 @@ const UiConfigFieldSpecProperties = {
     category: PRESET_PROPERTY_CATEGORY.Basic,
     default: true,
   }),
+  readonly: Type.Boolean({
+    title: "Readonly",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+    default: false,
+  }),
+  readonlyText: Type.String({
+    title: "Readonly text",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+    default: false,
+  }),
   helperText: Type.String({
     title: "Helper text",
     conditions: FIELD_CONDITIONS,
