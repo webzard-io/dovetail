@@ -13,6 +13,8 @@ import { generateFromSchema } from "../utils/schema";
 import { JSONSchema7 } from "json-schema";
 import { useTranslation } from "react-i18next";
 import { cloneDeep, set } from "lodash";
+import { XmarkRemove16SecondaryIcon, XmarkRemove16RegularRedIcon, } from "@cloudtower/icons-react";
+import { Icon as EagleIcon } from "@cloudtower/eagle";
 
 const Wrapper = styled.div`
   display: flex;
@@ -26,10 +28,11 @@ const HelperText = styled.div`
   line-height: 18px;
   color: rgba(44, 56, 82, 0.6);
 `;
-const CloseButtonStyle = css`
-  &.dovetail-ant-btn.dovetail-ant-btn-sm {
-    margin: 4px 0;
-  }
+const RemoveIconStyle = css`
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+  cursor: pointer;
 `;
 const AddedButtonStyle = css``;
 
@@ -168,16 +171,19 @@ const ArrayItems = (props: Props) => {
             />
           </div>
           {value.length > (widgetOptions?.minLength || 0) && !widgetOptions.disabled ? (
-            <kit.Button
-              className={CloseButtonStyle}
-              size="small"
-              type="text"
-              onClick={() => {
-                remove(itemIndex);
-              }}
+            <kit.Tooltip
+              title={t("dovetail.remove")}
+              placement="right"
             >
-              <CloseOutlined />
-            </kit.Button>
+              <EagleIcon
+                className={RemoveIconStyle}
+                src={XmarkRemove16SecondaryIcon}
+                hoverSrc={XmarkRemove16RegularRedIcon}
+                onClick={() => {
+                  remove(itemIndex);
+                }}
+              />
+            </kit.Tooltip>
           ) : null}
         </Wrapper>
       ))}
@@ -190,8 +196,8 @@ const ArrayItems = (props: Props) => {
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>
           ) : null}
           <kit.Button
-            prefixIcon="1-plus-add-create-new-16-gray"
-            hoverPrefixIcon="1-plus-add-create-new-16-blue"
+            prefixIcon="1-plus-add-create-new-16-secondary"
+            type="ordinary"
             className={AddedButtonStyle}
             size="small"
             disabled={value.length >= (widgetOptions.maxLength || Number.MAX_SAFE_INTEGER)}

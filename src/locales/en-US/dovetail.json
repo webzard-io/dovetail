@@ -85,5 +85,6 @@
   "yaml_value_wrong": "Configuration has invalid values.",
   "edit_yaml": "Edit YAML",
   "copied": "Copied",
-  "already_reset": "Already reset"
+  "already_reset": "Already reset",
+  "remove": "Remove"
 }

@@ -176,9 +176,9 @@ const ArrayGroups = (props: Props) => {
             <Icon type={widgetOptions.addedButtonIcon as IconTypes}></Icon>
           ) : null}
           <kit.Button
-            prefixIcon="1-plus-add-create-new-16-gray"
-            hoverPrefixIcon="1-plus-add-create-new-16-blue"
+            prefixIcon="1-plus-add-create-new-16-secondary"
             className={AddedButtonStyle}
+            type="ordinary"
             size="middle"
             onClick={() => {
               const defaultValue =

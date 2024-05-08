@@ -17,7 +17,7 @@ import { css, cx } from "@emotion/css";
 import styled from "@emotion/styled";
 import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
 import ErrorContent from "../../ErrorContent";
-import { Icon, useUIKit } from "@cloudtower/eagle";
+import { Button } from "@cloudtower/eagle";
 import { ArrowChevronUp16BoldBlueIcon, ArrowChevronDown16BoldBlueIcon } from "@cloudtower/icons-react";
 import cs from "classnames";
 
@@ -216,7 +216,6 @@ type DetailSectionProps = Pick<KubectlGetDetailProps, "errorText" | "renderActio
 
 function DetailSection(props: DetailSectionProps) {
   const { section, loading, error, errorText, data, context, fetch, renderAction, renderKey, renderValue } = props;
-  const UIKit = useUIKit();
   const kit = useContext(KitContext);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -231,12 +230,12 @@ function DetailSection(props: DetailSectionProps) {
           </div>
           {
             section.collapsible ? (
-              <UIKit.button type="text" size="small" onClick={() => setIsCollapsed(!isCollapsed)}>
+              <Button type="text" size="small" onClick={() => setIsCollapsed(!isCollapsed)}>
                 {isCollapsed ?
                   <ArrowChevronDown16BoldBlueIcon /> :
                   <ArrowChevronUp16BoldBlueIcon />
                 }
-              </UIKit.button>
+              </Button>
             ) : null
           }
         </div>
