@@ -279,7 +279,12 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
           >
             <kit.Tooltip title={fieldOrItem?.tooltip} placement="topLeft">
               <span>
-                {fieldOrItem?.readonly ? <span className={Typo.Label.l2_regular} style={{ color: "#00122E" }}>{fieldOrItem.readonlyText || value}</span> : null}
+                {fieldOrItem?.readonly ? <span
+                  className={Typo.Label.l2_regular}
+                  style={{ color: fieldOrItem.readonlyText || value ? "#00122E" : "rgba(0, 21, 64, 0.30)" }}
+                >
+                  {fieldOrItem.readonlyText || value || "-"}
+                </span> : null}
                 <span style={{ display: fieldOrItem?.readonly ? "none" : "inline" }}>
                   {(slot?.(
                     slotProps,
