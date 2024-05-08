@@ -6,6 +6,10 @@ import { css } from "@linaria/core";
 import { transformStorageUnit, StorageUnit, STORAGE_UNITS } from "../../sunmao/utils/storage";
 
 const InputNumberStyle = css`
+  &.dovetail-ant-input::placeholder {
+    font-size: 13px;
+  }
+
   .dovetail-ant-input.dovetail-ant-input:not([disabled]) {
     box-shadow: none;
     border: 0;
@@ -33,7 +37,7 @@ const InputNumber = (props: Props) => {
   const { displayValues } = props;
   const kit = useContext(KitContext);
   const unit = props.widgetOptions?.unit;
-  const transformValue = useCallback((value: string)=> {
+  const transformValue = useCallback((value: string) => {
     if (unit) {
       const isStorageUnit = STORAGE_UNITS.includes(unit);
 
