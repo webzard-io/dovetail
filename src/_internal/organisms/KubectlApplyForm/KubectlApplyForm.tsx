@@ -17,9 +17,10 @@ import {
   WizardBodyStyle,
   WizardFooterStyle,
   WizardStyle,
+  DescriptionStyle
 } from "./KubectlApplyForm.style";
 import { cx, css as dCss } from "@emotion/css";
-import { Steps, Row, Alert, Form } from "antd";
+import { Steps, Row, Alert, Col } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import SpecField from "../../molecules/AutoForm/SpecField";
 import Icon from "../../atoms/themes/CloudTower/components/Icon/Icon";
@@ -69,6 +70,7 @@ export type KubectlApplyFormProps = {
     isDisplayFooter?: boolean;
     title?: string;
     titleGap?: string;
+    description?: string;
     layout: Layout;
     confirmText: string;
     cancelText: string;
@@ -236,6 +238,12 @@ const KubectlApplyForm = React.forwardRef<
 
     function renderFields() {
       const { layout, cancelText, confirmText } = uiConfig;
+      const descriptionEl = uiConfig.description ? (
+        <Col>
+          <div className={cx(DescriptionStyle, Typo.Label.l2_regular)}>{uiConfig.description}</div>
+        </Col>
+      ) : null;
+
       switch (layout.type) {
         case "simple": {
           return (
@@ -245,6 +253,7 @@ const KubectlApplyForm = React.forwardRef<
                   <div className="left"></div>
                   <Row gutter={[24, 16]} className={cx("middle", dCss`${titleGap}`)}>
                     <div className="middle-form-wrapper">
+                      {descriptionEl}
                       {transformFields(layout.fields, values, defaultValues).map(
                         (f) => {
                           const { component } = getComponent(f);
@@ -372,6 +381,7 @@ const KubectlApplyForm = React.forwardRef<
                   </div>
                   <Row gutter={[24, 16]} className={cx("middle", dCss`${titleGap}`)}>
                     <div className="middle-form-wrapper">
+                      {descriptionEl}
                       {transformFields(
                         layout.steps[step].fields,
                         values,

@@ -17,6 +17,10 @@ export const WizardStyle = css`
   overflow: hidden;
 `;
 
+export const DescriptionStyle = css`
+  color: #00122E;
+`;
+
 export const WizardBodyWrapperStyle = css`
   overflow: auto;
   height: 100%;

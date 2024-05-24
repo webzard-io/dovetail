@@ -301,6 +301,10 @@ export const UiConfigSpec = Type.Object({
     title: "Title gap",
     category: PRESET_PROPERTY_CATEGORY.Basic,
   }),
+  description: Type.String({
+    title: "Description",
+    category: PRESET_PROPERTY_CATEGORY.Basic,
+  }),
   layout: Type.Object(
     {
       type: StringUnion(["simple", "tabs", "wizard"], {
