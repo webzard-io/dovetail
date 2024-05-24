@@ -281,9 +281,9 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
               <span>
                 {fieldOrItem?.readonly ? <span
                   className={Typo.Label.l2_regular}
-                  style={{ color: fieldOrItem.readonlyText || value ? "#00122E" : "rgba(0, 21, 64, 0.30)" }}
+                  style={{ color: !["", undefined, null].includes(fieldOrItem.readonlyText || value) ? "#00122E" : "rgba(0, 21, 64, 0.30)" }}
                 >
-                  {fieldOrItem.readonlyText || value || "-"}
+                  {fieldOrItem.readonlyText ?? value ?? "-"}
                 </span> : null}
                 <span style={{ display: fieldOrItem?.readonly ? "none" : "inline" }}>
                   {(slot?.(
