@@ -58,6 +58,7 @@ const ModalProps = Type.Object({
   footerError: Type.String(),
   size: StringUnion(["small", "medium"]),
   isChildModal: Type.Boolean(),
+  popupContainerId: Type.String(),
 });
 
 const ModalState = Type.Object({
@@ -113,6 +114,7 @@ export const Modal = implementRuntimeComponent({
     size,
     isChildModal,
     mergeState,
+    popupContainerId,
   }) => {
     const kit = useContext(KitContext);
     const { t } = useTranslation();
@@ -158,11 +160,13 @@ export const Modal = implementRuntimeComponent({
         visible={visible}
         maskClosable={maskClosable}
         maskStyle={{
-          background: isChildModal ? 'rgba(16, 26, 41, 0.6)' : undefined
+          background: isChildModal ? "rgba(16, 26, 41, 0.6)" : undefined,
         }}
         width={width}
         getContainer={() =>
-          document.getElementById(DIALOG_CONTAINER_ID) || document.body
+          document.getElementById(DIALOG_CONTAINER_ID) ||
+          document.getElementById(popupContainerId) ||
+          document.body
         }
         title={title}
         size={size}

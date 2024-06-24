@@ -144,6 +144,7 @@ export const ConfirmModal = implementRuntimeComponent({
         title: "Confirm button loading",
         category: PRESET_PROPERTY_CATEGORY.Basic,
       }),
+      popupContainerId: Type.String(),
     }),
     state: Type.Object({}),
     methods: {
@@ -182,6 +183,7 @@ export const ConfirmModal = implementRuntimeComponent({
     slotsElements,
     callbackMap,
     subscribeMethods,
+    popupContainerId,
   }) => {
     const [visible, setVisible] = useState(defaultVisible);
     const { t } = useTranslation();
@@ -252,7 +254,9 @@ export const ConfirmModal = implementRuntimeComponent({
       <kit.Modal
         ref={elementRef}
         getContainer={() =>
-          document.getElementById(DIALOG_CONTAINER_ID) || document.body
+          document.getElementById(DIALOG_CONTAINER_ID) ||
+          document.getElementById(popupContainerId) ||
+          document.body
         }
         visible={visible}
         className={cx(ModalStyle, css(customStyle?.content))}
