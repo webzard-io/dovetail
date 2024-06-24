@@ -232,10 +232,10 @@ const LabelGroup = React.forwardRef<HTMLDivElement, LabelGroupProps>(
                       remove={
                         editable
                           ? () => {
-                              onChange?.(
-                                labels.filter(({ key }) => label.key !== key)
-                              );
-                            }
+                            onChange?.(
+                              labels.filter(({ key }) => label.key !== key)
+                            );
+                          }
                           : undefined
                       }
                     />
@@ -263,8 +263,8 @@ const LabelGroup = React.forwardRef<HTMLDivElement, LabelGroupProps>(
                 {editable && editing === false ? (
                   <kit.Button
                     className={TriggerStyle}
+                    type="ordinary"
                     prefixIcon="1-plus-add-create-new-16-secondary"
-                    hoverPrefixIcon="1-plus-add-create-new-16-blue"
                     onClick={onClickAdd}
                   ></kit.Button>
                 ) : null}

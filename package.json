@@ -1,6 +1,6 @@
 {
   "name": "@dovetail-ui/ui",
-  "version": "0.3.58",
+  "version": "0.3.61",
   "files": [
     "dist"
   ],
@@ -18,8 +18,8 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@chakra-ui/react": "^1.7.1",
-    "@cloudtower/eagle": "^0.24.23",
-    "@cloudtower/icons-react": "^0.25.13",
+    "@cloudtower/eagle": "^0.29.1",
+    "@cloudtower/icons-react": "^0.29.1",
     "@emotion/css": "^11.7.1",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.7.1",
@@ -89,8 +89,8 @@
     "vite-tsconfig-paths": "^3.4.1"
   },
   "peerDependencies": {
-    "@cloudtower/eagle": "^0.24.23",
-    "@cloudtower/icons-react": "^0.25.13",
+    "@cloudtower/eagle": "^0.29.1",
+    "@cloudtower/icons-react": "^0.29.1",
     "@sunmao-ui/core": "^0.10.3",
     "@sunmao-ui/editor": "^0.10.4",
     "@sunmao-ui/editor-sdk": "^0.10.4",

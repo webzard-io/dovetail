@@ -85,5 +85,6 @@
   "yaml_value_wrong": "配置内容中存在不合法的值。",
   "edit_yaml": "编辑 YAML",
   "copied": "已复制",
-  "already_reset": "已重置"
+  "already_reset": "已重置",
+  "remove": "移除"
 }
