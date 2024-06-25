@@ -4,7 +4,7 @@ import {
   DIALOG_CONTAINER_ID,
 } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
-import { css } from "@emotion/css";
+import { css } from "@linaria/core";
 import _UnstructuredSidebar from "../../_internal/organisms/UnstructuredSidebar";
 
 const UnstructuredSidebarProps = Type.Object({

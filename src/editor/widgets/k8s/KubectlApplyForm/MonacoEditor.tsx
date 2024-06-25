@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { css, cx } from "@emotion/css";
+import { css, cx } from "@linaria/core";
 import { CodeEditorProps } from "src/_internal/atoms/kit-context";
 
 import "monaco-editor/esm/vs/editor/editor.all.js";

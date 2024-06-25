@@ -3,8 +3,8 @@ import { KitContext } from "../atoms/kit-context";
 import { WidgetProps } from "./AutoForm/widget";
 import { Type, Static } from "@sinclair/typebox";
 import SpecField from "./AutoForm/SpecField";
-import { css } from "@emotion/css";
-import styled from "@emotion/styled";
+import { css } from "@linaria/core";
+import { styled } from "@linaria/react";
 import { CloseOutlined } from "@ant-design/icons";
 import Icon, {
   IconTypes,

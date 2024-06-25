@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { css } from "@emotion/css";
+import { css } from "@linaria/core";
 import { KitContext, SidebarProps } from "../../_internal/atoms/kit-context";
 import ObjectMeta from "../../_internal/molecules/ObjectMeta";
 import ObjectSpec from "../../_internal/molecules/ObjectSpec";

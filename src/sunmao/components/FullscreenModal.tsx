@@ -5,7 +5,7 @@ import {
   StringUnion,
   PRESET_PROPERTY_CATEGORY,
 } from "@sunmao-ui/runtime";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
 import { KitContext } from "../../_internal/atoms/kit-context";
 
@@ -149,7 +149,7 @@ export const Modal = implementRuntimeComponent({
 
     return (
       <kit.FullscreenModal
-        className={css`
+        className={ecss`
           ${customStyle?.modal}
         `}
         visible={visible}

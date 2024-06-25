@@ -1,6 +1,6 @@
 import React from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
 import {
   ExpandAltOutlined,
@@ -56,7 +56,7 @@ export const Icon = implementRuntimeComponent({
   return (
     <C
       ref={elementRef}
-      className={css`
+      className={ecss`
         ${customStyle}
       `}
     />

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
 import { KitContext } from "../../_internal/atoms/kit-context";
 
@@ -44,8 +44,8 @@ export const CodeEditor = implementRuntimeComponent({
       defaultValue={defaultValue}
       language={language}
       minimap={minimap}
-      className={css`
-        ${customStyle}
+      className={ecss`
+        ${customStyle?.editor}
       `}
     />
   );
