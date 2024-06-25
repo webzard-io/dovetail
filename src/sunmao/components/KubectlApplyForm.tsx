@@ -9,7 +9,7 @@ import _KubectlApplyForm, {
   KubectlApplyFormRef,
 } from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 import { FormItemData } from "../../_internal/organisms/KubectlApplyForm/type";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
 import {
   FORM_WIDGETS_MAP,
   FORM_WIDGET_OPTIONS_MAP,
@@ -879,7 +879,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
     return (
       <_KubectlApplyForm
         ref={ref}
-        className={css(customStyle?.content)}
+        className={ecss(customStyle?.content)}
         basePath={basePath}
         schemas={formConfig.schemas}
         uiConfig={formConfig.uiConfig}

@@ -1,7 +1,7 @@
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import { PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
 import BaseK8sLabelGroup from "../../_internal/components/K8sLabelGroup";
 import { Label } from "../../_internal/components/LabelGroup";
 import { omit } from "lodash";
@@ -97,7 +97,7 @@ export const K8sLabelGroup = implementRuntimeComponent({
   return (
     <BaseK8sLabelGroup
       ref={elementRef}
-      className={css(customStyle?.content)}
+      className={ecss(customStyle?.content)}
       labels={Object.entries(labelsState || {}).map(([key, value]) => ({
         key,
         value,
