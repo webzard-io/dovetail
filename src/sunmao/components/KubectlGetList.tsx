@@ -1,7 +1,7 @@
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import { PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
 import BaseKubectlGetList, {
   type Response,
 } from "../../_internal/organisms/KubectlGetList";
@@ -169,7 +169,7 @@ export const KubectlGetList = implementRuntimeComponent({
     }, [subscribeMethods, mergeState, callbackMap, kubeSdk, response]);
 
     return (
-      <div className={css(customStyle?.content)} ref={elementRef}>
+      <div className={ecss(customStyle?.content)} ref={elementRef}>
         <BaseKubectlGetList
           basePath={basePath}
           watchWsBasePath={watchWsBasePath}

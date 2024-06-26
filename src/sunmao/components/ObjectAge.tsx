@@ -1,5 +1,5 @@
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
 import _ObjectAge from "../../_internal/molecules/ObjectAge";
 
@@ -37,7 +37,7 @@ export const ObjectAge = implementRuntimeComponent({
     <_ObjectAge
       value={date}
       ref={elementRef}
-      className={css`
+      className={ecss`
         ${customStyle?.text}
       `}
     />

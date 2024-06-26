@@ -3,7 +3,7 @@ import { WidgetProps } from "./AutoForm/widget";
 import { resolveSubFields } from "./AutoForm/ObjectField";
 import React from "react";
 import { Row } from "antd";
-import { css } from "@emotion/css";
+import { css } from "@linaria/core";
 
 const GroupBodyStyle = css`
   padding-bottom: 0;

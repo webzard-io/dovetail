@@ -2,12 +2,13 @@ import React, { useContext } from "react";
 import { Type, Static } from "@sinclair/typebox";
 import { WidgetProps } from "./AutoForm/widget";
 import { resolveSubFields } from "./AutoForm/ObjectField";
-import styled from "@emotion/styled";
+import { styled } from "@linaria/react";
 import { KitContext } from "../atoms/kit-context";
 import { CloseOutlined } from "@ant-design/icons";
 import { Row, Collapse } from "antd";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
-import { css, cx } from "@emotion/css";
+import { cx } from "@emotion/css";
+import { css } from "@linaria/core";
 import Icon from "../atoms/themes/CloudTower/components/Icon/Icon";
 import registry from "../../services/Registry";
 import { StringUnion } from "@sunmao-ui/runtime";
@@ -21,7 +22,9 @@ const GroupWrapperStyle = css`
     border-radius: 8px;
     background: transparent;
 
-    & > .dovetail-ant-collapse-item.dovetail-ant-collapse-no-arrow > .dovetail-ant-collapse-header {
+    &
+      > .dovetail-ant-collapse-item.dovetail-ant-collapse-no-arrow
+      > .dovetail-ant-collapse-header {
       padding: 0;
     }
   }
@@ -38,10 +41,10 @@ const GroupWrapperStyle = css`
     display: flex;
     justify-content: space-between;
     border-radius: 8px;
-    transition: border-radius .5s ease;
-  
+    transition: border-radius 0.5s ease;
+
     &:hover {
-      background: rgba(0, 136, 255, 0.10);
+      background: rgba(0, 136, 255, 0.1);
     }
   }
 
@@ -82,9 +85,7 @@ const GroupWrapperStyle = css`
     cursor: unset;
   }
 `;
-const GroupHeader = styled.div`
-
-`;
+const GroupHeader = styled.div``;
 const GroupTitleWrapper = styled.h5`
   color: rgba(44, 56, 82, 0.6);
   display: flex;
@@ -99,7 +100,7 @@ const GroupIcon = styled.span`
 `;
 const GroupTitle = styled.span`
   vertical-align: top;
-  color: #00122E;
+  color: #00122e;
 `;
 const GroupBodyStyle = css`
   padding-bottom: 0;
@@ -138,7 +139,8 @@ const Group = (props: GroupProps) => {
   return (
     <Collapse
       className={cx(GroupWrapperStyle, className)}
-      defaultActiveKey={["panel"]}>
+      defaultActiveKey={["panel"]}
+    >
       <Panel
         key="panel"
         header={

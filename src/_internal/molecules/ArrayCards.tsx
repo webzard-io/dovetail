@@ -3,7 +3,7 @@ import Card from "./Card";
 import { Type, Static } from "@sinclair/typebox";
 import { KitContext } from "../atoms/kit-context";
 import React, { useContext, useCallback, useEffect, useMemo } from "react";
-import { css } from "@emotion/css";
+import { css } from "@linaria/core";
 import Icon, {
   IconTypes,
 } from "../atoms/themes/CloudTower/components/Icon/Icon";

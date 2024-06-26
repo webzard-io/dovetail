@@ -10,7 +10,7 @@ import { implementWidget, SpecWidget } from "@sunmao-ui/editor-sdk";
 import { Type } from "@sinclair/typebox";
 import { last, get } from "lodash";
 import { observer } from "mobx-react-lite";
-import { css } from "@emotion/css";
+import { css } from "@linaria/core";
 import { SyncSpec } from "../../../../sunmao/traits/v2/SyncKubectlApplyForm";
 
 const FormItemStyle = css`

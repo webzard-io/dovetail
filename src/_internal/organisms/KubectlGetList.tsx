@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect, useCallback } from "react";
 import { KitContext } from "../atoms/kit-context";
 import { KubeApi, UnstructuredList } from "../k8s-api-client/kube-api";
-import styled from "@emotion/styled";
+import { styled } from "@linaria/react";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
 import ErrorContent from "../ErrorContent";
 import { useTranslation } from "react-i18next";
-import { css } from "@emotion/css";
+import { css } from "@linaria/core";
 
 const LoadingWrapper = styled.div`
   padding: 24px;

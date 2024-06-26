@@ -13,8 +13,8 @@ import {
 } from "../../k8s-api-client/kube-api";
 import { KitContext } from "../../atoms/kit-context";
 import { get } from "lodash";
-import { css, cx } from "@emotion/css";
-import styled from "@emotion/styled";
+import { css, cx } from "@linaria/core";
+import { styled } from "@linaria/react";
 import { Typo } from "../../atoms/themes/CloudTower/styles/typo.style";
 import ErrorContent from "../../ErrorContent";
 import { Button } from "@cloudtower/eagle";

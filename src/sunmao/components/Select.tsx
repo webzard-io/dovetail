@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
 import { Select as BaseSelect } from "antd";
 
@@ -81,7 +81,7 @@ export const Select = implementRuntimeComponent({
     return (
       <BaseSelect
         // ref={elementRef}
-        className={css`
+        className={ecss`
           ${customStyle?.select}
         `}
         value={value}

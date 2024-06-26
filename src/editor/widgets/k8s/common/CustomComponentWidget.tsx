@@ -5,7 +5,7 @@ import { implementWidget, ExpressionWidget } from "@sunmao-ui/editor-sdk";
 import { Type } from "@sinclair/typebox";
 import { last, get } from "lodash";
 import { observer } from "mobx-react-lite";
-import { css } from "@emotion/css";
+import { css } from "@linaria/core";
 
 const FormItemStyle = css`
   &.chakra-form-control {

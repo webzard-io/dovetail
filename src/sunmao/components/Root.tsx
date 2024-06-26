@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import { ConfigProvider } from "antd";
@@ -25,7 +25,9 @@ export const Root = implementRuntimeComponent({
     },
   },
   spec: {
-    properties: Type.Object({}),
+    properties: Type.Object({
+      popupContainerId: Type.String(),
+    }),
     state: RootState,
     methods: {},
     slots: {
@@ -36,15 +38,21 @@ export const Root = implementRuntimeComponent({
     styleSlots: [],
     events: [],
   },
-})(({ slotsElements, mergeState }) => {
+})(({ popupContainerId, slotsElements, mergeState }) => {
   useEffect(() => {
     mergeState({
       theme: CloudTowerKit.name,
     });
   }, []);
+  const antdGetPopupContainer = useCallback(() => {
+    return document.getElementById(popupContainerId) || document.body;
+  }, [popupContainerId]);
 
   return (
-    <ConfigProvider prefixCls="dovetail-ant">
+    <ConfigProvider
+      prefixCls="dovetail-ant"
+      getPopupContainer={popupContainerId ? antdGetPopupContainer : undefined}
+    >
       <KitContext.Provider value={CloudTowerKit}>
         <I18nextProvider i18n={i18n}>
           <>{slotsElements.root ? slotsElements.root?.({}) : null}</>

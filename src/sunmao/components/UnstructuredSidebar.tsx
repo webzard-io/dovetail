@@ -4,12 +4,13 @@ import {
   DIALOG_CONTAINER_ID,
 } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
-import { css } from "@emotion/css";
+import { css } from "@linaria/core";
 import _UnstructuredSidebar from "../../_internal/organisms/UnstructuredSidebar";
 
 const UnstructuredSidebarProps = Type.Object({
   item: Type.Any(),
   defaultVisible: Type.Boolean(),
+  popupContainerId: Type.String(),
 });
 
 const UnstructuredSidebarState = Type.Object({
@@ -97,6 +98,7 @@ export const UnstructuredSidebar = implementRuntimeComponent({
     mergeState,
     subscribeMethods,
     slotsElements,
+    popupContainerId,
   }) => {
     const [visible, setVisible] = useState(defaultVisible);
     useEffect(() => {
@@ -126,7 +128,9 @@ export const UnstructuredSidebar = implementRuntimeComponent({
           callbackMap?.onClose();
         }}
         getContainer={() =>
-          document.getElementById(DIALOG_CONTAINER_ID) || document.body
+          document.getElementById(DIALOG_CONTAINER_ID) ||
+          document.getElementById(popupContainerId) ||
+          document.body
         }
       />
     );

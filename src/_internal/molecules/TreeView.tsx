@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import isPlainObject from "lodash/isPlainObject";
 import isArray from "lodash/isArray";
-import { css, cx } from "@emotion/css";
+import { css, cx } from "@linaria/core";
 import { Row } from "./style/Layout.style";
 
 const BranchRow = css`
