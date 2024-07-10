@@ -11,6 +11,7 @@ import { generateFromSchema } from "../utils/schema";
 import { JSONSchema7 } from "json-schema";
 import { useTranslation } from "react-i18next";
 import { cloneDeep, set } from "lodash";
+import { defineId, ID_PROP } from "./../utils/id";
 
 const CardStyle = css`
   margin-bottom: 16px;
@@ -104,6 +105,8 @@ const ArrayCards = (props: Props) => {
   return (
     <>
       {(value || []).map((itemValue, itemIndex) => {
+        defineId(itemValue);
+
         return (
           <Card
             {...props}
@@ -113,6 +116,7 @@ const ArrayCards = (props: Props) => {
             spec={itemSpec as JSONSchema7}
             superiorKey={`${props.field?.key}-${itemIndex}`}
             index={itemIndex}
+            id={itemValue[ID_PROP]}
             error={errorInfo instanceof Array ? errorInfo[itemIndex] : ""}
             widgetOptions={{
               ...widgetOptions,

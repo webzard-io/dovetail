@@ -3,7 +3,7 @@ import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
 import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import useMergeState from "../hooks/useMergeState";
-import { cloneDeep, pick } from "lodash";
+import { cloneDeep, pick, get } from "lodash";
 import _KubectlApplyForm, {
   CUSTOM_SCHEMA_KIND,
   KubectlApplyFormRef,
@@ -19,6 +19,7 @@ import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 import { generateSlotChildren } from "../utils/slot";
 import { immutableSet } from "../utils/object";
 import registry from "../../services/Registry";
+import { defineId, ID_PROP } from "../../_internal/utils/id";
 
 const LABEL_CATEGORY = "Label Style";
 const VALIDATION_CATEGORY = "Validation";
@@ -601,7 +602,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
     }), [app, component, allComponents, services, slotsElements, childrenMap]);
 
     const generateSlot = useCallback((slot: string) => {
-      return (field: FormItemData, fallback: React.ReactNode, slotKey: string) => {
+      return (field: FormItemData, fallback: React.ReactNode, slotKey: string, id?: string) => {
         return (
           generateSlotChildren(
             {
@@ -612,6 +613,10 @@ export const KubectlApplyForm = implementRuntimeComponent({
             },
             {
               generateId(child) {
+                if (id) {
+                  return `${id}_${child.id}`;
+                }
+
                 return field.index !== undefined
                   ? `${child.id}_${field.index}`
                   : child.id;
@@ -668,6 +673,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
     useEffect(() => {
       subscribeMethods({
         setField({ fieldPath, value: fieldValue, displayValue }) {
+          const oldValue = get(values, fieldPath);
           const finalFieldValue =
             fieldValue && typeof fieldValue === "object"
               ? cloneDeep(fieldValue)
@@ -677,6 +683,10 @@ export const KubectlApplyForm = implementRuntimeComponent({
             ...displayValuesRef.current,
             [fieldPath]: displayValue,
           };
+
+          if (oldValue && typeof oldValue === "object" && oldValue[ID_PROP]) {
+            defineId(finalFieldValue, oldValue[ID_PROP]);
+          }
 
           setValues(newValues);
           mergeDisplayValues(newDisplayValues);
@@ -694,6 +704,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
             displayValues: Record<string, any>;
           }, { fieldPath, value: fieldValue, displayValue }) => {
             const { values, displayValues } = result;
+            const oldValue = get(values, fieldPath);
             const finalFieldValue =
               fieldValue && typeof fieldValue === "object"
                 ? cloneDeep(fieldValue)
@@ -704,6 +715,10 @@ export const KubectlApplyForm = implementRuntimeComponent({
               ...displayValues,
               [fieldPath]: displayValue,
             };
+
+            if (oldValue && typeof oldValue === "object" && oldValue[ID_PROP]) {
+              defineId(finalFieldValue, oldValue[ID_PROP]);
+            }
 
             return {
               values: newValues,

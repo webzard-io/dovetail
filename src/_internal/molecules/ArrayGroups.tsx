@@ -16,6 +16,7 @@ import { StringUnion } from "@sunmao-ui/runtime";
 import { set } from "lodash";
 import { COMMON_ARRAY_OPTIONS } from "./ArrayItems";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
+import { defineId, ID_PROP } from "../utils/id";
 
 const GroupStyle = css`
   &.dovetail-ant-collapse {
@@ -125,15 +126,18 @@ const ArrayGroups = (props: Props) => {
   return (
     <>
       {(value || []).map((itemValue, itemIndex) => {
+        defineId(itemValue);
+
         return (
           <Group
             {...props}
             className={GroupStyle}
-            key={widgetOptions.itemKey ? itemValue[widgetOptions.itemKey] || itemIndex : itemIndex}
+            key={widgetOptions.itemKey ? (itemValue[widgetOptions.itemKey] || itemValue[ID_PROP] || itemIndex) : (itemValue[ID_PROP] || itemIndex)}
             value={itemValue}
             spec={itemSpec as JSONSchema7}
             superiorKey={`${props.field?.key}-${itemIndex}`}
             index={itemIndex}
+            id={itemValue[ID_PROP]}
             error={errorInfo instanceof Array ? errorInfo[itemIndex] : ""}
             widgetOptions={{
               ...widgetOptions,
