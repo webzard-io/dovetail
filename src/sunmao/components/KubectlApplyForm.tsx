@@ -613,13 +613,16 @@ export const KubectlApplyForm = implementRuntimeComponent({
             },
             {
               generateId(child) {
-                if (id) {
-                  return `${id}_${child.id}`;
-                }
-
                 return field.index !== undefined
                   ? `${child.id}_${field.index}`
                   : child.id;
+              },
+              generateKey(child) {
+                if (id) {
+                  return `${child.id}_${id}`;
+                }
+
+                return child.id;
               },
               generateProps() {
                 return (field as Static<typeof UiConfigFieldSpec>) || {};

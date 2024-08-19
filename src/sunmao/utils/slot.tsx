@@ -29,6 +29,7 @@ type Props = {
 
 type Options = {
   generateId: (child: RuntimeComponentSchema) => string;
+  generateKey?: (child: RuntimeComponentSchema) => string;
   generateProps: () => Record<string, unknown>;
 };
 
@@ -44,7 +45,7 @@ export const generateSlotChildren = (
     fallback,
     childrenMap,
   }: Props,
-  { generateId, generateProps }: Options
+  { generateId, generateProps, generateKey }: Options
 ) => {
   const renderSet = new Set<string>();
   const slotTraitTypes = ["core/v1/slot", "core/v2/slot"];
@@ -57,37 +58,41 @@ export const generateSlotChildren = (
     );
   });
 
-  const _childrenSchema = childrenSchema.map((child) => {
+  const _childrenSchema: RuntimeComponentSchema<Record<string, unknown>>[] = [];
+  const childrenKeys: string[] = [];
+
+  childrenSchema.forEach((child) => {
     const id = generateId(child);
 
     renderSet.add(id);
 
-    return {
+    _childrenSchema.push({
       ...child,
       id,
-    };
+    });
+    childrenKeys.push(generateKey?.(child) || id);
   });
   // don't remove this code, it should be called for generate the slot context
   const slots =
     slotsElements[slot]?.(generateProps(), fallback, slotKey) || fallback;
 
   return _childrenSchema.length
-    ? _childrenSchema.map((child) => {
-        return (
-          <ImplWrapper
-            key={child.id}
-            component={child}
-            app={app}
-            allComponents={allComponents}
-            services={services}
-            childrenMap={childrenMap || {}}
-            isInModule
-            slotContext={{
-              renderSet,
-              slotKey: formatSlotKey(component.id, slot, slotKey),
-            }}
-          />
-        );
-      })
+    ? _childrenSchema.map((child, i) => {
+      return (
+        <ImplWrapper
+          key={childrenKeys[i]}
+          component={child}
+          app={app}
+          allComponents={allComponents}
+          services={services}
+          childrenMap={childrenMap || {}}
+          isInModule
+          slotContext={{
+            renderSet,
+            slotKey: formatSlotKey(component.id, slot, slotKey),
+          }}
+        />
+      );
+    })
     : fallback;
 };
