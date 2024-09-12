@@ -20,7 +20,7 @@ const Switch = (props: Props) => {
 
   return (
     <kit.Switch
-      checked={isNeedTransform ? props.widgetOptions?.valueMap?.[props.value as string] : props.value as boolean}
+      checked={!!(isNeedTransform ? props.widgetOptions?.valueMap?.[props.value as string] : props.value)}
       onChange={(checked) =>
         props.onChange(
           isNeedTransform ?
