@@ -275,7 +275,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
             spec={spec}
             error={typeof finalError === "string" ? finalError : ""}
             widgetErrors={widgetErrors}
-            testId={`${path}-${transformedField?.key || ""}`}
+            testId={field?.customTestId || `${path}-${transformedField?.key || ""}`}
           >
             <kit.Tooltip title={fieldOrItem?.tooltip} placement="topLeft">
               <span>
