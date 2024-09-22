@@ -46,8 +46,8 @@ export default implementRuntimeTrait({
           componentId,
           name: setValueMethod,
           parameters: formValue,
-          eventType: '',
-          triggerId: ''
+          eventType: "",
+          triggerId: ""
         });
       }
 

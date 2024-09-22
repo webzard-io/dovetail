@@ -676,20 +676,26 @@ export const KubectlApplyForm = implementRuntimeComponent({
     useEffect(() => {
       subscribeMethods({
         setField({ fieldPath, value: fieldValue, displayValue }) {
-          const oldValue = get(values, fieldPath);
           const finalFieldValue =
             fieldValue && typeof fieldValue === "object"
               ? cloneDeep(fieldValue)
               : fieldValue;
-          const newValues = immutableSet(valuesRef.current, fieldPath, finalFieldValue) as any[];
+          const newValues = immutableSet(
+            valuesRef.current,
+            fieldPath,
+            finalFieldValue,
+            (value, oldValue) => {
+              if (oldValue && typeof oldValue === "object" && oldValue[ID_PROP]) {
+                defineId(value, oldValue[ID_PROP]);
+              }
+
+              return value;
+            }
+          ) as any[];
           const newDisplayValues = {
             ...displayValuesRef.current,
             [fieldPath]: displayValue,
           };
-
-          if (oldValue && typeof oldValue === "object" && oldValue[ID_PROP]) {
-            defineId(finalFieldValue, oldValue[ID_PROP]);
-          }
 
           setValues(newValues);
           mergeDisplayValues(newDisplayValues);
@@ -707,21 +713,27 @@ export const KubectlApplyForm = implementRuntimeComponent({
             displayValues: Record<string, any>;
           }, { fieldPath, value: fieldValue, displayValue }) => {
             const { values, displayValues } = result;
-            const oldValue = get(values, fieldPath);
             const finalFieldValue =
               fieldValue && typeof fieldValue === "object"
                 ? cloneDeep(fieldValue)
                 : fieldValue;
 
-            const newValues = immutableSet(values, fieldPath, finalFieldValue) as any[];
+            const newValues = immutableSet(
+              values,
+              fieldPath,
+              finalFieldValue,
+              (value, oldValue) => {
+                if (oldValue && typeof oldValue === "object" && oldValue[ID_PROP]) {
+                  defineId(value, oldValue[ID_PROP]);
+                }
+
+                return value;
+              }
+            ) as any[];
             const newDisplayValues = {
               ...displayValues,
               [fieldPath]: displayValue,
             };
-
-            if (oldValue && typeof oldValue === "object" && oldValue[ID_PROP]) {
-              defineId(finalFieldValue, oldValue[ID_PROP]);
-            }
 
             return {
               values: newValues,
