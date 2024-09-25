@@ -770,7 +770,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
           }
 
           mergeState({
-            isValid: Object.values(result).every(error => !error),
+            isValid: Object.values(result).every(
+              (messages) => messages.length === 0
+            ),
           });
         },
         nextStep({ disabled }) {
@@ -781,7 +783,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
           }
 
           mergeState({
-            isValid: Object.values(result).every(error => !error),
+            isValid: Object.values(result).every(
+              (messages) => messages.length === 0
+            ),
           });
 
           if (
@@ -805,15 +809,16 @@ export const KubectlApplyForm = implementRuntimeComponent({
               result = ref.current.validate();
             }
 
+            const isValid = Object.values(result).every(
+              (messages) => messages.length === 0
+            );
+
             mergeState({
-              isValid: Object.values(result).every(error => !error),
+              isValid,
             });
 
             if (
-              Object.values(result).every(
-                (messages) => messages.length === 0
-              ) &&
-              !disabled
+              isValid && !disabled
             ) {
               const sdk = new KubeSdk({
                 basePath,
