@@ -63,7 +63,7 @@ const ArrayCards = (props: Props) => {
   const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
   const errorInfo = props.field?.error || props.error;
   const removable = useMemo(
-    () => value.length > (widgetOptions?.minLength || 0),
+    () => value.length > (widgetOptions?.minLength || 0) && widgetOptions.removable !== false,
     [value.length, widgetOptions?.minLength]
   );
 
