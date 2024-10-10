@@ -116,7 +116,7 @@ const ArrayGroups = (props: Props) => {
       const store = set(
         services.store,
         `summary.removableMap.${field.key || ""}`,
-        value.length > (widgetOptions?.minLength || 0)
+        value.length > (widgetOptions?.minLength || 0) && widgetOptions.removable !== false
       );
 
       services.setStore({ ...store });
@@ -155,7 +155,7 @@ const ArrayGroups = (props: Props) => {
             path={path.concat(`.${itemIndex}`)}
             level={level + 1}
             onRemove={
-              value.length > (widgetOptions?.minLength || 0)
+              value.length > (widgetOptions?.minLength || 0) && widgetOptions.removable !== false
                 ? () => remove(itemIndex)
                 : undefined
             }
