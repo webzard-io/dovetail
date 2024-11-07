@@ -1,3 +1,5 @@
+import { isObject } from "lodash";
+
 export const ID_PROP = "__id__"
 
 function uuidv4() {
@@ -15,7 +17,7 @@ function uuidv4() {
 }
 
 export function defineId(object: Record<string, unknown>, id?: string) {
-  if (object[ID_PROP]) return;
+  if (!isObject(object) || object[ID_PROP]) return;
 
   Object.defineProperty(object, ID_PROP, {
     value: id || uuidv4(),

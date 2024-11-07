@@ -3,7 +3,8 @@ import { first } from "lodash";
 export function immutableSet<T>(
   value: T,
   path: string,
-  propertyValue: any
+  propertyValue: any,
+  handleValue?: (value: any, oldValue: any) => any
 ): T | Record<string, any> {
   if (value !== undefined && value instanceof Object === false) return value;
 
@@ -16,13 +17,15 @@ export function immutableSet<T>(
     object instanceof Array
       ? [...object]
       : {
-          ...object,
-        };
+        ...object,
+      };
 
   if (nextPath) {
-    result[key] = immutableSet(oldValue, nextPath, propertyValue);
+    const newValue = immutableSet(oldValue, nextPath, propertyValue, handleValue);
+
+    result[key] = handleValue ? handleValue(newValue, oldValue) : newValue;
   } else {
-    result[key] = propertyValue;
+    result[key] = handleValue ? handleValue(propertyValue, oldValue) : propertyValue;
   }
 
   return result;

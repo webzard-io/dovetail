@@ -8,6 +8,7 @@ import type { Field } from "../../organisms/KubectlApplyForm/type";
 import { isObject } from "lodash";
 import { JSONSchema7 } from "json-schema";
 import { immutableSet } from "../../../sunmao/utils/object";
+import { defineId, ID_PROP } from "../../utils/id";
 
 export function resolveSubFields(props: WidgetProps) {
   const { specsArray, field, spec, value, path, level, error, widgetOptions, onChange } =
@@ -43,7 +44,7 @@ export function resolveSubFields(props: WidgetProps) {
           }
           field={subField}
           widget={subField.widget}
-          widgetOptions={{ disabled: widgetOptions?.disabled, ...subField.widgetOptions}}
+          widgetOptions={{ disabled: widgetOptions?.disabled, ...subField.widgetOptions }}
           key={subField.key || subField.path}
           spec={subSpec}
           path={path.concat(isLayout ? subField.path : `.${subField.path}`)}
@@ -54,6 +55,10 @@ export function resolveSubFields(props: WidgetProps) {
               onChange(newValue, displayValues, key, dataPath);
             } else {
               const result = immutableSet(value, subField.path, newValue);
+
+              if (value[ID_PROP]) {
+                defineId(result, value[ID_PROP]);
+              }
 
               onChange(result, displayValues, key, dataPath);
             }
