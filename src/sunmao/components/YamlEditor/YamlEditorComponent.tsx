@@ -362,9 +362,8 @@ export default implementRuntimeComponent({
     // init value
     useEffect(() => {
       mergeState({ value: defaultValue, isValid: true, isSchemaValid: true });
-      callbackMap?.onChange?.();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [callbackMap, mergeState]);
+    }, []);
 
     return <YamlEditorComponent
       ref={ref}
