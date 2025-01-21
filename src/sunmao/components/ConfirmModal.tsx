@@ -116,6 +116,10 @@ export const ConfirmModal = implementRuntimeComponent({
         title: "Size",
         category: PRESET_PROPERTY_CATEGORY.Basic,
       }),
+      maskClosable: Type.Boolean({
+        title: "Mask closable",
+        category: PRESET_PROPERTY_CATEGORY.Basic,
+      }),
       footerError: Type.String({
         title: "Footer Error",
         category: PRESET_PROPERTY_CATEGORY.Basic,
@@ -175,6 +179,7 @@ export const ConfirmModal = implementRuntimeComponent({
     tip,
     errors,
     size,
+    maskClosable = false,
     confirmButtonText,
     confirmButtonType,
     confirmButtonLoading,
@@ -266,6 +271,7 @@ export const ConfirmModal = implementRuntimeComponent({
         footer={footer}
         size={size}
         onClose={onCancel}
+        maskClosable={maskClosable}
       >
         {slotsElements.content?.({}, content) || content}
       </kit.Modal>
