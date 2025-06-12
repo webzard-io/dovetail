@@ -92,6 +92,7 @@ const MonacoYamlEditor: React.FC<Props> = props => {
       },
       tabSize: 2,
       readOnly: readOnly,
+      theme: "vs",
     });
 
     instanceRef.current.editor = editor;
