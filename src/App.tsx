@@ -1,4 +1,5 @@
-import { libs, dependencies } from "./sunmao/lib";
+import { libs } from "./sunmao/lib";
+import { dependencies } from "./sunmao/app";
 import registerSunmaoApp from "./SunmaoApp";
 import lcm from "./sunmao/lcm.json";
 import fiddle from "./sunmao/fiddle.json";

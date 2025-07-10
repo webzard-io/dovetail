@@ -37,17 +37,32 @@ if (!import.meta.env.PROD) {
   };
 }
 
-const schemaMap = new Map();
-
 const MonacoYamlEditor: React.FC<Props> = props => {
   const ref = useRef<HTMLDivElement>(null);
-  const instanceRef = useRef<{ editor: monaco.editor.IStandaloneCodeEditor | null }>({ editor: null });
-  const { defaultValue, id, height, readOnly, onChange, onValidate, getInstance, onEditorCreate, onBlur, schema } = props;
+  const instanceRef = useRef<{ editor: monaco.editor.IStandaloneCodeEditor | null }>({
+    editor: null,
+  });
+  const {
+    defaultValue,
+    id,
+    height,
+    readOnly,
+    onChange,
+    onValidate,
+    getInstance,
+    onEditorCreate,
+    onBlur,
+    schema,
+  } = props;
   const uri = id ? monaco.Uri.parse(`${id}.yaml`) : undefined;
 
   useEffect(() => {
+    if (!window._MonacoSchemaMap) {
+      window._MonacoSchemaMap = new Map();
+    }
+
     if (schema) {
-      schemaMap.set(id, {
+      window._MonacoSchemaMap.set(id || "", {
         // Id of the first schema
         uri: String(uri),
         // Associate with our model
@@ -55,7 +70,7 @@ const MonacoYamlEditor: React.FC<Props> = props => {
         schema,
       });
     }
-    const schemas = [...schemaMap.values()];
+    const schemas = [...window._MonacoSchemaMap.values()];
     // config monaco yaml
     setDiagnosticsOptions({
       enableSchemaRequest: false,
@@ -77,6 +92,7 @@ const MonacoYamlEditor: React.FC<Props> = props => {
       },
       tabSize: 2,
       readOnly: readOnly,
+      theme: "vs",
     });
 
     instanceRef.current.editor = editor;
@@ -85,10 +101,10 @@ const MonacoYamlEditor: React.FC<Props> = props => {
 
     return () => {
       instanceRef.current.editor = null;
-      schemaMap.delete(id);
+      window._MonacoSchemaMap.delete(id || "");
       model.dispose();
       editor.dispose();
-    }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValue, schema, id, readOnly, getInstance]);
 
@@ -97,14 +113,14 @@ const MonacoYamlEditor: React.FC<Props> = props => {
 
     if (editor) {
       const stop = editor.onDidChangeModelContent(() => {
-        ReactDOM.unstable_batchedUpdates(()=> {
+        ReactDOM.unstable_batchedUpdates(() => {
           onChange(editor.getValue());
         });
       });
 
       return () => {
         stop.dispose();
-      }
+      };
     }
   }, [onChange, instanceRef.current.editor]);
 
@@ -112,12 +128,15 @@ const MonacoYamlEditor: React.FC<Props> = props => {
     const editor = instanceRef.current.editor;
 
     if (editor) {
-      const stop = monaco.editor.onDidChangeMarkers((uri) => {
+      const stop = monaco.editor.onDidChangeMarkers(uri => {
         const model = instanceRef.current.editor?.getModel();
         const currentEditorUri = model?.uri;
 
         if (model && uri.toString() === currentEditorUri?.toString()) {
-          const marks = monaco.editor.getModelMarkers({ owner: "yaml", resource: currentEditorUri });
+          const marks = monaco.editor.getModelMarkers({
+            owner: "yaml",
+            resource: currentEditorUri,
+          });
           const yamlMarks = marks.filter(m => m.source === "YAML");
           const schemaMarks = marks.filter(m => m.source !== "YAML");
           const yamlValid = yamlMarks.length === 0;
@@ -125,17 +144,20 @@ const MonacoYamlEditor: React.FC<Props> = props => {
 
           onValidate(yamlValid, schemaValid);
 
-          if (marks.some(mark=> mark.source?.includes("yaml-schema"))) {
-            monaco.editor.setModelMarkers(model, "yaml", marks.map(mark=> ({ ...mark, source: "", resource: {} })));
+          if (marks.some(mark => mark.source?.includes("yaml-schema"))) {
+            monaco.editor.setModelMarkers(
+              model,
+              "yaml",
+              marks.map(mark => ({ ...mark, source: "", resource: {} }))
+            );
           }
         }
-      })
+      });
 
       return () => {
         stop.dispose();
       };
     }
-
   }, [onValidate, instanceRef.current.editor]);
 
   useEffect(() => {
@@ -143,7 +165,7 @@ const MonacoYamlEditor: React.FC<Props> = props => {
 
     if (editor) {
       const stop = editor.onDidBlurEditorWidget(() => {
-        ReactDOM.unstable_batchedUpdates(()=> {
+        ReactDOM.unstable_batchedUpdates(() => {
           onBlur?.();
         });
       });
@@ -159,26 +181,30 @@ const MonacoYamlEditor: React.FC<Props> = props => {
     const stops: monaco.IDisposable[] = [];
 
     if (editor) {
-      stops.push(editor.onDidFocusEditorWidget(() => {
-        editor.updateOptions({
-          scrollbar: {
-            handleMouseWheel: true,
-          }
+      stops.push(
+        editor.onDidFocusEditorWidget(() => {
+          editor.updateOptions({
+            scrollbar: {
+              handleMouseWheel: true,
+            },
+          });
         })
-      }));
-      stops.push(editor.onDidBlurEditorWidget(() => {
-        editor.updateOptions({
-          scrollbar: {
-            handleMouseWheel: false,
-          }
+      );
+      stops.push(
+        editor.onDidBlurEditorWidget(() => {
+          editor.updateOptions({
+            scrollbar: {
+              handleMouseWheel: false,
+            },
+          });
         })
-      }));
+      );
     }
 
     return () => {
       stops.forEach(stop => stop.dispose());
-    }
-  }, [instanceRef.current.editor])
+    };
+  }, [instanceRef.current.editor]);
 
   return (
     <div

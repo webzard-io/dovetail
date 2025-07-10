@@ -8,12 +8,17 @@ import linariaVitePlugin from "./tools/linaria-vite-plugin";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { getProxyConfig, applyK8sYamlPlugin } from "./tools/proxy-k8s";
 import monacoEditorPlugin from "vite-plugin-monaco-editor";
+import pkg from './package.json';
 
 const globalSassPath = path.resolve(
   __dirname,
   "./src/_internal/atoms/themes/CloudTower/styles/variables.scss"
 );
 const globalSass = fs.readFileSync(globalSassPath, "utf-8");
+const external = [
+  ...Object.keys(pkg.dependencies || {}),
+  ...Object.keys(pkg.peerDependencies || {})
+]
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -25,22 +30,11 @@ export default defineConfig({
         widgets: path.resolve(__dirname, "src/widgets.ts"),
       },
       name: "Kui",
-      fileName: (format, entryName) => `${entryName}.js`,
+      fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'mjs' : 'js'}`,
       formats: ["es", "cjs"],
     },
     rollupOptions: {
-      external: [
-        "react",
-        "react-dom",
-        "semver",
-        "@sunmao-ui/core",
-        "@sunmao-ui/runtime",
-        "@sunmao-ui/editor-sdk",
-        "chakra-react-select",
-        "monaco-editor",
-        "monaco-yaml",
-        "@cloudtower/eagle"
-      ],
+      external,
     },
   },
   server: {
