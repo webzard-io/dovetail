@@ -190,7 +190,7 @@ const FormItem = React.forwardRef<HTMLDivElement, TemplateProps>(
 
     return (
       <Form.Item
-        className={cx(FormItemStyle, itemKey, "kaf-form-item")}
+        className={cx(FormItemStyle, field?.customClassName || itemKey, "kaf-form-item")}
         labelAlign="left"
         label={
           displayLabel ? (

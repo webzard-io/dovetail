@@ -57,6 +57,8 @@ export type Field = {
   editorSchemaError?: string;
   readonly?: boolean;
   readonlyText?: string;
+  customTestId?: string;
+  customClassName?: string;
 };
 
 export type FormItemData = (Field | Record<string, unknown>) & {

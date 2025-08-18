@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import {
   implementWidget,
   WidgetProps,
@@ -152,9 +152,10 @@ const KubectlApplyFormDesignWidget: React.FC<
   WidgetProps<"kui/v1/KubectlApplyFormDesignWidget">
 > = (props) => {
   const { component, value, services, onChange, path } = props;
-  const formConfig = useRef<FormConfig>(
-    isExpression(value) ? services.stateManager.deepEval(value) : value
-  );
+  const formConfig = useRef<FormConfig>({
+    ...isExpression(value) ? services.stateManager.deepEval(value) : value,
+    schemas: services.stateManager.deepEval(value)["schemas"],
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { nextStep, prevStep, activeStep, setStep } = useSteps({
     initialStep: 0,
@@ -196,6 +197,57 @@ const KubectlApplyFormDesignWidget: React.FC<
 
     return spec || UiConfigSpec;
   }, [formConfig.current.schemas, props.spec, updater]);
+
+  const fetchSchemas = useCallback(async (resources: {
+    apiVersion: string;
+    kind: string;
+  }[]) => {
+    setLoadingSchema(true);
+
+    try {
+      const schemas = (await store.fetchResourcesSchemas(
+        basePath,
+        resources.map((resource) => ({
+          apiBase:
+            resource.apiVersion === "v1"
+              ? `/api/${resource.apiVersion}`
+              : `/apis/${resource.apiVersion}`,
+          kind: resource.kind,
+        }))
+      ))
+        .map((schema, index) =>
+          schema
+            ? omit(schema, ["properties.status"])
+            : formConfig.current.schemas[index] || {
+              type: "object",
+              properties: {},
+              [CUSTOM_SCHEMA_KIND]: [
+                {
+                  kind: resources[index].kind,
+                },
+              ],
+            }
+        );
+
+      return schemas;
+    } finally {
+      setLoadingSchema(false);
+    }
+
+  }, [basePath]);
+  const onChangeValue = useCallback(() => {
+    const newSchemas = formConfig.current?.schemas;
+    const finalSchemasValue = isExpression(value.schemas) ? value.schemas : newSchemas.map((newSchema, index) => {
+      const originSchemaValue = value.schemas[index];
+
+      return isExpression(originSchemaValue) ? originSchemaValue : newSchema;
+    });
+
+    onChange({
+      ...formConfig.current,
+      schemas: finalSchemasValue
+    });
+  }, [value.schemas, onChange])
 
   useEffect(() => {
     store.schemas = formConfig.current.schemas;
@@ -350,7 +402,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                             const newValue = inferLayout(uiConfig, _newValue);
                             setUiConfig(newValue);
                             formConfig.current.uiConfig = newValue;
-                            onChange(formConfig.current);
+                            onChangeValue();
                           }}
                         />
                       </Box>
@@ -375,7 +427,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                     size="sm"
                     colorScheme="blue"
                     onClick={() => {
-                      onChange(formConfig.current);
+                      onChangeValue();
                       onClose();
                     }}
                   >
@@ -395,32 +447,7 @@ const KubectlApplyFormDesignWidget: React.FC<
                         }[];
 
                         formConfig.current.defaultValues = resources;
-                        setLoadingSchema(true);
-
-                        formConfig.current.schemas = (
-                          await store.fetchResourcesSchemas(
-                            basePath,
-                            resources.map((resource) => ({
-                              apiBase:
-                                resource.apiVersion === "v1"
-                                  ? `/api/${resource.apiVersion}`
-                                  : `/apis/${resource.apiVersion}`,
-                              kind: resource.kind,
-                            }))
-                          )
-                        ).map((schema, index) =>
-                          schema
-                            ? omit(schema, ["properties.status"])
-                            : formConfig.current.schemas[index] || {
-                                type: "object",
-                                properties: {},
-                                [CUSTOM_SCHEMA_KIND]: [
-                                  {
-                                    kind: resources[index].kind,
-                                  },
-                                ],
-                              }
-                        );
+                        formConfig.current.schemas = await fetchSchemas(resources);
 
                         if (fieldsIsEmpty(formConfig.current.uiConfig)) {
                           formConfig.current.uiConfig.layout = {
@@ -441,9 +468,9 @@ const KubectlApplyFormDesignWidget: React.FC<
                             ),
                           };
                         }
-                        setLoadingSchema(false);
                       }
-                      onChange(formConfig.current);
+
+                      onChangeValue();
                     }}
                   >
                     Next
