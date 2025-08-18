@@ -27,14 +27,15 @@ import { useTranslation } from "react-i18next";
 import SectionTitle from "./SectionTitle";
 import { ID_PROP } from "../../../utils/id";
 
-function shouldDisplayDescription(spec: JSONSchema7): boolean {
-  if (spec.type === "object") {
+function shouldDisplayDescription(spec?: JSONSchema7): boolean {
+  if (spec?.type === "object") {
     return false;
   }
   return true;
 }
 
-type SpecFieldProps = Omit<WidgetProps, "setWidgetErrors"> & {
+type SpecFieldProps = Omit<WidgetProps, "setWidgetErrors" | "spec"> & {
+  spec?: JSONSchema7;
   children?: React.ReactNode;
 };
 
@@ -92,7 +93,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
   const editorRef = useRef<FormEditorHandle>(null);
   const kit = useContext(KitContext);
   const [widgetErrors, setWidgetErrors] = useState([]);
-  const { title } = spec;
+  const { title } = spec || {};
   const transformedField = field ? transformFuncProps(field, { index }) : field;
   const transformedItem = item ? transformFuncProps(item, { index }) : item;
   const fieldOrItem = transformedField || transformedItem;
@@ -131,7 +132,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     }
   }, [displayValues, onChange, transformedField?.key, transformedField?.path, enabledEditorMap, setEnabledEditorMap, itemKey]);
 
-  if (isEmpty(spec) || transformedField?.condition === false) {
+  if (!spec || transformedField?.condition === false) {
     return null;
   }
 
