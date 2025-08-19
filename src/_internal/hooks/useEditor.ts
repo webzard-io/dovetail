@@ -4,7 +4,7 @@ import { WidgetProps } from "../molecules/AutoForm/widget";
 import { useTranslation } from "react-i18next";
 import yaml from "js-yaml";
 import { Handle as YamlEditorComponentHandle } from "../../sunmao/components/YamlEditor/YamlEditorComponent";
-import { isEqual } from "lodash";
+import { isEqual, debounce } from "lodash";
 import { Field } from "../organisms/KubectlApplyForm/type";
 
 export type UseEditorProps = UseValidateProps & Pick<WidgetProps, "onChange" | "displayValues"> & {
@@ -133,6 +133,10 @@ function useEditor(props: UseEditorProps) {
       emitChange();
     }
   }, [emitChange, editorErrors.length]);
+  // 当持续按键输入时，会触发多次 onChangeOrBlur 更新值，然后触发 emitChange
+  // 由于 React 的更新值是异步的，更新值后可能会与 getEditorValue() 不一致，导致重新设置编辑器的值，终端用户输入
+  // 所以这里使用 debounce 来避免在持续输入中多次触发 onChangeOrBlur
+  const debouncedOnChangeOrBlur = useMemo(() => debounce(onChangeOrBlur, 100), [onChangeOrBlur]);
 
   useEffect(() => {
     changeValue();
@@ -155,7 +159,7 @@ function useEditor(props: UseEditorProps) {
     changeValue,
     validate,
     onEditorValidate,
-    onChangeOrBlur
+    onChangeOrBlur: debouncedOnChangeOrBlur
   }
 }
 
