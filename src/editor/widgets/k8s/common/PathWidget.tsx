@@ -4,7 +4,7 @@ import { Select } from "chakra-react-select";
 import { Box } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { Type } from "@sinclair/typebox";
-import { css } from "@emotion/css";
+import { css } from "@linaria/core";
 
 const SelectStyle = css`
   z-index: 3;

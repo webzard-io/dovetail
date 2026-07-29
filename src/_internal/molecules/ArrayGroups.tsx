@@ -3,7 +3,7 @@ import Group from "./Group";
 import { Type, Static } from "@sinclair/typebox";
 import { KitContext } from "../atoms/kit-context";
 import React, { useContext, useEffect, useCallback } from "react";
-import { css, cx } from "@emotion/css";
+import { css, cx } from "@linaria/core";
 import Icon, {
   IconTypes,
 } from "../atoms/themes/CloudTower/components/Icon/Icon";
@@ -16,6 +16,7 @@ import { StringUnion } from "@sunmao-ui/runtime";
 import { set } from "lodash";
 import { COMMON_ARRAY_OPTIONS } from "./ArrayItems";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
+import { defineId, ID_PROP } from "../utils/id";
 
 const GroupStyle = css`
   &.dovetail-ant-collapse {
@@ -115,7 +116,7 @@ const ArrayGroups = (props: Props) => {
       const store = set(
         services.store,
         `summary.removableMap.${field.key || ""}`,
-        value.length > (widgetOptions?.minLength || 0)
+        value.length > (widgetOptions?.minLength || 0) && widgetOptions.removable !== false
       );
 
       services.setStore({ ...store });
@@ -125,15 +126,18 @@ const ArrayGroups = (props: Props) => {
   return (
     <>
       {(value || []).map((itemValue, itemIndex) => {
+        defineId(itemValue);
+
         return (
           <Group
             {...props}
             className={GroupStyle}
-            key={widgetOptions.itemKey ? itemValue[widgetOptions.itemKey] || itemIndex : itemIndex}
+            key={widgetOptions.itemKey ? (itemValue[widgetOptions.itemKey] || itemValue[ID_PROP] || itemIndex) : (itemValue[ID_PROP] || itemIndex)}
             value={itemValue}
             spec={itemSpec as JSONSchema7}
             superiorKey={`${props.field?.key}-${itemIndex}`}
             index={itemIndex}
+            id={itemValue[ID_PROP]}
             error={errorInfo instanceof Array ? errorInfo[itemIndex] : ""}
             widgetOptions={{
               ...widgetOptions,
@@ -151,7 +155,7 @@ const ArrayGroups = (props: Props) => {
             path={path.concat(`.${itemIndex}`)}
             level={level + 1}
             onRemove={
-              value.length > (widgetOptions?.minLength || 0)
+              value.length > (widgetOptions?.minLength || 0) && widgetOptions.removable !== false
                 ? () => remove(itemIndex)
                 : undefined
             }

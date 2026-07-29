@@ -1,5 +1,9 @@
 import { JSONSchema7 } from "json-schema";
-import type { Field, Services, FormItemData } from "../../organisms/KubectlApplyForm/type";
+import type {
+  Field,
+  Services,
+  FormItemData,
+} from "../../organisms/KubectlApplyForm/type";
 
 type WidgetOptions = Partial<{
   displayLabel: boolean;
@@ -10,17 +14,15 @@ type WidgetOptions = Partial<{
 type SlotFunction = (
   props: FormItemData,
   fallback: React.ReactNode,
-  key: string
+  key: string,
+  id?: string,
 ) => React.ReactNode;
 
-export type WidgetProps<
-  Value = any,
-  WidgetOptions = Record<string, unknown>
-> = {
+export type WidgetProps<Value = any, WidgetOptions = Record<string, unknown>> = {
   services: Services;
   basePath: string;
   field?: Field;
-  item?: Field["subItem"]
+  item?: Field["subItem"];
   itemKey: string;
   spec: JSONSchema7;
   widget?: string;
@@ -29,11 +31,12 @@ export type WidgetProps<
   path: string;
   superiorKey?: string;
   index?: number;
+  id?: string;
   error?: string | string[] | Record<string, string>;
   value: Value;
   displayValues: Record<string, unknown>;
   enabledEditorMap: Record<string, boolean>;
-  setEnabledEditorMap: (newMap: Record<string, boolean>)=> void;
+  setEnabledEditorMap: (newMap: Record<string, boolean>) => void;
   onChange: (
     newValue: Value,
     displayValues: Record<string, unknown>,
@@ -44,6 +47,6 @@ export type WidgetProps<
   slot?: SlotFunction;
   helperSlot?: SlotFunction;
   labelSlot?: SlotFunction;
-  setWidgetErrors: (errors: string[])=> void;
+  setWidgetErrors: (errors: string[]) => void;
   specsArray: Record<string, { spec: JSONSchema7 }>[];
 };

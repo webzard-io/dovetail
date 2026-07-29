@@ -3,13 +3,13 @@ import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { PRESET_PROPERTY_CATEGORY, StringUnion } from "@sunmao-ui/shared";
 import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import useMergeState from "../hooks/useMergeState";
-import { cloneDeep, pick } from "lodash";
+import { cloneDeep, pick, get } from "lodash";
 import _KubectlApplyForm, {
   CUSTOM_SCHEMA_KIND,
   KubectlApplyFormRef,
 } from "../../_internal/organisms/KubectlApplyForm/KubectlApplyForm";
 import { FormItemData } from "../../_internal/organisms/KubectlApplyForm/type";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
 import {
   FORM_WIDGETS_MAP,
   FORM_WIDGET_OPTIONS_MAP,
@@ -19,6 +19,7 @@ import { KubeSdk } from "../../_internal/k8s-api-client/kube-api";
 import { generateSlotChildren } from "../utils/slot";
 import { immutableSet } from "../utils/object";
 import registry from "../../services/Registry";
+import { defineId, ID_PROP } from "../../_internal/utils/id";
 
 const LABEL_CATEGORY = "Label Style";
 const VALIDATION_CATEGORY = "Validation";
@@ -601,7 +602,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
     }), [app, component, allComponents, services, slotsElements, childrenMap]);
 
     const generateSlot = useCallback((slot: string) => {
-      return (field: FormItemData, fallback: React.ReactNode, slotKey: string) => {
+      return (field: FormItemData, fallback: React.ReactNode, slotKey: string, id?: string) => {
         return (
           generateSlotChildren(
             {
@@ -615,6 +616,13 @@ export const KubectlApplyForm = implementRuntimeComponent({
                 return field.index !== undefined
                   ? `${child.id}_${field.index}`
                   : child.id;
+              },
+              generateKey(child) {
+                if (id) {
+                  return `${child.id}_${id}`;
+                }
+
+                return child.id;
               },
               generateProps() {
                 return (field as Static<typeof UiConfigFieldSpec>) || {};
@@ -672,7 +680,18 @@ export const KubectlApplyForm = implementRuntimeComponent({
             fieldValue && typeof fieldValue === "object"
               ? cloneDeep(fieldValue)
               : fieldValue;
-          const newValues = immutableSet(valuesRef.current, fieldPath, finalFieldValue) as any[];
+          const newValues = immutableSet(
+            valuesRef.current,
+            fieldPath,
+            finalFieldValue,
+            (value, oldValue) => {
+              if (oldValue && typeof oldValue === "object" && oldValue[ID_PROP]) {
+                defineId(value, oldValue[ID_PROP]);
+              }
+
+              return value;
+            }
+          ) as any[];
           const newDisplayValues = {
             ...displayValuesRef.current,
             [fieldPath]: displayValue,
@@ -699,7 +718,18 @@ export const KubectlApplyForm = implementRuntimeComponent({
                 ? cloneDeep(fieldValue)
                 : fieldValue;
 
-            const newValues = immutableSet(values, fieldPath, finalFieldValue) as any[];
+            const newValues = immutableSet(
+              values,
+              fieldPath,
+              finalFieldValue,
+              (value, oldValue) => {
+                if (oldValue && typeof oldValue === "object" && oldValue[ID_PROP]) {
+                  defineId(value, oldValue[ID_PROP]);
+                }
+
+                return value;
+              }
+            ) as any[];
             const newDisplayValues = {
               ...displayValues,
               [fieldPath]: displayValue,
@@ -740,7 +770,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
           }
 
           mergeState({
-            isValid: Object.values(result).every(error => !error),
+            isValid: Object.values(result).every(
+              (messages) => messages.length === 0
+            ),
           });
         },
         nextStep({ disabled }) {
@@ -751,7 +783,9 @@ export const KubectlApplyForm = implementRuntimeComponent({
           }
 
           mergeState({
-            isValid: Object.values(result).every(error => !error),
+            isValid: Object.values(result).every(
+              (messages) => messages.length === 0
+            ),
           });
 
           if (
@@ -775,15 +809,16 @@ export const KubectlApplyForm = implementRuntimeComponent({
               result = ref.current.validate();
             }
 
+            const isValid = Object.values(result).every(
+              (messages) => messages.length === 0
+            );
+
             mergeState({
-              isValid: Object.values(result).every(error => !error),
+              isValid,
             });
 
             if (
-              Object.values(result).every(
-                (messages) => messages.length === 0
-              ) &&
-              !disabled
+              isValid && !disabled
             ) {
               const sdk = new KubeSdk({
                 basePath,
@@ -879,7 +914,7 @@ export const KubectlApplyForm = implementRuntimeComponent({
     return (
       <_KubectlApplyForm
         ref={ref}
-        className={css(customStyle?.content)}
+        className={ecss(customStyle?.content)}
         basePath={basePath}
         schemas={formConfig.schemas}
         uiConfig={formConfig.uiConfig}

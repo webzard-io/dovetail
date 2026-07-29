@@ -9,7 +9,7 @@ import {
   DISPLAY_WIDGET_OPTIONS_MAP,
 } from "../../_internal/molecules/display";
 import { renderWidget } from "../utils/widget";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
 
 const WIDGET_CATEGORY = "Widget";
 
@@ -398,7 +398,7 @@ export const KubectlGetDetail = implementRuntimeComponent({
     return (
       <BaseKubectlGetDetail
         ref={elementRef}
-        className={css(customStyle?.content)}
+        className={ecss(customStyle?.content)}
         basePath={basePath}
         watchWsBasePath={watchWsBasePath}
         apiBase={apiBase}

@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import { WidgetProps } from "./AutoForm/widget";
 import { Type, Static } from "@sinclair/typebox";
-import styled from "@emotion/styled";
-import { css } from "@emotion/css";
+import { styled } from "@linaria/react";
+import { css } from "@linaria/core";
 import { Typo } from "../atoms/themes/CloudTower/styles/typo.style";
 import { Row } from "antd";
 import { KitContext } from "../atoms/kit-context";

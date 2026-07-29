@@ -5,7 +5,7 @@ import {
   StringUnion,
   PRESET_PROPERTY_CATEGORY,
 } from "@sunmao-ui/runtime";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
 import { Type } from "@sinclair/typebox";
 import { KitContext } from "../../_internal/atoms/kit-context";
 
@@ -46,6 +46,7 @@ const ModalProps = Type.Object({
     title: "Show footer",
     category: PRESET_PROPERTY_CATEGORY.Behavior,
   }),
+  popupContainerId: Type.String(),
 });
 
 const ModalState = Type.Object({
@@ -103,6 +104,7 @@ export const Modal = implementRuntimeComponent({
     size,
     zIndex,
     mergeState,
+    popupContainerId,
   }) => {
     const kit = useContext(KitContext);
     const [visible, setVisible] = useState(defaultVisible || false);
@@ -147,14 +149,16 @@ export const Modal = implementRuntimeComponent({
 
     return (
       <kit.FullscreenModal
-        className={css`
+        className={ecss`
           ${customStyle?.modal}
         `}
         visible={visible}
         maskClosable={maskClosable}
         width={width}
         getContainer={() =>
-          document.getElementById(DIALOG_CONTAINER_ID) || document.body
+          document.getElementById(DIALOG_CONTAINER_ID) ||
+          document.getElementById(popupContainerId) ||
+          document.body
         }
         footer={
           showFooter ? slotsElements.footer?.({}, undefined) || undefined : null

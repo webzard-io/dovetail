@@ -1,4 +1,4 @@
-import { css } from "@emotion/css";
+import { css } from "@linaria/core";
 
 export const Row = css`
   display: flex;

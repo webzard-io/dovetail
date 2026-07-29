@@ -1,7 +1,7 @@
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import { PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
 import { KitContext } from "../../_internal/atoms/kit-context";
 import React, {
   useContext,
@@ -85,7 +85,7 @@ export const K8sNamespaceSelect = implementRuntimeComponent({
     <kit.Select
       options={options}
       placeholder={placeholder}
-      className={css(customStyle?.content)}
+      className={ecss(customStyle?.content)}
       onChange={onChange}
       showSearch
     />

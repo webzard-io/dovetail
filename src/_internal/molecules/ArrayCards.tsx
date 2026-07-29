@@ -3,7 +3,7 @@ import Card from "./Card";
 import { Type, Static } from "@sinclair/typebox";
 import { KitContext } from "../atoms/kit-context";
 import React, { useContext, useCallback, useEffect, useMemo } from "react";
-import { css } from "@emotion/css";
+import { css } from "@linaria/core";
 import Icon, {
   IconTypes,
 } from "../atoms/themes/CloudTower/components/Icon/Icon";
@@ -11,6 +11,7 @@ import { generateFromSchema } from "../utils/schema";
 import { JSONSchema7 } from "json-schema";
 import { useTranslation } from "react-i18next";
 import { cloneDeep, set } from "lodash";
+import { defineId, ID_PROP } from "./../utils/id";
 
 const CardStyle = css`
   margin-bottom: 16px;
@@ -62,7 +63,7 @@ const ArrayCards = (props: Props) => {
   const itemSpec = Array.isArray(spec.items) ? spec.items[0] : spec.items;
   const errorInfo = props.field?.error || props.error;
   const removable = useMemo(
-    () => value.length > (widgetOptions?.minLength || 0),
+    () => value.length > (widgetOptions?.minLength || 0) && widgetOptions.removable !== false,
     [value.length, widgetOptions?.minLength]
   );
 
@@ -104,6 +105,8 @@ const ArrayCards = (props: Props) => {
   return (
     <>
       {(value || []).map((itemValue, itemIndex) => {
+        defineId(itemValue);
+
         return (
           <Card
             {...props}
@@ -113,6 +116,7 @@ const ArrayCards = (props: Props) => {
             spec={itemSpec as JSONSchema7}
             superiorKey={`${props.field?.key}-${itemIndex}`}
             index={itemIndex}
+            id={itemValue[ID_PROP]}
             error={errorInfo instanceof Array ? errorInfo[itemIndex] : ""}
             widgetOptions={{
               ...widgetOptions,

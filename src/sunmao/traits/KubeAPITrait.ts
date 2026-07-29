@@ -3,6 +3,7 @@ import {
   implementRuntimeTrait,
   EventCallBackHandlerSpec,
   UIServices,
+  runEventHandler,
 } from "@sunmao-ui/runtime";
 import {
   KubeApi,
@@ -10,52 +11,6 @@ import {
 } from "../../_internal/k8s-api-client/kube-api";
 import { compact, debounce, delay, throttle } from "lodash";
 import { Static } from "@sinclair/typebox";
-
-export const runEventHandler = (
-  handler: Omit<Static<typeof EventCallBackHandlerSpec>, "type">,
-  rawHandlers: any,
-  index: number,
-  services: UIServices,
-  slotKey: string,
-  evalListItem?: boolean
-) => {
-  const { stateManager } = services;
-  const send = () => {
-    // Eval before sending event to assure the handler object is evaled from the latest state.
-    const evalOptions = {
-      slotKey,
-      evalListItem,
-    };
-    const evaledHandlers = stateManager.deepEval(
-      rawHandlers,
-      evalOptions
-    ) as Static<typeof EventCallBackHandlerSpec>[];
-    const evaledHandler = evaledHandlers[index];
-
-    if (evaledHandler.disabled && typeof evaledHandler.disabled === "boolean") {
-      return;
-    }
-
-    services.apiService.send("uiMethod", {
-      componentId: evaledHandler.componentId,
-      name: evaledHandler.method.name,
-      parameters: evaledHandler.method.parameters,
-    });
-  };
-  const { wait } = handler;
-
-  if (!wait || !wait.time) {
-    return send;
-  }
-
-  return wait.type === "debounce"
-    ? debounce(send, wait.time)
-    : wait.type === "throttle"
-    ? throttle(send, wait.time)
-    : wait.type === "delay"
-    ? () => delay(send, wait.time)
-    : send;
-};
 
 const emptyData = {
   apiVersion: "",
@@ -190,7 +145,7 @@ export default implementRuntimeTrait({
 
       const onListResponse = (response: UnstructuredList) => {
         mergeState({ loading: false, error: null, response });
-        
+
         onResponse?.forEach((handler, index) => {
           runEventHandler(
             handler,
@@ -203,7 +158,7 @@ export default implementRuntimeTrait({
       };
       const onListWatchUpdate = (response: UnstructuredList) => {
         mergeState({ loading: false, error: null, response });
-        
+
         onDataUpdate?.forEach((handler, index) => {
           runEventHandler(
             handler,

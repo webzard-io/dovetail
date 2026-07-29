@@ -1,4 +1,5 @@
-import { libs, dependencies } from "./sunmao/lib";
+import { libs } from "./sunmao/lib";
+import { dependencies } from "./sunmao/app";
 import registerSunmaoEditor from "./SunmaoEditor";
 import "@sunmao-ui/editor/dist/index.css";
 import "./i18n";

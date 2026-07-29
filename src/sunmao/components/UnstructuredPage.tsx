@@ -1,7 +1,7 @@
 import React from "react";
 import { implementRuntimeComponent } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
-import { css } from "@emotion/css";
+import { css } from "@linaria/core";
 import _UnstructuredPage from "../../_internal/organisms/UnstructuredPage";
 
 const UnstructuredPageProps = Type.Object({

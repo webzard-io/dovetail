@@ -25,6 +25,7 @@ import FormItem from "./FormItem";
 import FormEditor, { FormEditorHandle } from "./FormEditor";
 import { useTranslation } from "react-i18next";
 import SectionTitle from "./SectionTitle";
+import { ID_PROP } from "../../../utils/id";
 
 function shouldDisplayDescription(spec: JSONSchema7): boolean {
   if (spec.type === "object") {
@@ -79,6 +80,7 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     error,
     index,
     enabledEditorMap,
+    id,
     setEnabledEditorMap,
     slot,
     helperSlot,
@@ -86,7 +88,6 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
     onChange,
     onDisplayValuesChange,
   } = props;
-  const { i18n } = useTranslation();
   let { widgetOptions = {} } = props;
   const editorRef = useRef<FormEditorHandle>(null);
   const kit = useContext(KitContext);
@@ -289,7 +290,8 @@ const SpecField: React.FC<SpecFieldProps> = (props) => {
                   {(slot?.(
                     slotProps,
                     FieldComponent,
-                    `filed_${path}`
+                    `filed_${path}`,
+                    id,
                   ) || FieldComponent)}
                 </span>
               </span>

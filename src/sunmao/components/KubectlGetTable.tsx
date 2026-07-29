@@ -21,7 +21,8 @@ import BaseKubectlGetTable, {
 } from "../../_internal/organisms/KubectlGetTable";
 import { renderWidget } from "../utils/widget";
 import { generateSlotChildren } from "../utils/slot";
-import { css, cx } from "@emotion/css";
+import { css, cx } from "@linaria/core";
+import { css as ecss } from "@emotion/css";
 import { get, throttle } from "lodash";
 import { KitContext } from "../../_internal/atoms/kit-context";
 import semver from "semver";
@@ -729,7 +730,7 @@ export const KubectlGetTable = implementRuntimeComponent({
         ref={elementRef}
         className={cx(
           WrapperStyle,
-          css(customStyle?.content),
+          ecss(customStyle?.content),
           kit.TABLE_WRAPPER_SELECTOR.replace(".", ""),
           `${component.id}-table-wrapper`
         )}

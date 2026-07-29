@@ -178,15 +178,17 @@ p {
   top: 50%;
   transform: translateY(-50%);
 
+  .dovetail-ant-modal-close {
+    right: 24px;
+    top: 27px;
+  }
+
   .dovetail-ant-modal-close-x {
     width: 20px;
     height: 20px;
     line-height: 20px;
     font-size: 20px;
     color: #3e4652;
-    position: absolute;
-    right: 24px;
-    top: 27px;
 
     .anticon-close-circle {
       transition: opacity 320ms 80ms;
@@ -383,7 +385,7 @@ $footer-height: 64px;
   .dovetail-ant-modal-content {
     border-radius: 16px;
 
-    .dovetail-ant-modal-close-x {
+    .dovetail-ant-modal-close {
       right: 40px;
     }
   }
@@ -891,16 +893,14 @@ td .dovetail-ant-btn-link {
     color: $text-primary-light;
     border-radius: 6px;
     border-color: $strokes-light-trans-3;
-    transition: height 240ms ease 8ms, border 160ms ease 8ms,
-      box-shadow 160ms ease 8ms;
+    transition: height 240ms ease 8ms, border 160ms ease 8ms, box-shadow 160ms ease 8ms;
   }
   &.dovetail-ant-input-number {
     line-height: 20px;
     color: $text-primary-light;
     border-radius: 6px;
     border-color: $strokes-light-trans-3;
-    transition: height 240ms ease 8ms, border 160ms ease 8ms,
-      box-shadow 160ms ease 8ms;
+    transition: height 240ms ease 8ms, border 160ms ease 8ms, box-shadow 160ms ease 8ms;
   }
 
   &.dovetail-ant-input.dovetail-ant-input-lg {
@@ -966,8 +966,7 @@ td .dovetail-ant-btn-link {
     border-color: $strokes-light-trans-3;
     line-height: 20px;
     color: $text-primary-light;
-    transition: height 240ms ease 8ms, border 160ms ease 8ms,
-      box-shadow 160ms ease 8ms;
+    transition: height 240ms ease 8ms, border 160ms ease 8ms, box-shadow 160ms ease 8ms;
 
     .dovetail-ant-input-suffix,
     .dovetail-ant-input-prefix {
@@ -1002,7 +1001,9 @@ td .dovetail-ant-btn-link {
     }
   }
 
-  &.dovetail-ant-input-affix-wrapper.error:not(.dovetail-ant-input-affix-wrapper-disabled) {
+  &.dovetail-ant-input-affix-wrapper.error:not(
+      .dovetail-ant-input-affix-wrapper-disabled
+    ) {
     border-color: $red;
     > .dovetail-ant-input {
       color: $red;

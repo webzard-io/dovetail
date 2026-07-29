@@ -5,7 +5,8 @@ import {
 } from "@sunmao-ui/runtime";
 import { Type } from "@sinclair/typebox";
 import { PRESET_PROPERTY_CATEGORY } from "@sunmao-ui/shared";
-import { css, cx } from "@emotion/css";
+import { css, cx } from "@linaria/core";
+import { css as ecss } from "@emotion/css";
 import React, { useContext, useState, useCallback, useEffect } from "react";
 import { KitContext } from "../../_internal/atoms/kit-context";
 import { useTranslation } from "react-i18next";
@@ -115,6 +116,10 @@ export const ConfirmModal = implementRuntimeComponent({
         title: "Size",
         category: PRESET_PROPERTY_CATEGORY.Basic,
       }),
+      maskClosable: Type.Boolean({
+        title: "Mask closable",
+        category: PRESET_PROPERTY_CATEGORY.Basic,
+      }),
       footerError: Type.String({
         title: "Footer Error",
         category: PRESET_PROPERTY_CATEGORY.Basic,
@@ -144,6 +149,7 @@ export const ConfirmModal = implementRuntimeComponent({
         title: "Confirm button loading",
         category: PRESET_PROPERTY_CATEGORY.Basic,
       }),
+      popupContainerId: Type.String(),
     }),
     state: Type.Object({}),
     methods: {
@@ -173,6 +179,7 @@ export const ConfirmModal = implementRuntimeComponent({
     tip,
     errors,
     size,
+    maskClosable = false,
     confirmButtonText,
     confirmButtonType,
     confirmButtonLoading,
@@ -182,6 +189,7 @@ export const ConfirmModal = implementRuntimeComponent({
     slotsElements,
     callbackMap,
     subscribeMethods,
+    popupContainerId,
   }) => {
     const [visible, setVisible] = useState(defaultVisible);
     const { t } = useTranslation();
@@ -252,15 +260,18 @@ export const ConfirmModal = implementRuntimeComponent({
       <kit.Modal
         ref={elementRef}
         getContainer={() =>
-          document.getElementById(DIALOG_CONTAINER_ID) || document.body
+          document.getElementById(DIALOG_CONTAINER_ID) ||
+          document.getElementById(popupContainerId) ||
+          document.body
         }
         visible={visible}
-        className={cx(ModalStyle, css(customStyle?.content))}
+        className={cx(ModalStyle, ecss(customStyle?.content))}
         title={title}
         width={width}
         footer={footer}
         size={size}
         onClose={onCancel}
+        maskClosable={maskClosable}
       >
         {slotsElements.content?.({}, content) || content}
       </kit.Modal>

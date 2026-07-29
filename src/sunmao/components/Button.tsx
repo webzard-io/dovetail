@@ -4,7 +4,8 @@ import {
   Text,
   TextPropertySpec,
 } from "@sunmao-ui/runtime";
-import { css } from "@emotion/css";
+import { css as ecss } from "@emotion/css";
+import { css } from "@linaria/core";
 import { Type } from "@sinclair/typebox";
 import { buttonTypes, KitContext } from "../../_internal/atoms/kit-context";
 import { StringUnion } from "../helper";
@@ -80,7 +81,7 @@ export const Button = implementRuntimeComponent({
         type={type}
         ref={elementRef}
         onClick={callbackMap?.onClick}
-        className={css`
+        className={ecss`
           ${customStyle?.button}
         `}
         disabled={disabled}
