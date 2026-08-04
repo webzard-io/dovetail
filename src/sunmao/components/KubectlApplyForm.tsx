@@ -521,8 +521,11 @@ export const KubectlApplyForm = implementRuntimeComponent({
           { category: PRESET_PROPERTY_CATEGORY.Basic }
         ),
         transformMap: Type.Record(Type.String(), Type.Any()),
+        // 字符串项是「对该路径执行 replace」的简写；对象形式 `{ op, path, value? }`
+        // 还支持 add 和 remove，path 可以用分段数组表达含 `.` / `/` 的 key。
+        // 详见 JsonPatchOperation。
         replacePaths: Type.Array(
-          Type.Array(Type.String()),
+          Type.Array(Type.Any()),
           { conditions: [{ key: "strategy", value: "application/json-patch+json" }] }
         ),
         actions: Type.Array(StringUnion(["create", "patch"])),
