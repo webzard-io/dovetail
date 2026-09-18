@@ -75,6 +75,7 @@ export type KubectlApplyFormProps = {
     layout: Layout;
     confirmText: string;
     cancelText: string;
+    confirmDisabled?: boolean;
   };
   values: unknown[];
   defaultValues: unknown[];
@@ -331,6 +332,7 @@ const KubectlApplyForm = React.forwardRef<
                         onSubmit?.(values);
                       }}
                       loading={submitting}
+                      disabled={uiConfig.confirmDisabled}
                     >
                       {confirmText || "next"}
                     </kit.Button>
@@ -490,6 +492,7 @@ const KubectlApplyForm = React.forwardRef<
                         }
                       }}
                       loading={submitting}
+                      disabled={uiConfig.confirmDisabled}
                     >
                       {currentStep?.nextText || "next"}
                     </kit.Button>
