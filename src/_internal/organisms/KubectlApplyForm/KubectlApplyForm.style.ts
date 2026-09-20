@@ -67,9 +67,8 @@ export const WizardBodyStyle = css`
     }
 
     .error-alert {
-      width: 100%;
-      margin: 0 12px;
-      margin-bottom: 16px;
+      // 不能用 width: 100%，父级宽度加上左右 12px 外边距会超出表单字段的右边界
+      margin: 0 12px 16px;
 
       &-title {
         margin-bottom: 8px;
