@@ -23,6 +23,8 @@ import { cx, css } from "@linaria/core";
 import { css as ecss } from "@emotion/css";
 import { Steps, Row, Alert, Col } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
+import { Icon as EagleIcon } from "@cloudtower/eagle";
+import { XmarkFailedSeriousWarningFill16RedIcon } from "@cloudtower/icons-react";
 import SpecField from "../../molecules/AutoForm/SpecField";
 import Icon from "../../atoms/themes/CloudTower/components/Icon/Icon";
 // FIXME: use kit
@@ -75,6 +77,7 @@ export type KubectlApplyFormProps = {
     layout: Layout;
     confirmText: string;
     cancelText: string;
+    confirmDisabled?: boolean;
   };
   values: unknown[];
   defaultValues: unknown[];
@@ -231,16 +234,17 @@ const KubectlApplyForm = React.forwardRef<
         className="error-alert"
         message={
           <>
-            <div className={cx(Typo.Label.l4_regular, "error-alert-title")}>
-              {errorDetail.title}
-            </div>
+            <div className={Typo.Label.l4_regular}>{errorDetail.title}</div>
             {errorDetail.errors.map((errorInfo, index) => (
-              <div className={Typo.Label.l4_regular} key={errorInfo}>{`${
-                errorDetail.errors.length > 1 ? `${index + 1}.` : ""
-              } ${errorInfo}`}</div>
+              <div className={Typo.Label.l4_regular} key={errorInfo}>
+                {errorDetail.errors.length > 1
+                  ? `${index + 1}. ${errorInfo}`
+                  : errorInfo}
+              </div>
             ))}
           </>
         }
+        icon={<EagleIcon src={XmarkFailedSeriousWarningFill16RedIcon} />}
         showIcon
       ></Alert>
     ) : null;
@@ -331,6 +335,7 @@ const KubectlApplyForm = React.forwardRef<
                         onSubmit?.(values);
                       }}
                       loading={submitting}
+                      disabled={uiConfig.confirmDisabled}
                     >
                       {confirmText || "next"}
                     </kit.Button>
@@ -490,6 +495,7 @@ const KubectlApplyForm = React.forwardRef<
                         }
                       }}
                       loading={submitting}
+                      disabled={uiConfig.confirmDisabled}
                     >
                       {currentStep?.nextText || "next"}
                     </kit.Button>

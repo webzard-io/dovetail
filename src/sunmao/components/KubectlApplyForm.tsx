@@ -414,6 +414,19 @@ export const UiConfigSpec = Type.Object({
     category: PRESET_PROPERTY_CATEGORY.Behavior,
     default: true,
   }),
+  confirmDisabled: Type.Optional(
+    Type.Boolean({
+      title: "Confirm disabled",
+      category: PRESET_PROPERTY_CATEGORY.Behavior,
+      default: false,
+      conditions: [
+        {
+          key: "isDisplayFooter",
+          value: true,
+        },
+      ],
+    })
+  ),
 });
 
 const KubectlApplyFormProps = Type.Object({
