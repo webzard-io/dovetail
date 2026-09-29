@@ -66,17 +66,21 @@ export const WizardBodyStyle = css`
       margin-bottom: 40px;
     }
 
+    // 与 D2 的 FormErrorAlert 对齐；antd 默认的 Alert 样式在打包后排在主题覆盖之后，需提高优先级覆盖
     .error-alert {
       // 不能用 width: 100%，父级宽度加上左右 12px 外边距会超出表单字段的右边界
       margin: 0 12px 16px;
+      padding: 7px 12px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(255, 74, 74, 0.1);
 
-      &-title {
-        margin-bottom: 8px;
-      }
-
-      .anticon-close-circle {
+      .dovetail-ant-alert-icon {
+        position: static;
         display: flex;
         align-items: center;
+        height: 18px;
+        margin-right: 8px;
       }
     }
 
