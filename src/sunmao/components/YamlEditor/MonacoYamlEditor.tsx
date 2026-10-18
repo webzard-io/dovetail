@@ -7,6 +7,7 @@ import React, { useEffect, useRef } from "react";
 import YamlWorker from "./yaml.worker?worker";
 import { YamlEditorStyle } from "./style";
 import ReactDOM from "react-dom";
+import yaml from "js-yaml";
 
 const uri = monaco.Uri.parse("monaco-yaml.yaml");
 
@@ -114,7 +115,15 @@ const MonacoYamlEditor: React.FC<Props> = props => {
     if (editor) {
       const stop = editor.onDidChangeModelContent(() => {
         ReactDOM.unstable_batchedUpdates(() => {
-          onChange(editor.getValue());
+          const newValue = editor.getValue();
+          const parsedValue = yaml.load(newValue);
+
+          if (typeof parsedValue === "string") {
+            onValidate(false, true);
+          } else {
+            onChange(newValue);
+            onValidate(true, true);
+          }
         });
       });
 
@@ -122,7 +131,7 @@ const MonacoYamlEditor: React.FC<Props> = props => {
         stop.dispose();
       };
     }
-  }, [onChange, instanceRef.current.editor]);
+  }, [onChange, onValidate, instanceRef.current.editor]);
 
   useEffect(() => {
     const editor = instanceRef.current.editor;

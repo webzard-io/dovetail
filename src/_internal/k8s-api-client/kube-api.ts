@@ -9,7 +9,7 @@ import type {
 } from "kubernetes-types/meta/v1";
 import { informerLog } from "../utils/log";
 import mitt from "mitt";
-import { get } from "lodash";
+import { get, toPath } from "lodash";
 
 export type UnstructuredList = {
   apiVersion: string;
@@ -529,6 +529,100 @@ type KubernetesApiAction =
 
 export type KubernetesApplyAction = "create" | "patch";
 
+/**
+ * `application/json-patch+json` 策略下的一个 JSON Patch 操作。
+ *
+ * 字符串是「对该路径执行 replace」的简写，与 `replacePaths` 一直以来的含义保持一致。
+ * 对象形式额外支持 `add` 和 `remove`，这是 `replace` 无法表达的。
+ *
+ * `path` 支持两种写法：
+ * - 点分字符串，如 `spec.replicas`、`spec.containers[0].image`；
+ * - 分段数组，如 `["metadata", "annotations", "app.kubernetes.io/name"]`。
+ *
+ * key 本身含有 `.` 或 `/` 时（annotation、label 这类场景很常见）**必须**用数组形式，
+ * 否则点分字符串会被拆错，既定位不到值也生成不出正确的 JSON Pointer。
+ *
+ * `add` / `replace` 的 value 默认取自本次提交的资源（即表单内容），因此路径可以在
+ * 服务端对象上不存在（这正是 `add` 的用途），但必须能在提交的资源中取到值。
+ * 需要写入字面量、或往数组末尾追加（path 以 `-` 结尾）时，用 `value` 显式指定。
+ *
+ * `remove` 不携带 value，显式传入也会被忽略。
+ */
+export type JsonPatchOperation =
+  | string
+  | {
+    op: "add" | "replace" | "remove";
+    path: string | string[];
+    value?: unknown;
+  };
+
+/**
+ * 按 RFC 6901 转义 JSON Pointer 的单个 segment。
+ *
+ * JSON Pointer 用 `/` 分隔层级，所以 key 里真正含有的 `/` 必须转义成 `~1`；
+ * 而 `~` 是转义符本身，必须先转成 `~0`。例如 key `app.kubernetes.io/name`
+ * 要写成 `app.kubernetes.io~1name`，否则会被当成 `app.kubernetes.io` 和
+ * `name` 两层。
+ *
+ * 两次 replace 的顺序不能颠倒：若先转 `/` → `~1`，新产生的 `~` 会被后一步
+ * 再转成 `~0`，得到错误的 `~01`。
+ */
+function escapeJsonPointerSegment(segment: string) {
+  return segment.replace(/~/g, "~0").replace(/\//g, "~1");
+}
+
+/**
+ * 把 `JsonPatchOperation` 的 path 转成 JSON Pointer。
+ *
+ * 用 lodash `toPath` 统一解析：字符串按点分和数组下标语法拆段，数组则原样保留
+ * 每一段，因此含 `.` / `/` 的 key（K8s 的 annotation、label 基本都是这种）
+ * 只能用数组形式表达。几个例子：
+ *
+ * ```
+ * "spec.replicas"                                     → "/spec/replicas"
+ * "spec.containers[0].image"                          → "/spec/containers/0/image"
+ * "spec.containers.-"                                 → "/spec/containers/-"    // `-` 表示数组末尾
+ * ["metadata", "annotations", "app.kubernetes.io/name"] → "/metadata/annotations/app.kubernetes.io~1name"
+ * "metadata.annotations.app.kubernetes.io/name"       → "/metadata/annotations/app/kubernetes/io~1name"  // ✗ 点被当成层级分隔
+ * ```
+ *
+ * path 为空时 `toPath` 得到 `[]`，结果是 `"/"`。注意 `"/"` 在 RFC 6901 中指的是
+ * 「key 为空字符串的成员」而非文档根（文档根是空字符串 `""`），而这里恒定拼了
+ * `"/"` 前缀，所以不可能生成出替换整个资源的指针。这里不额外校验，让 API Server
+ * 返回错误。
+ */
+function toJsonPointer(path: string | string[]) {
+  return "/" + toPath(path).map(escapeJsonPointerSegment).join("/");
+}
+
+/**
+ * 把 `JsonPatchOperation[]` 编译成 RFC 6902 的 JSON Patch 文档。
+ *
+ * 抽成模块级纯函数而非 `patch()` 里的内联逻辑，是为了能脱离 HTTP 单独验证；
+ * `spec` 只用于给未显式指定 `value` 的操作取值。
+ */
+export function buildJsonPatch(spec: K8sObject, operations: JsonPatchOperation[]) {
+  return operations.map((operation) => {
+    const { op, path } = typeof operation === "string"
+      ? { op: "replace" as const, path: operation }
+      : operation;
+    const pointer = toJsonPointer(path);
+
+    // remove 是唯一不携带 value 的操作
+    if (op === "remove") {
+      return { op, path: pointer };
+    }
+
+    // 显式传入的 value 优先（用于写字面量或往数组末尾追加），
+    // 未传时回落到本次提交的资源上该路径的值
+    const value = typeof operation !== "string" && "value" in operation
+      ? operation.value
+      : get(spec, path);
+
+    return { op, path: pointer, value };
+  });
+}
+
 const apiVersionResourceCache: Record<string, APIResourceList> = {};
 
 type OperationOptions = {
@@ -546,7 +640,7 @@ export class KubeSdk {
     this.basePath = basePath;
   }
 
-  public async applyYaml(specs: Unstructured[], strategy?: string, replacePaths?: string[][], actions: KubernetesApplyAction[] = []) {
+  public async applyYaml(specs: Unstructured[], strategy?: string, replacePaths?: JsonPatchOperation[][], actions: KubernetesApplyAction[] = []) {
     const validSpecs = specs.filter((s) => s && s.kind && s.metadata);
     const changed: Unstructured[] = [];
 
@@ -660,13 +754,11 @@ export class KubeSdk {
     return res;
   }
 
-  private async patch(spec: K8sObject, strategy: string, replacePaths?: string[]) {
+  private async patch(spec: K8sObject, strategy: string, replacePaths?: JsonPatchOperation[]) {
     const url = await this.specUriPath(spec, "patch");
-    const json = strategy === "application/json-patch+json" ? (replacePaths || []).map(path => ({
-      op: "replace",
-      path: "/" + path.split(".").join("/"),
-      value: get(spec, path)
-    })) : spec;
+    const json = strategy === "application/json-patch+json"
+      ? buildJsonPatch(spec, replacePaths || [])
+      : spec;
     const res = await ky
       .patch(url, {
         headers: {
