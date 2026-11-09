@@ -33,20 +33,21 @@ export const WizardBodyStyle = css`
   display: flex;
   flex: 1;
 
-  .left,
-  .right {
+  // 只匹配直接子元素：表单里的 Monaco 编辑器内部也有 .left/.right（如查找框的展开按钮），不能被布局样式影响
+  > .left,
+  > .right {
     flex-grow: 0;
     flex-shrink: 0;
     flex-basis: 21%;
   }
 
-  .left {
+  > .left {
     display: flex;
     justify-content: flex-end;
     padding-right: 44px;
   }
 
-  .right {
+  > .right {
     padding-left: 44px;
     height: calc(100% - 40px);
   }
