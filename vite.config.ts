@@ -34,7 +34,10 @@ export default defineConfig({
       formats: ["es", "cjs"],
     },
     rollupOptions: {
-      external,
+      // monaco-editor 的子路径（如 esm/vs/editor/editor.all.js）也要外置，
+      // 否则会把旧版 Monaco 的 JS 和 CSS 打进产物，覆盖使用方自己的 Monaco 样式
+      external: (id) =>
+        external.includes(id) || id.startsWith("monaco-editor/"),
     },
   },
   server: {
